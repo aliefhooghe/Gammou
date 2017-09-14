@@ -1,0 +1,2 @@
+# Gammou
+Modular Sound Synthesizer
