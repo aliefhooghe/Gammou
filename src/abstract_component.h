@@ -1,0 +1,394 @@
+#ifndef ABSTRACT_COMPONENT_H_
+#define ABSTRACT_COMPONENT_H_
+
+#include <vector>
+#include <string>
+
+#include "gammou_exception.h"
+#include "link.h"
+
+namespace Gammou {
+
+template<class T> class abstract_frame;
+template<class T> class abstract_component;
+
+
+/*! \class component_link
+ *  \brief Describe a component input as a link to another component output
+ */
+template<class T>
+class component_link: public link<abstract_component<T> > {
+
+public:
+	component_link();
+	~component_link() {}
+
+	void set_src_output_id(const unsigned int output_id);
+	unsigned int get_src_output_id() const;
+
+private:
+	unsigned int m_src_output_id;
+};
+
+/*!	\class frame_link
+ * 	\brief Describe the component's link to his frame
+ */
+template<class T>
+class frame_link: public link<abstract_frame<T> >{
+
+public:
+	frame_link(abstract_component<T> *owner);
+	~frame_link() {}
+
+private:
+	void on_link_monitor_destruction();
+	abstract_component<T> *m_owner;
+};
+
+
+/*! \class abstract_component
+ *  \brief Describe a connected component that process data
+ */
+template<class T>
+class abstract_component{
+
+	class component_error: public error
+	{
+	public:
+		virtual const char *what() const throw () {
+			return "Component generic error";
+		}
+	};
+
+	class invalid_id: public component_error
+	{
+	public:
+		invalid_id(const unsigned int id = 0) throw () :
+				m_id(id) {
+		}
+		virtual const char *what() const throw () {
+			return "Invalid component input/output id";
+		}
+	private:
+		const unsigned int m_id;
+	};
+
+	class impossible_input_pop: public component_error
+	{
+	public:
+		virtual const char *what() const throw () {
+			return "No more Input to pop";
+		}
+	};
+
+	class not_on_the_same_frame: public component_error
+	{
+	public:
+		virtual const char *what() const throw () {
+			return "Component are not in the same frame";
+		}
+	};
+
+	class not_on_a_frame : public component_error{
+	public:
+		virtual const char *what() const throw () {
+			return "Component is not on a frame";
+		}
+	};
+
+	friend class abstract_frame<T>;
+
+public:
+	abstract_component(const std::string& name, const unsigned int input_count,
+			const unsigned int output_count);
+	virtual ~abstract_component();
+
+	const unsigned int get_input_count() const noexcept;
+	const unsigned int get_output_count() const noexcept;
+
+	const std::string get_name() const noexcept;
+	const std::string get_input_name(const unsigned int input_id) const;
+	const std::string get_output_name(const unsigned int output_id) const;
+
+	void connect_to(const unsigned int output_id, abstract_component<T>* dst,
+			const unsigned int dst_input_id);
+	void disconnect_input(const unsigned int input_id);
+
+	abstract_component<T> *get_input_src(const unsigned int input_id,
+			unsigned int& output_id);
+	abstract_component<T> *get_input_src(const unsigned int input_id);
+
+	abstract_frame<T> *get_frame();
+
+	bool update_process_cyle(const unsigned int cycle) noexcept;
+
+	// To be implemented
+	virtual T fetch_output(const unsigned int output_id) =0;
+	virtual void process(const T input[]) =0;
+	virtual void initialize_process() {};
+	virtual void on_input_connection(const unsigned int input_id) {};
+
+protected:
+	void set_input_name(const std::string& name, const unsigned int input_id);
+	void set_output_name(const std::string& name, const unsigned int output_id);
+	void push_input();
+	void push_input(const std::string& name);
+	void pop_input();
+
+private:
+	const std::string default_input_name(const unsigned int input_id);
+	const std::string default_output_name(const unsigned int output_id);
+
+	link_monitor<abstract_component<T> > m_link_monitor;
+	std::vector<component_link<T> > m_input;
+
+	std::vector<std::string> m_input_name;
+	std::vector<std::string> m_output_name;
+	std::string m_name;
+
+	frame_link<T> m_frame;
+
+	unsigned int m_process_cycle;
+};
+
+
+/*
+ *		Component link implementation
+ */
+
+template<class T>
+component_link<T>::component_link()
+	: link<abstract_component<T> >(), m_src_output_id(0)
+{
+}
+
+template<class T>
+void component_link<T>::set_src_output_id(const unsigned int output_id)
+{
+	m_src_output_id = output_id;
+}
+
+template<class T>
+unsigned int component_link<T>::get_src_output_id() const
+{
+	return m_src_output_id;
+}
+
+
+/*
+ * 		Frame link implementation
+ */
+
+template<class T>
+frame_link<T>::frame_link(abstract_component<T> *owner)
+	: m_owner(owner)
+{
+}
+
+template<class T>
+void frame_link<T>::on_link_monitor_destruction()
+{
+	const unsigned int ic = m_owner->get_input_count();
+
+	for(unsigned int i = 0; i < ic; ++i)
+		m_owner->disconnect_input(i);
+}
+
+/*
+ * 		Abstract Component implementation
+ */
+
+template<class T>
+abstract_component<T>::abstract_component(const std::string& name,
+		const unsigned int input_count, const unsigned int output_count)
+		: m_link_monitor(this),
+		  m_input(input_count),
+		  m_input_name(input_count),
+		  m_output_name(output_count),
+		  m_name(name),
+		  m_frame(this),
+		  m_process_cycle(0)
+{
+	// Not with iterator because we need id for name creation
+	for(unsigned int i = 0; i < input_count; ++i)
+		m_input_name[i] = default_input_name(i);
+	for(unsigned int i = 0; i < output_count; ++i)
+		m_output_name[i] = default_output_name(i);
+
+}
+
+template<class T>
+abstract_component<T>::~abstract_component()
+{
+	abstract_frame<T> *const frame = get_frame();
+
+	if( frame != nullptr )
+		frame->notify_circuit_change();
+}
+
+template<class T>
+const unsigned int abstract_component<T>::get_input_count() const noexcept
+{
+	return m_input_name.size();
+}
+
+template<class T>
+const unsigned int abstract_component<T>::get_output_count() const noexcept
+{
+	return m_output_name.size();
+}
+
+template<class T>
+const std::string abstract_component<T>::get_name() const noexcept
+{
+	return m_name;
+}
+
+template<class T>
+const std::string abstract_component<T>::get_input_name(const unsigned int input_id) const
+{
+	if(input_id >= get_input_count())
+		throw invalid_id(input_id);
+	return m_input_name[input_id];
+}
+
+template<class T>
+const std::string abstract_component<T>::get_output_name(const unsigned int output_id) const
+{
+	if(output_id >= get_output_count())
+		throw invalid_id(output_id);
+	return m_output_name[output_id];
+}
+
+template<class T>
+void abstract_component<T>::connect_to(const unsigned int output_id, abstract_component<T>* dst, const unsigned int dst_input_id)
+{
+	abstract_frame<T> *const frame = get_frame();
+
+	if( frame == nullptr )
+		throw not_on_a_frame();
+	else if( frame != dst->get_frame() )
+		throw not_on_the_same_frame();
+
+	if( output_id >= get_output_count() )
+		throw invalid_id(output_id);
+	if( dst_input_id >= dst->get_input_count() )
+		throw invalid_id(dst_input_id);
+
+	m_link_monitor.plug_link(&(dst->m_input[dst_input_id]));
+	dst->m_input[dst_input_id].set_src_output_id(output_id);
+	dst->on_input_connection(dst_input_id);
+	frame->notify_circuit_change();
+}
+
+template<class T>
+void abstract_component<T>::disconnect_input(const unsigned int input_id)
+{
+	abstract_frame<T> *const frame = get_frame();
+	if( input_id >= get_input_count() )
+		throw invalid_id(input_id);
+
+	m_input[input_id].disconnect();
+
+	if( frame != nullptr )
+		frame->notify_circuit_change();
+}
+
+template<class T>
+abstract_component<T> *abstract_component<T>::get_input_src(const unsigned int input_id, unsigned int& output_id)
+{
+	if( input_id >= get_input_count() )
+		throw invalid_id(input_id);
+
+	output_id = m_input[input_id].get_src_output_id();
+	return m_input[input_id].get_link_source();
+}
+
+template<class T>
+abstract_component<T> *abstract_component<T>::get_input_src(const unsigned int input_id)
+{
+	if( input_id >= get_input_count() )
+		throw invalid_id(input_id);
+
+	return m_input[input_id].get_link_source();
+}
+
+template<class T>
+abstract_frame<T> *abstract_component<T>::get_frame()
+{
+	return m_frame.get_link_source();
+}
+
+template<class T>
+bool abstract_component<T>::update_process_cyle(const unsigned int cycle) noexcept
+{
+	if( m_process_cycle != cycle ){
+		m_process_cycle = cycle;
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+
+// Protected
+
+template<class T>
+void abstract_component<T>::set_input_name(const std::string& name, const unsigned int input_id)
+{
+	if( input_id >= get_input_count() )
+		throw invalid_id(input_id);
+	m_input_name[input_id] = name;
+}
+
+template<class T>
+void abstract_component<T>::set_output_name(const std::string& name, const unsigned int output_id)
+{
+	if( output_id >= get_output_count() )
+		throw invalid_id(output_id);
+	m_output_name[output_id] = name;
+}
+
+template<class T>
+void abstract_component<T>::push_input()
+{
+	unsigned int new_input_id = get_input_count();
+	m_input.push_back(component_link<T>());
+	m_input_name.push_back(default_input_name(new_input_id));
+}
+
+template<class T>
+void abstract_component<T>::push_input(const std::string& name)
+{
+	m_input.push_back(component_link<T>());
+	m_input_name.push_back(name);
+}
+
+template<class T>
+void abstract_component<T>::pop_input()
+{
+	if( get_input_count() == 0 )
+		throw impossible_input_pop();
+	m_input.pop_back();
+	m_input_name.pop_back();
+}
+
+// private
+
+template<class T>
+const std::string abstract_component<T>::default_input_name(const unsigned int input_id)
+{
+	return "In-" + std::to_string(input_id);
+}
+
+template<class T>
+const std::string abstract_component<T>::default_output_name(const unsigned int output_id)
+{
+	return "Out-" + std::to_string(output_id);
+}
+
+
+} /* namespace Gammou */
+
+#endif /* COMPONENT_H_ */

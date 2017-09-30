@@ -17,6 +17,8 @@ public:
 };
 
 
+
+
 } /* namespace Gammou */
 
 #endif /* GAMMOU_EXCEPTION_H_ */
