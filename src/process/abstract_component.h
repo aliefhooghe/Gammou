@@ -7,7 +7,7 @@
 #include "gammou_exception.h"
 #include "link.h"
 
-namespace Gammou {
+namespace process {
 
 template<class T> class abstract_frame;
 template<class T> class abstract_component;

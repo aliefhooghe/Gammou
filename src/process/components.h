@@ -4,7 +4,7 @@
 #include "abstract_component.h"
 
 
-namespace Gammou{
+namespace process{
 
 
 template<class T>

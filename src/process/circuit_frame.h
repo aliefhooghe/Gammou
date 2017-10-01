@@ -4,7 +4,7 @@
 #include "abstract_frame.h"
 #include "components.h"
 
-namespace Gammou{
+namespace process{
 
 
 

@@ -4,7 +4,7 @@
 
 
 
-namespace Gammou{
+namespace process{
 
 template<class T> class link_monitor;
 

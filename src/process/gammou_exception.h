@@ -5,7 +5,7 @@
 #include <exception>
 
 
-namespace Gammou {
+namespace process {
 
 class error : public std::exception{
 

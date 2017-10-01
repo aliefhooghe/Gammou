@@ -4,7 +4,7 @@
 #include "abstract_component.h"
 #include "abstract_frame.h"
 
-namespace Gammou{
+namespace process{
 
 template<class T>
 class frame_component : public abstract_component<T>, public abstract_frame<T> {

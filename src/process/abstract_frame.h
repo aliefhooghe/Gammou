@@ -9,7 +9,7 @@
 
 #define FRAME_USE_CODE
 
-namespace Gammou{
+namespace process{
 
 
 template<class T>
