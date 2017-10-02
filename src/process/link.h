@@ -3,7 +3,6 @@
 #define LINK_H_
 
 
-
 namespace process{
 
 template<class T> class link_monitor;
@@ -20,10 +19,12 @@ public:
 
 protected:
 	virtual void on_link_monitor_destruction() {}
+	virtual void on_tick() {};
 
 private:
 	void add_to_link_list(link<T> *link);
 	void notify_monitor_destruction();
+	void notify_tick();
 
 	link_monitor<T> *m_monitor;
 	link<T> *m_previous_link;
@@ -40,6 +41,7 @@ public:
 	~link_monitor();
 
 	void plug_link(link<T> *link);
+	void send_tick();
 
 private:
 	T * const m_source;
@@ -116,6 +118,17 @@ void link<T>::notify_monitor_destruction()
 	on_link_monitor_destruction();
 }
 
+template<class T>
+void link<T>::notify_tick()
+{
+	if( m_next_link != nullptr )
+		m_next_link->notify_tick();
+	on_tick();
+}
+
+/*
+ *
+ */
 
 template<class T>
 link_monitor<T>::link_monitor(T * const source) :
@@ -140,6 +153,13 @@ void link_monitor<T>::plug_link(link<T> *link)
 		m_first_link = link;
 	else
 		m_first_link->add_to_link_list(link);
+}
+
+template<class T>
+void link_monitor<T>::send_tick()
+{
+	if( m_first_link != nullptr )
+		m_first_link->notify_tick();
 }
 
 } /*Gammou */

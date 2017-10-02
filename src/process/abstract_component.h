@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#include "gammou_exception.h"
+#include "../gammou_exception.h"
 #include "link.h"
 
 namespace process {

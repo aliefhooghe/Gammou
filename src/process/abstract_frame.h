@@ -36,7 +36,7 @@ class abstract_frame{
 			return instruction(component, 0, 0, PROCESS);
 		}
 
-		void execute(std::vector<T>& memory)
+		void execute(std::vector<T>& memory) const
 		{
 			if( m_type == FETCH_OUTPUT )
 				memory[m_mem_pos] = m_component->fetch_output(m_output_id);
@@ -183,7 +183,7 @@ void abstract_frame<T>::make_component_current_cycle_program(abstract_component<
 template<class T>
 void abstract_frame<T>::execute_program()
 {
-	for( typename std::vector<abstract_frame<T>::instruction>::iterator it = m_program.begin();
+	for( typename std::vector<abstract_frame<T>::instruction>::const_iterator it = m_program.begin();
 			it != m_program.end(); ++it)
 		it->execute(m_program_memory);
 }
