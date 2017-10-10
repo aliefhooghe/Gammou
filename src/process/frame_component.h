@@ -3,6 +3,7 @@
 
 #include "abstract_component.h"
 #include "abstract_frame.h"
+#include "helper_components/buffer_fetcher.h"
 
 namespace process{
 
@@ -55,7 +56,7 @@ public:
 	void connect_input_to_component(const unsigned int frame_input_id, abstract_component<T> *component, const unsigned int component_input_id);
 
 private:
-	input_fetcher_component<T> m_input;
+	buffer_fetcher_component<T> m_input;
 	output_component m_output;
 
 };
@@ -94,7 +95,7 @@ T frame_component<T>::fetch_output(const unsigned int output_id)
 template<class T>
 void frame_component<T>::process(const T input[])
 {
-	m_input.set_input_pointer(input);
+	m_input.set_input_buffer_ptr(input);
 	abstract_frame<T>::execute_program();
 }
 

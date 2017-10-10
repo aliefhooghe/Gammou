@@ -22,7 +22,6 @@ protected:
 	virtual void on_tick() {};
 
 private:
-	void add_to_link_list(link<T> *link);
 	void notify_monitor_destruction();
 	void notify_tick();
 
@@ -96,18 +95,6 @@ void link<T>::disconnect()
 	m_next_link = nullptr;
 }
 
-template<class T>
-void link<T>::add_to_link_list(link<T> *link)
-{
-	if( m_next_link == nullptr ){
-		link->m_previous_link = this;
-		m_next_link = link;
-	}
-	else{
-		m_next_link->add_to_link_list(link);
-	}
-}
-
 
 template<class T>
 void link<T>::notify_monitor_destruction()
@@ -149,10 +136,12 @@ void link_monitor<T>::plug_link(link<T> *link)
 	link->disconnect();
 	link->m_monitor = this;
 
-	if( m_first_link == nullptr )
-		m_first_link = link;
-	else
-		m_first_link->add_to_link_list(link);
+	if( m_first_link != nullptr ){
+		link->m_next_link = m_first_link;
+		m_first_link->m_previous_link = link;
+	}
+
+	m_first_link = link;
 }
 
 template<class T>

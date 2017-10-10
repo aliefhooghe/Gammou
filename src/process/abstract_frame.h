@@ -7,8 +7,6 @@
 
 #define FRAME_INITIAL_MEM 16
 
-#define FRAME_USE_CODE
-
 namespace process{
 
 
@@ -68,15 +66,10 @@ public:
 	virtual ~abstract_frame();
 
 	void add_component(abstract_component<T> *component);
-
 	virtual void notify_circuit_change() =0;
-
-	virtual void connect_component_to_output(abstract_component<T> *component, const unsigned int component_output_id, const unsigned int frame_output_id) =0;
-	virtual void connect_input_to_component(const unsigned int frame_input_id, abstract_component<T> *component, const unsigned int component_input_id) =0;
-
 	void initialize_components();
 protected:
-	void next_process_cycle(); // a renomer !!!!
+	void next_process_cycle();
 
 	void clear_program();
 	void make_component_current_cycle_program(abstract_component<T> *component);

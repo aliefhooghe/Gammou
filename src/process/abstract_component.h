@@ -5,6 +5,7 @@
 #include <string>
 
 #include "../gammou_exception.h"
+
 #include "link.h"
 
 namespace process {
@@ -390,5 +391,6 @@ const std::string abstract_component<T>::default_output_name(const unsigned int 
 
 
 } /* namespace Gammou */
+
 
 #endif /* COMPONENT_H_ */
