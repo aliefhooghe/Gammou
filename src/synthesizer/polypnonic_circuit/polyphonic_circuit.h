@@ -63,6 +63,10 @@ public:
 	void set_automation_buffer(const double buffer[]);
 	void set_master_to_polyphonic_buffer(const double buffer[]);
 
+	void connect_gpar_input_to_component(const unsigned int gpar_output_id, sound_component *component, const unsigned int component_input_id);
+	void connect_master_input_to_component(const unsigned int master_input_id, sound_component *component, const unsigned component_input_id);
+	void connect_automtion_input_to_component(const unsigned int automation_input_id, sound_component *component, const unsigned int component_input_id);
+	void connect_component_to_output(sound_component *component, const unsigned int component_output_id, const unsigned int circuit_output_id);
 private:
 	void notify_circuit_change();
 	polyphonic_circuit_GPAR_input m_gpar_input;

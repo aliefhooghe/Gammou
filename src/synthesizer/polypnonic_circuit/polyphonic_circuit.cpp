@@ -152,4 +152,24 @@ void polyphonic_circuit::notify_circuit_change()
 	make_component_current_cycle_program(&m_output);
 }
 
+void polyphonic_circuit::connect_gpar_input_to_component(const unsigned int gpar_output_id, sound_component *component, const unsigned int component_input_id)
+{
+	m_gpar_input.connect_to(gpar_output_id, component, component_input_id);
+}
+
+void polyphonic_circuit::connect_master_input_to_component(const unsigned int master_input_id, sound_component *component, const unsigned component_input_id)
+{
+	m_input_from_master.connect_to(master_input_id, component, component_input_id);
+}
+
+void polyphonic_circuit::connect_automtion_input_to_component(const unsigned int automation_input_id, sound_component *component, const unsigned int component_input_id)
+{
+	m_automation_input.connect_to(automation_input_id, component, component_input_id);
+}
+
+void polyphonic_circuit::connect_component_to_output(sound_component *component, const unsigned int component_output_id, const unsigned int circuit_output_id)
+{
+	component->connect_to(component_output_id, &m_output, circuit_output_id);
+}
+
 }
