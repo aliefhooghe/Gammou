@@ -1,6 +1,8 @@
 #ifndef PROCESS_H_
 #define PROCESS_H_
 
+
+
 #include "link.h"
 
 #include "abstract_component.h"
@@ -11,7 +13,7 @@
 
 #include "helper_components/buffer_fetcher.h"
 #include "helper_components/buffer_sum.h"
-
+#include "helper_components/buffer_filler.h"
 
 
 #endif /* PROCESS_H_ */

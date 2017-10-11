@@ -121,10 +121,6 @@ void test_component_basic()
 	assert("In-1" == a1.get_input_name(1));
 	assert("In-2" == a1.get_input_name(2));
 
-	assert( a1.get_input_src(0) == nullptr);
-	assert( a1.get_input_src(1) == nullptr);
-	assert( a1.get_input_src(2) == nullptr);
-
 	assert( a1.get_frame() == nullptr);
 }
 
@@ -148,10 +144,6 @@ void test_component_with_circuit_frame()
 	circuit.connect_input_to_component(0, &a1, 0);
 	circuit.connect_input_to_component(1, &a1, 1);
 	circuit.connect_input_to_component(2, &a1, 2);
-
-	assert( a1.get_input_src(0) != nullptr);
-	assert( a1.get_input_src(1) != nullptr);
-	assert( a1.get_input_src(2) != nullptr);
 
 	circuit.connect_component_to_output(&a1, 0, 0);
 

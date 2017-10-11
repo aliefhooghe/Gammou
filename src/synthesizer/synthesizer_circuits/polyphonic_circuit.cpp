@@ -72,18 +72,18 @@ void polyphonic_circuit_GPAR_input::set_channel_release_velocity(const unsigned 
 
 
 polyphonic_circuit::polyphonic_circuit(const unsigned int channel_count,
-		const unsigned int master_to_polyphonic_stream_count,
-		const unsigned int automation_stream_count)
+		const unsigned int master_to_polyphonic_output_count,
+		const unsigned int automation_input_count)
 	: m_gpar_input(channel_count),
-	  m_input_from_master("From Master", master_to_polyphonic_stream_count),
-	  m_automation_input("Automation", automation_stream_count),
-	  m_output(2), // L, R
+	  m_input_from_master("From Master", master_to_polyphonic_output_count),
+	  m_automation_input("Automation", automation_input_count),
+	  m_output_to_master(2), // L, R
 	  m_channel_manager(channel_count)
 {
 	add_component(&m_gpar_input);
 	add_component(&m_input_from_master);
 	add_component(&m_automation_input);
-	add_component(&m_output);
+	add_component(&m_output_to_master);
 	m_channel_manager.register_sound_component(&m_gpar_input);
 }
 
@@ -92,8 +92,12 @@ polyphonic_circuit::~polyphonic_circuit()
 
 }
 
-void polyphonic_circuit::add_sound_component(sound_component *component)
+void polyphonic_circuit::add_sound_component(abstract_sound_component *component)
 {
+	/*
+	 * 		check : component.channel_count == ok, component.is_multi_channel() == true
+	 */
+
 	add_component(component);
 	m_channel_manager.register_sound_component(component);
 }
@@ -130,9 +134,9 @@ void polyphonic_circuit::set_channel_release_velocity(const unsigned int channel
 	m_gpar_input.set_channel_release_velocity(channel, velocity);
 }
 
-void polyphonic_circuit::set_output_buffer(double buffer[])
+void polyphonic_circuit::set_output_to_master_buffer(double buffer[])
 {
-	m_output.set_buffer_ptr(buffer);
+	m_output_to_master.set_buffer_ptr(buffer);
 }
 
 
@@ -149,27 +153,31 @@ void polyphonic_circuit::set_master_to_polyphonic_buffer(const double buffer[])
 void polyphonic_circuit::notify_circuit_change()
 {
 	next_process_cycle();
-	make_component_current_cycle_program(&m_output);
+	make_component_current_cycle_program(&m_output_to_master);
 }
 
-void polyphonic_circuit::connect_gpar_input_to_component(const unsigned int gpar_output_id, sound_component *component, const unsigned int component_input_id)
+void polyphonic_circuit::connect_gpar_input_to_component(const unsigned int gpar_output_id, abstract_sound_component *component,
+		const unsigned int component_input_id)
 {
 	m_gpar_input.connect_to(gpar_output_id, component, component_input_id);
 }
 
-void polyphonic_circuit::connect_master_input_to_component(const unsigned int master_input_id, sound_component *component, const unsigned component_input_id)
+void polyphonic_circuit::connect_master_input_to_component(const unsigned int master_input_id, abstract_sound_component *component,
+		const unsigned component_input_id)
 {
 	m_input_from_master.connect_to(master_input_id, component, component_input_id);
 }
 
-void polyphonic_circuit::connect_automtion_input_to_component(const unsigned int automation_input_id, sound_component *component, const unsigned int component_input_id)
+void polyphonic_circuit::connect_automtion_input_to_component(const unsigned int automation_input_id, abstract_sound_component *component,
+		const unsigned int component_input_id)
 {
 	m_automation_input.connect_to(automation_input_id, component, component_input_id);
 }
 
-void polyphonic_circuit::connect_component_to_output(sound_component *component, const unsigned int component_output_id, const unsigned int circuit_output_id)
+void polyphonic_circuit::connect_component_to_output(abstract_sound_component *component, const unsigned int component_output_id,
+		const unsigned int circuit_output_id)
 {
-	component->connect_to(component_output_id, &m_output, circuit_output_id);
+	component->connect_to(component_output_id, &m_output_to_master, circuit_output_id);
 }
 
 }

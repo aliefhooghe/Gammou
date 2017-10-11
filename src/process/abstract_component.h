@@ -115,10 +115,6 @@ public:
 			const unsigned int dst_input_id);
 	void disconnect_input(const unsigned int input_id);
 
-	abstract_component<T> *get_input_src(const unsigned int input_id,
-			unsigned int& output_id);
-	abstract_component<T> *get_input_src(const unsigned int input_id);
-
 	abstract_frame<T> *get_frame();
 
 	bool update_process_cyle(const unsigned int cycle) noexcept;
@@ -130,6 +126,10 @@ public:
 	virtual void on_input_connection(const unsigned int input_id) {};
 
 protected:
+	abstract_component<T> *get_input_src(const unsigned int input_id,
+			unsigned int& output_id);
+	abstract_component<T> *get_input_src(const unsigned int input_id);
+
 	void set_input_name(const std::string& name, const unsigned int input_id);
 	void set_output_name(const std::string& name, const unsigned int output_id);
 	void push_input();

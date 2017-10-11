@@ -7,7 +7,7 @@
 #include "../sound_component/sound_component.h"
 
 
-namespace gammou{
+namespace gammou {
 
 // 'GPAR' = Gate, Pitch, Attack, Release
 
@@ -45,11 +45,11 @@ class polyphonic_circuit : private process::abstract_frame<double> {
 
 public:
 	polyphonic_circuit(const unsigned int channel_count,
-			const unsigned int master_to_polyphonic_stream_count,
-			const unsigned int automation_stream_count);
+			const unsigned int master_to_polyphonic_output_count,
+			const unsigned int automation_input_count);
 	~polyphonic_circuit();
 
-	void add_sound_component(sound_component *component);
+	void add_sound_component(abstract_sound_component *component);
 
 	void process(const unsigned int channel);
 	void initialize_channel(const unsigned int channel);
@@ -59,20 +59,24 @@ public:
 	void set_channel_attack_velocity(const unsigned int channel, const double velocity);
 	void set_channel_release_velocity(const unsigned int channel, const double velocity);
 
-	void set_output_buffer(double buffer[]);
+	void set_output_to_master_buffer(double buffer[]);
 	void set_automation_buffer(const double buffer[]);
 	void set_master_to_polyphonic_buffer(const double buffer[]);
 
-	void connect_gpar_input_to_component(const unsigned int gpar_output_id, sound_component *component, const unsigned int component_input_id);
-	void connect_master_input_to_component(const unsigned int master_input_id, sound_component *component, const unsigned component_input_id);
-	void connect_automtion_input_to_component(const unsigned int automation_input_id, sound_component *component, const unsigned int component_input_id);
-	void connect_component_to_output(sound_component *component, const unsigned int component_output_id, const unsigned int circuit_output_id);
+	void connect_gpar_input_to_component(const unsigned int gpar_output_id, abstract_sound_component *component,
+			const unsigned int component_input_id);
+	void connect_master_input_to_component(const unsigned int master_input_id, abstract_sound_component *component,
+			const unsigned component_input_id);
+	void connect_automtion_input_to_component(const unsigned int automation_input_id, abstract_sound_component *component,
+			const unsigned int component_input_id);
+	void connect_component_to_output(abstract_sound_component *component, const unsigned int component_output_id,
+			const unsigned int circuit_output_id);
 private:
 	void notify_circuit_change();
 	polyphonic_circuit_GPAR_input m_gpar_input;
 	process::buffer_fetcher_component<double> m_input_from_master;
 	process::buffer_fetcher_component<double> m_automation_input;
-	process::buffer_sum_component<double> m_output;
+	process::buffer_sum_component<double> m_output_to_master;
 	channels_manager m_channel_manager;
 };
 

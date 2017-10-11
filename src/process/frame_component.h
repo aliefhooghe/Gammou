@@ -17,6 +17,8 @@ class frame_component : public abstract_component<T>, public abstract_frame<T> {
 
 	class output_component : public abstract_component<T> {
 
+		friend class frame_component<T>;
+
 	public:
 		output_component(const unsigned int frame_output_count)
 			: abstract_component<T>("Output", frame_output_count, 0)
