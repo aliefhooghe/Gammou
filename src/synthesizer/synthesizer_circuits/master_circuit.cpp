@@ -17,7 +17,8 @@ master_circuit::master_circuit(const unsigned int master_to_polyphonic_output_co
 	  m_output_to_polyphonic("To Polyphonic", master_to_polyphonic_output_count),
 	  m_from_polyphonic_input("From Polyphonic", 2), // left, right
 	  m_main_output(2),
-	  m_automation_input("Automation", automation_input_count)
+	  m_automation_input("Automation", automation_input_count),
+	  m_sound_component_manager(1)
 {
 	add_component(&m_main_input);
 	add_component(&m_output_to_polyphonic);
@@ -38,8 +39,13 @@ void master_circuit::add_sound_component(abstract_sound_component *component)
 	 * 	check : component.is_multichannel = false
 	 */
 	add_component(component);
+	m_sound_component_manager.register_observer(component);
 }
 
+void master_circuit::set_sample_rate(const double sample_rate)
+{
+	m_sound_component_manager.set_current_samplerate(sample_rate);
+}
 
 void master_circuit::process()
 {

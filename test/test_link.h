@@ -1,43 +1,43 @@
 
 #include <cassert>
 
-#include "../src/process/link.h"
+#include "../src/process/observer.h"
 
 
 void test_link1()
 {
 	int entier = 5;
 
-	process::link_monitor<int> * monitor =
-			new process::link_monitor<int>(&entier);
+	process::subject<int> * monitor =
+			new process::subject<int>(&entier);
 
-	process::link<int> l1, l2;
-	process::link<int> *ldy = new process::link<int>();
+	process::observer<int> l1, l2;
+	process::observer<int> *ldy = new process::observer<int>();
 
 
-	assert( l1.get_link_source() == nullptr );
+	assert( l1.get_subject_resource() == nullptr );
 
-	monitor->plug_link(&l1);
+	monitor->register_observer(&l1);
 
-	assert( l1.get_link_source() == &entier );
+	assert( l1.get_subject_resource() == &entier );
 
-	monitor->plug_link(ldy);
+	monitor->register_observer(ldy);
 
-	assert( ldy->get_link_source() == &entier);
+	assert( ldy->get_subject_resource() == &entier);
 
-	monitor->plug_link(&l2);
+	monitor->register_observer(&l2);
 
-	assert( l2.get_link_source() == &entier);
+	assert( l2.get_subject_resource() == &entier);
 
 	delete ldy;
 
-	assert( l1.get_link_source() == &entier);
-	assert( l2.get_link_source() == &entier);
+	assert( l1.get_subject_resource() == &entier);
+	assert( l2.get_subject_resource() == &entier);
 
 	delete monitor;
 
-	assert( l1.get_link_source() == nullptr);
-	assert( l2.get_link_source() == nullptr);
+	assert( l1.get_subject_resource() == nullptr);
+	assert( l2.get_subject_resource() == nullptr);
 }
 
 void test_link2()
@@ -45,58 +45,58 @@ void test_link2()
 	int entier1;
 	int entier2;
 
-	process::link_monitor<int> *m1
-		= new process::link_monitor<int>(&entier1);
-	process::link_monitor<int> *m2
-		= new process::link_monitor<int>(&entier2);
+	process::subject<int> *m1
+		= new process::subject<int>(&entier1);
+	process::subject<int> *m2
+		= new process::subject<int>(&entier2);
 
-	process::link<int> l1, l2, l3, l4;
+	process::observer<int> l1, l2, l3, l4;
 
-	m1->plug_link(&l1);
-	m1->plug_link(&l2);
-	m1->plug_link(&l3);
-	m1->plug_link(&l4);
+	m1->register_observer(&l1);
+	m1->register_observer(&l2);
+	m1->register_observer(&l3);
+	m1->register_observer(&l4);
 
-	assert( l1.get_link_source() == &entier1 );
-	assert( l2.get_link_source() == &entier1 );
-	assert( l3.get_link_source() == &entier1 );
-	assert( l4.get_link_source() == &entier1 );
+	assert( l1.get_subject_resource() == &entier1 );
+	assert( l2.get_subject_resource() == &entier1 );
+	assert( l3.get_subject_resource() == &entier1 );
+	assert( l4.get_subject_resource() == &entier1 );
 
-	m2->plug_link(&l2);
+	m2->register_observer(&l2);
 
-	assert( l1.get_link_source() == &entier1 );
-	assert( l2.get_link_source() == &entier2 );
-	assert( l3.get_link_source() == &entier1 );
-	assert( l4.get_link_source() == &entier1 );
+	assert( l1.get_subject_resource() == &entier1 );
+	assert( l2.get_subject_resource() == &entier2 );
+	assert( l3.get_subject_resource() == &entier1 );
+	assert( l4.get_subject_resource() == &entier1 );
 
-	m2->plug_link(&l1);
+	m2->register_observer(&l1);
 
-	assert( l1.get_link_source() == &entier2 );
-	assert( l2.get_link_source() == &entier2 );
-	assert( l3.get_link_source() == &entier1 );
-	assert( l4.get_link_source() == &entier1 );
+	assert( l1.get_subject_resource() == &entier2 );
+	assert( l2.get_subject_resource() == &entier2 );
+	assert( l3.get_subject_resource() == &entier1 );
+	assert( l4.get_subject_resource() == &entier1 );
 
 	delete m1;
 
-	assert( l1.get_link_source() == &entier2 );
-	assert( l2.get_link_source() == &entier2 );
-	assert( l3.get_link_source() == nullptr );
-	assert( l4.get_link_source() == nullptr );
+	assert( l1.get_subject_resource() == &entier2 );
+	assert( l2.get_subject_resource() == &entier2 );
+	assert( l3.get_subject_resource() == nullptr );
+	assert( l4.get_subject_resource() == nullptr );
 
 	delete m2;
 
-	assert( l1.get_link_source() == nullptr );
-	assert( l2.get_link_source() == nullptr );
-	assert( l3.get_link_source() == nullptr );
-	assert( l4.get_link_source() == nullptr );
+	assert( l1.get_subject_resource() == nullptr );
+	assert( l2.get_subject_resource() == nullptr );
+	assert( l3.get_subject_resource() == nullptr );
+	assert( l4.get_subject_resource() == nullptr );
 }
 
 
 
-class test_link_callback : public process::link<int> {
+class test_link_callback : public process::observer<int> {
 
 public:
-	test_link_callback() : process::link<int>(), m_test_value(0)
+	test_link_callback() : process::observer<int>(), m_test_value(0)
 	{}
 
 
@@ -105,14 +105,14 @@ public:
 		return m_test_value;
 	}
 protected:
-	void on_link_monitor_destruction()
+	void on_subject_destruction() override
 	{
 		m_test_value = 42;
 	}
 
-	void on_tick()
+	void on_notify(const unsigned int notification_tag) override
 	{
-		m_test_value++;
+		m_test_value = notification_tag;
 	}
 
 private:
@@ -124,26 +124,26 @@ void test_link3()
 {
 	// test on_tick() and on_link_destruction();
 
-	process::link_monitor<int> *monitor = new process::link_monitor<int>(nullptr);
+	process::subject<int> *monitor = new process::subject<int>(nullptr);
 
 	test_link_callback test1;
 	test_link_callback test2;
 
-	monitor->plug_link(&test1);
-	monitor->plug_link(&test2);
+	monitor->register_observer(&test1);
+	monitor->register_observer(&test2);
 
 	assert( test1.get_test_value() == 0 );
 	assert( test2.get_test_value() == 0 );
 
-	monitor->send_tick();
+	monitor->notify_observers(183);
 
-	assert( test1.get_test_value() == 1 );
-	assert( test2.get_test_value() == 1 );
+	assert( test1.get_test_value() == 183 );
+	assert( test2.get_test_value() == 183 );
 
-	monitor->send_tick();
+	monitor->notify_observers(75);
 
-	assert( test1.get_test_value() == 2 );
-	assert( test2.get_test_value() == 2 );
+	assert( test1.get_test_value() == 75 );
+	assert( test2.get_test_value() == 75 );
 
 	delete monitor;
 

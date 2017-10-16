@@ -6,7 +6,7 @@ namespace gammou{
 
 
 polyphonic_circuit_GPAR_input::polyphonic_circuit_GPAR_input(const unsigned int channel_count)
-	: abstract_sound_component("Input", 0, Input::COUNT, channel_count, true),
+	: abstract_sound_component("Input", 0, Input::COUNT, channel_count),
 	  m_gate_state(channel_count),
 	  m_pitch(channel_count),
 	  m_attack_velocity(channel_count),
@@ -78,13 +78,14 @@ polyphonic_circuit::polyphonic_circuit(const unsigned int channel_count,
 	  m_input_from_master("From Master", master_to_polyphonic_output_count),
 	  m_automation_input("Automation", automation_input_count),
 	  m_output_to_master(2), // L, R
-	  m_channel_manager(channel_count)
+	  m_sound_component_manager(channel_count)
 {
 	add_component(&m_gpar_input);
 	add_component(&m_input_from_master);
 	add_component(&m_automation_input);
 	add_component(&m_output_to_master);
-	m_channel_manager.register_sound_component(&m_gpar_input);
+
+	m_sound_component_manager.register_observer(&m_gpar_input);
 }
 
 polyphonic_circuit::~polyphonic_circuit()
@@ -95,22 +96,27 @@ polyphonic_circuit::~polyphonic_circuit()
 void polyphonic_circuit::add_sound_component(abstract_sound_component *component)
 {
 	/*
-	 * 		check : component.channel_count == ok, component.is_multi_channel() == true
+	 * 		check : component.channel_count == ok
 	 */
 
 	add_component(component);
-	m_channel_manager.register_sound_component(component);
+	m_sound_component_manager.register_observer(component);
+}
+
+void polyphonic_circuit::set_sample_rate(const double sample_rate)
+{
+	m_sound_component_manager.set_current_samplerate(sample_rate);
 }
 
 void polyphonic_circuit::process(const unsigned int channel)
 {
-	m_channel_manager.set_current_working_channel(channel);
+	m_sound_component_manager.set_current_working_channel(channel);
 	execute_program();
 }
 
 void polyphonic_circuit::initialize_channel(const unsigned int channel)
 {
-	m_channel_manager.set_current_working_channel(channel);
+	m_sound_component_manager.set_current_working_channel(channel);
 	initialize_components();
 }
 

@@ -80,7 +80,7 @@ private:
 	std::vector<abstract_component<T>*> m_component_to_initialize;
 	std::vector<T> m_program_memory;
 
-	link_monitor<abstract_frame<T> > m_link_monitor;
+	subject<abstract_frame<T> > m_link_monitor;
 
 	unsigned int m_process_cycle;
 };
@@ -106,7 +106,7 @@ abstract_frame<T>::~abstract_frame()
 template<class T>
 void abstract_frame<T>::add_component(abstract_component<T> *component)
 {
-	m_link_monitor.plug_link(&(component->m_frame));
+	m_link_monitor.register_observer(&(component->m_frame));
 }
 
 template<class T>

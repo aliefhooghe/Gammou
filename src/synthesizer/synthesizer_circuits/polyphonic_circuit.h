@@ -50,6 +50,7 @@ public:
 	~polyphonic_circuit();
 
 	void add_sound_component(abstract_sound_component *component);
+	void set_sample_rate(const double sample_rate);
 
 	void process(const unsigned int channel);
 	void initialize_channel(const unsigned int channel);
@@ -77,7 +78,7 @@ private:
 	process::buffer_fetcher_component<double> m_input_from_master;
 	process::buffer_fetcher_component<double> m_automation_input;
 	process::buffer_sum_component<double> m_output_to_master;
-	channels_manager m_channel_manager;
+	sound_component_manager m_sound_component_manager;
 };
 
 

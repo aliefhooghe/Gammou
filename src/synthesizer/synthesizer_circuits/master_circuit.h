@@ -17,6 +17,7 @@ public:
 	~master_circuit();
 
 	void add_sound_component(abstract_sound_component *component);
+	void set_sample_rate(const double sample_rate);
 	void process();
 
 	void set_main_input_buffer(const double buffer[]);
@@ -42,6 +43,7 @@ private:
 	process::buffer_fetcher_component<double> m_from_polyphonic_input;
 	process::buffer_filler_component<double> m_main_output;
 	process::buffer_fetcher_component<double> m_automation_input;
+	sound_component_manager m_sound_component_manager;
 };
 
 

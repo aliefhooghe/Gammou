@@ -6,7 +6,7 @@
 
 #include "../gammou_exception.h"
 
-#include "link.h"
+#include "observer.h"
 
 namespace process {
 
@@ -18,7 +18,7 @@ template<class T> class abstract_component;
  *  \brief Describe a component input as a link to another component output
  */
 template<class T>
-class component_link: public link<abstract_component<T> > {
+class component_link: public observer<abstract_component<T> > {
 
 public:
 	component_link();
@@ -35,14 +35,14 @@ private:
  * 	\brief Describe the component's link to his frame
  */
 template<class T>
-class frame_link: public link<abstract_frame<T> >{
+class frame_link: public observer<abstract_frame<T> >{
 
 public:
 	frame_link(abstract_component<T> *owner);
 	~frame_link() {}
 
 private:
-	void on_link_monitor_destruction();
+	void on_subject_destruction();
 	abstract_component<T> *m_owner;
 };
 
@@ -140,7 +140,7 @@ private:
 	const std::string default_input_name(const unsigned int input_id);
 	const std::string default_output_name(const unsigned int output_id);
 
-	link_monitor<abstract_component<T> > m_link_monitor;
+	subject<abstract_component<T> > m_link_monitor;
 	std::vector<component_link<T> > m_input;
 
 	std::vector<std::string> m_input_name;
@@ -159,7 +159,7 @@ private:
 
 template<class T>
 component_link<T>::component_link()
-	: link<abstract_component<T> >(), m_src_output_id(0)
+	: observer<abstract_component<T> >(), m_src_output_id(0)
 {
 }
 
@@ -187,7 +187,7 @@ frame_link<T>::frame_link(abstract_component<T> *owner)
 }
 
 template<class T>
-void frame_link<T>::on_link_monitor_destruction()
+void frame_link<T>::on_subject_destruction()
 {
 	const unsigned int ic = m_owner->get_input_count();
 
@@ -276,7 +276,7 @@ void abstract_component<T>::connect_to(const unsigned int output_id, abstract_co
 	if( dst_input_id >= dst->get_input_count() )
 		throw invalid_id(dst_input_id);
 
-	m_link_monitor.plug_link(&(dst->m_input[dst_input_id]));
+	m_link_monitor.register_observer(&(dst->m_input[dst_input_id]));
 	dst->m_input[dst_input_id].set_src_output_id(output_id);
 	dst->on_input_connection(dst_input_id);
 	frame->notify_circuit_change();
@@ -302,7 +302,7 @@ abstract_component<T> *abstract_component<T>::get_input_src(const unsigned int i
 		throw invalid_id(input_id);
 
 	output_id = m_input[input_id].get_src_output_id();
-	return m_input[input_id].get_link_source();
+	return m_input[input_id].get_subject_resource();
 }
 
 template<class T>
@@ -311,13 +311,13 @@ abstract_component<T> *abstract_component<T>::get_input_src(const unsigned int i
 	if( input_id >= get_input_count() )
 		throw invalid_id(input_id);
 
-	return m_input[input_id].get_link_source();
+	return m_input[input_id].get_subject_resource();
 }
 
 template<class T>
 abstract_frame<T> *abstract_component<T>::get_frame()
 {
-	return m_frame.get_link_source();
+	return m_frame.get_subject_resource();
 }
 
 template<class T>
