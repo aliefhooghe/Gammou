@@ -46,7 +46,11 @@ class polyphonic_circuit : private process::abstract_frame<double> {
 public:
 	polyphonic_circuit(const unsigned int channel_count,
 			const unsigned int master_to_polyphonic_output_count,
-			const unsigned int automation_input_count);
+			const unsigned int automation_input_count,
+			const unsigned int output_to_master_count,
+			double output_to_master_buffer[],
+			const double automation_buffer[],
+			const double master_to_polyphonic_buffer[]);
 	~polyphonic_circuit();
 
 	void add_sound_component(abstract_sound_component *component);
@@ -60,10 +64,6 @@ public:
 	void set_channel_attack_velocity(const unsigned int channel, const double velocity);
 	void set_channel_release_velocity(const unsigned int channel, const double velocity);
 
-	void set_output_to_master_buffer(double buffer[]);
-	void set_automation_buffer(const double buffer[]);
-	void set_master_to_polyphonic_buffer(const double buffer[]);
-
 	void connect_gpar_input_to_component(const unsigned int gpar_output_id, abstract_sound_component *component,
 			const unsigned int component_input_id);
 	void connect_master_input_to_component(const unsigned int master_input_id, abstract_sound_component *component,
@@ -73,7 +73,7 @@ public:
 	void connect_component_to_output(abstract_sound_component *component, const unsigned int component_output_id,
 			const unsigned int circuit_output_id);
 private:
-	void notify_circuit_change();
+	void notify_circuit_change() override;
 	polyphonic_circuit_GPAR_input m_gpar_input;
 	process::buffer_fetcher_component<double> m_input_from_master;
 	process::buffer_fetcher_component<double> m_automation_input;

@@ -120,6 +120,7 @@ void abstract_frame<T>::initialize_components()
 template<class T>
 void abstract_frame<T>::next_process_cycle()
 {
+	clear_program();
 	m_process_cycle++;
 }
 

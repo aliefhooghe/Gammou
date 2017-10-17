@@ -73,11 +73,15 @@ void polyphonic_circuit_GPAR_input::set_channel_release_velocity(const unsigned 
 
 polyphonic_circuit::polyphonic_circuit(const unsigned int channel_count,
 		const unsigned int master_to_polyphonic_output_count,
-		const unsigned int automation_input_count)
+		const unsigned int automation_input_count,
+		const unsigned int output_to_master_count,
+		double output_to_master_buffer[],
+		const double automation_buffer[],
+		const double master_to_polyphonic_buffer[])
 	: m_gpar_input(channel_count),
 	  m_input_from_master("From Master", master_to_polyphonic_output_count),
 	  m_automation_input("Automation", automation_input_count),
-	  m_output_to_master(2), // L, R
+	  m_output_to_master(output_to_master_count),
 	  m_sound_component_manager(channel_count)
 {
 	add_component(&m_gpar_input);
@@ -86,6 +90,10 @@ polyphonic_circuit::polyphonic_circuit(const unsigned int channel_count,
 	add_component(&m_output_to_master);
 
 	m_sound_component_manager.register_observer(&m_gpar_input);
+
+	m_output_to_master.set_buffer_ptr(output_to_master_buffer);
+	m_automation_input.set_input_buffer_ptr(automation_buffer);
+	m_input_from_master.set_input_buffer_ptr(master_to_polyphonic_buffer);
 }
 
 polyphonic_circuit::~polyphonic_circuit()
@@ -138,22 +146,6 @@ void polyphonic_circuit::set_channel_attack_velocity(const unsigned int channel,
 void polyphonic_circuit::set_channel_release_velocity(const unsigned int channel, const double velocity)
 {
 	m_gpar_input.set_channel_release_velocity(channel, velocity);
-}
-
-void polyphonic_circuit::set_output_to_master_buffer(double buffer[])
-{
-	m_output_to_master.set_buffer_ptr(buffer);
-}
-
-
-void polyphonic_circuit::set_automation_buffer(const double buffer[])
-{
-	m_automation_input.set_input_buffer_ptr(buffer);
-}
-
-void polyphonic_circuit::set_master_to_polyphonic_buffer(const double buffer[])
-{
-	m_input_from_master.set_input_buffer_ptr(buffer);
 }
 
 void polyphonic_circuit::notify_circuit_change()
