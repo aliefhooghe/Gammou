@@ -1,6 +1,8 @@
 #ifndef COMPONENTS_H_
 #define COMPONENTS_H_
 
+
+#include "vector"
 #include "../abstract_component.h"
 
 

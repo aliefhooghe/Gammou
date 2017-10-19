@@ -126,7 +126,6 @@ void frame_component<T>::notify_circuit_change()
 {
 	const unsigned int ic = m_output.get_input_count();
 
-	abstract_frame<T>::clear_program();
 	abstract_frame<T>::next_process_cycle();
 
 	for(unsigned int i = 0; i < ic; ++i){

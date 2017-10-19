@@ -70,12 +70,12 @@ public:
 	void initialize_components();
 protected:
 	void next_process_cycle();
-
-	void clear_program();
 	void make_component_current_cycle_program(abstract_component<T> *component);
 	void execute_program();
 
 private:
+	void clear_program();
+
 	std::vector<instruction> m_program;
 	std::vector<abstract_component<T>*> m_component_to_initialize;
 	std::vector<T> m_program_memory;

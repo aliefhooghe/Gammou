@@ -55,7 +55,6 @@ circuit_frame<T>::~circuit_frame()
 template<class T>
 void circuit_frame<T>::notify_circuit_change()
 {
-	abstract_frame<T>::clear_program();
 	abstract_frame<T>::next_process_cycle();
 	abstract_frame<T>::make_component_current_cycle_program(&m_output);
 }
