@@ -21,9 +21,8 @@ public:
 
 	void notify_circuit_change();
 
-	void connect_component_to_output(abstract_component<T> *component, const unsigned int component_output_id, const unsigned int frame_output_id);
-	void connect_input_to_component(const unsigned int frame_input_id, abstract_component<T> *component, const unsigned int component_input_id);
-
+	abstract_component<T> *get_input();
+	abstract_component<T> *get_output();
 
 	void process(const T input[], T output[]);
 
@@ -60,16 +59,15 @@ void circuit_frame<T>::notify_circuit_change()
 }
 
 template<class T>
-void circuit_frame<T>::connect_component_to_output(abstract_component<T> *component, const unsigned int component_output_id, const unsigned int frame_output_id)
+abstract_component<T> *circuit_frame<T>::get_input()
 {
-	component->connect_to(component_output_id, &m_output, frame_output_id);
+	return &m_input;
 }
 
-
 template<class T>
-void circuit_frame<T>::connect_input_to_component(const unsigned int frame_input_id, abstract_component<T> *component, const unsigned int component_input_id)
+abstract_component<T> *circuit_frame<T>::get_output()
 {
-	m_input.connect_to(frame_input_id, component, component_input_id);
+	return &m_output;
 }
 
 template<class T>

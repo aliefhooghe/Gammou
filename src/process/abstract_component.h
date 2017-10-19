@@ -35,11 +35,11 @@ private:
  * 	\brief Describe the component's link to his frame
  */
 template<class T>
-class frame_link: public observer<abstract_frame<T> >{
+class frame_observer: public observer<abstract_frame<T> >{
 
 public:
-	frame_link(abstract_component<T> *owner);
-	~frame_link() {}
+	frame_observer(abstract_component<T> *owner);
+	~frame_observer() {}
 
 private:
 	void on_subject_destruction();
@@ -115,15 +115,13 @@ public:
 			const unsigned int dst_input_id);
 	void disconnect_input(const unsigned int input_id);
 
-	abstract_frame<T> *get_frame();
-
-	bool update_process_cyle(const unsigned int cycle) noexcept;
+	abstract_frame<T> *get_frame() const;
 
 	// To be implemented
 	virtual T fetch_output(const unsigned int output_id) =0;
 	virtual void process(const T input[]) =0;
 	virtual void initialize_process() {};
-	virtual void on_input_connection(const unsigned int input_id) {};
+
 
 protected:
 	abstract_component<T> *get_input_src(const unsigned int input_id,
@@ -137,17 +135,20 @@ protected:
 	void pop_input();
 
 private:
+	bool update_process_cyle(const unsigned int cycle) noexcept;
+	// To be implemented
+	virtual void on_input_connection(const unsigned int input_id) {};
 	const std::string default_input_name(const unsigned int input_id);
 	const std::string default_output_name(const unsigned int output_id);
 
-	subject<abstract_component<T> > m_link_monitor;
+	subject<abstract_component<T> > m_component_subject;
 	std::vector<component_link<T> > m_input;
 
 	std::vector<std::string> m_input_name;
 	std::vector<std::string> m_output_name;
 	std::string m_name;
 
-	frame_link<T> m_frame;
+	frame_observer<T> m_frame;
 
 	unsigned int m_process_cycle;
 };
@@ -181,13 +182,13 @@ unsigned int component_link<T>::get_src_output_id() const
  */
 
 template<class T>
-frame_link<T>::frame_link(abstract_component<T> *owner)
+frame_observer<T>::frame_observer(abstract_component<T> *owner)
 	: m_owner(owner)
 {
 }
 
 template<class T>
-void frame_link<T>::on_subject_destruction()
+void frame_observer<T>::on_subject_destruction()
 {
 	const unsigned int ic = m_owner->get_input_count();
 
@@ -202,7 +203,7 @@ void frame_link<T>::on_subject_destruction()
 template<class T>
 abstract_component<T>::abstract_component(const std::string& name,
 		const unsigned int input_count, const unsigned int output_count)
-		: m_link_monitor(this),
+		: m_component_subject(this),
 		  m_input(input_count),
 		  m_input_name(input_count),
 		  m_output_name(output_count),
@@ -276,7 +277,7 @@ void abstract_component<T>::connect_to(const unsigned int output_id, abstract_co
 	if( dst_input_id >= dst->get_input_count() )
 		throw invalid_id(dst_input_id);
 
-	m_link_monitor.register_observer(&(dst->m_input[dst_input_id]));
+	m_component_subject.register_observer(&(dst->m_input[dst_input_id]));
 	dst->m_input[dst_input_id].set_src_output_id(output_id);
 	dst->on_input_connection(dst_input_id);
 	frame->notify_circuit_change();
@@ -315,7 +316,7 @@ abstract_component<T> *abstract_component<T>::get_input_src(const unsigned int i
 }
 
 template<class T>
-abstract_frame<T> *abstract_component<T>::get_frame()
+abstract_frame<T> *abstract_component<T>::get_frame() const
 {
 	return m_frame.get_subject_resource();
 }

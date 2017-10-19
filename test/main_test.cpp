@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-#include "test_link.h"
+#include "test_observer.h"
 
 #include "test_component.h"
 
@@ -17,7 +17,7 @@
 
 int main()
 {
-	RUN_TEST(test_link);
+	RUN_TEST(test_observer);
 	RUN_TEST(test_component_basic);
 	RUN_TEST(test_component_with_circuit_frame);
 	RUN_TEST(test_frame_component_basic);

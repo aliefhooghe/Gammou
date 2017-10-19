@@ -26,16 +26,12 @@ public:
 	void set_sample_rate(const double sample_rate);
 	void process();
 
-	void connect_main_input_to_component(const unsigned int master_main_input_id, abstract_sound_component *component,
-			const unsigned int component_input_id);
-	void connect_component_to_polyphonic_output(abstract_sound_component *component, const unsigned int component_output_id,
-			const unsigned int polyphonic_input_id);
-	void connect_polyphonic_input_to_component(const unsigned int polyphonic_input_id, abstract_sound_component *component,
-			const unsigned int component_input_id);
-	void connect_component_to_main_output(abstract_sound_component *component, const unsigned int component_output_id,
-			const unsigned int main_output_id);
-	void connect_automation_input_to_component(const unsigned int automation_input_id, abstract_sound_component *component,
-			const unsigned int component_input_id);
+	process::abstract_component<double> *get_main_input();
+	process::abstract_component<double> *get_main_output();
+
+	process::abstract_component<double> *get_polyphonic_input();
+	process::abstract_component<double> *get_polyphonic_output();
+	process::abstract_component<double> *get_automation_input();
 
 private:
 

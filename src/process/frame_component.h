@@ -50,12 +50,11 @@ public:
 	void set_input_name(const std::string& name, const unsigned int input_id);
 	void set_output_name(const std::string& name, const unsigned int output_id);
 
+	abstract_component<T> *get_input();
+	abstract_component<T> *get_output();
+
 	// From abstract frame
-
 	void notify_circuit_change();
-
-	void connect_component_to_output(abstract_component<T> *component, const unsigned int component_output_id, const unsigned int frame_output_id);
-	void connect_input_to_component(const unsigned int frame_input_id, abstract_component<T> *component, const unsigned int component_input_id);
 
 private:
 	buffer_fetcher_component<T> m_input;
@@ -122,6 +121,18 @@ void frame_component<T>::set_output_name(const std::string& name, const unsigned
 }
 
 template<class T>
+abstract_component<T> *frame_component<T>::get_input()
+{
+	return &m_input;
+}
+
+template<class T>
+abstract_component<T> *frame_component<T>::get_output()
+{
+	return &m_output;
+}
+
+template<class T>
 void frame_component<T>::notify_circuit_change()
 {
 	const unsigned int ic = m_output.get_input_count();
@@ -137,17 +148,7 @@ void frame_component<T>::notify_circuit_change()
 	}
 }
 
-template<class T>
-void frame_component<T>::connect_component_to_output(abstract_component<T> *component, const unsigned int component_output_id, const unsigned int frame_output_id)
-{
-	component->connect_to(component_output_id, &m_output, frame_output_id);
-}
 
-template<class T>
-void frame_component<T>::connect_input_to_component(const unsigned int frame_input_id, abstract_component<T> *component, const unsigned int component_input_id)
-{
-	m_input.connect_to(frame_input_id, component, component_input_id);
-}
 
 
 } /* Gammou */

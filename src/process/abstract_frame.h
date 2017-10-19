@@ -68,6 +68,7 @@ public:
 	void add_component(abstract_component<T> *component);
 	virtual void notify_circuit_change() =0;
 	void initialize_components();
+
 protected:
 	void next_process_cycle();
 	void make_component_current_cycle_program(abstract_component<T> *component);

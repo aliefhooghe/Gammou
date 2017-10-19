@@ -14,7 +14,7 @@ class observer{
 public:
 	observer();
 	virtual ~observer();
-	T *get_subject_resource();
+	T *get_subject_resource() const;
 	void disconnect();
 
 protected:
@@ -62,7 +62,7 @@ observer<T>::~observer()
 }
 
 template<class T>
-T *observer<T>::get_subject_resource()
+T *observer<T>::get_subject_resource() const
 {
 	if( m_subject == nullptr )
 		return nullptr;

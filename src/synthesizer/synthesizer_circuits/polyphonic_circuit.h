@@ -64,14 +64,11 @@ public:
 	void set_channel_attack_velocity(const unsigned int channel, const double velocity);
 	void set_channel_release_velocity(const unsigned int channel, const double velocity);
 
-	void connect_gpar_input_to_component(const unsigned int gpar_output_id, abstract_sound_component *component,
-			const unsigned int component_input_id);
-	void connect_master_input_to_component(const unsigned int master_input_id, abstract_sound_component *component,
-			const unsigned component_input_id);
-	void connect_automtion_input_to_component(const unsigned int automation_input_id, abstract_sound_component *component,
-			const unsigned int component_input_id);
-	void connect_component_to_output(abstract_sound_component *component, const unsigned int component_output_id,
-			const unsigned int circuit_output_id);
+	process::abstract_component<double> *get_gpar_input();
+	process::abstract_component<double> *get_master_input();
+	process::abstract_component<double> *get_automation_input();
+	process::abstract_component<double> *get_output();
+
 private:
 	void notify_circuit_change() override;
 	polyphonic_circuit_GPAR_input m_gpar_input;

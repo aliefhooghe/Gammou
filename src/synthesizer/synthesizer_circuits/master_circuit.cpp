@@ -65,34 +65,29 @@ void master_circuit::process()
 	execute_program();
 }
 
-void master_circuit::connect_main_input_to_component(const unsigned int master_main_input_id, abstract_sound_component *component,
-		const unsigned int component_input_id)
+process::abstract_component<double> *master_circuit::get_main_input()
 {
-	m_main_input.connect_to(master_main_input_id, component, component_input_id);
+	return &m_main_input;
 }
 
-void master_circuit::connect_component_to_polyphonic_output(abstract_sound_component *component, const unsigned int component_output_id,
-		const unsigned int polyphonic_input_id)
+process::abstract_component<double> *master_circuit::get_main_output()
 {
-	component->connect_to(component_output_id, &m_output_to_polyphonic, polyphonic_input_id);
+	return &m_main_output;
 }
 
-void master_circuit::connect_polyphonic_input_to_component(const unsigned int polyphonic_input_id, abstract_sound_component *component,
-		const unsigned int component_input_id)
+process::abstract_component<double> *master_circuit::get_polyphonic_input()
 {
-	m_from_polyphonic_input.connect_to(polyphonic_input_id, component, component_input_id);
+	return &m_from_polyphonic_input;
 }
 
-void master_circuit::connect_component_to_main_output(abstract_sound_component *component, const unsigned int component_output_id,
-		const unsigned int main_output_id)
+process::abstract_component<double> *master_circuit::get_polyphonic_output()
 {
-	component->connect_to(component_output_id, &m_main_output, main_output_id);
+	return &m_output_to_polyphonic;
 }
 
-void master_circuit::connect_automation_input_to_component(const unsigned int automation_input_id, abstract_sound_component *component,
-		const unsigned int component_input_id)
+process::abstract_component<double> *master_circuit::get_automation_input()
 {
-	m_automation_input.connect_to(automation_input_id, component, component_input_id);
+	return &m_automation_input;
 }
 
 void master_circuit::notify_circuit_change()

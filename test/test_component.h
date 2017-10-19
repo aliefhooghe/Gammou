@@ -141,11 +141,11 @@ void test_component_with_circuit_frame()
 
 	// connection
 
-	circuit.connect_input_to_component(0, &a1, 0);
-	circuit.connect_input_to_component(1, &a1, 1);
-	circuit.connect_input_to_component(2, &a1, 2);
+	circuit.get_input()->connect_to(0, &a1, 0);
+	circuit.get_input()->connect_to(1, &a1, 1);
+	circuit.get_input()->connect_to(2, &a1, 2);
 
-	circuit.connect_component_to_output(&a1, 0, 0);
+	a1.connect_to(0, circuit.get_output(), 0);
 
 	// Try some calculation
 
@@ -158,7 +158,7 @@ void test_component_with_circuit_frame()
 	// New connection
 
 	a1.connect_to(0, &m1, 0);
-	circuit.connect_component_to_output(&m1, 0, 0);
+	m1.connect_to(0, circuit.get_output(), 0);
 
 	circuit.process(input, &output);
 	assert( output == (1 + 42 - 10) * 2);
@@ -214,20 +214,23 @@ void test_frame_component_with_circuit_frame()
 	addmul2.add_component(&a1);
 	addmul2.add_component(&m1);
 
-	addmul2.connect_input_to_component(0, &a1, 0);
-	addmul2.connect_input_to_component(1, &a1, 1);
+
+	addmul2.get_input()->connect_to(0, &a1, 0);
+	addmul2.get_input()->connect_to(1, &a1, 1);
 
 	a1.connect_to(0, &m1, 0);
-
-	addmul2.connect_component_to_output(&m1, 0, 0);
+	m1.connect_to(0, addmul2.get_output(), 0);
 
 	// Putting addmul2 on circuit
 	circuit.add_component(&addmul2);
-	circuit.connect_input_to_component(0, &addmul2, 0);
-	circuit.connect_input_to_component(1, &addmul2, 1);
-	circuit.connect_input_to_component(2, &addmul2, 2);
 
-	circuit.connect_component_to_output(&addmul2, 0, 0);
+
+
+	circuit.get_input()->connect_to(0, &addmul2, 0);
+	circuit.get_input()->connect_to(1, &addmul2, 1);
+	circuit.get_input()->connect_to(2, &addmul2, 2);
+
+	addmul2.connect_to(0, circuit.get_output(), 0);
 
 	// Try calculation
 	int input[5] = {11, 42, 8, 2, 5};
