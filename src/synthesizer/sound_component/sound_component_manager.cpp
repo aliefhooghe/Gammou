@@ -1,5 +1,5 @@
 
-#include "channels_manager.h"
+#include "sound_component_manager.h"
 #include "sound_component.h"
 
 

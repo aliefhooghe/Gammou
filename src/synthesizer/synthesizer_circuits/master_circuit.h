@@ -14,17 +14,15 @@ public:
 				const unsigned int main_input_count,
 				const unsigned int main_output_count,
 				const unsigned int input_from_polyphonic_count,
-				const double main_input_buffer[],
 				double master_to_polyphonic_buffer[],
 				const double polyphonic_to_master_buffer[],
-				const double automation_buffer[],
-				double main_output_buffer[]
+				const double automation_buffer[]
 				);
 	~master_circuit();
 
 	void add_sound_component(abstract_sound_component *component);
 	void set_sample_rate(const double sample_rate);
-	void process();
+	void process(const double input[], double output[]);
 
 	process::abstract_component<double> *get_main_input();
 	process::abstract_component<double> *get_main_output();

@@ -4,8 +4,7 @@
 
 #include "../../process/process.h"
 
-#include "channels_manager.h"
-
+#include "sound_component_manager.h"
 #include "multi_channel_data_container.h"
 /*
  * 		Channels data types

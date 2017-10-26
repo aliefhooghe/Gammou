@@ -15,6 +15,8 @@
 
 
 
+#include <vector>
+
 int main()
 {
 	RUN_TEST(test_observer);

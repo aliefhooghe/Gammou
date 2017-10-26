@@ -17,13 +17,11 @@ master_circuit::master_circuit(
 		const unsigned int main_input_count,
 		const unsigned int main_output_count,
 		const unsigned int input_from_polyphonic_count,
-		const double main_input_buffer[],
 		double master_to_polyphonic_buffer[],
 		const double polyphonic_to_master_buffer[],
-		const double automation_buffer[],
-		double main_output_buffer[]
+		const double automation_buffer[]
 		)
-	: m_main_input(main_input_count), // Tempo
+	: m_main_input(main_input_count),
 	  m_output_to_polyphonic("To Polyphonic", master_to_polyphonic_output_count),
 	  m_from_polyphonic_input("From Polyphonic", input_from_polyphonic_count),
 	  m_main_output(main_output_count),
@@ -36,11 +34,9 @@ master_circuit::master_circuit(
 	add_component(&m_main_output);
 	add_component(&m_automation_input);
 
-	m_main_input.set_input_buffer_ptr(main_input_buffer);
 	m_output_to_polyphonic.set_output_pointer(master_to_polyphonic_buffer);
 	m_from_polyphonic_input.set_input_buffer_ptr(polyphonic_to_master_buffer);
 	m_automation_input.set_input_buffer_ptr(automation_buffer);
-	m_main_output.set_output_pointer(main_output_buffer);
 }
 
 master_circuit::~master_circuit()
@@ -60,8 +56,10 @@ void master_circuit::set_sample_rate(const double sample_rate)
 	m_sound_component_manager.set_current_samplerate(sample_rate);
 }
 
-void master_circuit::process()
+void master_circuit::process(const double input[], double output[])
 {
+	m_main_input.set_input_buffer_ptr(input);
+	m_main_output.set_output_pointer(output);
 	execute_program();
 }
 

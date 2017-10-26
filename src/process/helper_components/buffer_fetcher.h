@@ -13,14 +13,14 @@ template<class T>
 class buffer_fetcher_component : public abstract_component<T> {
 
 public:
-	buffer_fetcher_component(const unsigned int buffer_size)
+	buffer_fetcher_component(const unsigned int buffer_size, const T *buffer = nullptr)
 		: abstract_component<T>("Input", 0, buffer_size),
-		  m_buffer_ptr(nullptr)
+		  m_buffer_ptr(buffer)
 	{}
 
-	buffer_fetcher_component(const std::string& name, const unsigned int buffer_size)
+	buffer_fetcher_component(const std::string& name, const unsigned int buffer_size, const T *buffer = nullptr)
 		: abstract_component<T>(name, 0, buffer_size),
-		  m_buffer_ptr(nullptr)
+		  m_buffer_ptr(buffer)
 	{}
 
 	~buffer_fetcher_component(){}

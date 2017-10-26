@@ -16,7 +16,6 @@ class abstract_sound_component;
 
 class sound_component_manager : public process::subject<sound_component_manager> {
 
-
 public:
 	typedef enum {CHANNEL_CHANGE_NOTIFY, SAMPLE_RATE_NOTIFY} notification_tag;
 

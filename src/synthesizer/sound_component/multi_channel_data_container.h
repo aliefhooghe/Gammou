@@ -4,7 +4,7 @@
 #include <vector>
 
 
-#include "channels_manager.h"
+#include "sound_component_manager.h"
 
 
 namespace gammou {
