@@ -35,6 +35,23 @@ private:
 };
 
 
+class polyphonic_circuit_output : public process::abstract_component<double> {
+
+public:
+	polyphonic_circuit_output(const unsigned int output_count);
+	~polyphonic_circuit_output() {};
+
+
+	void set_buffer_ptr(double buffer[]);
+	void process(const double input[]);
+	double fetch_output(const unsigned int output_id) {return 0.0;}  // a stub
+	bool last_out_was_zero() const;
+
+private:
+	double *m_buffer_ptr;
+	bool m_last_out_was_zero;
+};
+
 
 
 /*
@@ -56,7 +73,8 @@ public:
 	void add_sound_component(abstract_sound_component *component);
 	void set_sample_rate(const double sample_rate);
 
-	void process(const unsigned int channel);
+	// Return whether the last output was ZERO
+	bool process(const unsigned int channel);
 	void initialize_channel(const unsigned int channel);
 
 	void set_channel_gate_state(const unsigned int channel, const bool gate_state);
@@ -74,7 +92,7 @@ private:
 	polyphonic_circuit_GPAR_input m_gpar_input;
 	process::buffer_fetcher_component<double> m_input_from_master;
 	process::buffer_fetcher_component<double> m_automation_input;
-	process::buffer_sum_component<double> m_output_to_master;
+	polyphonic_circuit_output m_output_to_master;
 	sound_component_manager m_sound_component_manager;
 };
 

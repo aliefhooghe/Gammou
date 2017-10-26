@@ -1,6 +1,8 @@
 
 #include "polyphonic_circuit.h"
 
+#include <limits>
+
 
 namespace gammou{
 
@@ -70,6 +72,40 @@ void polyphonic_circuit_GPAR_input::set_channel_release_velocity(const unsigned 
  *
  */
 
+polyphonic_circuit_output::polyphonic_circuit_output(const unsigned int output_count)
+	: process::abstract_component<double>("Output", output_count, 0),
+	  m_buffer_ptr(nullptr), m_last_out_was_zero(false)
+{
+
+}
+
+void polyphonic_circuit_output::set_buffer_ptr(double buffer[])
+{
+	m_buffer_ptr = buffer;
+}
+
+void polyphonic_circuit_output::process(const double input[])
+{
+	m_last_out_was_zero = true;
+
+	if( m_buffer_ptr != nullptr ){
+		const unsigned int ic = get_input_count();
+
+		for(unsigned int i = 0; i < ic; ++i){
+			if((m_buffer_ptr[i] += input[i]) > std::numeric_limits<float>::min())
+				m_last_out_was_zero = false;
+		}
+	}
+}
+
+bool polyphonic_circuit_output::last_out_was_zero() const
+{
+	return m_last_out_was_zero;
+}
+/*
+ *
+ */
+
 
 polyphonic_circuit::polyphonic_circuit(const unsigned int channel_count,
 		const unsigned int master_to_polyphonic_output_count,
@@ -116,10 +152,11 @@ void polyphonic_circuit::set_sample_rate(const double sample_rate)
 	m_sound_component_manager.set_current_samplerate(sample_rate);
 }
 
-void polyphonic_circuit::process(const unsigned int channel)
+bool polyphonic_circuit::process(const unsigned int channel)
 {
 	m_sound_component_manager.set_current_working_channel(channel);
 	execute_program();
+	return m_output_to_master.last_out_was_zero();
 }
 
 void polyphonic_circuit::initialize_channel(const unsigned int channel)
