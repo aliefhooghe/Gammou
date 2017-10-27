@@ -2,7 +2,6 @@
 #include "sound_component.h"
 
 
-#define INV_44100 ((double)0.000022676)
 
 namespace gammou {
 

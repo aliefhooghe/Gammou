@@ -62,7 +62,7 @@ multi_channel_variable<T>::multi_channel_variable(abstract_sound_component *owne
 template<class T>
 T multi_channel_variable<T>::operator=(const T& value)
 {
-	m_data[get_current_working_channel()] = value;
+	return (m_data[get_current_working_channel()] = value);
 }
 
 template<class T>

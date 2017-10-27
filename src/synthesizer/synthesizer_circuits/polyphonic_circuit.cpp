@@ -2,7 +2,7 @@
 #include "polyphonic_circuit.h"
 
 #include <limits>
-
+#include <cmath>
 
 namespace gammou{
 
@@ -92,10 +92,13 @@ void polyphonic_circuit_output::process(const double input[])
 		const unsigned int ic = get_input_count();
 
 		for(unsigned int i = 0; i < ic; ++i){
-			if((m_buffer_ptr[i] += input[i]) > std::numeric_limits<float>::min())
+			m_buffer_ptr[i] += input[i];
+
+			if(std::abs(input[i]) > std::numeric_limits<float>::min())
 				m_last_out_was_zero = false;
 		}
 	}
+
 }
 
 bool polyphonic_circuit_output::last_out_was_zero() const
@@ -156,7 +159,7 @@ bool polyphonic_circuit::process(const unsigned int channel)
 {
 	m_sound_component_manager.set_current_working_channel(channel);
 	execute_program();
-	return m_output_to_master.last_out_was_zero();
+	return (m_output_to_master.last_out_was_zero());
 }
 
 void polyphonic_circuit::initialize_channel(const unsigned int channel)

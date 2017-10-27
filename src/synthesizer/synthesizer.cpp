@@ -1,5 +1,6 @@
 #include <numeric>
 #include "synthesizer.h"
+#include<iostream>
 
 namespace gammou {
 
@@ -32,11 +33,11 @@ synthesizer::synthesizer(const unsigned int main_input_count,
 			 m_master_to_polyphonic_buffer.data(),
 			 m_polyphonic_to_master_buffer.data(),
 			 m_automation_input_buffer.data()),
-			 m_channels(channel_count),
-			 m_running_channels_end(m_channels.begin()),
-			 m_channels_lifetime(channel_count),
-			 m_channel_zero_lifetime(channel_zero_lifetime),
-			 m_channels_midi_note(channel_count)
+	m_channels(channel_count),
+	m_running_channels_end(m_channels.begin()),
+	m_channels_lifetime(channel_count),
+	m_channel_zero_lifetime(channel_zero_lifetime),
+	m_channels_midi_note(channel_count)
 {
 	std::iota(m_channels.begin(), m_channels.end(), 0u);
 }
@@ -51,18 +52,35 @@ void synthesizer::process(const double input[], double output[])
 	std::fill(m_polyphonic_to_master_buffer.begin(),
 			m_polyphonic_to_master_buffer.end(), 0.0);
 
+	DEBUG_PRINT("[");
+
 	for(auto it = m_channels.begin(); it != m_running_channels_end; ){
 		const unsigned int current_channel = *it;
 
-		if( m_polyphonic_circuit.process(current_channel)	// Output == Zero for this channel
-				&& (--(m_channels_lifetime[current_channel]) == 0u)){ // and no more lifetime
+
+		DEBUG_PRINT(",%d", m_channels_lifetime[current_channel]);
+
+		if( m_polyphonic_circuit.process(current_channel)){
+			// Output == Zero for this channel
+
+			DEBUG_PRINT("--");
+
+			if( (--(m_channels_lifetime[current_channel])) == 0u){
+				// no more lifetime
+				//DEBUG_PRINT("free:%d\n", current_channel);
 				free_channel(it);
+				continue;
+			}
 		}
 		else{
+			DEBUG_PRINT("#", current_channel);
 			m_channels_lifetime[current_channel] = m_channel_zero_lifetime;
-			++it;
 		}
+
+		++it;
 	}
+
+	DEBUG_PRINT("]\n");
 
 	m_master_circuit.process(input, output);
 }
@@ -73,12 +91,18 @@ void synthesizer::send_note_on(const char midi_note, const double velocity)
 	const unsigned int channel = get_new_channel();
 
 	if( channel != INVALID_CHANNEL ){
+
+		//DEBUG_PRINT("on : %d\n", channel);
+
 		m_channels_midi_note[channel] = midi_note;
+		m_polyphonic_circuit.initialize_channel(channel);
 		m_polyphonic_circuit.set_channel_pitch(channel, m_note_frequencies[(int)midi_note]);
 		m_polyphonic_circuit.set_channel_attack_velocity(channel, velocity);
 		m_polyphonic_circuit.set_channel_gate_state(channel, true);
 		// default value (avoid undetermined component behavior)
 		m_polyphonic_circuit.set_channel_release_velocity(channel, 1.0);
+
+		m_channels_lifetime[channel] = m_channel_zero_lifetime;
 	}
 
 	// Else do nothing
@@ -90,10 +114,25 @@ void synthesizer::send_note_off(char midi_note, const double velocity)
 		const unsigned int channel = *it;
 
 		if( m_channels_midi_note[channel] == midi_note ) {
+			//DEBUG_PRINT("off: %d\n", channel);
+			m_channels_midi_note[channel] = NO_NOTE;
 			m_polyphonic_circuit.set_channel_release_velocity(channel, velocity);
 			m_polyphonic_circuit.set_channel_gate_state(channel, false);
+			break;
 		}
 	}
+
+
+}
+
+void synthesizer::add_sound_component_on_master_circuit(abstract_sound_component *component)
+{
+	m_master_circuit.add_sound_component(component);
+}
+
+void synthesizer::add_sound_component_on_polyphonic_circuit(abstract_sound_component *component)
+{
+	m_polyphonic_circuit.add_sound_component(component);
 }
 
 // polyphonic_circuit_ component
@@ -119,6 +158,16 @@ process::abstract_component<double> *synthesizer::get_polyphonic_circuit_output(
 }
 
 // master_circuit_ component
+
+process::abstract_component<double> *synthesizer::get_master_main_input()
+{
+	return m_master_circuit.get_main_input();
+}
+
+process::abstract_component<double> *synthesizer::get_master_main_output()
+{
+	return m_master_circuit.get_main_output();
+}
 
 process::abstract_component<double> *synthesizer::get_master_circuit_polyphonic_input()
 {

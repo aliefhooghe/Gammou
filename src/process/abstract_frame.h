@@ -107,6 +107,9 @@ abstract_frame<T>::~abstract_frame()
 template<class T>
 void abstract_frame<T>::add_component(abstract_component<T> *component)
 {
+	if( component->get_frame() != nullptr)
+		return; // TODO throw exception
+
 	m_link_monitor.register_observer(&(component->m_frame));
 }
 
@@ -178,7 +181,7 @@ void abstract_frame<T>::make_component_current_cycle_program(abstract_component<
 template<class T>
 void abstract_frame<T>::execute_program()
 {
-	for( typename std::vector<abstract_frame<T>::instruction>::const_iterator it = m_program.begin();
+	for( auto it = m_program.begin();
 			it != m_program.end(); ++it)
 		it->execute(m_program_memory);
 }

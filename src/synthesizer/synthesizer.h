@@ -5,6 +5,8 @@
 #include "sound_component/sound_component.h"
 #include "synthesizer_circuits/master_circuit.h"
 #include "synthesizer_circuits/polyphonic_circuit.h"
+#include "sound_component/standard_sound_component.h"
+#include "../gammou_exception.h"
 
 
 namespace gammou{
@@ -19,7 +21,7 @@ class synthesizer{
 	 *				->
 	 */
 
-	enum { INVALID_CHANNEL = 0xFFFFFF , INFINITE_LIFETIME = 0xFFFFFFFF};
+	enum { INVALID_CHANNEL = 0xFFFFFF , INFINITE_LIFETIME = 0xFFFFFFFF, NO_NOTE = 0xFF};
 
 public:
 	synthesizer(const unsigned int main_input_count,
@@ -37,6 +39,10 @@ public:
 	void send_note_on(const char midi_note, const double velocity);
 	void send_note_off(const char midi_note, const double velocity);
 
+
+	void add_sound_component_on_master_circuit(abstract_sound_component *component);
+	void add_sound_component_on_polyphonic_circuit(abstract_sound_component *component);
+
 	// polyphonic_circuit_ component
 
 	process::abstract_component<double> *get_polyphonic_circuit_gpar_input();
@@ -46,11 +52,12 @@ public:
 
 	// master_circuit_ component
 
+	process::abstract_component<double> *get_master_main_input();
+	process::abstract_component<double> *get_master_main_output();
+
 	process::abstract_component<double> *get_master_circuit_polyphonic_input();
 	process::abstract_component<double> *get_master_circuit_polyphonic_output();
 	process::abstract_component<double> *get_master_circuit_automation_input();
-
-
 
 private:
 	unsigned int get_new_channel();
