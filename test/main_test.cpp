@@ -3,7 +3,7 @@
 
 
 
-#define GLOP_TEST
+//#define GLOP_TEST
 
 
 #ifdef GLOP_TEST
@@ -37,6 +37,16 @@ void sound_process(void *data, float out[], const unsigned int nb_sample)
 	case XK_##key: \
 		synth->send_note_off(90 + (#key)[0] - 'a', 0.8); \
 		break
+
+
+double aut = 0.0;
+
+int mouse_drag(void *data, const unsigned int x, const unsigned int y, int dx, int dy, const unsigned int b)
+{
+
+	aut += dy * 0.01;
+	return 0;
+}
 
 int key_press(void *data, const unsigned int key)
 {
@@ -120,19 +130,41 @@ int key_release(void *data, const unsigned int key)
 
 int main()
 {
-	gammou::synthesizer synth(0, 1, TEST_CHANNEL_COUNT, 0, 1, 1, 44100);
+	gammou::synthesizer synth(0, 1, TEST_CHANNEL_COUNT, 1, &aut, 1, 1, 44100);
 	gammou::sin_oscilator sinus(TEST_CHANNEL_COUNT);
+	gammou::sin_oscilator sinus2(TEST_CHANNEL_COUNT);
+
 	gammou::static_prod<2> prod(TEST_CHANNEL_COUNT);
+	gammou::static_prod<2> prod2(TEST_CHANNEL_COUNT);
+	gammou::static_sum<3> sum(TEST_CHANNEL_COUNT);
 
 
 	synth.add_sound_component_on_polyphonic_circuit(&sinus);
+	synth.add_sound_component_on_polyphonic_circuit(&sinus2);
 	synth.add_sound_component_on_polyphonic_circuit(&prod);
+	synth.add_sound_component_on_polyphonic_circuit(&prod2);
+	synth.add_sound_component_on_polyphonic_circuit(&sum);
+
 
 	synth.get_polyphonic_circuit_gpar_input()->connect_to(1, &sinus, 0);
 
 	synth.get_polyphonic_circuit_gpar_input()->connect_to(0, &prod, 0);
 	sinus.connect_to(0, &prod, 1);
-	sinus.connect_to(0, &sinus, 1);
+
+
+	synth.get_polyphonic_circuit_gpar_input()->connect_to(1, &sum, 0);
+	synth.get_polyphonic_circuit_gpar_input()->connect_to(1, &sum, 1);
+	sinus.connect_to(0, &sum, 2);
+	sum.connect_to(0, &sinus2, 0);
+
+	sinus.connect_to(0, &sinus2, 1);
+
+	sinus2.connect_to(0, &prod2, 0);
+	synth.get_polyphonic_circuit_automation_input()->connect_to(0, &prod2, 1);
+
+
+	prod2.connect_to(0, &sinus, 1);
+
 
 	prod.connect_to(0, synth.get_polyphonic_circuit_output(), 0);
 
@@ -145,6 +177,7 @@ int main()
 
 
 	Glop_set_user_data(&synth);
+	Glop_set_mouse_drag_fct(mouse_drag);
 	Glop_set_key_press_fct(key_press);
 	Glop_set_key_release_fct(key_release);
 
@@ -163,9 +196,10 @@ int main()
 #else
 
 #include "test_observer.h"
-
 #include "test_component.h"
 
+
+#include "../src/synthesizer/plugin/plugin_form.h"
 
 
 #define RUN_TEST(test_function) \
@@ -176,6 +210,8 @@ int main()
 
 
 #include <vector>
+
+
 
 int main()
 {

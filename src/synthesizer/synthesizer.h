@@ -28,6 +28,7 @@ public:
 				const unsigned int main_output_count,
 				const unsigned int channel_count,
 				const unsigned int automation_count,
+				const double automation_buffer[],
 				const unsigned int master_to_polyphonic_count = 2,
 				const unsigned int polyphonic_to_master_count = 2,
 				const unsigned int channel_zero_lifetime = 44100);
@@ -63,7 +64,6 @@ private:
 	unsigned int get_new_channel();
 	void free_channel(const std::vector<unsigned int>::iterator& it);
 
-	std::vector<double> m_automation_input_buffer;
 	std::vector<double> m_master_to_polyphonic_buffer;
 	std::vector<double> m_polyphonic_to_master_buffer;
 

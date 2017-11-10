@@ -15,30 +15,30 @@ class abstract_frame{
 
 
 	class instruction{
-		typedef enum {FETCH_OUTPUT, FETCH_DEFAULT, PROCESS} instruction_type;
+		enum class type {FETCH_OUTPUT, FETCH_DEFAULT, PROCESS};
 
 	public:
 
 		static instruction fetch_output(abstract_component<T> *component, const unsigned int output_id, const unsigned int mem_pos)
 		{
-			return instruction(component, output_id, mem_pos, FETCH_OUTPUT);
+			return instruction(component, output_id, mem_pos, type::FETCH_OUTPUT);
 		}
 
 		static instruction fetch_default(const unsigned int mem_pos)
 		{
-			return instruction(nullptr, 0, mem_pos, FETCH_DEFAULT);
+			return instruction(nullptr, 0, mem_pos, type::FETCH_DEFAULT);
 		}
 
 		static instruction process(abstract_component<T> *component)
 		{
-			return instruction(component, 0, 0, PROCESS);
+			return instruction(component, 0, 0, type::PROCESS);
 		}
 
 		void execute(std::vector<T>& memory) const
 		{
-			if( m_type == FETCH_OUTPUT )
+			if( m_type == type::FETCH_OUTPUT )
 				memory[m_mem_pos] = m_component->fetch_output(m_output_id);
-			else if( m_type == FETCH_DEFAULT )
+			else if( m_type == type::FETCH_DEFAULT )
 				memory[m_mem_pos] = T();
 			else
 				m_component->process(memory.data());
@@ -50,14 +50,14 @@ class abstract_frame{
 		instruction(abstract_component<T> *const component,
 				const unsigned int output_id,
 				const unsigned int mem_pos,
-				const instruction_type type)
+				const type type)
 			: m_component(component), m_output_id(output_id), m_mem_pos(mem_pos), m_type(type) {}
 
 
 		abstract_component<T> *const m_component;
 		const unsigned int m_output_id;
 		const unsigned int m_mem_pos;
-		const instruction_type m_type;
+		const type m_type;
 	};
 
 
