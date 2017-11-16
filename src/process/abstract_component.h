@@ -20,12 +20,16 @@ template<class T> class abstract_component;
 template<class T>
 class component_link: public observer<abstract_component<T> > {
 
+
+
+
 public:
 	component_link();
 	~component_link() {}
 
 	void set_src_output_id(const unsigned int output_id);
 	unsigned int get_src_output_id() const;
+	void on_notify(const unsigned int notification_tag) override;
 
 private:
 	unsigned int m_src_output_id;
@@ -130,14 +134,19 @@ protected:
 
 	void set_input_name(const std::string& name, const unsigned int input_id);
 	void set_output_name(const std::string& name, const unsigned int output_id);
+
 	void push_input();
 	void push_input(const std::string& name);
 	void pop_input();
 
+	void push_output();
+	void push_output(const std::string& name);
+	void pop_output();
+
 private:
 	bool update_process_cyle(const unsigned int cycle) noexcept;
 	// To be implemented
-	virtual void on_input_connection(const unsigned int input_id) {};
+	virtual void on_input_connection(const unsigned int input_id) {}; // TODO : peut etre en protected
 	const std::string default_input_name(const unsigned int input_id);
 	const std::string default_output_name(const unsigned int output_id);
 
@@ -176,7 +185,11 @@ unsigned int component_link<T>::get_src_output_id() const
 	return m_src_output_id;
 }
 
+template<class T>
+void component_link<T>::on_notify(const unsigned int notification_tag)
+{
 
+}
 /*
  * 		Frame link implementation
  */
@@ -355,7 +368,7 @@ void abstract_component<T>::set_output_name(const std::string& name, const unsig
 template<class T>
 void abstract_component<T>::push_input()
 {
-	unsigned int new_input_id = get_input_count();
+	const unsigned int new_input_id = get_input_count();
 	m_input.push_back(component_link<T>());
 	m_input_name.push_back(default_input_name(new_input_id));
 }
@@ -374,6 +387,27 @@ void abstract_component<T>::pop_input()
 		throw impossible_input_pop();
 	m_input.pop_back();
 	m_input_name.pop_back();
+}
+
+template<class T>
+void abstract_component<T>::push_output()
+{
+	const unsigned int new_output_id = get_output_count();
+	m_output_name.push_back(default_output_name(new_output_id));
+}
+
+template<class T>
+void abstract_component<T>::push_output(const std::string& name)
+{
+	m_output_name.push_back(name);
+}
+
+template<class T>
+void abstract_component<T>::pop_output()
+{
+	if( get_output_count() == 0 )
+		throw impossible_input_pop();
+	m_output_name.pop_back();
 }
 
 // private
