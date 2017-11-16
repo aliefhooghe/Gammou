@@ -17,7 +17,7 @@ constexpr double DEFAULT_SAMPLE_DURATION = 1.0 / DEFAULT_SAMPLE_RATE;
 
 
 class abstract_sound_component : public process::abstract_component<double>,
-								 public process::observer<sound_component_manager> {
+								 public process::observer<sound_component_manager, sound_component_notification_tag> {
 
 	friend class multi_channel_data;
 
@@ -36,7 +36,7 @@ public:
 	virtual void on_sample_rate_change() {};
 
 protected:
-	void on_notify(const unsigned notification_tag) override;
+	void on_notify(const sound_component_notification_tag notification_tag) override;
 
 	double get_sample_duration() const;
 	double get_sample_rate() const;

@@ -6,7 +6,7 @@
 namespace gammou{
 
 sound_component_manager::sound_component_manager(const unsigned int channel_count)
-	: process::subject<sound_component_manager>(this), m_channel_count(channel_count),
+	: process::subject<sound_component_manager, sound_component_notification_tag>(this), m_channel_count(channel_count),
 	  m_current_working_channel(0),
 	  m_current_sample_rate(DEFAULT_SAMPLE_RATE)
 {
@@ -37,14 +37,14 @@ void sound_component_manager::set_current_working_channel(const unsigned int cha
 {
 	if( channel != m_current_working_channel ){
 		m_current_working_channel = channel;
-		notify_observers(CHANNEL_CHANGE_NOTIFY);
+		notify_observers(sound_component_notification_tag::CHANNEL_CHANGE_NOTIFY);
 	}
 }
 
 void sound_component_manager::set_current_samplerate(const double sample_rate)
 {
 	m_current_sample_rate = sample_rate;
-	notify_observers(SAMPLE_RATE_NOTIFY);
+	notify_observers(sound_component_notification_tag::SAMPLE_RATE_NOTIFY);
 }
 
 

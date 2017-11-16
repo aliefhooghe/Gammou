@@ -14,10 +14,12 @@ namespace gammou{
 
 class abstract_sound_component;
 
-class sound_component_manager : public process::subject<sound_component_manager> {
+enum class sound_component_notification_tag {CHANNEL_CHANGE_NOTIFY, SAMPLE_RATE_NOTIFY};
+
+class sound_component_manager : public process::subject<sound_component_manager, sound_component_notification_tag> {
 
 public:
-	typedef enum {CHANNEL_CHANGE_NOTIFY, SAMPLE_RATE_NOTIFY} notification_tag;
+	//enum class notification_tag ;
 
 	sound_component_manager(const unsigned int channel_count);  // securité a prevoir >0
 	~sound_component_manager();

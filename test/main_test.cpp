@@ -3,7 +3,7 @@
 
 
 
-//#define GLOP_TEST
+#define GLOP_TEST
 
 
 #ifdef GLOP_TEST

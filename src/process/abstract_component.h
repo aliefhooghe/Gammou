@@ -20,16 +20,13 @@ template<class T> class abstract_component;
 template<class T>
 class component_link: public observer<abstract_component<T> > {
 
-
-
-
 public:
 	component_link();
 	~component_link() {}
 
 	void set_src_output_id(const unsigned int output_id);
 	unsigned int get_src_output_id() const;
-	void on_notify(const unsigned int notification_tag) override;
+	void on_notify(const unsigned int popped_output_id) override;
 
 private:
 	unsigned int m_src_output_id;
@@ -186,9 +183,10 @@ unsigned int component_link<T>::get_src_output_id() const
 }
 
 template<class T>
-void component_link<T>::on_notify(const unsigned int notification_tag)
+void component_link<T>::on_notify(const unsigned int popped_output_id)
 {
-
+	if( popped_output_id == m_src_output_id )
+		observer<abstract_component<T> >::disconnect();
 }
 /*
  * 		Frame link implementation
@@ -408,6 +406,7 @@ void abstract_component<T>::pop_output()
 	if( get_output_count() == 0 )
 		throw impossible_input_pop();
 	m_output_name.pop_back();
+	m_component_subject.notify_observers(get_output_count());
 }
 
 // private

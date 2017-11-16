@@ -35,7 +35,7 @@ unsigned int abstract_sound_component::get_current_working_channel() const
 	return m_current_working_channel;
 }
 
-void abstract_sound_component::on_notify(const unsigned int notification_tag)
+void abstract_sound_component::on_notify(const sound_component_notification_tag notification_tag)
 {
 	sound_component_manager *manager = get_subject_resource();
 
@@ -43,11 +43,11 @@ void abstract_sound_component::on_notify(const unsigned int notification_tag)
 
 		switch (notification_tag) {
 
-		case sound_component_manager::CHANNEL_CHANGE_NOTIFY:
+		case sound_component_notification_tag::CHANNEL_CHANGE_NOTIFY:
 			m_current_working_channel = manager->get_current_working_channel();
 			break;
 
-		case sound_component_manager::SAMPLE_RATE_NOTIFY:
+		case sound_component_notification_tag::SAMPLE_RATE_NOTIFY:
 			m_sample_rate = manager->get_current_sample_rate();
 			m_sample_duration = 1.0 / m_sample_rate;
 			on_sample_rate_change();
