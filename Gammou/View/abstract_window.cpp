@@ -1,5 +1,5 @@
 
-#include "gammou_abstract_window.h"
+#include "abstract_window.h"
 
 namespace Gammou {
 

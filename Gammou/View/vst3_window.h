@@ -2,7 +2,7 @@
 #define GAMMOU_VST3_WINDOW_H_
 
 #ifdef WIN32
-#include "gammou_win32_vst3_window.h"
+#include "win32_vst3_window.h"
 #endif
 
 

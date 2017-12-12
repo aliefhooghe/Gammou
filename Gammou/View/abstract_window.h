@@ -1,7 +1,7 @@
 #ifndef GAMMOU_ABSTRACT_WINDOW_H_
 #define GAMMOU_ABSTRACT_WINDOW_H_
 
-#include "gammou_panel.h"
+#include "widget/panel.h"
 
 namespace Gammou {
 

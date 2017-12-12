@@ -1,8 +1,8 @@
 #ifndef ABSTRACT_VST3_WINDOW_H_
 #define ABSTRACT_VST3_WINDOW_H_
 
-#include "public.sdk\source\common\pluginview.h"
-#include "gammou_abstract_window.h"
+#include "public.sdk/source/common/pluginview.h"
+#include "../abstract_window.h"
 
 namespace Gammou {
 

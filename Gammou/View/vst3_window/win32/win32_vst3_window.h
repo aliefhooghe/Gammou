@@ -1,7 +1,7 @@
 #ifndef GAMMOU_WIN32_VST3_WINDOW_H_
 #define GAMMOU_WIN32_VST3_WINDOW_H_
 
-#include "gammou_abstract_vst3_window.h"
+#include "../abstract_vst3_window.h"
 #include <Windows.h>
 #include <windowsx.h>
 

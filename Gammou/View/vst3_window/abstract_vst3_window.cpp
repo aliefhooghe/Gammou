@@ -1,8 +1,8 @@
 
-#include "gammou_abstract_vst3_window.h"
-#include "pluginterfaces\base\keycodes.h"
+#include "abstract_vst3_window.h"
+#include "pluginterfaces/base/keycodes.h"
 
-#include "pluginterfaces\vst\ivstcontextmenu.h"
+#include "pluginterfaces/vst/ivstcontextmenu.h"
 
 #define DEBUG_PRINT(...) {char str[256];sprintf(str, __VA_ARGS__);OutputDebugStringA(str);}
 

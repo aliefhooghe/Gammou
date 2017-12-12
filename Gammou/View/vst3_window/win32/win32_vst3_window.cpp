@@ -1,5 +1,5 @@
-#include "debug.h"
-#include "gammou_win32_vst3_window.h"
+#include "../../debug.h"
+#include "win32_vst3_window.h"
 
 #define WNDCLASS_NAME "WNDCLASS_NAME"
 
@@ -72,7 +72,7 @@ namespace Gammou {
 		void win32_vst3_window::redraw_rect(rectangle & rect)
 		{
 			RECT win32_rect = 
-			{ rect.x , rect.y, rect.x + rect.width, rect.y + rect.height };
+			{ (LONG)rect.x , (LONG)rect.y, (LONG)rect.x + (LONG)rect.width, (LONG)rect.y + (LONG)rect.height };
 			InvalidateRect(m_plugin_window, &win32_rect, true);
 		}
 
