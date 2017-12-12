@@ -22,7 +22,6 @@ class abstract_sound_component : public process::abstract_component<double>,
 	friend class multi_channel_data;
 
 public:
-
 	abstract_sound_component(
 						const std::string& name,
 						const unsigned int input_count,
@@ -61,8 +60,7 @@ public:
 			const unsigned int channel_count);
 	virtual ~sound_component();
 
-	double fetch_output(const unsigned int output_id);
-
+	double fetch_output(const unsigned int output_id) override;
 protected:
 	multi_channel_array<double> m_output;
 
