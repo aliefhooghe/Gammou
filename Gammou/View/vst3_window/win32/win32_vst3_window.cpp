@@ -1,4 +1,6 @@
-#include "../../debug.h"
+#ifdef _WIN32
+
+#include "../../../debug.h"
 #include "win32_vst3_window.h"
 
 #define WNDCLASS_NAME "WNDCLASS_NAME"
@@ -215,3 +217,8 @@ namespace Gammou {
 } /* View */
 } /* Gammou */
 
+
+
+
+
+#endif // _WIN32

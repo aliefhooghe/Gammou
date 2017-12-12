@@ -1,19 +1,18 @@
 #pragma once
 
-#include "debug.h"
-#include "gammou_vst3_window.h"
-#include "gammou_common_widgets.h"
+#include "../../debug.h"
+#include "view.h"
 
 
 namespace Gammou {
 
 	namespace Vst {
 
-		class GammouPluginWindow : public View::vst3_window {
+		class GammouPluginWindow : public View::generic_window {
 
 		public:
 			GammouPluginWindow() 
-				: View::vst3_window(800, 400), movable(true)
+				: View::generic_window(800, 400), movable(true)
 			{
 				set_background_color(0.78, 0.83, 0.86);
 

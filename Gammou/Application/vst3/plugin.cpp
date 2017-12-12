@@ -3,8 +3,7 @@
 #include <iostream>
 #include <cmath>
 
-#include "GammouPlugin.h"
-
+#include "plugin.h"
 
 #include <Windows.h>
 

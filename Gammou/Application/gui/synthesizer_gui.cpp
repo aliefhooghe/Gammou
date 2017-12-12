@@ -1,3 +1,3 @@
-#include "GammouPluginWindow.h"
+#include "synthesizer_gui.h"
 
 

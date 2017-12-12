@@ -3,7 +3,7 @@
  */
 
 #pragma once
-#include "debug.h"
+#include "../../debug.h"
 
 #include "public.sdk/source/vst/vstsinglecomponenteffect.h" // first !!!!
 
@@ -11,7 +11,7 @@
 #include "pluginterfaces/vst/ivstevents.h"
 #include "pluginterfaces/base/ustring.h"
 
-#include "GammouPluginWindow.h"
+#include "../gui/synthesizer_gui.h"
 
 
 namespace Gammou {

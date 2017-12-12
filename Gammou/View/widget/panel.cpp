@@ -1,6 +1,6 @@
 
 #include <algorithm>
-#include "../debug.h"
+#include "../../debug.h"
 #include "panel.h"
 
 namespace Gammou {

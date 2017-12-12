@@ -1,0 +1,6 @@
+#ifndef GAMMOU_ABSTRACT_APP_WINDOW_H_
+#define GAMMOU_ABSTRACT_APP_WINDOW_H_
+
+// todo
+
+#endif

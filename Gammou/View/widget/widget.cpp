@@ -1,7 +1,7 @@
 
 #include "widget.h"
 #include "panel.h"
-#include "../debug.h"
+#include "../../debug.h"
 
 #define RECT_REDRAW_SHIFT 10
 
