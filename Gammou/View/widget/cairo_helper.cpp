@@ -47,17 +47,6 @@ namespace Gammou {
 		}
 
 
-
-		color::color(const float vr, const float vg, const float vb, const float va)
-			: r(vr), g(vg), b(vb), a(va)
-		{
-		}
-
-		color::color(const float vr, const float vg, const float vb)
-			: r(vr), g(vg), b(vb), a(1.0) // todo verifier
-		{
-		}
-
 	} /* View */
 
 } /* Gammou */

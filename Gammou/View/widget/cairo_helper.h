@@ -2,21 +2,12 @@
 #define CAIRO_HELPER_H_
 
 #include "../cairo_definition.h"
+#include "color.h"
 
 namespace Gammou {
 
 	namespace View {
 
-		struct color {
-
-			color(const float vr, const float vg, const float vb, const float va);
-			color(const float vr, const float vg, const float vb);
-			
-			float r;
-			float g;
-			float b;
-			float a;
-		};
 
 		struct rectangle {
 
