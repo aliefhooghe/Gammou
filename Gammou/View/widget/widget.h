@@ -3,7 +3,7 @@
 
 #include "../cairo_definition.h"
 #include "event.h"
-#include "geometry.h"
+#include "cairo_helper.h"
 
 namespace Gammou {
 

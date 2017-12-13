@@ -1,13 +1,13 @@
-#include "geometry.h"
-
 #define  _USE_MATH_DEFINES
 #include <cmath>
 
-
+#include "cairo_helper.h"
 
 namespace Gammou {
 
 	namespace View {
+
+
 
 		rectangle::rectangle(const int px, const int py, const int width, const int height)
 			: x(px), y(py), width(width), height(height)
@@ -46,7 +46,18 @@ namespace Gammou {
 			cairo_close_path(cr);
 		}
 
+
+
+		color::color(const float vr, const float vg, const float vb, const float va)
+			: r(vr), g(vg), b(vb), a(va)
+		{
+		}
+
+		color::color(const float vr, const float vg, const float vb)
+			: r(vr), g(vg), b(vb), a(1.0) // todo verifier
+		{
+		}
+
 	} /* View */
 
 } /* Gammou */
-

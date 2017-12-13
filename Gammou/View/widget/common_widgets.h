@@ -5,6 +5,7 @@
 #include <functional>
 #include "widget.h"
 #include "panel.h"
+#include "cairo_helper.h"
 
 namespace Gammou {
 
