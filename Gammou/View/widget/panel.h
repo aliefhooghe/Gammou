@@ -12,8 +12,8 @@ namespace Gammou {
 		class panel : public widget {
 
 		public:
-			panel(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const float background_red = 1.0, const float background_g = 1.0, const float background_b = 1.0);
-			panel(const rectangle& rect, const float background_red = 1.0, const float background_g = 1.0, const float background_b = 1.0);
+			panel(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const color background = cl_white);
+			panel(const rectangle& rect, const color background = cl_white);
 			virtual ~panel();
 
 			virtual void redraw_rect(rectangle& rect);
@@ -41,7 +41,7 @@ namespace Gammou {
 			void add_widget(widget *w);
 			void remove_widget(widget *w);
 
-			void set_background_color(const float r, const float g, const float b);
+			void set_background_color(const color c);
 		protected:
 			widget *widget_at_position(const unsigned int x, const unsigned int y);
 			widget *focused_widget(void);
@@ -53,10 +53,7 @@ namespace Gammou {
 			widget *m_focused_widget;	//	under cursor
 			widget *m_draging_widget;
 			
-
-			float m_background_r;
-			float m_background_g;
-			float m_background_b;
+			color m_background_color;
 		};
 
 	} /* View */

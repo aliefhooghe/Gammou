@@ -24,7 +24,20 @@ namespace Gammou {
 			unsigned int height;
 		};
 
-		void cairo_rounded_rectangle(cairo_t *cr, const float x, const float y, const float width, const float height, const float radius);
+
+		//////////////////////////////////////////////////////////////////////////////////////
+
+
+		namespace cairo_helper {
+			
+			void rounded_rectangle(cairo_t *cr, const rectangle& rect, const float radius);
+			void rounded_rectangle(cairo_t *cr, const float x, const float y, const float width, const float height, const float radius);
+			
+			void set_source_color(cairo_t *cr, const color c);
+
+		}	/* cairo_helper */
+
+		
 
 	} /* View */
 

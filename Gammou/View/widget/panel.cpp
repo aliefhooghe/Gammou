@@ -8,15 +8,14 @@ namespace Gammou {
 	namespace View {
 	
 
-		panel::panel(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const float r, const float g, const float b)
+		panel::panel(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const color background)
 			: widget(x, y, width, height), m_focused_widget(nullptr), 
-			m_draging_widget(nullptr), m_draging_button(mouse_button::LeftButton), m_background_r(r), m_background_g(g), m_background_b(b)
+			m_draging_widget(nullptr), m_draging_button(mouse_button::LeftButton), m_background_color(background)
 		{
 		}
 
-		panel::panel(const rectangle & rect, const float r, const float g, const float b)
-			: widget(rect), m_focused_widget(nullptr), m_draging_widget(nullptr),
-			m_background_r(r), m_background_g(g), m_background_b(b)
+		panel::panel(const rectangle & rect, const color c)
+			: widget(rect), m_focused_widget(nullptr), m_draging_widget(nullptr), m_background_color(c)
 		{
 		}
 
@@ -29,7 +28,7 @@ namespace Gammou {
 		void panel::draw(cairo_t * cr)
 		{
 			//	Draw Background
-			cairo_set_source_rgb(cr, m_background_r, m_background_g, m_background_b);
+			cairo_helper::set_source_color(cr, m_background_color);
 			cairo_rectangle(cr, 0, 0, get_width(), get_height());
 			cairo_fill(cr);
 			
@@ -69,11 +68,9 @@ namespace Gammou {
 			redraw();
 		}
 
-		void panel::set_background_color(const float r, const float g, const float b)
+		void panel::set_background_color(const color c)
 		{
-			m_background_r = r;
-			m_background_g = g;
-			m_background_b = b;
+			m_background_color = c;
 			redraw();
 		}
 

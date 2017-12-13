@@ -119,13 +119,13 @@ namespace Gammou {
 			else
 				cairo_set_source_rgb(cr, 1, 1, 1.0);
 			
-			cairo_rounded_rectangle(cr, offset / 2, offset / 2, get_width() - offset, get_height() - offset, offset);
+			cairo_helper::rounded_rectangle(cr, offset / 2, offset / 2, get_width() - offset, get_height() - offset, offset);
 			cairo_fill(cr);
 			cairo_set_source_rgb(cr, 0, 0, 0);
 
 			cairo_set_line_width(cr, offset);
 			cairo_set_line_join(cr, CAIRO_LINE_JOIN_ROUND);
-			cairo_rounded_rectangle(cr, offset / 2, offset / 2, get_width() - offset, get_height() - offset, offset);
+			cairo_helper::rounded_rectangle(cr, offset / 2, offset / 2, get_width() - offset, get_height() - offset, offset);
 			cairo_stroke(cr);
 
 			cairo_set_font_size(cr, m_font_size);

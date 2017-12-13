@@ -4,7 +4,31 @@
 namespace Gammou {
 
 	namespace View {
-		
+
+		color create_color(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
+		{
+			return (r << 24) | (g << 16) | (b << 8) | a;
+		}
+
+		color create_color(const unsigned char r, const unsigned char g, const unsigned char b)
+		{
+			return create_color(r, g, b, 255u);
+		}
+
+		color create_color(const float r, const float g, const float b, const float a)
+		{
+			const unsigned char ur = static_cast<unsigned char>(r * 255.0f);
+			const unsigned char ug = static_cast<unsigned char>(g * 255.0f);
+			const unsigned char ub = static_cast<unsigned char>(b * 255.0f);
+			const unsigned char ua = static_cast<unsigned char>(a * 255.0f);
+			return create_color(ur, ug, ub, ua);
+		}
+
+		color create_color(const float r, const float g, const float b)
+		{
+			return create_color(r, g, b, 1.0f);
+		}
+
 		unsigned char uchar_red(const color c)
 		{
 			return c >> 24;
