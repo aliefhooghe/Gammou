@@ -8,30 +8,30 @@ namespace Gammou {
 
 	namespace Vst {
 
-		class GammouPluginWindow : public View::generic_window {
+		class synthesizer_gui : public View::generic_window {
 
 		public:
-			GammouPluginWindow() 
-				: View::generic_window(800, 400), movable(true)
+			synthesizer_gui(const unsigned int width, const unsigned int height) 
+				: View::generic_window(width, height), movable(true)
 			{
-				set_background_color(0.78, 0.83, 0.86);
+				set_background_color(0.78f, 0.83f, 0.86f);
 
 				square = new View::movable_control(200, 100, 66, 66);	
 				add_widget(square);
 
 
-				add_widget(new View::push_button([&] { set_background_color(0.78, 0.95, 0.86); }, "BOUTON", 100, 50));
-				add_widget(new View::push_button([&] { set_background_color(0.95, 0.78, 0.86); }, "BOUTON", 150, 100));
-				add_widget(new View::push_button([&] { set_background_color(0.78, 0.86, 0.95); }, "BOUTON", 200, 150));
-				add_widget(new View::push_button([&] { set_background_color(0.95, 0.86, 0.78); }, "BOUTON", 250, 200));
-				add_widget(new View::push_button([&] { set_background_color(0.86, 0.95, 0.78); }, "BOUTON", 300, 250));
-				add_widget(new View::push_button([&] { set_background_color(0.86, 0.78, 0.95); }, "BOUTON", 350, 300));
+				add_widget(new View::push_button([&] { set_background_color(0.78f, 0.95f, 0.86f); }, "BOUTON", 100, 50));
+				add_widget(new View::push_button([&] { set_background_color(0.95f, 0.78f, 0.86f); }, "BOUTON", 150, 100));
+				add_widget(new View::push_button([&] { set_background_color(0.78f, 0.86f, 0.95f); }, "BOUTON", 200, 150));
+				add_widget(new View::push_button([&] { set_background_color(0.95f, 0.86f, 0.78f); }, "BOUTON", 250, 200));
+				add_widget(new View::push_button([&] { set_background_color(0.86f, 0.95f, 0.78f); }, "BOUTON", 300, 250));
+				add_widget(new View::push_button([&] { set_background_color(0.86f, 0.78f, 0.95f); }, "BOUTON", 350, 300));
 
 
 				add_widget(new View::push_button([&] { set_background_color(0.45, 0.45, 0.02); }, "Clement", 10, 200, 70, 70, 15));
 			}
 			
-			~GammouPluginWindow() 
+			~synthesizer_gui() 
 			{
 			}
 

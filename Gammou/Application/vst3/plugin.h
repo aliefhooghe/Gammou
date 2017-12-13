@@ -1,5 +1,5 @@
 /*
- *		GammouPlugin.h
+ *		Plugin.h
  */
 
 #pragma once
@@ -17,11 +17,11 @@
 namespace Gammou {
 
 	namespace Vst {
-		class GammouPlugin : public Steinberg::Vst::SingleComponentEffect {
+		class Plugin : public Steinberg::Vst::SingleComponentEffect {
 
 		public:
-			GammouPlugin();
-			~GammouPlugin();
+			Plugin();
+			~Plugin();
 
 			//	AudioEffect override
 			Steinberg::tresult PLUGIN_API initialize(FUnknown* context) SMTG_OVERRIDE;
@@ -39,7 +39,7 @@ namespace Gammou {
 			Steinberg::IPlugView *PLUGIN_API createView(const char* name) SMTG_OVERRIDE;
 
 		private:
-			GammouPluginWindow *m_window;
+			synthesizer_gui m_window;
 
 			double m_freq;
 			double m_t;

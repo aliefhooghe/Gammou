@@ -10,7 +10,7 @@
 
 Steinberg::FUnknown *createGammouInstance(void *context)
 {
-	return (Steinberg::Vst::IAudioProcessor*)(new Gammou::Vst::GammouPlugin());
+	return (Steinberg::Vst::IAudioProcessor*)(new Gammou::Vst::Plugin());
 }
 
 bool InitModule()

@@ -11,22 +11,22 @@ namespace Gammou {
 
 	namespace Vst {
 
-		//	GammouPlugin class implementation
+		//	Plugin class implementation
 
-		GammouPlugin::GammouPlugin()
+		Plugin::Plugin()
+			: m_window(800, 400)
 		{
 			m_t = 0.0;
 			m_freq = 111.0;
 			DEBUG_PRINT("Gammou CTOR\n");
-			m_window = new GammouPluginWindow();
 		}
 
-		GammouPlugin::~GammouPlugin()
+		Plugin::~Plugin()
 		{
-			delete m_window;
+			DEBUG_PRINT("Gammou DTOR\n");
 		}
 
-		Steinberg::tresult PLUGIN_API GammouPlugin::initialize(FUnknown * context)
+		Steinberg::tresult PLUGIN_API Plugin::initialize(FUnknown * context)
 		{
 			Steinberg::tresult result = SingleComponentEffect::initialize(context);
 
@@ -44,24 +44,24 @@ namespace Gammou {
 			return Steinberg::kResultOk;
 		}
 
-		Steinberg::tresult PLUGIN_API GammouPlugin::terminate()
+		Steinberg::tresult PLUGIN_API Plugin::terminate()
 		{
 			return SingleComponentEffect::terminate();
 		}
 
-		Steinberg::tresult PLUGIN_API GammouPlugin::setActive(Steinberg::TBool state)
+		Steinberg::tresult PLUGIN_API Plugin::setActive(Steinberg::TBool state)
 		{
 			return Steinberg::kResultOk;
 		}
 
-		Steinberg::tresult PLUGIN_API GammouPlugin::canProcessSampleSize(Steinberg::int32 symbolicSampleSize)
+		Steinberg::tresult PLUGIN_API Plugin::canProcessSampleSize(Steinberg::int32 symbolicSampleSize)
 		{
 			return (symbolicSampleSize == Steinberg::Vst::kSample64 ||
 				symbolicSampleSize == Steinberg::Vst::kSample32) ?
 				Steinberg::kResultTrue : Steinberg::kResultFalse;
 		}
 
-		Steinberg::tresult PLUGIN_API GammouPlugin::setupProcessing(Steinberg::Vst::ProcessSetup & newSetup)
+		Steinberg::tresult PLUGIN_API Plugin::setupProcessing(Steinberg::Vst::ProcessSetup & newSetup)
 		{
 			//	TODO : peut etre Prendre en compte newSetup.sampleRate et newSetup.maxSamplesPerBlock
 			DEBUG_PRINT("Gammou Setup processing : sample size = %u bits, sample rate = %lf\n",
@@ -70,7 +70,7 @@ namespace Gammou {
 			return SingleComponentEffect::setupProcessing(newSetup);
 		}
 
-		Steinberg::tresult PLUGIN_API GammouPlugin::process(Steinberg::Vst::ProcessData & data)
+		Steinberg::tresult PLUGIN_API Plugin::process(Steinberg::Vst::ProcessData & data)
 		{
 			// Input parameter change : Nothing for le moment
 
@@ -127,7 +127,7 @@ namespace Gammou {
 			return Steinberg::kResultOk;
 		}
 
-		Steinberg::tresult PLUGIN_API GammouPlugin::setBusArrangements(Steinberg::Vst::SpeakerArrangement* inputs, Steinberg::int32 numIns,
+		Steinberg::tresult PLUGIN_API Plugin::setBusArrangements(Steinberg::Vst::SpeakerArrangement* inputs, Steinberg::int32 numIns,
 			Steinberg::Vst::SpeakerArrangement* outputs, Steinberg::int32 numOuts)
 		{
 			// Host ask to change
@@ -140,9 +140,9 @@ namespace Gammou {
 		}
 
 
-		Steinberg::IPlugView *GammouPlugin::createView(const char* name)
+		Steinberg::IPlugView *Plugin::createView(const char* name)
 		{
-			return m_window->create_vst3_view_instance();
+			return m_window.create_vst3_view_instance();
 		}
 
 
