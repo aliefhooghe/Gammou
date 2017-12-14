@@ -145,7 +145,7 @@ namespace Gammou {
 				m_component_to_initialize.push_back(component);
 
 				if( ic != 0){ // if there are inputs
-					abstract_component<T> *src_component[ic];
+					abstract_component<T> *src_component[ic];  // todo don't use VLA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 					unsigned int src_output_id[ic];
 
 					//	Update memory size if needed

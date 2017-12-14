@@ -1,8 +1,10 @@
 
-#include "polyphonic_circuit.h"
-
 #include <limits>
 #include <cmath>
+#include <stdexcept>
+
+#include "polyphonic_circuit.h"
+
 
 namespace Gammou {
 
@@ -75,7 +77,7 @@ namespace Gammou {
 		*/
 
 		polyphonic_circuit_output::polyphonic_circuit_output(const unsigned int output_count)
-			: process::abstract_component<double>("Output", output_count, 0),
+			: Process::abstract_component<double>("Output", output_count, 0),
 			m_buffer_ptr(nullptr), m_last_out_was_zero(false)
 		{
 
@@ -107,6 +109,7 @@ namespace Gammou {
 		{
 			return m_last_out_was_zero;
 		}
+
 		/*
 		*
 		*/
@@ -144,11 +147,9 @@ namespace Gammou {
 
 		void polyphonic_circuit::add_sound_component(abstract_sound_component *component)
 		{
-			/*
-			* 		check : component.channel_count == ok
-			*/
 
-			if( component-> 
+			if (component->get_channel_count() != get_channel_count())
+				throw std::domain_error("Component's channel count does not fit");
 
 			add_component(component);
 			m_sound_component_manager.register_observer(component);

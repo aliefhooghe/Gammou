@@ -128,49 +128,49 @@ namespace Gammou {
 
 		// polyphonic_circuit_ component
 
-		process::abstract_component<double> *synthesizer::get_polyphonic_circuit_gpar_input()
+		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_gpar_input()
 		{
 			return m_polyphonic_circuit.get_gpar_input();
 		}
 
-		process::abstract_component<double> *synthesizer::get_polyphonic_circuit_master_input()
+		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_master_input()
 		{
 			return m_polyphonic_circuit.get_master_input();
 		}
 
-		process::abstract_component<double> *synthesizer::get_polyphonic_circuit_automation_input()
+		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_automation_input()
 		{
 			return m_polyphonic_circuit.get_automation_input();
 		}
 
-		process::abstract_component<double> *synthesizer::get_polyphonic_circuit_output()
+		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_output()
 		{
 			return m_polyphonic_circuit.get_output();
 		}
 
 		// master_circuit_ component
 
-		process::abstract_component<double> *synthesizer::get_master_main_input()
+		Process::abstract_component<double> *synthesizer::get_master_main_input()
 		{
 			return m_master_circuit.get_main_input();
 		}
 
-		process::abstract_component<double> *synthesizer::get_master_main_output()
+		Process::abstract_component<double> *synthesizer::get_master_main_output()
 		{
 			return m_master_circuit.get_main_output();
 		}
 
-		process::abstract_component<double> *synthesizer::get_master_circuit_polyphonic_input()
+		Process::abstract_component<double> *synthesizer::get_master_circuit_polyphonic_input()
 		{
 			return m_master_circuit.get_polyphonic_input();
 		}
 
-		process::abstract_component<double> *synthesizer::get_master_circuit_polyphonic_output()
+		Process::abstract_component<double> *synthesizer::get_master_circuit_polyphonic_output()
 		{
 			return m_master_circuit.get_polyphonic_output();
 		}
 
-		process::abstract_component<double> *synthesizer::get_master_circuit_automation_input()
+		Process::abstract_component<double> *synthesizer::get_master_circuit_automation_input()
 		{
 			return m_master_circuit.get_automation_input();
 		}

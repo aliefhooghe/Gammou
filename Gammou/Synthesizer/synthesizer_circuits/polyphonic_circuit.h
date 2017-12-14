@@ -11,7 +11,7 @@ namespace Gammou {
 
 	namespace Sound {
 
-// 'GPAR' = Gate, Pitch, Attack, Release
+ // 'GPAR' = Gate, Pitch, Attack, Release
 
 		class polyphonic_circuit_GPAR_input : public abstract_sound_component {
 
