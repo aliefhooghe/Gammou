@@ -3,8 +3,7 @@
 
 #include <vector>
 #include <string>
-
-#include "../gammou_exception.h"
+#include <stdexcept>
 
 #include "observer.h"
 
@@ -54,50 +53,6 @@ private:
 template<class T>
 class abstract_component{
 
-	class component_error: public error
-	{
-	public:
-		virtual const char *what() const throw () {
-			return "Component generic error";
-		}
-	};
-
-	class invalid_id: public component_error
-	{
-	public:
-		invalid_id(const unsigned int id = 0) throw () :
-				m_id(id) {
-		}
-		virtual const char *what() const throw () {
-			return "Invalid component input/output id";
-		}
-	private:
-		const unsigned int m_id;
-	};
-
-	class impossible_input_pop: public component_error
-	{
-	public:
-		virtual const char *what() const throw () {
-			return "No more Input to pop";
-		}
-	};
-
-	class not_on_the_same_frame: public component_error
-	{
-	public:
-		virtual const char *what() const throw () {
-			return "Component are not in the same frame";
-		}
-	};
-
-	class not_on_a_frame : public component_error{
-	public:
-		virtual const char *what() const throw () {
-			return "Component is not on a frame";
-		}
-	};
-
 	friend class abstract_frame<T>;
 
 public:
@@ -140,10 +95,10 @@ protected:
 	void push_output(const std::string& name);
 	void pop_output();
 
+	virtual void on_input_connection(const unsigned int input_id) {};
 private:
 	bool update_process_cyle(const unsigned int cycle) noexcept;
-	// To be implemented
-	virtual void on_input_connection(const unsigned int input_id) {}; // TODO : peut etre en protected
+
 	const std::string default_input_name(const unsigned int input_id);
 	const std::string default_output_name(const unsigned int output_id);
 
@@ -261,7 +216,7 @@ template<class T>
 const std::string abstract_component<T>::get_input_name(const unsigned int input_id) const
 {
 	if(input_id >= get_input_count())
-		throw invalid_id(input_id);
+		throw std::out_of_range("Invalid input id");
 	return m_input_name[input_id];
 }
 
@@ -269,7 +224,7 @@ template<class T>
 const std::string abstract_component<T>::get_output_name(const unsigned int output_id) const
 {
 	if(output_id >= get_output_count())
-		throw invalid_id(output_id);
+		throw std::out_of_range("Invalid output id");
 	return m_output_name[output_id];
 }
 
@@ -278,15 +233,13 @@ void abstract_component<T>::connect_to(const unsigned int output_id, abstract_co
 {
 	abstract_frame<T> *const frame = get_frame();
 
-	if( frame == nullptr )
-		throw not_on_a_frame();
-	else if( frame != dst->get_frame() )
-		throw not_on_the_same_frame();
+	if( frame == nullptr || frame != dst->get_frame())
+		throw std::domain_error("Component are not on the same frame");
 
 	if( output_id >= get_output_count() )
-		throw invalid_id(output_id);
+		throw std::out_of_range("Invalid output id");
 	if( dst_input_id >= dst->get_input_count() )
-		throw invalid_id(dst_input_id);
+		throw std::out_of_range("Invalid input id");
 
 	m_component_subject.register_observer(&(dst->m_input[dst_input_id]));
 	dst->m_input[dst_input_id].set_src_output_id(output_id);
@@ -298,8 +251,9 @@ template<class T>
 void abstract_component<T>::disconnect_input(const unsigned int input_id)
 {
 	abstract_frame<T> *const frame = get_frame();
+
 	if( input_id >= get_input_count() )
-		throw invalid_id(input_id);
+		throw std::out_of_range("Invalid input id");
 
 	m_input[input_id].disconnect();
 
@@ -311,7 +265,7 @@ template<class T>
 abstract_component<T> *abstract_component<T>::get_input_src(const unsigned int input_id, unsigned int& output_id)
 {
 	if( input_id >= get_input_count() )
-		throw invalid_id(input_id);
+		throw std::out_of_range("Invalid input id");
 
 	output_id = m_input[input_id].get_src_output_id();
 	return m_input[input_id].get_subject_resource();
@@ -321,7 +275,7 @@ template<class T>
 abstract_component<T> *abstract_component<T>::get_input_src(const unsigned int input_id)
 {
 	if( input_id >= get_input_count() )
-		throw invalid_id(input_id);
+		throw std::out_of_range("Invalid input id");
 
 	return m_input[input_id].get_subject_resource();
 }
@@ -351,7 +305,7 @@ template<class T>
 void abstract_component<T>::set_input_name(const std::string& name, const unsigned int input_id)
 {
 	if( input_id >= get_input_count() )
-		throw invalid_id(input_id);
+		throw std::out_of_range("Invalid input id");
 	m_input_name[input_id] = name;
 }
 
@@ -359,7 +313,7 @@ template<class T>
 void abstract_component<T>::set_output_name(const std::string& name, const unsigned int output_id)
 {
 	if( output_id >= get_output_count() )
-		throw invalid_id(output_id);
+		throw std::out_of_range("Invalid output id");
 	m_output_name[output_id] = name;
 }
 
@@ -382,7 +336,7 @@ template<class T>
 void abstract_component<T>::pop_input()
 {
 	if( get_input_count() == 0 )
-		throw impossible_input_pop();
+		throw std::domain_error("No input to pop");
 	m_input.pop_back();
 	m_input_name.pop_back();
 }
@@ -404,7 +358,7 @@ template<class T>
 void abstract_component<T>::pop_output()
 {
 	if( get_output_count() == 0 )
-		throw impossible_input_pop();
+		throw std::domain_error("No output to pop");
 	m_output_name.pop_back();
 	m_component_subject.notify_observers(get_output_count());
 }

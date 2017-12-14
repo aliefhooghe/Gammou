@@ -2,7 +2,6 @@
 #define ABSTRACT_FRAME_H_
 
 #include "abstract_component.h"
-#include "link.h"
 
 
 #define FRAME_INITIAL_MEM 16
@@ -34,14 +33,14 @@ class abstract_frame{
 			return instruction(component, 0, 0, type::PROCESS);
 		}
 
-		void execute(std::vector<T>& memory) const
+		inline void execute(std::vector<T>& memory) const
 		{
-			if( m_type == type::FETCH_OUTPUT )
-				memory[m_mem_pos] = m_component->fetch_output(m_output_id);
-			else if( m_type == type::FETCH_DEFAULT )
-				memory[m_mem_pos] = T();
-			else
+			if( m_type == type::PROCESS )
 				m_component->process(memory.data());
+			else if( m_type == type::FETCH_OUTPUT )
+				memory[m_mem_pos] = m_component->fetch_output(m_output_id);
+			else
+				memory[m_mem_pos] = T();	
 		}
 
 		~instruction() {};
@@ -108,7 +107,7 @@ template<class T>
 void abstract_frame<T>::add_component(abstract_component<T> *component)
 {
 	if( component->get_frame() != nullptr)
-		return; // TODO throw exception
+		throw std::domain_error("Can't add component that is already on a frame");
 
 	m_link_monitor.register_observer(&(component->m_frame));
 }
@@ -116,7 +115,7 @@ void abstract_frame<T>::add_component(abstract_component<T> *component)
 template<class T>
 void abstract_frame<T>::initialize_components()
 {
-	for(typename std::vector<abstract_component<T>*>::iterator it = m_component_to_initialize.begin();
+	for(auto it = m_component_to_initialize.begin();
 			it != m_component_to_initialize.end(); ++it)
 		(*it)->initialize_process();
 }
