@@ -69,7 +69,7 @@ namespace Gammou {
 		bool movable_control::on_mouse_drag(const mouse_button button, const int x, const int y, const int dx, const int dy)
 		{
 			if (m_movable) {
-				const rectangle rect = get_rect()->translate(dx, dy);
+				const rectangle rect = get_absolute_rect().translate(dx, dy);
 				if (get_parent()->contains(rect)) {
 					set_rect(rect);
 					redraw_parent();
@@ -102,16 +102,15 @@ namespace Gammou {
 
 		void push_button::draw(cairo_t * cr)
 		{
-			cairo_text_extents_t te;
 			float offset;
 
 			if (m_pushed) {
 				cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-				offset = 3;
+				offset = 1.5;
 			}
 			else {
 				cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-				offset = 2;
+				offset = 1.0;
 			}
 
 			if (is_focused())
@@ -119,7 +118,7 @@ namespace Gammou {
 			else
 				cairo_helper::set_source_color(cr, cl_gainsboro);
 			
-			cairo_helper::rounded_rectangle(cr, offset / 2, offset / 2, get_width() - offset, get_height() - offset, offset);
+			cairo_helper::rounded_rectangle(cr, offset / 2, offset / 2, get_width() - offset, get_height() - offset, 2.0 * offset);
 			cairo_fill_preserve(cr);
 			cairo_helper::set_source_color(cr, cl_black);
 
@@ -128,10 +127,7 @@ namespace Gammou {
 			cairo_stroke(cr);
 
 			cairo_set_font_size(cr, m_font_size);
-			cairo_text_extents(cr, m_text.c_str(), &te);
-			cairo_move_to(cr, (get_width() - te.width) / 2,
-				(get_height() + te.height) / 2);
-			cairo_show_text(cr, m_text.c_str());
+			cairo_helper::show_centered_text(cr, get_relative_rect(), m_text.c_str());
 		}
 
 		bool push_button::on_mouse_drag_end(const mouse_button button, const int x, const int y)

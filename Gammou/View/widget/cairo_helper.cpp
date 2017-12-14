@@ -44,7 +44,8 @@ namespace Gammou {
 
 			void rounded_rectangle(cairo_t * cr, const rectangle & rect, const float radius)
 			{
-				rounded_rectangle(cr, rect.x, rect.y, rect.width, rect.height, radius);
+				rounded_rectangle(cr, static_cast<float>(rect.x), static_cast<float>(rect.y), 
+					static_cast<float>(rect.width), static_cast<float>(rect.height), radius);
 			}
 			
 			void rounded_rectangle(cairo_t * cr, const float x, const float y, const float width, const float height, const float radius)
@@ -61,6 +62,17 @@ namespace Gammou {
 			{
 				cairo_set_source_rgba(cr, float_red(c), float_green(c), 
 					float_blue(c), float_alpha(c));
+			}
+
+			void show_centered_text(cairo_t * cr, const rectangle & rect, const char * text)
+			{
+				cairo_text_extents_t te;
+
+				cairo_text_extents(cr, text, &te);
+				cairo_move_to(cr, rect.x + (rect.width - te.width) / 2,
+					rect.y + (rect.height + te.height) / 2);
+
+				cairo_show_text(cr, text);
 			}
 
 		}

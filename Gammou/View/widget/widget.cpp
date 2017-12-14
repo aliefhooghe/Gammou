@@ -9,12 +9,12 @@ namespace Gammou {
 
 	namespace View {
 		widget::widget(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height)
-			: m_parent(nullptr), m_rect(x, y, width, height) 
+			: m_parent(nullptr), m_absolute_rect(x, y, width, height) 
 		{
 		}
 
 		widget::widget(const rectangle & rect)
-			: m_parent(nullptr), m_rect(rect)
+			: m_parent(nullptr), m_absolute_rect(rect)
 		{
 		}
 
@@ -85,50 +85,50 @@ namespace Gammou {
 
 		bool widget::contains(const unsigned int px, const unsigned int py) const 
 		{
-			return m_rect.contains(px, py);
+			return m_absolute_rect.contains(px , py);
 		}
 
 		bool widget::contains(const rectangle & rect) const
 		{
-			return m_rect.contains(rect);
+			return m_absolute_rect.contains(rect);
 		}
 
 		unsigned int widget::get_x(void) const
 		{
-			return m_rect.x;
+			return m_absolute_rect.x;
 		}
 
 		unsigned int widget::get_y(void) const
 		{
-			return m_rect.y;
+			return m_absolute_rect.y;
 		}
 
 		unsigned int widget::get_width(void) const
 		{
-			return m_rect.width;
+			return m_absolute_rect.width;
 		}
 
 		unsigned int widget::get_height(void) const
 		{
-			return m_rect.height;
+			return m_absolute_rect.height;
 		}
 
-		const rectangle *widget::get_rect(void) const
+		const rectangle & widget::get_absolute_rect() const
 		{
-			return &m_rect;
+			return m_absolute_rect;
 		}
 
 		void widget::set_pos(const unsigned int x, const unsigned int y)
 		{
-			m_rect.x = x;
-			m_rect.y = y;
+			m_absolute_rect.x = x;
+			m_absolute_rect.y = y;
 			redraw();
 		}
 
 		void widget::resize(const unsigned int width, const unsigned int height)
 		{
-			m_rect.width = width;
-			m_rect.height = height;
+			m_absolute_rect.width = width;
+			m_absolute_rect.height = height;
 			redraw();
 		}
 
@@ -137,7 +137,7 @@ namespace Gammou {
 			//	TODO lever des exceptions
 			if( rect.x >= 0 && rect.y >= 0 
 				&& rect.width > 0 && rect.height > 0)
-				m_rect = rect;
+				m_absolute_rect = rect;
 			redraw();
 		}
 
@@ -152,9 +152,14 @@ namespace Gammou {
 			return m_parent;
 		}
 
+		const rectangle widget::get_relative_rect() const
+		{
+			return rectangle(0, 0, m_absolute_rect.width, m_absolute_rect.height);
+		}
+
 		void widget::redraw()
 		{
-			rectangle rect = m_rect;
+			rectangle rect = m_absolute_rect;
 
 			rect.x = (rect.x > RECT_REDRAW_SHIFT) ? (rect.x - RECT_REDRAW_SHIFT) : 0;
 			rect.y = (rect.y > RECT_REDRAW_SHIFT) ? (rect.y - RECT_REDRAW_SHIFT) : 0;

@@ -16,6 +16,7 @@ namespace Gammou {
 			friend class panel;
 
 		public:
+			//	x,y in parent coordinate system
 			widget(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height);
 			widget(const rectangle& rect);
 			virtual ~widget();
@@ -24,7 +25,7 @@ namespace Gammou {
 			unsigned int get_y(void) const;
 			unsigned int get_width(void) const;
 			unsigned int get_height(void) const;
-			const rectangle *get_rect(void) const;
+			const rectangle& get_absolute_rect() const;
 
 			virtual bool contains(const unsigned int px, const unsigned int py) const;
 			virtual bool contains(const rectangle& rect) const;
@@ -32,6 +33,7 @@ namespace Gammou {
 			virtual void redraw();
 
 		protected:
+			// x and y in widget coordinate system after this line
 			virtual bool on_key_up(const keycode key);
 			virtual bool on_key_down(const keycode key);
 
@@ -57,10 +59,11 @@ namespace Gammou {
 
 			void redraw_parent();
 			panel *get_parent();
+			const rectangle get_relative_rect() const;
 			
 		private:
 			panel *m_parent;
-			rectangle m_rect;
+			rectangle m_absolute_rect;
 		};
 
 	} /* View */

@@ -35,6 +35,8 @@ namespace Gammou {
 			
 			void set_source_color(cairo_t *cr, const color c);
 
+			void show_centered_text(cairo_t *cr, const rectangle& rect, const char *text);
+
 		}	/* cairo_helper */
 
 		
