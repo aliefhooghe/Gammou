@@ -2,7 +2,6 @@
 #define PROCESS_H_
 
 
-
 #include "link.h"
 
 #include "abstract_component.h"
