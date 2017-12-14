@@ -8,7 +8,7 @@
 #ifndef SOUND_MODULE_MANAGER_H_
 #define SOUND_MODULE_MANAGER_H_
 
-#include "process.h"
+#include "gammou_process.h"
 
 namespace Gammou {
 

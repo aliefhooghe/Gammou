@@ -2,7 +2,7 @@
 #define PROCESS_H_
 
 
-#include "link.h"
+#include "observer.h"
 
 #include "abstract_component.h"
 #include "abstract_frame.h"

@@ -32,7 +32,7 @@ namespace Gammou {
 			switch( output_id ) {
 
 			case Input::GATE:
-				return (double)(m_gate_state[channel]);
+				return static_cast<double>(m_gate_state[channel]);
 				break;
 
 			case Input::PITCH:
@@ -53,7 +53,7 @@ namespace Gammou {
 
 		void polyphonic_circuit_GPAR_input::set_channel_gate_state(const unsigned int channel, const bool state)
 		{
-			m_gate_state[channel] = (state? 1.0 : 0.0);
+			m_gate_state[channel] = state;
 		}
 
 		void polyphonic_circuit_GPAR_input::set_channel_pitch(const unsigned int channel, const double pitch)

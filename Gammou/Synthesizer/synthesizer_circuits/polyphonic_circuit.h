@@ -3,7 +3,7 @@
 
 
 #include <vector>
-#include "process.h"
+#include "gammou_process.h"
 #include "../sound_component/sound_component.h"
 
 
@@ -15,7 +15,7 @@ namespace Gammou {
 
 		class polyphonic_circuit_GPAR_input : public abstract_sound_component {
 
-			enum Input {GATE = 0, PITCH = 1, ATTACK_VELOCITY = 2, RELEASE_VELOCITY = 3, COUNT = 4};
+			enum Input : unsigned int {GATE = 0, PITCH = 1, ATTACK_VELOCITY = 2, RELEASE_VELOCITY = 3, COUNT = 4};
 
 		public:
 			polyphonic_circuit_GPAR_input(const unsigned int channel_count);

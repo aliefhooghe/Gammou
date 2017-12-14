@@ -80,7 +80,7 @@ namespace Gammou {
 			unsigned int m_channel_zero_lifetime; // No const (set_sample rate)
 
 			// Channel note
-			std::vector<char> m_channels_midi_note;
+			std::vector<unsigned char> m_channels_midi_note;
 
 			static const double m_note_frequencies[127];
 		};

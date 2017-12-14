@@ -152,7 +152,7 @@ namespace Gammou {
 				// todo touver une solution !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				// todo touver une solution !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 					abstract_component<T> *src_component[16];  	// <- !!!!!!!!!!!!!!!!!
-					unsigned int src_output_id[ic];
+					unsigned int src_output_id[16];
 
 					//	Update memory size if needed
 					if( ic > m_program_memory.size() )

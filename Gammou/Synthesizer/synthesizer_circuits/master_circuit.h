@@ -1,7 +1,7 @@
 #ifndef MASTER_CIRCUIT_H_
 #define MASTER_CIRCUIT_H_
 
-#include "process.h"
+#include "gammou_process.h"
 #include "../sound_component/sound_component.h"
 
 
