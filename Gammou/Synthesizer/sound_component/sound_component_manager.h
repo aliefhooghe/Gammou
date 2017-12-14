@@ -8,39 +8,41 @@
 #ifndef SOUND_MODULE_MANAGER_H_
 #define SOUND_MODULE_MANAGER_H_
 
-#include "../../process/observer.h"
+#include "../../Process/observer.h"
 
-namespace gammou{
+namespace Gammou {
 
-class abstract_sound_component;
+	namespace Sound {
 
-enum class sound_component_notification_tag {CHANNEL_CHANGE_NOTIFY, SAMPLE_RATE_NOTIFY};
+		class abstract_sound_component;
 
-class sound_component_manager : public process::subject<sound_component_manager, sound_component_notification_tag> {
+		enum class sound_component_notification_tag {CHANNEL_CHANGE_NOTIFY, SAMPLE_RATE_NOTIFY};
 
-public:
-	//enum class notification_tag ;
+		class sound_component_manager : public Process::subject<sound_component_manager, sound_component_notification_tag> {
 
-	sound_component_manager(const unsigned int channel_count);  // securité a prevoir >0
-	~sound_component_manager();
+		public:
+			//enum class notification_tag ;
 
-	unsigned int get_channel_count() const;
-	unsigned int get_current_working_channel() const;
-	double get_current_sample_rate() const;
+			sound_component_manager(const unsigned int channel_count);  // securité a prevoir >0
+			~sound_component_manager();
 
-	void set_current_working_channel(const unsigned int channel);
-	void set_current_samplerate(const double sample_rate);
+			unsigned int get_channel_count() const;
+			unsigned int get_current_working_channel() const;
+			double get_current_sample_rate() const;
 
-private:
-	const unsigned int m_channel_count;
-	unsigned int m_current_working_channel;
-	double m_current_sample_rate;
-};
+			void set_current_working_channel(const unsigned int channel);
+			void set_current_samplerate(const double sample_rate);
+
+		private:
+			const unsigned int m_channel_count;
+			unsigned int m_current_working_channel;
+			double m_current_sample_rate;
+		};
 
 
+	} /* Sound */
 
-
-}
+} /* Gammou */
 
 
 
