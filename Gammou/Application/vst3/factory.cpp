@@ -4,7 +4,7 @@
 #include "pluginterfaces/vst/ivstaudioprocessor.h"
 
 
-#include "plugin.h"
+#include "vst3_plugin.h"
 
 #define stringPluginName "Gammou"
 

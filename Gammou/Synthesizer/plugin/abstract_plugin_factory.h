@@ -5,7 +5,7 @@
 namespace Gammou {
 
     namespace Sound {
-
+		/*
         class abstract_plugin_factory{
 
         public:
@@ -15,7 +15,7 @@ namespace Gammou {
         private:
 
         };
-
+		*/
     } /* Sound */
 
 } /* Gammou */
