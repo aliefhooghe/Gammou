@@ -115,17 +115,16 @@ namespace Gammou {
 			}
 
 			if (is_focused())
-				cairo_set_source_rgb(cr, 0.83, 0.86, 0.9);
+				cairo_helper::set_source_color(cr, cl_lightblue);
 			else
-				cairo_set_source_rgb(cr, 1, 1, 1.0);
+				cairo_helper::set_source_color(cr, cl_gainsboro);
 			
 			cairo_helper::rounded_rectangle(cr, offset / 2, offset / 2, get_width() - offset, get_height() - offset, offset);
-			cairo_fill(cr);
-			cairo_set_source_rgb(cr, 0, 0, 0);
+			cairo_fill_preserve(cr);
+			cairo_helper::set_source_color(cr, cl_black);
 
 			cairo_set_line_width(cr, offset);
 			cairo_set_line_join(cr, CAIRO_LINE_JOIN_ROUND);
-			cairo_helper::rounded_rectangle(cr, offset / 2, offset / 2, get_width() - offset, get_height() - offset, offset);
 			cairo_stroke(cr);
 
 			cairo_set_font_size(cr, m_font_size);

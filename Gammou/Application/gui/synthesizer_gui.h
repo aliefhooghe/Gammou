@@ -20,15 +20,15 @@ namespace Gammou {
 				add_widget(square);
 
 
-				add_widget(new View::push_button([&] { set_background_color(View::create_color(0.78f, 0.95f, 0.86f)); }, "BOUTON", 100, 50));
-				add_widget(new View::push_button([&] { set_background_color(View::create_color(0.95f, 0.78f, 0.86f)); }, "BOUTON", 150, 100));
-				add_widget(new View::push_button([&] { set_background_color(View::create_color(0.78f, 0.86f, 0.95f)); }, "BOUTON", 200, 150));
-				add_widget(new View::push_button([&] { set_background_color(View::create_color(0.95f, 0.86f, 0.78f)); }, "BOUTON", 250, 200));
-				add_widget(new View::push_button([&] { set_background_color(View::create_color(0.86f, 0.95f, 0.78f)); }, "BOUTON", 300, 250));
-				add_widget(new View::push_button([&] { set_background_color(View::create_color(0.86f, 0.78f, 0.95f)); }, "BOUTON", 350, 300));
+				add_widget(new View::push_button([&] { set_background_color(View::cl_peru); }, "BOUTON", 100, 50));
+				add_widget(new View::push_button([&] { set_background_color(View::cl_bisque); }, "BOUTON", 150, 100));
+				add_widget(new View::push_button([&] { set_background_color(View::cl_coral); }, "BOUTON", 200, 150));
+				add_widget(new View::push_button([&] { set_background_color(View::cl_beige); }, "BOUTON", 250, 200));
+				add_widget(new View::push_button([&] { set_background_color(View::cl_chocolate); }, "BOUTON", 300, 250));
+				add_widget(new View::push_button([&] { set_background_color(View::cl_aquamarine); }, "BOUTON", 350, 300));
 
 
-				add_widget(new View::push_button([&] { set_background_color(View::create_color(0.45f, 0.45f, 0.02f)); }, "Clement", 10, 200, 70, 70, 15));
+				add_widget(new View::push_button([&] { set_background_color(View::cl_cornsilk); }, "Clement", 10, 200, 70, 70, 15));
 			}
 			
 			~synthesizer_gui() 
