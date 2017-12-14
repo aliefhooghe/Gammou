@@ -235,12 +235,12 @@ namespace Gammou {
 		{
 			abstract_frame<T> *const frame = get_frame();
 
-			if( frame == nullptr || frame != dst->get_frame())
+			if (frame == nullptr || frame != dst->get_frame())
 				throw std::domain_error("Component are not on the same frame");
 
-			if( output_id >= get_output_count() )
+			if (output_id >= get_output_count() )
 				throw std::out_of_range("Invalid output id");
-			if( dst_input_id >= dst->get_input_count() )
+			if (dst_input_id >= dst->get_input_count() )
 				throw std::out_of_range("Invalid input id");
 
 			m_component_subject.register_observer(&(dst->m_input[dst_input_id]));
@@ -254,19 +254,19 @@ namespace Gammou {
 		{
 			abstract_frame<T> *const frame = get_frame();
 
-			if( input_id >= get_input_count() )
+			if (input_id >= get_input_count() )
 				throw std::out_of_range("Invalid input id");
 
 			m_input[input_id].disconnect();
 
-			if( frame != nullptr )
+			if (frame != nullptr )
 				frame->notify_circuit_change();
 		}
 
 		template<class T>
 		abstract_component<T> *abstract_component<T>::get_input_src(const unsigned int input_id, unsigned int& output_id)
 		{
-			if( input_id >= get_input_count() )
+			if (input_id >= get_input_count() )
 				throw std::out_of_range("Invalid input id");
 
 			output_id = m_input[input_id].get_src_output_id();

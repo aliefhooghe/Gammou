@@ -148,7 +148,7 @@ namespace Gammou {
 		void polyphonic_circuit::add_sound_component(abstract_sound_component *component)
 		{
 
-			if (component->get_channel_count() != get_channel_count())
+			if (component->get_channel_count() != m_sound_component_manager.get_channel_count())
 				throw std::domain_error("Component's channel count does not fit");
 
 			add_component(component);

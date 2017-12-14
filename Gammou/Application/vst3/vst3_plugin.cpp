@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cmath>
 
-#include "plugin.h"
+#include "vst3_plugin.h"
 
 #include <Windows.h>
 
@@ -97,7 +97,7 @@ namespace Gammou {
 			if (data.numOutputs == 0)
 				return Steinberg::kResultOk;
 
-			//	No Silent flag 
+			//	No Silent flag
 			data.outputs[0].silenceFlags = 0;
 
 			const unsigned int nbSamples = data.numSamples;
@@ -146,7 +146,7 @@ namespace Gammou {
 		}
 
 
-	
+
 	} /*  Vst */
 
 
