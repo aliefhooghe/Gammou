@@ -1,7 +1,7 @@
 #ifndef MASTER_CIRCUIT_H_
 #define MASTER_CIRCUIT_H_
 
-#include "../../Process/process.h"
+#include "process.h"
 #include "../sound_component/sound_component.h"
 
 

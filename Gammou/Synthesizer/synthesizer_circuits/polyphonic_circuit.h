@@ -3,7 +3,7 @@
 
 
 #include <vector>
-#include "../../Process/process.h"
+#include "process.h"
 #include "../sound_component/sound_component.h"
 
 

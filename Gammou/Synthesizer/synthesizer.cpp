@@ -1,6 +1,6 @@
 #include <numeric>
 #include "synthesizer.h"
-#include<iostream>
+#include <iostream>
 
 namespace Gammou {
 
