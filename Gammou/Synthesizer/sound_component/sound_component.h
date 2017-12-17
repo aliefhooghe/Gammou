@@ -52,6 +52,9 @@ namespace Gammou {
 		};
 
 
+
+		////-///
+
 		class sound_component : public abstract_sound_component {
 
 		public:
@@ -62,6 +65,8 @@ namespace Gammou {
 					const unsigned int channel_count);
 			virtual ~sound_component();
 
+
+			//	not virtual : if another behaviour is needed, inherit from abstract_sound_component
 			double fetch_output(const unsigned int output_id) override;
 		protected:
 			multi_channel_array<double> m_output;
