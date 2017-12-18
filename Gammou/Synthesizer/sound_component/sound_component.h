@@ -6,6 +6,8 @@
 
 #include "sound_component_manager.h"
 #include "multi_channel_data_container.h"
+#include "../plugin/data_stream.h"
+
 /*
  * 		Channels data types
  */
@@ -38,6 +40,9 @@ namespace Gammou {
 			unsigned int get_channel_count() const;
 			unsigned int get_current_working_channel() const;
 			virtual void on_sample_rate_change() {};
+
+			unsigned int get_factory_id() const;
+			virtual unsigned int save_state(data_destination& data) {};
 
 		protected:
 			void on_notify(const sound_component_notification_tag notification_tag) override;

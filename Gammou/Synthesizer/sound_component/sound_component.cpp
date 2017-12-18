@@ -37,6 +37,11 @@ namespace Gammou {
 			return m_current_working_channel;
 		}
 
+		unsigned int abstract_sound_component::get_factory_id() const
+		{
+			return m_factory_id;
+		}
+
 		void abstract_sound_component::on_notify(const sound_component_notification_tag notification_tag)
 		{
 			sound_component_manager *manager = get_subject_resource();

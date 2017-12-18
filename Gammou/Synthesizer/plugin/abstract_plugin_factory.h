@@ -3,6 +3,7 @@
 
 #include "request_form.h"
 #include "../sound_component/sound_component.h"
+#include "data_stream.h"
 
 namespace Gammou {
 
@@ -15,9 +16,12 @@ namespace Gammou {
 			virtual ~abstract_plugin_factory() {}
 
 			const request_form_descriptor& get_request_form() const;
+			
+			virtual abstract_sound_component *create_module(data_source& source) = 0;
+			virtual abstract_sound_component *create_module(const answer_form_descriptor& answer) = 0;
 
-			// todo : peut etre du unique ptr ??
-			virtual abstract_sound_component *create_module(const answer_form_descriptor& answer) =0;
+			unsigned int get_factory_id() const;
+			void delete_sound_component(abstract_sound_component *component) const;
 
 		protected:
 			void stamp_sound_component(abstract_sound_component *component) const;
