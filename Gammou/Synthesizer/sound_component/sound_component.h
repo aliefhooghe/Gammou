@@ -17,12 +17,14 @@ namespace Gammou {
 		// Todo verifier tout ca 
 		constexpr double DEFAULT_SAMPLE_RATE = 44100.0;		
 		constexpr double DEFAULT_SAMPLE_DURATION = 1.0 / DEFAULT_SAMPLE_RATE;
+		constexpr unsigned int NO_FACTORY = 0xFFFFFFFF;
 
 
 		class abstract_sound_component : public Process::abstract_component<double>, 
 											public Process::observer<sound_component_manager, sound_component_notification_tag> {
 
 			friend class multi_channel_data;
+			friend class abstract_plugin_factory;
 
 		public:
 			abstract_sound_component(
@@ -49,6 +51,7 @@ namespace Gammou {
 
 			double m_sample_rate;
 			double m_sample_duration;
+			unsigned int m_factory_id;
 		};
 
 

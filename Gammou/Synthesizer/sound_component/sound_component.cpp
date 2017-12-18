@@ -16,7 +16,8 @@ namespace Gammou {
 				m_channels_count(channel_count),
 				m_current_working_channel(0),
 				m_sample_rate(DEFAULT_SAMPLE_RATE),
-				m_sample_duration(DEFAULT_SAMPLE_DURATION)
+				m_sample_duration(DEFAULT_SAMPLE_DURATION),
+				m_factory_id(NO_FACTORY)
 		{
 
 		}
