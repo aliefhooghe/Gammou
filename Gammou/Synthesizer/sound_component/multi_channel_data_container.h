@@ -48,7 +48,7 @@ namespace Gammou {
 			virtual ~multi_channel_variable() {}
 
 			T operator =(const T& value);
-			operator T();
+			operator T&();
 
 		protected:
 			std::vector<T> m_data;
@@ -68,7 +68,7 @@ namespace Gammou {
 		}
 
 		template<class T>
-		multi_channel_variable<T>::operator T()
+		inline multi_channel_variable<T>::operator T&()
 		{
 			return m_data[get_current_working_channel()];
 		}

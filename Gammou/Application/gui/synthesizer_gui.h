@@ -6,7 +6,7 @@
 
 namespace Gammou {
 
-	namespace Vst {
+	namespace Gui {
 
 		class synthesizer_gui : public View::generic_window {
 

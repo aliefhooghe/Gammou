@@ -72,25 +72,22 @@ namespace Gammou {
 		}
 
 
+
+
 		/*
 		*
 		*/
 
-		polyphonic_circuit_output::polyphonic_circuit_output(const unsigned int output_count)
-			: Process::abstract_component<double>("Output", output_count, 0),
-			m_buffer_ptr(nullptr), m_last_out_was_zero(false)
+		polyphonic_circuit_output::polyphonic_circuit_output(std::vector<double>& output_buffer)
+			: 
+			Process::abstract_component<double>("Output", output_buffer.size(), 0),
+			m_buffer_ptr(output_buffer.data()),
+			m_last_out_was_zero(false)
 		{
-
-		}
-
-		void polyphonic_circuit_output::set_buffer_ptr(double buffer[])
-		{
-			m_buffer_ptr = buffer;
 		}
 
 		void polyphonic_circuit_output::process(const double input[])
 		{
-			m_last_out_was_zero = true;
 
 			if( m_buffer_ptr != nullptr ){
 				const unsigned int ic = get_input_count();
@@ -114,35 +111,18 @@ namespace Gammou {
 		*
 		*/
 
-
-		polyphonic_circuit::polyphonic_circuit(const unsigned int channel_count,
-				const unsigned int master_to_polyphonic_output_count,
-				const unsigned int automation_input_count,
-				const unsigned int output_to_master_count,
-				double output_to_master_buffer[],
-				const double automation_buffer[],
-				const double master_to_polyphonic_buffer[])
-			: m_gpar_input(channel_count),
-			m_input_from_master("From Master", master_to_polyphonic_output_count),
-			m_automation_input("Automation", automation_input_count),
-			m_output_to_master(output_to_master_count),
+		polyphonic_circuit::polyphonic_circuit(master_circuit * master, const unsigned int channel_count)
+			:
+			m_gpar_input(channel_count),
+			m_input_from_master("From Master", master->m_master_to_polyphonic_buffer),
+			m_automation_input("Automation", master->m_automation_buffer),
+			m_output_to_master(master->m_polyphonic_to_master_buffer),
 			m_sound_component_manager(channel_count)
 		{
-			add_component(&m_gpar_input);
-			add_component(&m_input_from_master);
-			add_component(&m_automation_input);
-			add_component(&m_output_to_master);
-
-			m_sound_component_manager.register_observer(&m_gpar_input);
-
-			m_output_to_master.set_buffer_ptr(output_to_master_buffer);
-			m_automation_input.set_input_buffer_ptr(automation_buffer);
-			m_input_from_master.set_input_buffer_ptr(master_to_polyphonic_buffer);
 		}
 
 		polyphonic_circuit::~polyphonic_circuit()
 		{
-
 		}
 
 		void polyphonic_circuit::add_sound_component(abstract_sound_component *component)
@@ -163,6 +143,7 @@ namespace Gammou {
 		bool polyphonic_circuit::process(const unsigned int channel)
 		{
 			m_sound_component_manager.set_current_working_channel(channel);
+			m_output_to_master.reset_zero_flag();
 			execute_program();
 			return (m_output_to_master.last_out_was_zero());
 		}
@@ -199,26 +180,6 @@ namespace Gammou {
 			make_component_current_cycle_program(&m_output_to_master);
 		}
 
-		Process::abstract_component<double> *polyphonic_circuit::get_gpar_input()
-		{
-			return &m_gpar_input;
-		}
-
-		Process::abstract_component<double> *polyphonic_circuit::get_master_input()
-		{
-			return &m_input_from_master;
-		}
-
-		Process::abstract_component<double> *polyphonic_circuit::get_automation_input()
-		{
-			return &m_automation_input;
-		}
-
-		Process::abstract_component<double> *polyphonic_circuit::get_output()
-		{
-			return &m_output_to_master;
-		}
-
-	} /* Sound */
+} /* Sound */
 
 }	/* Gammou */

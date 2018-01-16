@@ -9,17 +9,27 @@ namespace Gammou {
 
 
 		template<class T>
-		class buffer_sum_component : public abstract_component<T> {
+		class vector_sum_component : public abstract_component<T> {
 
 		public:
-			buffer_sum_component(const unsigned int buffer_size)
-				: abstract_component<T>("Output", buffer_size, 0),
-				m_buffer_ptr(nullptr)
+			vector_sum_component(const unsigned int buffer_size, T *buffer = nullptr)
+				: abstract_component<T>("Vector Sum Output", buffer_size, 0),
+				m_buffer_ptr(buffer)
 			{}
 
-			buffer_sum_component(const std::string& name, const unsigned int buffer_size)
+			vector_sum_component(const std::string& name, const unsigned int buffer_size, T *buffer = nullptr)
 				: abstract_component<T>(name, buffer_size, 0),
-				m_buffer_ptr(nullptr)
+				m_buffer_ptr(buffer)
+			{}
+
+			vector_sum_component(std::vector<T>& buffer)
+				: abstract_component<T>("Vector Sum Output", static_cast<unsigned int>(buffer.size()), 0),
+				m_buffer_ptr(buffer.data())
+			{}
+
+			vector_sum_component(const std::string& name, std::vector<T>& buffer)
+				: abstract_component<T>(name, static_cast<unsigned int>(buffer.size()), 0),
+				m_buffer_ptr(buffer.data())
 			{}
 
 

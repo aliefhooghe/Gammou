@@ -61,7 +61,7 @@ namespace Gammou {
 
 		unsigned int request_form_descriptor::get_request_count() const
 		{
-			return m_index.size();
+			return static_cast<unsigned int>(m_index.size());
 		}
 
 		void request_form_descriptor::add_file_request(const std::string & name, const std::string & description, const std::string & ext)

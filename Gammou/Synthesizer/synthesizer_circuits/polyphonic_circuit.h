@@ -5,7 +5,7 @@
 #include <vector>
 #include "gammou_process.h"
 #include "../sound_component/sound_component.h"
-
+#include "master_circuit.h"
 
 namespace Gammou {
 
@@ -36,17 +36,16 @@ namespace Gammou {
 			std::vector<double> m_release_velocity;
 		};
 
-
 		class polyphonic_circuit_output : public Process::abstract_component<double> {
 
 		public:
-			polyphonic_circuit_output(const unsigned int output_count);
+			polyphonic_circuit_output(std::vector<double>& output_buffer);
 			~polyphonic_circuit_output() {};
 
-
-			void set_buffer_ptr(double buffer[]);
-			void process(const double input[]);
-			double fetch_output(const unsigned int output_id) {return 0.0;}  // a stub
+			void process(const double input[]) override;
+			double fetch_output(const unsigned int output_id) override {return 0.0;}  // a stub
+			
+			inline void reset_zero_flag() { m_last_out_was_zero = true;  }
 			bool last_out_was_zero() const;
 
 		private:
@@ -57,19 +56,17 @@ namespace Gammou {
 
 
 		/*
-		* 	input : pitch, attack, release, c0, ...., cn
-		*/
+		 *
+		 */
 
 		class polyphonic_circuit : private Process::abstract_frame<double> {
 
+			friend class synthesizer;
+
 		public:
-			polyphonic_circuit(const unsigned int channel_count,
-					const unsigned int master_to_polyphonic_output_count,
-					const unsigned int automation_input_count,
-					const unsigned int output_to_master_count,
-					double output_to_master_buffer[],
-					const double automation_buffer[],
-					const double master_to_polyphonic_buffer[]);
+			polyphonic_circuit(
+				master_circuit *master,
+				const unsigned int channel_count);
 			~polyphonic_circuit();
 
 			void add_sound_component(abstract_sound_component *component);
@@ -84,16 +81,12 @@ namespace Gammou {
 			void set_channel_attack_velocity(const unsigned int channel, const double velocity);
 			void set_channel_release_velocity(const unsigned int channel, const double velocity);
 
-			Process::abstract_component<double> *get_gpar_input();
-			Process::abstract_component<double> *get_master_input();
-			Process::abstract_component<double> *get_automation_input();
-			Process::abstract_component<double> *get_output();
-
 		private:
 			void notify_circuit_change() override;
+
 			polyphonic_circuit_GPAR_input m_gpar_input;
-			Process::buffer_fetcher_component<double> m_input_from_master;
-			Process::buffer_fetcher_component<double> m_automation_input;
+			Process::vector_fetcher_component<double> m_input_from_master;
+			Process::vector_fetcher_component<double> m_automation_input;
 			polyphonic_circuit_output m_output_to_master;
 			sound_component_manager m_sound_component_manager;
 		};

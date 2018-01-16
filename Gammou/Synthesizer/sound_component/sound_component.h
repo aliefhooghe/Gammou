@@ -1,7 +1,6 @@
 #ifndef SOUD_MODULE_H_
 #define SOUD_MODULE_H_
 
-
 #include "gammou_process.h"
 
 #include "sound_component_manager.h"
@@ -42,7 +41,7 @@ namespace Gammou {
 			virtual void on_sample_rate_change() {};
 
 			unsigned int get_factory_id() const;
-			virtual unsigned int save_state(data_destination& data) {};
+			virtual unsigned int save_state(data_destination& data) { return 0; };
 
 		protected:
 			void on_notify(const sound_component_notification_tag notification_tag) override;

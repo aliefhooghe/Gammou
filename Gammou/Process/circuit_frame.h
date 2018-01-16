@@ -32,8 +32,8 @@ namespace Gammou {
 			void set_input_name(const std::string& name, const unsigned int input_id);
 			void set_output_name(const std::string& name, const unsigned int output_id);
 		private:
-			buffer_fetcher_component<T> m_input;
-			buffer_filler_component<T> m_output;
+			vector_fetcher_component<T> m_input;
+			vector_filler_component<T> m_output;
 
 		};
 

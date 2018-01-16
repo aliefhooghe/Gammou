@@ -9,21 +9,30 @@ namespace Gammou {
 	namespace Process{
 
 		template<class T>
-		class buffer_filler_component: public abstract_component<T> {
+		class vector_filler_component: public abstract_component<T> {
 
 		public:
-			buffer_filler_component(const unsigned int frame_output_count) :
-					abstract_component<T>("Output", frame_output_count, 0),
-					m_output_pointer(nullptr)
+			vector_filler_component(const unsigned int buffer_size, T *buffer = nullptr) :
+					abstract_component<T>("Vector Output", buffer_size, 0),
+					m_output_pointer(buffer)
 			{}
 
-			buffer_filler_component(const std::string& name, const unsigned int frame_output_count) :
-						abstract_component<T>(name, frame_output_count, 0),
-						m_output_pointer(nullptr)
+			vector_filler_component(const std::string& name, const unsigned int buffer_size, T *buffer = nullptr) :
+						abstract_component<T>(name, buffer_size, 0),
+						m_output_pointer(buffer)
 			{}
 
-			~buffer_filler_component() {
-			}
+			vector_filler_component(std::vector<T>& buffer) :
+				abstract_component<T>("Vector Output", static_cast<unsigned int>(buffer.size()), 0),
+				m_output_pointer(buffer.data())
+			{}
+
+			vector_filler_component(const std::string& name, std::vector<T>& buffer) :
+				abstract_component<T>(name, static_cast<unsigned int>(buffer.size()), 0),
+				m_output_pointer(buffer.data())
+			{}
+
+			~vector_filler_component() {}
 
 			void set_output_pointer(T *output_pointer) {
 				m_output_pointer = output_pointer;

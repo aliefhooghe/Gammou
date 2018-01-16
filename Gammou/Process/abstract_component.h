@@ -65,9 +65,9 @@ namespace Gammou {
 			const unsigned int get_input_count() const noexcept;
 			const unsigned int get_output_count() const noexcept;
 
-			const std::string get_name() const noexcept;
-			const std::string get_input_name(const unsigned int input_id) const;
-			const std::string get_output_name(const unsigned int output_id) const;
+			const std::string& get_name() const noexcept;
+			const std::string& get_input_name(const unsigned int input_id) const;
+			const std::string& get_output_name(const unsigned int output_id) const;
 
 			void connect_to(const unsigned int output_id, abstract_component<T>* dst,
 					const unsigned int dst_input_id);
@@ -79,7 +79,6 @@ namespace Gammou {
 			virtual T fetch_output(const unsigned int output_id) =0;
 			virtual void process(const T input[]) =0;
 			virtual void initialize_process() {};
-
 
 		protected:
 			abstract_component<T> *get_input_src(const unsigned int input_id,
@@ -209,13 +208,13 @@ namespace Gammou {
 		}
 
 		template<class T>
-		const std::string abstract_component<T>::get_name() const noexcept
+		const std::string& abstract_component<T>::get_name() const noexcept
 		{
 			return m_name;
 		}
 
 		template<class T>
-		const std::string abstract_component<T>::get_input_name(const unsigned int input_id) const
+		const std::string& abstract_component<T>::get_input_name(const unsigned int input_id) const
 		{
 			if(input_id >= get_input_count())
 				throw std::out_of_range("Invalid input id");
@@ -223,7 +222,7 @@ namespace Gammou {
 		}
 
 		template<class T>
-		const std::string abstract_component<T>::get_output_name(const unsigned int output_id) const
+		const std::string& abstract_component<T>::get_output_name(const unsigned int output_id) const
 		{
 			if(output_id >= get_output_count())
 				throw std::out_of_range("Invalid output id");

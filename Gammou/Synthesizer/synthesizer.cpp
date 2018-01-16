@@ -16,31 +16,25 @@ namespace Gammou {
 									const unsigned int main_output_count,
 									const unsigned int channel_count,
 									const unsigned int automation_count,
-									const double automation_buffer[],
 									const unsigned int master_to_polyphonic_count,
 									const unsigned int polyphonic_to_master_count,
-									const unsigned int channel_zero_lifetime)
-			: m_master_to_polyphonic_buffer(master_to_polyphonic_count),
-			m_polyphonic_to_master_buffer(polyphonic_to_master_count),
-			m_polyphonic_circuit(channel_count,
-								master_to_polyphonic_count,
-								automation_count,
-								polyphonic_to_master_count,
-								m_polyphonic_to_master_buffer.data(),
-								automation_buffer,
-								m_master_to_polyphonic_buffer.data()),
-			m_master_circuit(master_to_polyphonic_count,
-					automation_count, main_input_count,
-					main_output_count, polyphonic_to_master_count,
-					m_master_to_polyphonic_buffer.data(),
-					m_polyphonic_to_master_buffer.data(),
-					automation_buffer),
+									const unsigned int sample_rate,
+									const float channel_zero_lifetime)
+			:
+			m_master_circuit(
+				master_to_polyphonic_count, 
+				automation_count, main_input_count,
+				main_output_count, 
+				polyphonic_to_master_count),
+			m_polyphonic_circuit(&m_master_circuit, channel_count),
 			m_channels(channel_count),
 			m_running_channels_end(m_channels.begin()),
 			m_channels_lifetime(channel_count),
-			m_channel_zero_lifetime(channel_zero_lifetime),
+			m_channel_zero_lifetime(sample_rate * channel_zero_lifetime),
 			m_channels_midi_note(channel_count)
 		{
+			m_master_circuit.set_sample_rate(sample_rate);
+			m_polyphonic_circuit.set_sample_rate(sample_rate);
 			std::iota(m_channels.begin(), m_channels.end(), 0u);
 		}
 
@@ -51,12 +45,15 @@ namespace Gammou {
 
 		void synthesizer::process(const double input[], double output[])
 		{
-			std::fill(m_polyphonic_to_master_buffer.begin(),
-					m_polyphonic_to_master_buffer.end(), 0.0);
+			std::fill(m_master_circuit.m_polyphonic_to_master_buffer.begin(),
+				m_master_circuit.m_polyphonic_to_master_buffer.end(), 0.0);
+
 
 
 			for(auto it = m_channels.begin(); it != m_running_channels_end; ){
 				const unsigned int current_channel = *it;
+
+
 
 				if( m_polyphonic_circuit.process(current_channel)){
 					// Output == Zero for this channel
@@ -67,6 +64,7 @@ namespace Gammou {
 						free_channel(it);
 						continue;
 					}
+
 				}
 				else{
 					m_channels_lifetime[current_channel] = m_channel_zero_lifetime;
@@ -93,9 +91,12 @@ namespace Gammou {
 				m_polyphonic_circuit.set_channel_attack_velocity(channel, velocity);
 				m_polyphonic_circuit.set_channel_gate_state(channel, true);
 				// default value (avoid undetermined component behavior)
-				m_polyphonic_circuit.set_channel_release_velocity(channel, 1.0);
+				m_polyphonic_circuit.set_channel_release_velocity(channel, 0.5);
 
 				m_channels_lifetime[channel] = m_channel_zero_lifetime;
+			}
+			else {
+				DEBUG_PRINT("No more channel\n");
 			}
 
 			// Else do nothing
@@ -128,53 +129,59 @@ namespace Gammou {
 			m_polyphonic_circuit.add_sound_component(component);
 		}
 
+		void synthesizer::set_sample_rate(const double sample_rate)
+		{
+			m_master_circuit.set_sample_rate(sample_rate);
+			m_polyphonic_circuit.set_sample_rate(sample_rate);
+		}
+
 		// polyphonic_circuit_ component
 
 		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_gpar_input()
 		{
-			return m_polyphonic_circuit.get_gpar_input();
+			return &(m_polyphonic_circuit.m_gpar_input);
 		}
 
 		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_master_input()
 		{
-			return m_polyphonic_circuit.get_master_input();
+			return &(m_polyphonic_circuit.m_input_from_master);
 		}
 
 		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_automation_input()
 		{
-			return m_polyphonic_circuit.get_automation_input();
+			return &(m_polyphonic_circuit.m_automation_input);
 		}
 
 		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_output()
 		{
-			return m_polyphonic_circuit.get_output();
+			return &(m_polyphonic_circuit.m_output_to_master);
 		}
 
 		// master_circuit_ component
 
 		Process::abstract_component<double> *synthesizer::get_master_main_input()
 		{
-			return m_master_circuit.get_main_input();
+			return &(m_master_circuit.m_main_input);
 		}
 
 		Process::abstract_component<double> *synthesizer::get_master_main_output()
 		{
-			return m_master_circuit.get_main_output();
+			return  &(m_master_circuit.m_main_output);
 		}
 
 		Process::abstract_component<double> *synthesizer::get_master_circuit_polyphonic_input()
 		{
-			return m_master_circuit.get_polyphonic_input();
+			return &(m_master_circuit.m_from_polyphonic_input);
 		}
 
 		Process::abstract_component<double> *synthesizer::get_master_circuit_polyphonic_output()
 		{
-			return m_master_circuit.get_polyphonic_output();
+			return &(m_master_circuit.m_output_to_polyphonic);
 		}
 
 		Process::abstract_component<double> *synthesizer::get_master_circuit_automation_input()
 		{
-			return m_master_circuit.get_automation_input();
+			return &(m_master_circuit.m_automation_input);
 		}
 
 

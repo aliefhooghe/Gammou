@@ -147,7 +147,7 @@ namespace Gammou {
 				m_parent->redraw();
 		}
 
-		panel * widget::get_parent()
+		abstract_panel * widget::get_parent()
 		{
 			return m_parent;
 		}

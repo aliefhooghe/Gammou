@@ -1,8 +1,8 @@
 #ifndef COMPONENTS_H_
 #define COMPONENTS_H_
 
-
-#include "vector"
+#include <string>
+#include <vector>
 #include "../abstract_component.h"
 
 
@@ -12,20 +12,30 @@ namespace Gammou {
 
 
 		template<class T>
-		class buffer_fetcher_component : public abstract_component<T> {
+		class vector_fetcher_component : public abstract_component<T> {
 
 		public:
-			buffer_fetcher_component(const unsigned int buffer_size, const T *buffer = nullptr)
+			vector_fetcher_component(const unsigned int buffer_size, const T *buffer = nullptr)
 				: abstract_component<T>("Input", 0, buffer_size),
 				m_buffer_ptr(buffer)
 			{}
 
-			buffer_fetcher_component(const std::string& name, const unsigned int buffer_size, const T *buffer = nullptr)
+			vector_fetcher_component(const std::string& name, const unsigned int buffer_size, const T *buffer = nullptr)
 				: abstract_component<T>(name, 0, buffer_size),
 				m_buffer_ptr(buffer)
 			{}
 
-			~buffer_fetcher_component(){}
+			vector_fetcher_component(const std::vector<T>& buffer)
+				: abstract_component<T>("Input", 0, static_cast<unsigned int>(buffer.size())),
+				m_buffer_ptr(buffer.data())
+			{}
+
+			vector_fetcher_component(const std::string& name, const std::vector<T>& buffer)
+				: abstract_component<T>(name, 0, static_cast<unsigned int>(buffer.size())),
+				m_buffer_ptr(buffer.data())
+			{}
+
+			~vector_fetcher_component(){}
 
 			void set_input_buffer_ptr(const T *input_pointer)
 			{
@@ -50,6 +60,7 @@ namespace Gammou {
 
 		};
 	
+
 	} /* Process */
 
 } /* Gammou */

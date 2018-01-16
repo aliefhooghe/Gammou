@@ -112,6 +112,7 @@ namespace Gammou {
 				throw std::domain_error("Can't add component that is already on a frame");
 
 			m_link_monitor.register_observer(&(component->m_frame));
+			notify_circuit_change();
 		}
 
 		template<class T>

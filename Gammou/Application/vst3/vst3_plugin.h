@@ -1,8 +1,10 @@
+#ifndef GAMMOU_VST3_H_
+#define GAMMOU_VST3_H_
+
 /*
  *		Plugin.h
  */
 
-#pragma once
 #include "../../debug.h"
 
 #include "public.sdk/source/vst/vstsinglecomponenteffect.h" // first !!!!
@@ -12,11 +14,12 @@
 #include "pluginterfaces/base/ustring.h"
 
 #include "../gui/synthesizer_gui.h"
-
+#include "synthesizer.h"
 
 namespace Gammou {
 
 	namespace Vst {
+
 		class Plugin : public Steinberg::Vst::SingleComponentEffect {
 
 		public:
@@ -39,11 +42,16 @@ namespace Gammou {
 			Steinberg::IPlugView *PLUGIN_API createView(const char* name) SMTG_OVERRIDE;
 
 		private:
-			synthesizer_gui m_window;
-
-			double m_freq;
-			double m_t;
+			Gui::synthesizer_gui m_window;
+			Sound::synthesizer m_synthesizer;
 		};
+
+
 	} /* namespace Vst */
 
 } /* namespace Gammou */
+
+
+
+
+#endif

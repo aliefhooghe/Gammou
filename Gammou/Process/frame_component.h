@@ -61,7 +61,7 @@ namespace Gammou {
 			void notify_circuit_change();
 
 		private:
-			buffer_fetcher_component<T> m_input;
+			vector_fetcher_component<T> m_input;
 			output_component m_output;
 
 		};

@@ -28,10 +28,10 @@ namespace Gammou {
 						const unsigned int main_output_count,
 						const unsigned int channel_count,
 						const unsigned int automation_count,
-						const double automation_buffer[],
 						const unsigned int master_to_polyphonic_count = 2,
 						const unsigned int polyphonic_to_master_count = 2,
-						const unsigned int channel_zero_lifetime = 44100);
+						const unsigned int sample_rate = 44100,
+						const float zero_lifetime = 1.0);
 
 			~synthesizer();
 
@@ -40,9 +40,10 @@ namespace Gammou {
 			void send_note_on(const char midi_note, const double velocity);
 			void send_note_off(const char midi_note, const double velocity);
 
-
 			void add_sound_component_on_master_circuit(abstract_sound_component *component);
 			void add_sound_component_on_polyphonic_circuit(abstract_sound_component *component);
+
+			void set_sample_rate(const double sample_rate);
 
 			// polyphonic_circuit_ component
 
@@ -64,12 +65,9 @@ namespace Gammou {
 			unsigned int get_new_channel();
 			void free_channel(const std::vector<unsigned int>::iterator& it);
 
-			std::vector<double> m_master_to_polyphonic_buffer;
-			std::vector<double> m_polyphonic_to_master_buffer;
-
-			polyphonic_circuit m_polyphonic_circuit;
 			master_circuit m_master_circuit;
-
+			polyphonic_circuit m_polyphonic_circuit;
+			
 
 			// Channels allocation
 			std::vector<unsigned int> m_channels;

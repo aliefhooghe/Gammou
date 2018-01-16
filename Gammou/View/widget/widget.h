@@ -10,10 +10,12 @@ namespace Gammou {
 	namespace View {
 	
 
-		class widget {
 
+		class widget {
+			
 			//	a panel is a widget-container widget
-			friend class panel;
+			friend class abstract_panel;
+			template<class widget_type> friend class panel;
 
 		public:
 			//	x,y in parent coordinate system
@@ -58,11 +60,11 @@ namespace Gammou {
 			virtual void set_rect(const rectangle& rect);
 
 			void redraw_parent();
-			panel *get_parent();
+			abstract_panel *get_parent();
 			const rectangle get_relative_rect() const;
 			
 		private:
-			panel *m_parent;
+			abstract_panel *m_parent;
 			rectangle m_absolute_rect;
 		};
 

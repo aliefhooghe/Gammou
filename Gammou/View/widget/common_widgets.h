@@ -88,15 +88,8 @@ namespace Gammou {
 
 		//-----------
 
-		class toolbar : public panel {
 
-		public:
-
-		};
-
-		//----------
-
-		//	TODO :	Slider, knob, .... 
+		//	TODO :	Slider, knob, toolbar, tabpanel, .... 
 
 	} /* View */
 

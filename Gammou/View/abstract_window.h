@@ -7,7 +7,7 @@ namespace Gammou {
 
 	namespace View {
 
-		class abstract_window : public panel {
+		class abstract_window : public panel<widget> {
 		
 		public:
 			//	Width and Height in pixel (abstract size)

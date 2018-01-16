@@ -118,7 +118,7 @@ namespace Gammou {
 			else
 				cairo_helper::set_source_color(cr, cl_gainsboro);
 			
-			cairo_helper::rounded_rectangle(cr, offset / 2, offset / 2, get_width() - offset, get_height() - offset, 2.0 * offset);
+			cairo_helper::rounded_rectangle(cr, offset / 2.0f, offset / 2.0f, get_width() - offset, get_height() - offset, 2.0f * offset);
 			cairo_fill_preserve(cr);
 			cairo_helper::set_source_color(cr, cl_black);
 

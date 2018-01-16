@@ -14,10 +14,10 @@ namespace Gammou {
 		//	Plugin class implementation
 
 		Plugin::Plugin()
-			: m_window(800, 400)
+			: 
+			m_window(800, 400),
+			m_synthesizer(0, 2, 128, 1)
 		{
-			m_t = 0.0;
-			m_freq = 111.0;
 			DEBUG_PRINT("Gammou CTOR\n");
 		}
 
@@ -63,10 +63,10 @@ namespace Gammou {
 
 		Steinberg::tresult PLUGIN_API Plugin::setupProcessing(Steinberg::Vst::ProcessSetup & newSetup)
 		{
-			//	TODO : peut etre Prendre en compte newSetup.sampleRate et newSetup.maxSamplesPerBlock
 			DEBUG_PRINT("Gammou Setup processing : sample size = %u bits, sample rate = %lf\n",
 				newSetup.symbolicSampleSize == Steinberg::Vst::kSample32 ? 32 : 64,
 				newSetup.sampleRate);
+			m_synthesizer.set_sample_rate(newSetup.sampleRate);
 			return SingleComponentEffect::setupProcessing(newSetup);
 		}
 
@@ -82,12 +82,20 @@ namespace Gammou {
 				for (unsigned int i = 0; i < eventCount; ++i) {
 					Steinberg::Vst::Event event;
 					if (Steinberg::kResultOk == eventList->getEvent(i, event)) {
+						
 						//	TODO
-						//	event.type == kNoteOnEvent ?, etc...
 						//	event.sampleOffset
 
-						if (event.type == Steinberg::Vst::Event::kNoteOnEvent) {
-							m_freq += 111.0;
+						switch (event.type) {
+
+						case Steinberg::Vst::Event::kNoteOnEvent:
+							m_synthesizer.send_note_on(event.noteOn.pitch, event.noteOn.velocity);
+							break;
+
+						case Steinberg::Vst::Event::kNoteOffEvent:
+							m_synthesizer.send_note_off(event.noteOff.pitch, event.noteOff.velocity);
+							break;
+
 						}
 					}
 				}
@@ -101,16 +109,17 @@ namespace Gammou {
 			data.outputs[0].silenceFlags = 0;
 
 			const unsigned int nbSamples = data.numSamples;
-			const double dt = 1.0 / 44100.0;
+			double output[2];
 
 			if (processSetup.symbolicSampleSize == Steinberg::Vst::kSample32) {
 				float *outputBufferLeft = data.outputs[0].channelBuffers32[0];
 				float *outputBufferRight = data.outputs[0].channelBuffers32[1];
 
 				for (unsigned int i = 0; i < nbSamples; ++i, ++outputBufferLeft, ++outputBufferRight) {
-					*outputBufferLeft = std::sin(6.28 * m_freq * m_t);
-					*outputBufferRight = std::sin(6.28 * m_freq * m_t);
-					m_t += dt;
+					m_synthesizer.process(nullptr, output);
+
+					*outputBufferLeft = 0.0;
+					*outputBufferRight = 0.0;
 				}
 			}
 			else { // 64 bit
@@ -118,9 +127,10 @@ namespace Gammou {
 				double *outputBufferRight = data.outputs[0].channelBuffers64[1];
 
 				for (unsigned int i = 0; i < nbSamples; ++i, ++outputBufferLeft, ++outputBufferRight) {
-					*outputBufferLeft = std::sin(6.28 * m_freq * m_t);
-					*outputBufferRight = std::sin(6.28 * m_freq * m_t);
-					m_t += dt;
+					m_synthesizer.process(nullptr, output);
+
+					*outputBufferLeft = output[0];
+					*outputBufferRight = output[1];
 				}
 			}
 

@@ -4,8 +4,8 @@
 
 
 
-#define GAMMOU_MAKE_FACTORY_SYMBOL ""
-#define GAMMOU_DELETE_FACTORY_SYMBOL ""
+#define GAMMOU_MAKE_FACTORY_SYMBOL "make_factory"
+#define GAMMOU_DELETE_FACTORY_SYMBOL "delete_factory"
 
 namespace Gammou {
 
@@ -22,20 +22,21 @@ namespace Gammou {
 			};
 
 		public:
-			
 			main_factory();
 			~main_factory();
 
-			void load_factory(const std::string& file_path);
+			unsigned int load_factory(const std::string& file_path);
+			void register_factory(abstract_plugin_factory *factory);
 
-			const request_form_descriptor& get_request_form(const unsigned int factory_id) const;
-			abstract_sound_component *create_module(const unsigned int factory_id, data_source& data);
-			abstract_sound_component *create_module(const unsigned int factory_id, const answer_form_descriptor& answer_form);
+			const request_form_descriptor& get_plugin_request_form(const unsigned int factory_id) const;
+
+			abstract_sound_component *get_new_sound_component(const unsigned int factory_id, data_source& data, const unsigned int channel_count);
+			abstract_sound_component *get_new_sound_component(const unsigned int factory_id, const answer_form_descriptor& answer_form, const unsigned int channel_count);
+			
 			void delete_sound_component(abstract_sound_component *component);
 
-
-		private:
 			abstract_plugin_factory *factory_by_id(const unsigned int factory_id) const;
+		private:
 			std::map<unsigned int, std::pair<plugin_lib, abstract_plugin_factory*> > m_plugin_factory;
 		};
 
