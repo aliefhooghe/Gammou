@@ -48,12 +48,18 @@ namespace Gammou {
 			abstract_component<T> *m_owner;
 		};
 
+		/*
+		*
+		*/
+
+
 
 		/*! \class abstract_component
 		*  \brief Describe a connected component that process data
 		*/
+
 		template<class T>
-		class abstract_component{
+		class abstract_component {
 
 			friend class abstract_frame<T>;
 
@@ -80,11 +86,11 @@ namespace Gammou {
 			virtual void process(const T input[]) =0;
 			virtual void initialize_process() {};
 
-		protected:
 			abstract_component<T> *get_input_src(const unsigned int input_id,
-					unsigned int& output_id);
+				unsigned int& output_id);
 			abstract_component<T> *get_input_src(const unsigned int input_id);
 
+		protected:
 			void set_input_name(const std::string& name, const unsigned int input_id);
 			void set_output_name(const std::string& name, const unsigned int output_id);
 

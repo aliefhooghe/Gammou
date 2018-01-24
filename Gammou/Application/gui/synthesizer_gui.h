@@ -2,6 +2,7 @@
 
 #include "../../debug.h"
 #include "view.h"
+#include "gui_sound_component.h"
 
 
 namespace Gammou {
@@ -11,24 +12,33 @@ namespace Gammou {
 		class synthesizer_gui : public View::generic_window {
 
 		public:
-			synthesizer_gui(const unsigned int width, const unsigned int height) 
-				: View::generic_window(width, height), movable(true)
+			synthesizer_gui(Sound::synthesizer *synthesizer, const unsigned int width, const unsigned int height) 
+				: View::generic_window(width, height)
 			{
 				set_background_color(View::cl_white);
 
-				square = new View::movable_control(200, 100, 66, 66);	
-				add_widget(square);
 
+				Sound::abstract_sound_component *osc = new Sound::sin_oscilator(12);
+				Sound::abstract_sound_component *sum = new Sound::static_sum<10>(12);
+				Sound::abstract_sound_component *sum1 = new Sound::static_sum<5>(12);
+				Sound::abstract_sound_component *sum2 = new Sound::static_sum<3>(12);
+				Sound::abstract_sound_component *sum3 = new Sound::static_sum<2>(12);
 
-				add_widget(new View::push_button([&] { set_background_color(View::cl_peru); }, "BOUTON", 100, 50));
-				add_widget(new View::push_button([&] { set_background_color(View::cl_bisque); }, "BOUTON", 150, 100));
-				add_widget(new View::push_button([&] { set_background_color(View::cl_coral); }, "BOUTON", 200, 150));
-				add_widget(new View::push_button([&] { set_background_color(View::cl_beige); }, "BOUTON", 250, 200));
-				add_widget(new View::push_button([&] { set_background_color(View::cl_chocolate); }, "BOUTON", 300, 250));
-				add_widget(new View::push_button([&] { set_background_color(View::cl_aquamarine); }, "BOUTON", 350, 300));
+				gui_sound_component *c = new gui_sound_component(osc, 1, 1);
+				gui_sound_component *c2 = new gui_sound_component(sum, 300, 85);
+				gui_sound_component *c21 = new gui_sound_component(sum1, 330, 100);
+				gui_sound_component *c22 = new gui_sound_component(sum2, 360, 125);
+				gui_sound_component *c23 = new gui_sound_component(sum3, 390, 140);
 
+				gui_master_circuit *c_map = new gui_master_circuit(synthesizer,  0, 0, 1000, 600);
 
-				add_widget(new View::push_button([&] { set_background_color(View::cl_cornsilk); }, "Clement", 10, 200, 70, 70, 15));
+				c_map->add_gui_component(c);
+				c_map->add_gui_component(c2);
+				c_map->add_gui_component(c21);
+				c_map->add_gui_component(c22);
+				c_map->add_gui_component(c23);
+
+				add_widget(c_map);
 			}
 			
 			~synthesizer_gui() 
@@ -42,9 +52,6 @@ namespace Gammou {
 				return true;
 			}
 
-		private:
-			bool movable;
-			View::movable_control *square;
 		};
 	}
 }

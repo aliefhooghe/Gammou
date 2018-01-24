@@ -15,8 +15,8 @@ namespace Gammou {
 
 		Plugin::Plugin()
 			: 
-			m_window(800, 400),
-			m_synthesizer(0, 2, 128, 1)
+			m_synthesizer(0, 2, 128, 1),
+			m_window(&m_synthesizer, 1000, 600)
 		{
 			DEBUG_PRINT("Gammou CTOR\n");
 		}
@@ -109,14 +109,14 @@ namespace Gammou {
 			data.outputs[0].silenceFlags = 0;
 
 			const unsigned int nbSamples = data.numSamples;
-			double output[2];
+			double output[2] = { 0.0, 0.0 };
 
 			if (processSetup.symbolicSampleSize == Steinberg::Vst::kSample32) {
 				float *outputBufferLeft = data.outputs[0].channelBuffers32[0];
 				float *outputBufferRight = data.outputs[0].channelBuffers32[1];
 
 				for (unsigned int i = 0; i < nbSamples; ++i, ++outputBufferLeft, ++outputBufferRight) {
-					m_synthesizer.process(nullptr, output);
+					//m_synthesizer.process(nullptr, output);
 
 					*outputBufferLeft = 0.0;
 					*outputBufferRight = 0.0;
@@ -127,7 +127,7 @@ namespace Gammou {
 				double *outputBufferRight = data.outputs[0].channelBuffers64[1];
 
 				for (unsigned int i = 0; i < nbSamples; ++i, ++outputBufferLeft, ++outputBufferRight) {
-					m_synthesizer.process(nullptr, output);
+					//m_synthesizer.process(nullptr, output);
 
 					*outputBufferLeft = output[0];
 					*outputBufferRight = output[1];

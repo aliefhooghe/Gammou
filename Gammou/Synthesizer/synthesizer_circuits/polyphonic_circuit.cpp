@@ -12,7 +12,7 @@ namespace Gammou {
 
 
 		polyphonic_circuit_GPAR_input::polyphonic_circuit_GPAR_input(const unsigned int channel_count)
-			: abstract_sound_component("Input", 0, Input::COUNT, channel_count),
+			: polyphonic_sound_component("Input", 0, Input::COUNT, channel_count),
 			m_gate_state(channel_count),
 			m_pitch(channel_count),
 			m_attack_velocity(channel_count),
@@ -80,7 +80,7 @@ namespace Gammou {
 
 		polyphonic_circuit_output::polyphonic_circuit_output(std::vector<double>& output_buffer)
 			: 
-			Process::abstract_component<double>("Output", output_buffer.size(), 0),
+			abstract_sound_component("Output", output_buffer.size(), 0),
 			m_buffer_ptr(output_buffer.data()),
 			m_last_out_was_zero(false)
 		{
@@ -125,7 +125,7 @@ namespace Gammou {
 		{
 		}
 
-		void polyphonic_circuit::add_sound_component(abstract_sound_component *component)
+		void polyphonic_circuit::add_sound_component(polyphonic_sound_component *component)
 		{
 
 			if (component->get_channel_count() != m_sound_component_manager.get_channel_count())

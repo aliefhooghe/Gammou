@@ -41,7 +41,7 @@ namespace Gammou {
 			void send_note_off(const char midi_note, const double velocity);
 
 			void add_sound_component_on_master_circuit(abstract_sound_component *component);
-			void add_sound_component_on_polyphonic_circuit(abstract_sound_component *component);
+			void add_sound_component_on_polyphonic_circuit(polyphonic_sound_component *component);
 
 			void set_sample_rate(const double sample_rate);
 

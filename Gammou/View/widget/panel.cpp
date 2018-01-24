@@ -34,20 +34,16 @@ namespace Gammou {
 
 		bool abstract_panel::on_key_up(const keycode key)
 		{
-			widget *focused_widget = get_focused_widget();
-
-			if (focused_widget != nullptr)
-				return focused_widget->on_key_up(key);
+			if (m_focused_widget != nullptr)
+				return m_focused_widget->on_key_up(key);
 			else
 				return false;
 		}
 
 		bool abstract_panel::on_key_down(const keycode key)
 		{
-			widget *focused_widget = get_focused_widget();
-
-			if (focused_widget != nullptr)
-				return focused_widget->on_key_down(key);
+			if (m_focused_widget != nullptr)
+				return m_focused_widget->on_key_down(key);
 			else
 				return false;
 		}
@@ -59,17 +55,14 @@ namespace Gammou {
 
 		bool abstract_panel::on_mouse_exit(void)
 		{
-			widget *focused_widget = get_focused_widget();
-			widget *draging_widget = get_draging_widget();
-
-			if (focused_widget != nullptr) {
-				focused_widget->on_mouse_exit();
-				focused_widget = nullptr;
+			if (m_focused_widget != nullptr) {
+				m_focused_widget->on_mouse_exit();
+				m_focused_widget = nullptr;
 			}
 
-			if (draging_widget != nullptr) {
-				draging_widget->on_mouse_drag_end(m_draging_button, 0, 0);
-				draging_widget = nullptr;
+			if (m_draging_widget != nullptr) {
+				m_draging_widget->on_mouse_drag_end(m_draging_button, 0, 0);
+				m_draging_widget = nullptr;
 			}
 
 			return false;
@@ -78,77 +71,69 @@ namespace Gammou {
 		bool abstract_panel::on_mouse_move(const int x, const int y)
 		{
 			widget *w = get_widget_at_position(x, y);
-			widget *focused_widget = get_focused_widget();
 			
 			bool ret = false;
 
-			if (focused_widget != w) {
-				if (focused_widget != nullptr)
-					ret = focused_widget->on_mouse_exit();
+			if (m_focused_widget != w) {
+				if (m_focused_widget != nullptr)
+					ret = m_focused_widget->on_mouse_exit();
 				if (w != nullptr)
 					ret |= w->on_mouse_enter();
 			}
-			else if (focused_widget != nullptr) {
-				ret = focused_widget->on_mouse_move(
-					x - focused_widget->get_x(),
-					y - focused_widget->get_y());
+			else if (m_focused_widget != nullptr) {
+				ret = m_focused_widget->on_mouse_move(
+					x - m_focused_widget->get_x(),
+					y - m_focused_widget->get_y());
 			}
 
 			m_focused_widget = w;
+			redraw();
 			return false;
 		}
 
 		bool abstract_panel::on_mouse_button_down(const mouse_button button, const int x, const int y)
 		{
-			widget *focused_widget = get_focused_widget();
-
-			if (focused_widget != nullptr)
-				return focused_widget->on_mouse_button_down(button, x, y);
+			if (m_focused_widget != nullptr)
+				return m_focused_widget->on_mouse_button_down(button, 
+					x - m_focused_widget->get_x(),
+					y - m_focused_widget->get_y());
 			else
 				return false;
 		}
 
 		bool abstract_panel::on_mouse_button_up(const mouse_button button, const int x, const int y)
 		{
-			widget *focused_widget = get_focused_widget();
-
-			if (focused_widget != nullptr)
-				return focused_widget->on_mouse_button_up(button,
-					x - focused_widget->get_x(),
-					y - focused_widget->get_y());
+			if (m_focused_widget != nullptr)
+				return m_focused_widget->on_mouse_button_up(button,
+					x - m_focused_widget->get_x(),
+					y - m_focused_widget->get_y());
 			else
 				return false;
 		}
 
 		bool abstract_panel::on_mouse_dbl_click(const int x, const int y)
-		{
-			widget *focused_widget = get_focused_widget();
-			
-			if (focused_widget != nullptr)
-				return focused_widget->on_mouse_dbl_click(
-					x - focused_widget->get_x(),
-					y - focused_widget->get_y());
+		{	
+			if (m_focused_widget != nullptr)
+				return m_focused_widget->on_mouse_dbl_click(
+					x - m_focused_widget->get_x(),
+					y - m_focused_widget->get_y());
 			else
 				return false;
 		}
 
 		bool abstract_panel::on_mouse_wheel(const float distance)
 		{
-			widget *focused_widget = get_focused_widget();
-
-			if (focused_widget != nullptr)
-				return focused_widget->on_mouse_wheel(distance);
+			if (m_focused_widget != nullptr)
+				return m_focused_widget->on_mouse_wheel(distance);
 			else
 				return false;
 		}
 
 		bool abstract_panel::on_mouse_drag_start(const mouse_button button, const int x, const int y)
 		{
-			widget *focused_widget = get_focused_widget();
-
 			m_draging_button = button;
 
-			if (focused_widget != nullptr) {
+			if (m_focused_widget != nullptr) {
 				m_draging_widget = m_focused_widget;
 				return m_draging_widget->on_mouse_drag_start(button,
 					x - m_draging_widget->get_x(),
@@ -162,23 +147,20 @@ namespace Gammou {
 		bool abstract_panel::on_mouse_drag(const mouse_button button, const int x, const int y, const int dx, const int dy)
 		{
 			widget *w = get_widget_at_position(x, y);
-			widget *focused_widget = get_focused_widget();
-			widget *draging_widget = get_draging_widget();
-
 			bool ret = false;
 
-			if (focused_widget != w) {
-				if (focused_widget != nullptr)
-					ret = focused_widget->on_mouse_exit();
+			if (m_focused_widget != w) {
+				if (m_focused_widget != nullptr)
+					ret = m_focused_widget->on_mouse_exit();
 				if (w != nullptr)
 					ret |= w->on_mouse_enter();
-				focused_widget = get_widget_at_position(x, y);
+				m_focused_widget = get_widget_at_position(x, y);
 			}
 
-			if (draging_widget != nullptr)
-				ret |= draging_widget->on_mouse_drag(button,
-					x - draging_widget->get_x(),
-					y - draging_widget->get_y(),
+			if (m_draging_widget != nullptr)
+				ret |= m_draging_widget->on_mouse_drag(button,
+					x - m_draging_widget->get_x(),
+					y - m_draging_widget->get_y(),
 					dx, dy);
 
 			return ret;
@@ -186,13 +168,11 @@ namespace Gammou {
 
 		bool abstract_panel::on_mouse_drag_end(const mouse_button button, const int x, const int y)
 		{
-			widget *draging_widget = get_draging_widget();
-
-			if (draging_widget != nullptr) {
-				bool ret = draging_widget->on_mouse_drag_end(button,
-					x - draging_widget->get_x(),
-					y - draging_widget->get_y());
-				draging_widget = nullptr;
+			if (m_draging_widget != nullptr) {
+				bool ret = m_draging_widget->on_mouse_drag_end(button,
+					x - m_draging_widget->get_x(),
+					y - m_draging_widget->get_y());
+				m_draging_widget = nullptr;
 				return ret;
 			}
 			else {

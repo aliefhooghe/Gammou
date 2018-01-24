@@ -1,6 +1,7 @@
 #ifndef CAIRO_HELPER_H_
 #define CAIRO_HELPER_H_
 
+#include <string>
 #include "../cairo_definition.h"
 #include "color.h"
 
@@ -36,6 +37,16 @@ namespace Gammou {
 			void set_source_color(cairo_t *cr, const color c);
 
 			void show_centered_text(cairo_t *cr, const rectangle& rect, const char *text);
+			void show_centered_text(cairo_t *cr, const rectangle& rect, const std::string& text);
+
+			void show_left_aligned_text(cairo_t *cr, const rectangle& rect, const char *text);
+			void show_left_aligned_text(cairo_t *cr, const rectangle& rect, const std::string& text);
+
+			void show_right_aligned_text(cairo_t *cr, const rectangle& rect, const char *text);
+			void show_right_aligned_text(cairo_t *cr, const rectangle& rect, const std::string& text);
+
+			void circle(cairo_t *cr, const float center_x, const float center_y, const float radius);
+			void centered_circle(cairo_t *cr, const rectangle& rect, const float radius);
 
 		}	/* cairo_helper */
 

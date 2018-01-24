@@ -75,6 +75,54 @@ namespace Gammou {
 				cairo_show_text(cr, text);
 			}
 
+			void show_centered_text(cairo_t * cr, const rectangle & rect, const std::string & text)
+			{
+				show_centered_text(cr, rect, text.c_str());
+			}
+
+			void show_left_aligned_text(cairo_t * cr, const rectangle & rect, const char * text)
+			{
+				cairo_text_extents_t te;
+
+				cairo_text_extents(cr, text, &te);
+				cairo_move_to(cr, rect.x, rect.y + (rect.height + te.height) / 2);
+
+				cairo_show_text(cr, text);
+			}
+
+			void show_left_aligned_text(cairo_t * cr, const rectangle & rect, const std::string & text)
+			{
+				show_left_aligned_text(cr, rect, text.c_str());
+			}
+
+			void show_right_aligned_text(cairo_t *cr, const rectangle& rect, const char *text)
+			{
+				cairo_text_extents_t te;
+
+				cairo_text_extents(cr, text, &te);
+				cairo_move_to(cr, rect.x + rect.width - te.width,
+					rect.y + (rect.height + te.height) / 2);
+
+				cairo_show_text(cr, text);
+			}
+
+			void show_right_aligned_text(cairo_t *cr, const rectangle& rect, const std::string& text)
+			{
+				show_right_aligned_text(cr, rect, text.c_str());
+			}
+
+			void circle(cairo_t * cr, const float center_x, const float center_y, const float radius)
+			{
+				cairo_arc(cr, center_x, center_y, radius, 0.0, 2.0 * M_PI);
+			}
+
+			void centered_circle(cairo_t * cr, const rectangle & rect, const float radius)
+			{
+				const float cx = static_cast<float>(rect.x) + static_cast<float>(rect.width) / 2.0;
+				const float cy = static_cast<float>(rect.y) + static_cast<float>(rect.height) / 2.0;
+				circle(cr, cx, cy, radius);
+			}
+
 		}
 
 

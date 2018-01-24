@@ -13,7 +13,7 @@ namespace Gammou {
 
  // 'GPAR' = Gate, Pitch, Attack, Release
 
-		class polyphonic_circuit_GPAR_input : public abstract_sound_component {
+		class polyphonic_circuit_GPAR_input : public polyphonic_sound_component {
 
 			enum Input : unsigned int {GATE = 0, PITCH = 1, ATTACK_VELOCITY = 2, RELEASE_VELOCITY = 3, COUNT = 4};
 
@@ -36,7 +36,8 @@ namespace Gammou {
 			std::vector<double> m_release_velocity;
 		};
 
-		class polyphonic_circuit_output : public Process::abstract_component<double> {
+		
+		class polyphonic_circuit_output : public abstract_sound_component {
 
 		public:
 			polyphonic_circuit_output(std::vector<double>& output_buffer);
@@ -69,7 +70,7 @@ namespace Gammou {
 				const unsigned int channel_count);
 			~polyphonic_circuit();
 
-			void add_sound_component(abstract_sound_component *component);
+			void add_sound_component(polyphonic_sound_component *component);
 			void set_sample_rate(const double sample_rate);
 
 			// Return whether the last output was ZERO

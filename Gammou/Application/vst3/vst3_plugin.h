@@ -42,8 +42,8 @@ namespace Gammou {
 			Steinberg::IPlugView *PLUGIN_API createView(const char* name) SMTG_OVERRIDE;
 
 		private:
-			Gui::synthesizer_gui m_window;
 			Sound::synthesizer m_synthesizer;
+			Gui::synthesizer_gui m_window;
 		};
 
 

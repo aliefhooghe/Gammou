@@ -6,7 +6,7 @@ namespace Gammou {
 
 	namespace Sound {
 
-		multi_channel_data::multi_channel_data(abstract_sound_component *owner)
+		multi_channel_data::multi_channel_data(polyphonic_sound_component *owner)
 			: m_owner(owner)
 		{
 			m_channels_count = owner->get_channel_count();

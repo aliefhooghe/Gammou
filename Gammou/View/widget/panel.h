@@ -41,7 +41,6 @@ namespace Gammou {
 			
 			widget *get_focused_widget(void) const;
 			widget *get_draging_widget(void) const;
-			
 		private:
 			mouse_button m_draging_button;
 			color m_background_color;
@@ -66,10 +65,7 @@ namespace Gammou {
 			}
 
 			panel(const rectangle& rect, const color background = cl_white)
-				: abstract_panel(rect, background), 
-				m_focused_widget(nullptr), 
-				m_draging_widget(nullptr), 
-				m_background_color(c)
+				: abstract_panel(rect, background) 
 			{
 
 			}
@@ -88,20 +84,27 @@ namespace Gammou {
 
 		protected:
 
-			virtual void draw(cairo_t *cr) override // ????
+			virtual void draw_background(cairo_t *cr)
 			{
-				//	Draw Background
 				cairo_helper::set_source_color(cr, get_background_color());
 				cairo_rectangle(cr, 0, 0, get_width(), get_height());
 				cairo_fill(cr);
+			}
 
-				//	Draw widgets
-				for (widget_type *w : m_widgets) {
+			virtual void draw_widgets(cairo_t *cr)
+			{
+				for (widget *w : m_widgets) {
 					cairo_save(cr);
 					cairo_translate(cr, w->get_x(), w->get_y());
 					w->draw(cr);
 					cairo_restore(cr);
 				}
+			}
+
+			virtual void draw(cairo_t *cr) override
+			{
+				draw_background(cr);
+				draw_widgets(cr);
 			}
 
 			void add_widget(widget_type *w)
@@ -125,12 +128,11 @@ namespace Gammou {
 				redraw();
 			}
 
-
-		protected:
 			widget_type *get_widget_at_position(const unsigned int x, const unsigned int y) const override
 			{
-				for (widget_type *w : m_widgets) {
-					if (w->contains(x, y))
+				for (auto it = m_widgets.rbegin(); it != m_widgets.rend(); ++it) {
+					widget_type *const w = (*it);
+					if (w->contains(x - w->get_x(), y - w->get_y()))
 						return w;
 				}
 
@@ -138,10 +140,7 @@ namespace Gammou {
 			}
 
 			mouse_button m_draging_button;
-		
-		private:
 			std::deque<widget_type*> m_widgets;
-
 		};
 
 	} /* View */

@@ -10,7 +10,6 @@ namespace Gammou {
 
 	namespace Sound {
 
-
 		class master_circuit : private Process::abstract_frame<double> {
 
 		friend class polyphonic_circuit;

@@ -69,8 +69,8 @@ namespace Gammou {
 			virtual ~push_button() {};
 
 		protected:
-			virtual void draw(cairo_t *cr);
-			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y);
+			virtual void draw(cairo_t *cr) override;
+			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y) override;
 			virtual bool on_mouse_button_down(const mouse_button button, const int cx, const int cy) override;
 			virtual bool on_mouse_button_up(const mouse_button button, const int cx, const int cy) override;
 			virtual bool on_mouse_enter(void);

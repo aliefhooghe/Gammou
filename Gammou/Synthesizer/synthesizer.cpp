@@ -30,7 +30,7 @@ namespace Gammou {
 			m_channels(channel_count),
 			m_running_channels_end(m_channels.begin()),
 			m_channels_lifetime(channel_count),
-			m_channel_zero_lifetime(sample_rate * channel_zero_lifetime),
+			m_channel_zero_lifetime(static_cast<unsigned int>(sample_rate * channel_zero_lifetime)),
 			m_channels_midi_note(channel_count)
 		{
 			m_master_circuit.set_sample_rate(sample_rate);
@@ -124,7 +124,7 @@ namespace Gammou {
 			m_master_circuit.add_sound_component(component);
 		}
 
-		void synthesizer::add_sound_component_on_polyphonic_circuit(abstract_sound_component *component)
+		void synthesizer::add_sound_component_on_polyphonic_circuit(polyphonic_sound_component *component)
 		{
 			m_polyphonic_circuit.add_sound_component(component);
 		}

@@ -29,7 +29,7 @@ namespace Gammou {
 			unsigned int get_height(void) const;
 			const rectangle& get_absolute_rect() const;
 
-			virtual bool contains(const unsigned int px, const unsigned int py) const;
+			virtual bool contains(const int px, const int py) const;
 			virtual bool contains(const rectangle& rect) const;
 
 			virtual void redraw();

@@ -18,7 +18,8 @@ namespace Gammou {
 		: sound_component("Sin", 2, 1, channel_count),
 		m_freq_integral(this)
 		{
-
+			set_input_name("Freq", 0);
+			set_input_name("Phase", 1);
 		}
 
 		void sin_oscilator::process(const double input[])

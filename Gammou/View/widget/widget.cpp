@@ -83,14 +83,15 @@ namespace Gammou {
 			return false;
 		}
 
-		bool widget::contains(const unsigned int px, const unsigned int py) const 
+		bool widget::contains(const int px, const int py) const 
 		{
-			return m_absolute_rect.contains(px , py);
+			//DEBUG_PRINT("contain(%d, %d")
+			return get_relative_rect().contains(px, py);
 		}
 
 		bool widget::contains(const rectangle & rect) const
 		{
-			return m_absolute_rect.contains(rect);
+			return get_relative_rect().contains(rect);
 		}
 
 		unsigned int widget::get_x(void) const
