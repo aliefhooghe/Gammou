@@ -14,9 +14,10 @@ namespace Gammou {
 		//	Plugin class implementation
 
 		Plugin::Plugin()
-			: 
-			m_synthesizer(0, 2, 128, 1),
-			m_window(&m_synthesizer, 1000, 600)
+			:
+			m_synthesizer_mutex(),
+			m_synthesizer(1, 2, 128, 6),
+			m_window(&m_synthesizer, &m_synthesizer_mutex, 1000, 600)
 		{
 			DEBUG_PRINT("Gammou CTOR\n");
 		}
@@ -66,7 +67,11 @@ namespace Gammou {
 			DEBUG_PRINT("Gammou Setup processing : sample size = %u bits, sample rate = %lf\n",
 				newSetup.symbolicSampleSize == Steinberg::Vst::kSample32 ? 32 : 64,
 				newSetup.sampleRate);
+
+			lock_synthesizer();
 			m_synthesizer.set_sample_rate(newSetup.sampleRate);
+			unlock_synthesizer();
+
 			return SingleComponentEffect::setupProcessing(newSetup);
 		}
 
@@ -76,6 +81,8 @@ namespace Gammou {
 
 			// Input Events
 			Steinberg::Vst::IEventList *eventList = data.inputEvents;
+
+			lock_synthesizer();
 
 			if (eventList != nullptr) {
 				unsigned int eventCount = eventList->getEventCount();
@@ -109,6 +116,7 @@ namespace Gammou {
 			data.outputs[0].silenceFlags = 0;
 
 			const unsigned int nbSamples = data.numSamples;
+			double input[1] = { 440.0 };
 			double output[2] = { 0.0, 0.0 };
 
 			if (processSetup.symbolicSampleSize == Steinberg::Vst::kSample32) {
@@ -116,10 +124,11 @@ namespace Gammou {
 				float *outputBufferRight = data.outputs[0].channelBuffers32[1];
 
 				for (unsigned int i = 0; i < nbSamples; ++i, ++outputBufferLeft, ++outputBufferRight) {
-					//m_synthesizer.process(nullptr, output);
+					
+					m_synthesizer.process(input, output);
 
-					*outputBufferLeft = 0.0;
-					*outputBufferRight = 0.0;
+					*outputBufferLeft = output[0];
+					*outputBufferRight = output[1];
 				}
 			}
 			else { // 64 bit
@@ -127,12 +136,15 @@ namespace Gammou {
 				double *outputBufferRight = data.outputs[0].channelBuffers64[1];
 
 				for (unsigned int i = 0; i < nbSamples; ++i, ++outputBufferLeft, ++outputBufferRight) {
-					//m_synthesizer.process(nullptr, output);
+					
+					m_synthesizer.process(input, output);
 
 					*outputBufferLeft = output[0];
 					*outputBufferRight = output[1];
 				}
 			}
+
+			unlock_synthesizer();
 
 			return Steinberg::kResultOk;
 		}

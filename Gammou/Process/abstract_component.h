@@ -86,10 +86,14 @@ namespace Gammou {
 			virtual void process(const T input[]) =0;
 			virtual void initialize_process() {};
 
+			// Link 
 			abstract_component<T> *get_input_src(const unsigned int input_id,
 				unsigned int& output_id);
 			abstract_component<T> *get_input_src(const unsigned int input_id);
 
+			static const std::string default_input_name(const unsigned int input_id);
+			static const std::string default_output_name(const unsigned int output_id);
+			
 		protected:
 			void set_input_name(const std::string& name, const unsigned int input_id);
 			void set_output_name(const std::string& name, const unsigned int output_id);
@@ -105,9 +109,6 @@ namespace Gammou {
 			virtual void on_input_connection(const unsigned int input_id) {};
 		private:
 			bool update_process_cyle(const unsigned int cycle) noexcept;
-
-			const std::string default_input_name(const unsigned int input_id);
-			const std::string default_output_name(const unsigned int output_id);
 
 			subject<abstract_component<T> > m_component_subject;
 			std::vector<component_link<T> > m_input;

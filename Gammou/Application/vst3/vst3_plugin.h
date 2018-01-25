@@ -5,6 +5,8 @@
  *		Plugin.h
  */
 
+#include <mutex>
+
 #include "../../debug.h"
 
 #include "public.sdk/source/vst/vstsinglecomponenteffect.h" // first !!!!
@@ -42,6 +44,10 @@ namespace Gammou {
 			Steinberg::IPlugView *PLUGIN_API createView(const char* name) SMTG_OVERRIDE;
 
 		private:
+			inline void lock_synthesizer() { m_synthesizer_mutex.lock();  }
+			inline void unlock_synthesizer() { m_synthesizer_mutex.unlock();  }
+
+			std::mutex m_synthesizer_mutex;
 			Sound::synthesizer m_synthesizer;
 			Gui::synthesizer_gui m_window;
 		};

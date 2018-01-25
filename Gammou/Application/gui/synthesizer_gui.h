@@ -1,8 +1,10 @@
 #pragma once
 
+#include <mutex>
 #include "../../debug.h"
 #include "view.h"
 #include "gui_sound_component.h"
+#include "gui_synthesizer_circuit.h"
 
 
 namespace Gammou {
@@ -12,7 +14,9 @@ namespace Gammou {
 		class synthesizer_gui : public View::generic_window {
 
 		public:
-			synthesizer_gui(Sound::synthesizer *synthesizer, const unsigned int width, const unsigned int height) 
+			synthesizer_gui(
+				Sound::synthesizer *synthesizer, std::mutex *synthesizer_mutex,
+				unsigned int width, const unsigned int height) 
 				: View::generic_window(width, height)
 			{
 				set_background_color(View::cl_white);
@@ -24,14 +28,15 @@ namespace Gammou {
 				Sound::abstract_sound_component *sum2 = new Sound::static_sum<3>(12);
 				Sound::abstract_sound_component *sum3 = new Sound::static_sum<2>(12);
 
+				synthesizer_mutex->lock();
+
 				synthesizer->add_sound_component_on_master_circuit(osc);
 				synthesizer->add_sound_component_on_master_circuit(sum);
 				synthesizer->add_sound_component_on_master_circuit(sum1);
 				synthesizer->add_sound_component_on_master_circuit(sum2);
 				synthesizer->add_sound_component_on_master_circuit(sum3);
 
-				for(unsigned int i = 0; i < 10; ++i)
-					osc->connect_to(0, sum, i);
+				synthesizer_mutex->unlock();
 
 				gui_sound_component *c = new gui_sound_component(osc, 1, 1);
 				gui_sound_component *c2 = new gui_sound_component(sum, 300, 85);
@@ -39,7 +44,7 @@ namespace Gammou {
 				gui_sound_component *c22 = new gui_sound_component(sum2, 360, 125);
 				gui_sound_component *c23 = new gui_sound_component(sum3, 390, 140);
 
-				abstract_gui_component_map *c_map = new abstract_gui_component_map(0, 0, 1000, 600);
+				gui_master_circuit *c_map = new gui_master_circuit(synthesizer, synthesizer_mutex, 0, 0, 1000, 600);
 
 				c_map->add_gui_component(c);
 				c_map->add_gui_component(c2);

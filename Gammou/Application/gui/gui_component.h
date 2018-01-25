@@ -2,6 +2,7 @@
 #define GUI_COMPONENT_H_
 
 #include <map>
+#include <mutex>
 #include "view.h"
 #include "synthesizer.h"
 
@@ -13,12 +14,21 @@ namespace Gammou {
 		void draw_link(cairo_t *cr, const float x_input, const float y_input,
 			const float x_output, const float y_output, const View::color color);
 
+
+		/*
+		
+		*/
+
+
+		//		WARNING : abstract_gui_component is not supposed to deal with mutex.
+		//		Concurency isues are solved by component_map
 		class abstract_gui_component : public View::panel<> {
 
 			friend class abstract_gui_component_map;
 
 		public:
-			abstract_gui_component(const unsigned int x, const unsigned int y, 
+			abstract_gui_component(
+				unsigned int x, const unsigned int y, 
 				const unsigned int initial_input_count, const unsigned int initial_output_count);
 
 			virtual ~abstract_gui_component() {}
@@ -47,6 +57,7 @@ namespace Gammou {
 
 		private:
 			bool m_frozen;
+
 
 			// cf schema
 			float m_l1;
@@ -81,22 +92,24 @@ namespace Gammou {
 			}
 		
 		protected:
-			Process::abstract_component<double> *m_component;
+			Process::abstract_component<double> *const m_component;
 		};
 
 		/*
 		
 		*/
+
 		class abstract_gui_component_map : public View::panel<abstract_gui_component> {
 
 		public:
-			abstract_gui_component_map(const unsigned int x, const unsigned int y,
+			abstract_gui_component_map(
+				std::mutex *circuit_mutex, const unsigned int x, const unsigned int y,
 				const unsigned int width, const unsigned int height, const View::color background = View::cl_dimgray);
-			abstract_gui_component_map(const View::rectangle& rect,
+			abstract_gui_component_map(std::mutex *circuit_mutex, const View::rectangle& rect,
 				const View::color background = View::cl_dimgray);
 			virtual ~abstract_gui_component_map() {}
 
-			void add_gui_component(abstract_gui_component *component);
+			virtual void add_gui_component(abstract_gui_component *component);
 
 			virtual bool on_mouse_drag(const View::mouse_button button, const int x, const int y,
 				const int dx, const int dy) override;
@@ -109,12 +122,15 @@ namespace Gammou {
 			virtual void connect(abstract_gui_component* src, const unsigned int output_id,
 				abstract_gui_component *dst, const unsigned int input_id);
 		private:
+			inline void lock_circuit() { m_circuit_mutex->lock();  }
+			inline void unlock_circuit() { m_circuit_mutex->unlock(); }
 
-			unsigned int input_count(abstract_gui_component *component);
+			unsigned int get_input_count(abstract_gui_component *component);
 			abstract_gui_component *get_input_src(abstract_gui_component *component, const unsigned int input_id, 
 				unsigned int& src_output_id);
 
 			std::map<Process::abstract_component<double>*, abstract_gui_component*> m_component_association;
+			std::mutex *m_circuit_mutex;
 
 			bool m_is_linking;
 			abstract_gui_component *m_linking_component;
