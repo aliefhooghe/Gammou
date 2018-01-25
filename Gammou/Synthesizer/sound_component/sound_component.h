@@ -20,6 +20,7 @@ namespace Gammou {
 		constexpr double DEFAULT_SAMPLE_DURATION = 1.0 / DEFAULT_SAMPLE_RATE;
 		constexpr unsigned int NO_FACTORY = 0xFFFFFFFF;
 
+
 		class abstract_sound_component : public Process::abstract_component<double>,
 											public Process::observer<sound_component_manager, sound_component_notification_tag>  {
 
@@ -34,6 +35,7 @@ namespace Gammou {
 			virtual ~abstract_sound_component() {}
 
 			unsigned int get_factory_id() const;
+			virtual unsigned int save_state(data_destination& data) { return 0; };
 
 		protected:
 			virtual void on_sample_rate_change(const double new_sample_rate) {};
@@ -67,9 +69,6 @@ namespace Gammou {
 
 			unsigned int get_channel_count() const;
 			unsigned int get_current_working_channel() const;
-			
-
-			virtual unsigned int save_state(data_destination& data) { return 0; };
 
 		private:
 			const unsigned int m_channels_count;
@@ -101,6 +100,7 @@ namespace Gammou {
 			multi_channel_array<double> m_output;
 
 		};
+
 
 
 	} /* Sound */

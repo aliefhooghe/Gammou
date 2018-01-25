@@ -30,7 +30,7 @@ namespace Gammou {
 				gui_sound_component *c22 = new gui_sound_component(sum2, 360, 125);
 				gui_sound_component *c23 = new gui_sound_component(sum3, 390, 140);
 
-				gui_master_circuit *c_map = new gui_master_circuit(synthesizer,  0, 0, 1000, 600);
+				abstract_gui_component_map *c_map = new abstract_gui_component_map(0, 0, 1000, 600);
 
 				c_map->add_gui_component(c);
 				c_map->add_gui_component(c2);
