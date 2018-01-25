@@ -23,7 +23,7 @@ namespace Gammou {
 			// FACTORY STUFF TO DO
 
 		protected:
-			Process::abstract_component<double> *get_component() override;
+			Process::abstract_component<double> *get_component() const override;
 			Sound::abstract_sound_component *const m_sound_component;
 		};
 

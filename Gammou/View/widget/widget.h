@@ -34,7 +34,6 @@ namespace Gammou {
 
 			virtual void redraw();
 
-		protected:
 			// x and y in widget coordinate system after this line
 			virtual bool on_key_up(const keycode key);
 			virtual bool on_key_down(const keycode key);
@@ -48,11 +47,12 @@ namespace Gammou {
 			virtual bool on_mouse_button_up(const mouse_button button, const int x, const int y);
 			virtual bool on_mouse_dbl_click(const int x, const int y);
 
-			virtual bool on_mouse_drag(const mouse_button button, const int x, const int y, 
+			virtual bool on_mouse_drag(const mouse_button button, const int x, const int y,
 				const int dx, const int dy);
 			virtual bool on_mouse_drag_start(const mouse_button button, const int x, const int y);
 			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y);
 
+		protected:
 			virtual void draw(cairo_t *cr) = 0;
 
 			virtual void set_pos(const unsigned int x, const unsigned int y);

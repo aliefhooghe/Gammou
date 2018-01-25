@@ -20,15 +20,15 @@ namespace Gammou {
 
 			bool is_enabled(void) const;
 			virtual void set_enabled(const bool state = true);
-		protected:
-			// widget override
-			
-			virtual void draw(cairo_t *cr) override;
+
 			virtual bool on_mouse_enter(void) override;
 			virtual bool on_mouse_exit(void) override;
 
+			// widget override
+		protected:
+			virtual void draw(cairo_t *cr) override;
+
 			//	control features
-			
 			bool is_focused(void) const;
 		private:
 			bool m_focused;
@@ -47,7 +47,6 @@ namespace Gammou {
 			bool is_movable() const;
 			void set_movable(bool movable);
 
-		protected:
 			virtual bool on_mouse_drag(const mouse_button button, const int x, const int y, const int dx, const int dy) override;
 
 			bool on_mouse_wheel(const float d) override
@@ -68,14 +67,14 @@ namespace Gammou {
 			push_button(std::function<void()> push_action, const std::string& text, const unsigned int x, const unsigned int y, const unsigned int width = 70, const unsigned int height = 20, const unsigned int font_size = 10);
 			virtual ~push_button() {};
 
-		protected:
-			virtual void draw(cairo_t *cr) override;
 			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y) override;
 			virtual bool on_mouse_button_down(const mouse_button button, const int cx, const int cy) override;
 			virtual bool on_mouse_button_up(const mouse_button button, const int cx, const int cy) override;
 			virtual bool on_mouse_enter(void);
 			virtual bool on_mouse_exit(void);
-		
+
+		protected:
+			virtual void draw(cairo_t *cr) override;
 			void set_text(std::string& text);
 
 			bool is_pushed(void) const;

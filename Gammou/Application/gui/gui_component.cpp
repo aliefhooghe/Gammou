@@ -5,10 +5,28 @@ namespace Gammou {
 
 	namespace Gui {
 
-		abstract_gui_component::abstract_gui_component(const unsigned int x, const unsigned int y, const unsigned int initial_input_count, const unsigned int initial_output_count)
-			: View::panel<View::widget>(x, y, 80, 10 + 15 * max(initial_input_count, initial_output_count))
+		void draw_link(cairo_t *cr, const float x_input, const float y_input, const float x_output, const float y_output, const View::color color)
 		{
-			m_l1 = 40.0;
+			const float D = min(std::fabs(x_output - x_input), 70.0);
+
+			cairo_move_to(cr, x_input, y_input);
+			cairo_curve_to(cr, x_input + D, y_input, x_output - D, y_output, x_output, y_output);
+
+			cairo_set_line_width(cr, 3.0);
+			View::cairo_helper::set_source_color(cr, color);
+			cairo_stroke(cr);
+		}
+
+
+		//
+
+
+
+		abstract_gui_component::abstract_gui_component(const unsigned int x, const unsigned int y, const unsigned int initial_input_count, const unsigned int initial_output_count)
+			: View::panel<View::widget>(x, y, 80, 10 + 15 * max(initial_input_count, initial_output_count)),
+				m_frozen(false)
+		{
+			m_l1 = 40;
 			m_rec_radius = 5.0;
 			m_socket_radius = 3.0;
 			m_socket_size = 9;
@@ -51,6 +69,42 @@ namespace Gammou {
 			y = get_y() + m_name_height + (static_cast<float>(output_id) + 0.5) * socket_rect_height;
 
 			return true;
+		}
+
+		int abstract_gui_component::output_id_by_pos(const float x, const float y) const
+		{
+			const Process::abstract_component<double> *component = get_component();
+			const float self_x = x - get_x();
+			const float self_y = y - get_y();
+
+			if (component != nullptr 
+				&& ((get_width() - self_x) < (m_l1 / 2.0))) {
+				const unsigned int oc = component->get_output_count();
+				const float socket_rect_height = static_cast<float>(get_height() - m_name_height) / static_cast<float>(oc);
+
+				if (oc != 0)
+					return (int)((self_y - m_name_height) / socket_rect_height);
+			}
+
+			return -1;
+		}
+
+		int abstract_gui_component::input_id_by_pos(const float x, const float y) const
+		{
+			const Process::abstract_component<double> *component = get_component();
+			const float self_x = x - get_x();
+			const float self_y = y - get_y();
+
+			if (component != nullptr
+				&& (self_x < (m_l1/2.0))) {
+				const unsigned int ic = component->get_input_count();
+				const float socket_rect_height = static_cast<float>(get_height() - m_name_height) / static_cast<float>(ic);
+
+				if (ic != 0)
+					return (int)((self_y - m_name_height) / socket_rect_height);
+			}
+
+			return -1;
 		}
 
 		void abstract_gui_component::draw(cairo_t * cr)
@@ -126,46 +180,76 @@ namespace Gammou {
 
 				}
 			}
+
+		}
+
+		bool abstract_gui_component::is_frozen()
+		{
+			return m_frozen;
+		}
+
+		void abstract_gui_component::set_frozen(const bool state)
+		{
+			m_frozen = state;
 		}
 
 		bool abstract_gui_component::on_mouse_drag(const View::mouse_button button, const int x, const int y, const int dx, const int dy)
 		{
-			const View::rectangle rect = get_absolute_rect().translate(dx, dy);
-			if (get_parent()->contains(rect)) {
-				set_rect(rect);
-				redraw_parent();
+			if (!is_frozen()) {
+				const View::rectangle rect = get_absolute_rect().translate(dx, dy);
+				if (get_parent()->contains(rect)) {
+					set_rect(rect);
+					redraw_parent();
+				}
 			}
+			
 			return true;
 		}
 
 		bool abstract_gui_component::on_mouse_drag_start(const View::mouse_button, const int x, const int y)
 		{
-			m_component_border_color = View::cl_blue;
-			m_component_color = View::cl_lightgrey;
-			redraw();
-			return false;
+			if (!is_frozen()) {
+				m_component_border_color = View::cl_blue;
+				m_component_color = View::cl_lightgrey;
+				redraw();
+			}
+
+			return true;
 		}
 
 		bool abstract_gui_component::on_mouse_drag_end(const View::mouse_button, const int x, const int y)
 		{
-			m_component_border_color = View::cl_black;
-			m_component_color = View::cl_silver;
-			redraw();
-			return false;
+			if (!is_frozen()) {
+				m_component_border_color = View::cl_black;
+				m_component_color = View::cl_silver;
+				redraw();
+				return true;
+			}
 		}
+
 
 		/*
 		 *		ABSTRACT GUI COMPONENT MAP IMPLEMENTATION
 		 */
 
-		abstract_gui_component_map::abstract_gui_component_map(const unsigned int x, const unsigned int y, const unsigned int width, 
+		abstract_gui_component_map::abstract_gui_component_map(const unsigned int x, const unsigned int y, const unsigned int width,
 			const unsigned int height, const View::color background)
-			: panel<abstract_gui_component>(x, y, width, height, background)
+			: panel<abstract_gui_component>(x, y, width, height, background),
+			m_is_linking(false),
+			m_linking_component(nullptr),
+			m_linking_output_id(0),
+			m_linking_x(0.0),
+			m_linking_y(0.0)
 		{
 		}
 
 		abstract_gui_component_map::abstract_gui_component_map(const View::rectangle & rect, const View::color background)
-			: panel<abstract_gui_component>(rect, background)
+			: panel<abstract_gui_component>(rect, background),
+			m_is_linking(false),
+			m_linking_component(nullptr),
+			m_linking_output_id(0),
+			m_linking_x(0.0),
+			m_linking_y(0.0)
 		{
 		}
 
@@ -191,25 +275,91 @@ namespace Gammou {
 					abstract_gui_component *src = get_input_src(gui_component, i, output_id);
 					
 					if (src != nullptr) {
-						float x1, y1, x2, y2, D;
+						float x1, y1, x2, y2;
 
 						src->get_output_pos(output_id, x1, y1);
 						gui_component->get_input_pos(i, x2, y2);
 
-						D = min(std::fabs(x2 - x1), 70.0);
-
-						cairo_move_to(cr, x1, y1);
-						cairo_curve_to(cr, x1 + D, y1, x2 - D, y2, x2, y2);
-
-						cairo_set_line_width(cr, 3.0);
-						View::cairo_helper::set_source_color(cr, View::cl_crimson);
-						cairo_stroke(cr);
+						draw_link(cr, x1, y1, x2, y2, View::cl_crimson);
 					}
 				}
+			}
 
+			// linking link
+			if (m_is_linking) {
+				float x, y;
+					
+				if (!(m_linking_component->get_output_pos(m_linking_output_id, x, y))) {
+					DEBUG_PRINT("ERROR OID %d\n", m_linking_output_id);
+				}
+				else{
+					draw_link(cr, x, y, m_linking_x, m_linking_y, View::cl_blue);
+				}
 			}
 
 			draw_widgets(cr);
+		}
+
+		void abstract_gui_component_map::connect(abstract_gui_component * src, const unsigned int src_output_id, 
+			abstract_gui_component * dst, const unsigned int dst_input_id)
+		{
+			Process::abstract_component<double> *c_src = src->get_component();
+			Process::abstract_component<double> *c_dst = dst->get_component();
+
+			if( c_src != nullptr && c_dst != nullptr)
+				c_src->connect_to(src_output_id, c_dst, dst_input_id);
+		}
+
+		bool abstract_gui_component_map::on_mouse_drag(const View::mouse_button button, const int x, const int y, const int dx, const int dy)
+		{
+			if (m_is_linking) {
+				m_linking_x = x;
+				m_linking_y = y;
+				redraw();
+			}
+
+
+			return View::panel<abstract_gui_component>::on_mouse_drag(button, x, y, dx, dy);
+		}
+
+		bool abstract_gui_component_map::on_mouse_drag_start(const View::mouse_button button, const int x, const int y)
+		{
+			abstract_gui_component *focused_component = get_focused_widget();
+
+			if (focused_component != nullptr) {
+				int output_id = focused_component->output_id_by_pos(x, y);
+				
+				if (output_id != -1) {
+					m_is_linking = true;
+					m_linking_output_id = output_id;
+					m_linking_component = focused_component;
+					focused_component->set_frozen(); // prenvent from moving while being linked
+				}
+			}
+
+			return View::panel<abstract_gui_component>::on_mouse_drag_start(button, x, y);
+		}
+
+		bool abstract_gui_component_map::on_mouse_drag_end(const View::mouse_button button, const int x, const int y)
+		{
+			if (m_is_linking) {
+				abstract_gui_component *dst = get_focused_widget();
+				
+				if (dst != nullptr) {
+					const int input_id = dst->input_id_by_pos(x, y);
+
+					DEBUG_PRINT("INPUT ID = %d\n", input_id);
+
+					if (input_id != -1)
+						connect(m_linking_component, m_linking_output_id, dst, input_id);
+				}
+
+				m_is_linking = false;
+				m_linking_component->set_frozen(false);
+				redraw();
+			}
+
+			return View::panel<abstract_gui_component>::on_mouse_drag_end(button, x, y);
 		}
 
 		unsigned int abstract_gui_component_map::input_count(abstract_gui_component * component)
@@ -238,6 +388,10 @@ namespace Gammou {
 			return nullptr;
 		}
 
-	} /* Gui */
+
+
+
+
+} /* Gui */
 
 } /* Gammou */

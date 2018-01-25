@@ -18,7 +18,7 @@ namespace Gammou {
 		{
 		}
 
-		Process::abstract_component<double>* gui_sound_component::get_component()
+		Process::abstract_component<double>* gui_sound_component::get_component() const
 		{
 			return m_sound_component;
 		}

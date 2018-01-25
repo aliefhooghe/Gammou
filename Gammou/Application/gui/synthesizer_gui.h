@@ -24,6 +24,15 @@ namespace Gammou {
 				Sound::abstract_sound_component *sum2 = new Sound::static_sum<3>(12);
 				Sound::abstract_sound_component *sum3 = new Sound::static_sum<2>(12);
 
+				synthesizer->add_sound_component_on_master_circuit(osc);
+				synthesizer->add_sound_component_on_master_circuit(sum);
+				synthesizer->add_sound_component_on_master_circuit(sum1);
+				synthesizer->add_sound_component_on_master_circuit(sum2);
+				synthesizer->add_sound_component_on_master_circuit(sum3);
+
+				for(unsigned int i = 0; i < 10; ++i)
+					osc->connect_to(0, sum, i);
+
 				gui_sound_component *c = new gui_sound_component(osc, 1, 1);
 				gui_sound_component *c2 = new gui_sound_component(sum, 300, 85);
 				gui_sound_component *c21 = new gui_sound_component(sum1, 330, 100);
@@ -45,13 +54,13 @@ namespace Gammou {
 			{
 			}
 
-		protected:
 			bool on_mouse_dbl_click(const int x, const int y) override
 			{
 				DEBUG_PRINT("DBLCLICK\n");
 				return true;
 			}
 
+			protected:
 		};
 	}
 }

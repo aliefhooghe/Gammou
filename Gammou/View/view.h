@@ -1,6 +1,8 @@
 #ifndef VIEW_H_
 #define VIEW_H_
 
+#include "../debug.h" // a enlever a terme
+
 #include "cairo_definition.h"
 #include "widget\widget.h"
 #include "widget\panel.h"

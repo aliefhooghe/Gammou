@@ -9,7 +9,6 @@ namespace Gammou {
 
 	namespace View {
 
-
 		struct rectangle {
 
 			rectangle(const int px, const int py, const int width, const int height);
