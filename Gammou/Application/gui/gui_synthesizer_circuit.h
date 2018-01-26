@@ -7,7 +7,23 @@ namespace Gammou {
 
 	namespace Gui {
 
-		class gui_master_circuit : public abstract_gui_component_map {
+		class abstract_gui_synthesizer_circuit : public abstract_gui_component_map {
+
+		public:
+			abstract_gui_synthesizer_circuit(Sound::synthesizer *synthesizer, std::mutex *synthesizer_mutex,
+				unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height,
+				const View::color background);
+			abstract_gui_synthesizer_circuit(Sound::synthesizer *synthesizer, std::mutex *synthesizer_mutex,
+				const View::rectangle& rect, const View::color background);
+
+			virtual ~abstract_gui_synthesizer_circuit() {}
+
+		protected:
+			Sound::synthesizer *const m_synthesizer;
+		};
+
+
+		class gui_master_circuit : public abstract_gui_synthesizer_circuit {
 
 		public:
 			gui_master_circuit(Sound::synthesizer *synthesizer, std::mutex *synthesizer_mutex,
@@ -20,9 +36,25 @@ namespace Gammou {
 
 		private:
 			void add_internal_components(std::mutex *synthesizer_mutex);
-
-			Sound::synthesizer *const m_synthesizer;
 		};
+
+		
+		class gui_polyphonic_circuit : public abstract_gui_synthesizer_circuit {
+
+		public:
+			gui_polyphonic_circuit(Sound::synthesizer *synthesizer, std::mutex *synthesizer_mutex,
+				unsigned int x, const unsigned int y, const unsigned int width, const unsigned height,
+				const View::color background = View::cl_gray);
+			gui_polyphonic_circuit(Sound::synthesizer *synthesizer, std::mutex *synthesizer_mutex,
+				const View::rectangle& rect, const View::color background  = View::cl_gray);
+
+			virtual ~gui_polyphonic_circuit() {}
+
+		private:
+			void add_internal_components(std::mutex *synthesizer_mutex);
+
+		};
+		
 
 	} /* Gui */
 

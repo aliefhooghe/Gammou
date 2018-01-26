@@ -16,7 +16,7 @@ namespace Gammou {
 		Plugin::Plugin()
 			:
 			m_synthesizer_mutex(),
-			m_synthesizer(2, 2, 128, GAMMOU_VST_AUTOMATION_INPUT_COUNT),
+			m_synthesizer(2, 2, GAMMOU_SYNTHESIZER_CHANNEL_COUNT, GAMMOU_VST_AUTOMATION_INPUT_COUNT),
 			m_window(&m_synthesizer, &m_synthesizer_mutex, 1000, 600)
 		{
 			DEBUG_PRINT("Gammou CTOR\n");
@@ -117,8 +117,9 @@ namespace Gammou {
 			Steinberg::Vst::IEventList *event_list = data.inputEvents;
 
 			if (event_list != nullptr) {
-				unsigned int eventCount = event_list->getEventCount();
-				for (unsigned int i = 0; i < eventCount; ++i) {
+				const unsigned int event_count = event_list->getEventCount();
+
+				for (unsigned int i = 0; i < event_count; ++i) {
 					Steinberg::Vst::Event event;
 
 					if (Steinberg::kResultOk == event_list->getEvent(i, event)) {
@@ -165,7 +166,7 @@ namespace Gammou {
 				for (unsigned int i = 0; i < nbSamples; 
 					++i, ++output_buffer_left, ++output_buffer_right, ++input_buffer_left, ++input_buffer_right) {
 
-					input[0] = static_cast<double>(*input_buffer_left);
+					input[0] = 440.0;// static_cast<double>(*input_buffer_left);
 					input[1] = static_cast<double>(*input_buffer_right);
 
 					m_synthesizer.process(input, output);
@@ -184,7 +185,7 @@ namespace Gammou {
 				for (unsigned int i = 0; i < nbSamples; 
 					++i, ++output_buffer_left, ++output_buffer_right, ++input_buffer_left, ++input_buffer_right) {
 
-					input[0] = *input_buffer_left;
+					input[0] = 440.0;// *input_buffer_left;
 					input[1] = *input_buffer_right;
 
 					m_synthesizer.process(input, output);

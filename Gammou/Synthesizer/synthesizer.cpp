@@ -48,12 +48,8 @@ namespace Gammou {
 			std::fill(m_master_circuit.m_polyphonic_to_master_buffer.begin(),
 				m_master_circuit.m_polyphonic_to_master_buffer.end(), 0.0);
 
-
-
 			for(auto it = m_channels.begin(); it != m_running_channels_end; ){
 				const unsigned int current_channel = *it;
-
-
 
 				if( m_polyphonic_circuit.process(current_channel)){
 					// Output == Zero for this channel
@@ -83,7 +79,7 @@ namespace Gammou {
 
 			if( channel != INVALID_CHANNEL ){
 
-				DEBUG_PRINT("on : %d\n", channel);
+				DEBUG_PRINT("on : %d (n = %d), fr = %f)\n", channel, midi_note, m_note_frequencies[(int)midi_note]);
 
 				m_channels_midi_note[channel] = midi_note;
 				m_polyphonic_circuit.initialize_channel(channel);
@@ -112,11 +108,11 @@ namespace Gammou {
 					m_channels_midi_note[channel] = NO_NOTE;
 					m_polyphonic_circuit.set_channel_release_velocity(channel, velocity);
 					m_polyphonic_circuit.set_channel_gate_state(channel, false);
-					break;
+					return;
 				}
 			}
 
-
+			DEBUG_PRINT("off Inaplicable : (n = %d)\n", midi_note);
 		}
 
 		void synthesizer::add_sound_component_on_master_circuit(abstract_sound_component *component)

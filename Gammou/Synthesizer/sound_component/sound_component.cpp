@@ -89,6 +89,11 @@ namespace Gammou {
 			return m_current_working_channel;
 		}
 
+		void polyphonic_sound_component::on_channel_change(const unsigned int new_chanel)
+		{
+			m_current_working_channel = new_chanel;
+		}
+
 
 		/*
 		*

@@ -7,6 +7,10 @@
 #include "gui_synthesizer_circuit.h"
 
 
+
+#define GAMMOU_SYNTHESIZER_CHANNEL_COUNT 128
+
+
 namespace Gammou {
 
 	namespace Gui {
@@ -21,16 +25,19 @@ namespace Gammou {
 			{
 				set_background_color(View::cl_white);
 
+				/*
+						MASTER
+				*/
 
-				Sound::abstract_sound_component *osc = new Sound::sin_oscilator(12);
-				Sound::abstract_sound_component *osc1 = new Sound::sin_oscilator(12);
-				Sound::abstract_sound_component *osc2 = new Sound::sin_oscilator(12);
+				Sound::sound_component *osc = new Sound::sin_oscilator(1);
+				Sound::sound_component *osc1 = new Sound::sin_oscilator(1);
+				Sound::sound_component *osc2 = new Sound::sin_oscilator(1);
 
 
-				Sound::abstract_sound_component *sum = new Sound::static_sum<5>(12);
-				Sound::abstract_sound_component *sum1 = new Sound::static_sum<5>(12);
-				Sound::abstract_sound_component *sum2 = new Sound::static_prod<2>(12);
-				Sound::abstract_sound_component *sum3 = new Sound::static_prod<2>(12);
+				Sound::sound_component *sum = new Sound::static_sum<5>(1);
+				Sound::sound_component *sum1 = new Sound::static_sum<5>(1);
+				Sound::sound_component *sum2 = new Sound::static_prod<2>(1);
+				Sound::sound_component *sum3 = new Sound::static_prod<2>(1);
 
 				synthesizer_mutex->lock();
 
@@ -52,24 +59,70 @@ namespace Gammou {
 				gui_sound_component *c22 = new gui_sound_component(sum2, synthesizer_mutex, 360, 125);
 				gui_sound_component *c23 = new gui_sound_component(sum3, synthesizer_mutex, 390, 140);
 
-				gui_master_circuit *c_map = new gui_master_circuit(synthesizer, synthesizer_mutex, 0, 0, 1000, 600);
+				gui_master_circuit *master = new gui_master_circuit(synthesizer, synthesizer_mutex, 0, 0, 500, 600);
 
-				c_map->add_gui_component(c);
-				c_map->add_gui_component(cc);
-				c_map->add_gui_component(ccc);
-				c_map->add_gui_component(c2);
-				c_map->add_gui_component(c21);
-				c_map->add_gui_component(c22);
-				c_map->add_gui_component(c23);
+				master->add_gui_component(c);
+				master->add_gui_component(cc);
+				master->add_gui_component(ccc);
+				master->add_gui_component(c2);
+				master->add_gui_component(c21);
+				master->add_gui_component(c22);
+				master->add_gui_component(c23);
 
-				add_widget(c_map);
+				add_widget(master);
+
+
+				/*
+					POLYPHONIC
+				*/
+
+				Sound::sound_component *posc = new Sound::sin_oscilator(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
+				Sound::sound_component *posc1 = new Sound::sin_oscilator(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
+				Sound::sound_component *posc2 = new Sound::sin_oscilator(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
+
+
+				Sound::sound_component *psum = new Sound::static_sum<5>(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
+				Sound::sound_component *psum1 = new Sound::static_sum<5>(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
+				Sound::sound_component *psum2 = new Sound::static_prod<2>(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
+				Sound::sound_component *psum3 = new Sound::static_prod<2>(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
+
+				synthesizer_mutex->lock();
+
+				synthesizer->add_sound_component_on_polyphonic_circuit(posc);
+				synthesizer->add_sound_component_on_polyphonic_circuit(posc1);
+				synthesizer->add_sound_component_on_polyphonic_circuit(psum3);
+				synthesizer->add_sound_component_on_polyphonic_circuit(posc2);
+				synthesizer->add_sound_component_on_polyphonic_circuit(psum);
+				synthesizer->add_sound_component_on_polyphonic_circuit(psum1);
+				synthesizer->add_sound_component_on_polyphonic_circuit(psum2);
+
+				synthesizer_mutex->unlock();
+
+				gui_sound_component *pc = new gui_sound_component(posc, synthesizer_mutex, 1, 1);
+				gui_sound_component *pcc = new gui_sound_component(posc2, synthesizer_mutex, 1, 1);
+				gui_sound_component *pccc = new gui_sound_component(posc1, synthesizer_mutex, 1, 1);
+				gui_sound_component *pc2 = new gui_sound_component(psum, synthesizer_mutex, 300, 85);
+				gui_sound_component *pc21 = new gui_sound_component(psum1, synthesizer_mutex, 330, 100);
+				gui_sound_component *pc22 = new gui_sound_component(psum2, synthesizer_mutex, 360, 125);
+				gui_sound_component *pc23 = new gui_sound_component(psum3, synthesizer_mutex, 390, 140);
+
+				gui_polyphonic_circuit *poly = new gui_polyphonic_circuit(synthesizer, synthesizer_mutex, 500, 0, 500, 600);
+
+				poly->add_gui_component(pc);
+				poly->add_gui_component(pcc);
+				poly->add_gui_component(pccc);
+				poly->add_gui_component(pc2);
+				poly->add_gui_component(pc21);
+				poly->add_gui_component(pc22);
+				poly->add_gui_component(pc23);
+
+				add_widget(poly);
 			}
 			
 			~synthesizer_gui() 
 			{
 			}
 
-			protected:
 		};
 	}
 }

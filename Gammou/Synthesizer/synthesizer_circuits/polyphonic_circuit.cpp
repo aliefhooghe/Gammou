@@ -12,12 +12,17 @@ namespace Gammou {
 
 
 		polyphonic_circuit_GPAR_input::polyphonic_circuit_GPAR_input(const unsigned int channel_count)
-			: polyphonic_sound_component("Input", 0, Input::COUNT, channel_count),
+			: polyphonic_sound_component("Midi In", 0, Input::COUNT, channel_count),
 			m_gate_state(channel_count),
 			m_pitch(channel_count),
 			m_attack_velocity(channel_count),
 			m_release_velocity(channel_count)
 		{
+			// Naming
+			set_output_name("Gate", 0);
+			set_output_name("Pitch", 1);
+			set_output_name("Attack", 2);
+			set_output_name("Release", 3);
 		}
 
 		polyphonic_circuit_GPAR_input::~polyphonic_circuit_GPAR_input()
@@ -26,7 +31,6 @@ namespace Gammou {
 
 		double polyphonic_circuit_GPAR_input::fetch_output(const unsigned int output_id)
 		{
-
 			const unsigned int channel = get_current_working_channel();
 
 			switch( output_id ) {
@@ -48,7 +52,7 @@ namespace Gammou {
 				break;
 			}
 
-			return 0.0;
+			return 0.0; // pour le compilo
 		}
 
 		void polyphonic_circuit_GPAR_input::set_channel_gate_state(const unsigned int channel, const bool state)
@@ -80,7 +84,7 @@ namespace Gammou {
 
 		polyphonic_circuit_output::polyphonic_circuit_output(std::vector<double>& output_buffer)
 			: 
-			abstract_sound_component("Output", output_buffer.size(), 0),
+			abstract_sound_component("Master In", output_buffer.size(), 0),
 			m_buffer_ptr(output_buffer.data()),
 			m_last_out_was_zero(false)
 		{
@@ -114,11 +118,15 @@ namespace Gammou {
 		polyphonic_circuit::polyphonic_circuit(master_circuit * master, const unsigned int channel_count)
 			:
 			m_gpar_input(channel_count),
-			m_input_from_master("From Master", master->m_master_to_polyphonic_buffer),
-			m_automation_input("Automation", master->m_automation_buffer),
+			m_input_from_master("Master Out", master->m_master_to_polyphonic_buffer),
+			m_automation_input("Automations", master->m_automation_buffer),
 			m_output_to_master(master->m_polyphonic_to_master_buffer),
 			m_sound_component_manager(channel_count)
 		{
+			add_sound_component(&m_gpar_input);
+			add_component(&m_input_from_master);
+			add_component(&m_automation_input);
+			add_component(&m_output_to_master);
 		}
 
 		polyphonic_circuit::~polyphonic_circuit()
