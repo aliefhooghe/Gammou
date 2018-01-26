@@ -16,7 +16,7 @@ namespace Gammou {
 		Plugin::Plugin()
 			:
 			m_synthesizer_mutex(),
-			m_synthesizer(1, 2, 128, 6),
+			m_synthesizer(2, 2, 128, GAMMOU_VST_AUTOMATION_INPUT_COUNT),
 			m_window(&m_synthesizer, &m_synthesizer_mutex, 1000, 600)
 		{
 			DEBUG_PRINT("Gammou CTOR\n");
@@ -35,7 +35,7 @@ namespace Gammou {
 				return result;
 
 			// Create Audio Input
-			//addAudioInput(USTRING("Stereo In"), Steinberg::Vst::SpeakerArr::kStereo);
+			addAudioInput(USTRING("Stereo In"), Steinberg::Vst::SpeakerArr::kStereo);
 
 			// Create Audio Output
 			addAudioOutput(USTRING("Stereo Out"), Steinberg::Vst::SpeakerArr::kStereo);
@@ -104,15 +104,16 @@ namespace Gammou {
 						const unsigned int param_id = param_data->getParameterId();
 						Steinberg::int32 sample_offset;
 						double value;
-						// FOr le moment, only the last point
+						// For le moment, only the last point
 
-						if (Steinberg::kResultTrue == param_data->getPoint(data_count - 1, sample_offset, value))
+						if (Steinberg::kResultTrue == 
+							param_data->getPoint(data_count - 1, sample_offset, value))
 							m_synthesizer.set_automation_value(value, param_id);
 					}
 				}
 			}
 
-			// Input Events
+			// Process Midi Input Events
 			Steinberg::Vst::IEventList *event_list = data.inputEvents;
 
 			if (event_list != nullptr) {
@@ -140,39 +141,56 @@ namespace Gammou {
 				}
 			}
 
-			//	Process Audio output
-			if (data.numOutputs == 0)
-				return Steinberg::kResultOk;
+			//	Process Audio
+			
+			//if (data.numOutputs == 0) // 
+			//	return Steinberg::kResultOk;
 
-			//	No Silent flag
+
+			//	No Silent flag (Todo check input silent flag)
 			data.outputs[0].silenceFlags = 0;
 
 			const unsigned int nbSamples = data.numSamples;
-			double input[1] = { 440.0 };
+
+			double input[2] = { 0.0, 0.0 };
 			double output[2] = { 0.0, 0.0 };
 
-			if (processSetup.symbolicSampleSize == Steinberg::Vst::kSample32) {
-				float *outputBufferLeft = data.outputs[0].channelBuffers32[0];
-				float *outputBufferRight = data.outputs[0].channelBuffers32[1];
+			if (processSetup.symbolicSampleSize == Steinberg::Vst::kSample32) { // 32 bits
+				float *output_buffer_left = data.outputs[0].channelBuffers32[0];
+				float *output_buffer_right = data.outputs[0].channelBuffers32[1];
 
-				for (unsigned int i = 0; i < nbSamples; ++i, ++outputBufferLeft, ++outputBufferRight) {
-					
+				float *input_buffer_left = data.inputs[0].channelBuffers32[0];
+				float *input_buffer_right = data.inputs[0].channelBuffers32[1];
+
+				for (unsigned int i = 0; i < nbSamples; 
+					++i, ++output_buffer_left, ++output_buffer_right, ++input_buffer_left, ++input_buffer_right) {
+
+					input[0] = static_cast<double>(*input_buffer_left);
+					input[1] = static_cast<double>(*input_buffer_right);
+
 					m_synthesizer.process(input, output);
 
-					*outputBufferLeft = output[0];
-					*outputBufferRight = output[1];
+					*output_buffer_left = static_cast<float>(output[0]);
+					*output_buffer_right = static_cast<float>(output[1]);
 				}
 			}
 			else { // 64 bit
-				double *outputBufferLeft = data.outputs[0].channelBuffers64[0];
-				double *outputBufferRight = data.outputs[0].channelBuffers64[1];
+				double *output_buffer_left = data.outputs[0].channelBuffers64[0];
+				double *output_buffer_right = data.outputs[0].channelBuffers64[1];
 
-				for (unsigned int i = 0; i < nbSamples; ++i, ++outputBufferLeft, ++outputBufferRight) {
-					
+				double *input_buffer_left = data.inputs[0].channelBuffers64[0];
+				double *input_buffer_right = data.inputs[0].channelBuffers64[1];
+
+				for (unsigned int i = 0; i < nbSamples; 
+					++i, ++output_buffer_left, ++output_buffer_right, ++input_buffer_left, ++input_buffer_right) {
+
+					input[0] = *input_buffer_left;
+					input[1] = *input_buffer_right;
+
 					m_synthesizer.process(input, output);
 
-					*outputBufferLeft = output[0];
-					*outputBufferRight = output[1];
+					*output_buffer_left = output[0];
+					*output_buffer_right = output[1];
 				}
 			}
 
@@ -185,9 +203,11 @@ namespace Gammou {
 			Steinberg::Vst::SpeakerArrangement* outputs, Steinberg::int32 numOuts)
 		{
 			// Host ask to change
-			if (numIns != 0 ||
+			// TODO check coherence with synthesizer
+			if (numIns != 1 ||
 				numOuts != 1 ||
-				outputs[0] != Steinberg::Vst::SpeakerArr::kStereo)
+				outputs[0] != Steinberg::Vst::SpeakerArr::kStereo ||
+				inputs[0] != Steinberg::Vst::SpeakerArr::kStereo)
 				return Steinberg::kResultFalse;
 			else
 				return Steinberg::kResultOk;

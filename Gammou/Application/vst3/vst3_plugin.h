@@ -19,6 +19,8 @@
 #include "../gui/synthesizer_gui.h"
 #include "synthesizer.h"
 
+#define GAMMOU_VST_AUTOMATION_INPUT_COUNT 8
+
 namespace Gammou {
 
 	namespace Vst {
