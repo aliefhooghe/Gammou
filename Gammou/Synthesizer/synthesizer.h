@@ -61,6 +61,10 @@ namespace Gammou {
 			Process::abstract_component<double> *get_master_circuit_polyphonic_output();
 			Process::abstract_component<double> *get_master_circuit_automation_input();
 
+			//
+			unsigned int get_automation_input_count() const;
+			void set_automation_value(const double value, const unsigned int automation_id);
+
 		private:
 			unsigned int get_new_channel();
 			void free_channel(const std::vector<unsigned int>::iterator& it);

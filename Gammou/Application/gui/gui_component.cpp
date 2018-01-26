@@ -17,15 +17,14 @@ namespace Gammou {
 			cairo_stroke(cr);
 		}
 
-
 		//
 
-
-
 		abstract_gui_component::abstract_gui_component(
+			std::mutex *circuit_mutex,
 			const unsigned int x, const unsigned int y, const unsigned int initial_input_count, const unsigned int initial_output_count)
 			: View::panel<View::widget>(x, y, 90, 10 + 15 * max(initial_input_count, initial_output_count)),
-				m_frozen(false)
+				m_frozen(false),
+				m_circuit_mutex(circuit_mutex)
 		{
 			m_l1 = 40;
 			m_rec_radius = 5.0;
@@ -82,13 +81,21 @@ namespace Gammou {
 			const float self_x = x - get_x();
 			const float self_y = y - get_y();
 
-			if (component != nullptr 
-				&& ((get_width() - self_x) < (m_l1 / 2.0))) {
+			if (component != nullptr
+				&& ((get_width() - self_x) < m_l1 / 2.0)) {
 				const unsigned int oc = component->get_output_count();
 				const float socket_rect_height = static_cast<float>(get_height() - m_name_height) / static_cast<float>(oc);
 
-				if (oc != 0)
-					return (int)((self_y - m_name_height) / socket_rect_height);
+				if (oc != 0) {
+					const int ret =  (int)((self_y - m_name_height) / socket_rect_height);
+					
+					if (ret < 0)
+						return ret;
+					else if (ret >= oc)
+						return (oc - 1);
+					else
+						return ret;
+				}
 			}
 
 			return -1;
@@ -101,12 +108,20 @@ namespace Gammou {
 			const float self_y = y - get_y();
 
 			if (component != nullptr
-				&& (self_x < (m_l1/2.0))) {
+				&& (self_x < m_l1)) {
 				const unsigned int ic = component->get_input_count();
 				const float socket_rect_height = static_cast<float>(get_height() - m_name_height) / static_cast<float>(ic);
 
-				if (ic != 0)
-					return (int)((self_y - m_name_height) / socket_rect_height);
+				if (ic != 0) {
+					const int ret = (int)((self_y - m_name_height) / socket_rect_height);
+					
+					if (ret < 0)
+						return ret;
+					else if (ret >= ic)
+						return (ic - 1);
+					else
+						return ret;
+				}
 			}
 
 			return -1;
@@ -232,6 +247,28 @@ namespace Gammou {
 			}
 		}
 
+		bool abstract_gui_component::on_mouse_dbl_click(const int x, const int y)
+		{
+			bool ret;
+
+			lock_circuit();
+			const unsigned int input_id = input_id_by_pos(x + get_x(), y + get_y());
+
+			if (input_id != -1) {
+				ret = true; // event handled
+				DEBUG_PRINT("Disconect input %d\n", input_id);
+				get_component()->disconnect_input(input_id);
+				redraw_parent();
+			}
+			else {
+				DEBUG_PRINT("Not on an input\n");
+				ret = false;
+			}
+				
+			unlock_circuit();
+			return ret;
+		}
+
 
 		/*
 		 *		ABSTRACT GUI COMPONENT MAP IMPLEMENTATION
@@ -268,9 +305,7 @@ namespace Gammou {
 
 			if (cmpt != nullptr) {
 				add_widget(component);
-				lock_circuit();
 				m_component_association[cmpt] = component;
-				unlock_circuit();
 			}
 		}
 
@@ -345,6 +380,8 @@ namespace Gammou {
 				lock_circuit();
 				int output_id = focused_component->output_id_by_pos(x, y);
 				unlock_circuit();
+
+				DEBUG_PRINT("Start linking from output_id = %d\n", output_id);
 
 				if (output_id != -1) {
 					m_is_linking = true;

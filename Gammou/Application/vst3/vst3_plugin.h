@@ -13,6 +13,7 @@
 
 #include "pluginterfaces/base/ftypes.h"
 #include "pluginterfaces/vst/ivstevents.h"
+#include "pluginterfaces/vst/ivstparameterchanges.h"
 #include "pluginterfaces/base/ustring.h"
 
 #include "../gui/synthesizer_gui.h"

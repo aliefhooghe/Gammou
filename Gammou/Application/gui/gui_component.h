@@ -19,15 +19,13 @@ namespace Gammou {
 		
 		*/
 
-
-		//		WARNING : abstract_gui_component is not supposed to deal with mutex.
-		//		Concurency isues are solved by component_map
 		class abstract_gui_component : public View::panel<> {
 
 			friend class abstract_gui_component_map;
 
 		public:
 			abstract_gui_component(
+				std::mutex *circuit_mutex,
 				unsigned int x, const unsigned int y, 
 				const unsigned int initial_input_count, const unsigned int initial_output_count);
 
@@ -49,6 +47,8 @@ namespace Gammou {
 			virtual bool on_mouse_drag_start(const View::mouse_button, const int x, const int y) override;
 			virtual bool on_mouse_drag_end(const View::mouse_button, const int x, const int y) override;
 
+			virtual bool on_mouse_dbl_click(const int x, const int y) override;
+
 		protected:
 			virtual void draw(cairo_t *cr) override;
 
@@ -56,8 +56,11 @@ namespace Gammou {
 			void set_frozen(const bool state = true);
 
 		private:
-			bool m_frozen;
+			inline void lock_circuit() { m_circuit_mutex->lock(); }
+			inline void unlock_circuit() { m_circuit_mutex->unlock(); }
 
+			bool m_frozen;
+			std::mutex *m_circuit_mutex;
 
 			// cf schema
 			float m_l1;
@@ -79,9 +82,11 @@ namespace Gammou {
 		class default_gui_component : public abstract_gui_component {
 
 		public:
-			default_gui_component(Process::abstract_component<double> *component,
+			default_gui_component(
+				Process::abstract_component<double> *component,
+				std::mutex *circuit_mutex,
 				const unsigned int x, const unsigned int y)
-				: abstract_gui_component(x, y, component->get_input_count(), component->get_output_count()),
+				: abstract_gui_component(circuit_mutex, x, y, component->get_input_count(), component->get_output_count()),
 				m_component(component) {}
 
 			virtual ~default_gui_component() {}

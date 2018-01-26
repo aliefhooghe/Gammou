@@ -5,7 +5,7 @@
 
 #include "vst3_plugin.h"
 
-#include <Windows.h>
+#include <Windows.h> // a supprimer
 
 namespace Gammou {
 
@@ -34,11 +34,22 @@ namespace Gammou {
 			if (result != Steinberg::kResultOk)
 				return result;
 
+			// Create Audio Input
+			//addAudioInput(USTRING("Stereo In"), Steinberg::Vst::SpeakerArr::kStereo);
+
 			// Create Audio Output
 			addAudioOutput(USTRING("Stereo Out"), Steinberg::Vst::SpeakerArr::kStereo);
 
 			//	Create Midi Input
 			addEventInput(USTRING("Midi In"), 1); // 1 channel
+
+			// Create Automation inputs
+			const unsigned int automation_count = m_synthesizer.get_automation_input_count();
+
+			for (unsigned int i = 0; i < automation_count; ++i) {
+				std::string param_name = ("Automation " + std::to_string(i));
+				parameters.addParameter(new Steinberg::Vst::Parameter(USTRING(param_name.c_str()), i));
+			}
 
 			DEBUG_PRINT("Gammou Initialize\n");
 
@@ -77,18 +88,39 @@ namespace Gammou {
 
 		Steinberg::tresult PLUGIN_API Plugin::process(Steinberg::Vst::ProcessData & data)
 		{
-			// Input parameter change : Nothing for le moment
-
-			// Input Events
-			Steinberg::Vst::IEventList *eventList = data.inputEvents;
-
 			lock_synthesizer();
 
-			if (eventList != nullptr) {
-				unsigned int eventCount = eventList->getEventCount();
+			// Input parameter change (Automation input)
+			Steinberg::Vst::IParameterChanges *const param_changes = data.inputParameterChanges;
+
+			if (param_changes != nullptr) {
+				const unsigned int changed_param_count = param_changes->getParameterCount();
+				
+				for (unsigned int i = 0; i < changed_param_count; ++i) {
+					Steinberg::Vst::IParamValueQueue *const param_data = param_changes->getParameterData(i);
+
+					if (param_data != nullptr) {
+						const unsigned int data_count = param_data->getPointCount();
+						const unsigned int param_id = param_data->getParameterId();
+						Steinberg::int32 sample_offset;
+						double value;
+						// FOr le moment, only the last point
+
+						if (Steinberg::kResultTrue == param_data->getPoint(data_count - 1, sample_offset, value))
+							m_synthesizer.set_automation_value(value, param_id);
+					}
+				}
+			}
+
+			// Input Events
+			Steinberg::Vst::IEventList *event_list = data.inputEvents;
+
+			if (event_list != nullptr) {
+				unsigned int eventCount = event_list->getEventCount();
 				for (unsigned int i = 0; i < eventCount; ++i) {
 					Steinberg::Vst::Event event;
-					if (Steinberg::kResultOk == eventList->getEvent(i, event)) {
+
+					if (Steinberg::kResultOk == event_list->getEvent(i, event)) {
 						
 						//	TODO
 						//	event.sampleOffset

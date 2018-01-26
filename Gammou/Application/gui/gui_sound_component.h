@@ -17,7 +17,10 @@ namespace Gammou {
 		class gui_sound_component : public abstract_gui_component {
 
 		public:
-			gui_sound_component(Sound::abstract_sound_component *sound_component, const unsigned int x, const unsigned int y);
+			gui_sound_component(
+				Sound::abstract_sound_component *sound_component, 
+				std::mutex *synthesizer_mutex,
+				const unsigned int x, const unsigned int y);
 			virtual ~gui_sound_component();
 			
 			// FACTORY STUFF TO DO

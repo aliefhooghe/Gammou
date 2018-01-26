@@ -184,6 +184,17 @@ namespace Gammou {
 			return &(m_master_circuit.m_automation_input);
 		}
 
+		unsigned int synthesizer::get_automation_input_count() const
+		{
+			return m_master_circuit.m_automation_buffer.size();
+		}
+
+		void synthesizer::set_automation_value(const double value, const unsigned int automation_id)
+		{
+			// TODO safer ???
+			m_master_circuit.m_automation_buffer[automation_id] = value;
+		}
+
 
 		unsigned int synthesizer::get_new_channel()
 		{

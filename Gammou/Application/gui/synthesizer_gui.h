@@ -23,14 +23,20 @@ namespace Gammou {
 
 
 				Sound::abstract_sound_component *osc = new Sound::sin_oscilator(12);
-				Sound::abstract_sound_component *sum = new Sound::static_sum<10>(12);
+				Sound::abstract_sound_component *osc1 = new Sound::sin_oscilator(12);
+				Sound::abstract_sound_component *osc2 = new Sound::sin_oscilator(12);
+
+
+				Sound::abstract_sound_component *sum = new Sound::static_sum<5>(12);
 				Sound::abstract_sound_component *sum1 = new Sound::static_sum<5>(12);
-				Sound::abstract_sound_component *sum2 = new Sound::static_sum<3>(12);
-				Sound::abstract_sound_component *sum3 = new Sound::static_sum<2>(12);
+				Sound::abstract_sound_component *sum2 = new Sound::static_prod<2>(12);
+				Sound::abstract_sound_component *sum3 = new Sound::static_prod<2>(12);
 
 				synthesizer_mutex->lock();
 
 				synthesizer->add_sound_component_on_master_circuit(osc);
+				synthesizer->add_sound_component_on_master_circuit(osc1);
+				synthesizer->add_sound_component_on_master_circuit(osc2);
 				synthesizer->add_sound_component_on_master_circuit(sum);
 				synthesizer->add_sound_component_on_master_circuit(sum1);
 				synthesizer->add_sound_component_on_master_circuit(sum2);
@@ -38,15 +44,19 @@ namespace Gammou {
 
 				synthesizer_mutex->unlock();
 
-				gui_sound_component *c = new gui_sound_component(osc, 1, 1);
-				gui_sound_component *c2 = new gui_sound_component(sum, 300, 85);
-				gui_sound_component *c21 = new gui_sound_component(sum1, 330, 100);
-				gui_sound_component *c22 = new gui_sound_component(sum2, 360, 125);
-				gui_sound_component *c23 = new gui_sound_component(sum3, 390, 140);
+				gui_sound_component *c = new gui_sound_component(osc, synthesizer_mutex, 1, 1);
+				gui_sound_component *cc = new gui_sound_component(osc2, synthesizer_mutex, 1, 1);
+				gui_sound_component *ccc = new gui_sound_component(osc1, synthesizer_mutex, 1, 1);
+				gui_sound_component *c2 = new gui_sound_component(sum, synthesizer_mutex, 300, 85);
+				gui_sound_component *c21 = new gui_sound_component(sum1, synthesizer_mutex, 330, 100);
+				gui_sound_component *c22 = new gui_sound_component(sum2, synthesizer_mutex, 360, 125);
+				gui_sound_component *c23 = new gui_sound_component(sum3, synthesizer_mutex, 390, 140);
 
 				gui_master_circuit *c_map = new gui_master_circuit(synthesizer, synthesizer_mutex, 0, 0, 1000, 600);
 
 				c_map->add_gui_component(c);
+				c_map->add_gui_component(cc);
+				c_map->add_gui_component(ccc);
 				c_map->add_gui_component(c2);
 				c_map->add_gui_component(c21);
 				c_map->add_gui_component(c22);
@@ -57,12 +67,6 @@ namespace Gammou {
 			
 			~synthesizer_gui() 
 			{
-			}
-
-			bool on_mouse_dbl_click(const int x, const int y) override
-			{
-				DEBUG_PRINT("DBLCLICK\n");
-				return true;
 			}
 
 			protected:

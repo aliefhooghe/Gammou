@@ -34,6 +34,7 @@ namespace Gammou {
 			void set_sample_rate(const double sample_rate);
 			void process(const double input[], double output[]);
 
+			//void 
 		private:
 			void notify_circuit_change() override;
 			

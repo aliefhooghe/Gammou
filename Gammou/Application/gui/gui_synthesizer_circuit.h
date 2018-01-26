@@ -19,7 +19,7 @@ namespace Gammou {
 			virtual ~gui_master_circuit() {}
 
 		private:
-			void add_internal_components();
+			void add_internal_components(std::mutex *synthesizer_mutex);
 
 			Sound::synthesizer *const m_synthesizer;
 		};
