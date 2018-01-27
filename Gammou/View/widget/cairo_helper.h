@@ -11,6 +11,7 @@ namespace Gammou {
 
 		struct rectangle {
 
+			rectangle();
 			rectangle(const int px, const int py, const int width, const int height);
 			~rectangle() {};
 

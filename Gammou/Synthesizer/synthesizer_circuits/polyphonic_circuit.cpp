@@ -6,6 +6,8 @@
 #include "polyphonic_circuit.h"
 
 
+#define SOUND_EPSILON 0.00003	//( ~= 1 / (2^15))
+
 namespace Gammou {
 
 	namespace Sound {
@@ -99,7 +101,7 @@ namespace Gammou {
 				for(unsigned int i = 0; i < ic; ++i){
 					m_buffer_ptr[i] += input[i];
 
-					if(std::abs(input[i]) > std::numeric_limits<float>::min())
+					if(std::abs(input[i]) > SOUND_EPSILON)
 						m_last_out_was_zero = false;
 				}
 			}
@@ -135,10 +137,7 @@ namespace Gammou {
 
 		void polyphonic_circuit::add_sound_component(polyphonic_sound_component *component)
 		{
-
-			if (component->get_channel_count() != m_sound_component_manager.get_channel_count())
-				throw std::domain_error("Component's channel count does not fit");
-
+			// Component channel alredy checked and Initialized by synthesizer
 			add_component(component);
 			m_sound_component_manager.register_observer(component);
 		}

@@ -56,13 +56,45 @@ namespace Gammou {
 
 			~static_sum() {};
 
-			void process(const double input[])
+			void process(const double input[]) override
 			{
 				double ret = input[0];
 				for(unsigned int i = 1; i < Input_Count; ++i)
 					ret += input[i];
 				m_output[0] = ret;
 			}
+		};
+
+
+		// Juste pour essayer, a supprimer
+		class fpb1 : public sound_component {
+
+		public:
+			fpb1(const unsigned int channel_count)
+				: sound_component("Fpb1", 2, 1, channel_count),
+					m_previous_input(this)
+			{
+				set_input_name("In", 0);
+				set_input_name("Freq", 1);
+			}
+
+			~fpb1() {}
+
+			void initialize_process() override
+			{
+				m_previous_input = 0.0;
+			}
+
+			void process(const double input[]) override
+			{
+				const double fact = 1.0 / (6.28318530718 * input[1] * get_sample_duration());
+				const double ret = (input[0] + fact * m_previous_input) / (1.0 + fact);
+				m_previous_input = ret;
+				m_output[0] = ret;
+			}
+
+		private:
+			multi_channel_variable<double> m_previous_input;
 		};
 
 	} /* Sound */

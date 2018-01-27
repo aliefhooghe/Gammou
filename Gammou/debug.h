@@ -4,6 +4,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#undef min
 #define DEBUG_PRINT(...) {char str[256];sprintf(str, __VA_ARGS__);OutputDebugStringA(str);}
 #else
 #include <iostream>

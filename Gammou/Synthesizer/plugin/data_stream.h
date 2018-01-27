@@ -5,6 +5,8 @@ namespace Gammou {
 
 	namespace Sound {
 
+		// Dirty C style read-write ^^
+
 		class data_source {
 		public:
 			virtual unsigned int read(void *data, const unsigned int size) = 0;

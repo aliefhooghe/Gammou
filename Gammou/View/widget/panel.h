@@ -18,17 +18,18 @@ namespace Gammou {
 			abstract_panel(const rectangle& rect, const color background);
 
 			virtual ~abstract_panel() {}
-			virtual void redraw_rect(rectangle& rect);
+			virtual void redraw_rect(const rectangle& rect);
 
 			void set_background_color(const color c);
 			color get_background_color(void);
 
 		protected:
-			virtual widget *get_widget_at_position(const unsigned int x, const unsigned int y) const =0;
+			
 			virtual widget *get_focused_widget(void) const =0;
 			virtual widget *get_draging_widget(void) const =0;
 			virtual widget *get_draging_widget(mouse_button& button) const = 0;
 		private:
+			//virtual widget *get_widget_at_position(const unsigned int x, const unsigned int y) const = 0; //
 			color m_background_color;
 		};
 
@@ -43,10 +44,6 @@ namespace Gammou {
 			panel(const rectangle& rect, const color background = cl_white);
 
 			virtual ~panel();
-
-			virtual void redraw_rect(rectangle& rect) override;
-
-		
 
 			// widget override
 			virtual bool on_key_up(const keycode key) override;
@@ -73,7 +70,7 @@ namespace Gammou {
 			void add_widget(widget_type *w);
 			void remove_widget(widget_type *w);
 
-			widget_type *get_widget_at_position(const unsigned int x, const unsigned int y) const override;
+			
 			widget_type *get_focused_widget(void) const override;
 			widget_type *get_draging_widget(void) const override;
 			widget_type *get_draging_widget(mouse_button& button) const override;
@@ -81,6 +78,8 @@ namespace Gammou {
 			std::deque<widget_type*> m_widgets;
 
 		private:
+			widget_type *get_widget_at_position(const unsigned int x, const unsigned int y) const;
+
 			widget_type *m_focused_widget;	//	under cursor
 			widget_type *m_draging_widget;
 			mouse_button m_draging_button;
@@ -105,15 +104,8 @@ namespace Gammou {
 		template<class widget_type>
 		inline panel<widget_type>::~panel()
 		{
-			for (widget *w : m_widgets)
+			for (widget_type *w : m_widgets)
 				delete w;
-		}
-
-		template<class widget_type>
-		inline void panel<widget_type>::redraw_rect(rectangle & rect)
-		{
-			if (m_parent != nullptr)
-				m_parent->redraw_rect(rect);
 		}
 
 		template<class widget_type>
@@ -121,8 +113,8 @@ namespace Gammou {
 		{
 			if (m_focused_widget != nullptr)
 				return m_focused_widget->on_key_up(key);
-			else
-				return false;
+			else	
+				return false;	//	no need to be redrawn
 		}
 
 		template<class widget_type>
@@ -143,41 +135,55 @@ namespace Gammou {
 		template<class widget_type>
 		inline bool panel<widget_type>::on_mouse_exit(void)
 		{
+			bool ret;
+
 			if (m_focused_widget != nullptr) {
-				m_focused_widget->on_mouse_exit();
+				ret = m_focused_widget->on_mouse_exit();
 				m_focused_widget = nullptr;
 			}
 
 			if (m_draging_widget != nullptr) {
-				m_draging_widget->on_mouse_drag_end(m_draging_button, 0, 0);
+				ret |= m_draging_widget->on_mouse_drag_end(m_draging_button, 0, 0);
 				m_draging_widget = nullptr;
 			}
 
-			return false;
+			return ret;
 		}
 
 		template<class widget_type>
 		inline bool panel<widget_type>::on_mouse_move(const int x, const int y)
 		{
-			widget_type *w = get_widget_at_position(x, y);
 
-			bool ret = false;
+			if (m_focused_widget == nullptr) {
+				widget_type *const w = get_widget_at_position(x, y);
 
-			if (m_focused_widget != w) {
-				if (m_focused_widget != nullptr)
-					ret = m_focused_widget->on_mouse_exit();
-				if (w != nullptr)
-					ret |= w->on_mouse_enter();
+				if (w != nullptr) {
+					m_focused_widget = w;
+					return w->on_mouse_enter();
+				}
+				else {
+					return false;
+				}
 			}
-			else if (m_focused_widget != nullptr) {
-				ret = m_focused_widget->on_mouse_move(
+			else if (m_focused_widget->contains(x - m_focused_widget->get_x(), 
+				y - m_focused_widget->get_y())){
+
+				return m_focused_widget->on_mouse_move(
 					x - m_focused_widget->get_x(),
 					y - m_focused_widget->get_y());
 			}
+			else {
+				widget_type *const w = get_widget_at_position(x, y);
 
-			m_focused_widget = w;
-			redraw();
-			return false;
+				bool ret = m_focused_widget->on_mouse_exit();
+
+				if (w != nullptr)
+					ret |= w->on_mouse_enter();
+
+				m_focused_widget = w;
+				return ret;
+			}
+
 		}
 
 		template<class widget_type>

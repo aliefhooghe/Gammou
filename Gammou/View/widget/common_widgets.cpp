@@ -54,44 +54,6 @@ namespace Gammou {
 			m_enabled = state;
 		}
 
-		// movable control implementation
-
-		movable_control::movable_control(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height)
-			: control(x, y, width, height), m_movable(true)
-		{
-		}
-
-		movable_control::movable_control(const rectangle & rect)
-			: control(rect)
-		{
-		}
-
-		bool movable_control::on_mouse_drag(const mouse_button button, const int x, const int y, const int dx, const int dy)
-		{
-			if (m_movable) {
-				const rectangle rect = get_absolute_rect().translate(dx, dy);
-				if (get_parent()->contains(rect)) {
-					set_rect(rect);
-					redraw_parent();
-				}
-				return true;
-			}
-			else {
-				return false;
-			}	
-		}
-
-		bool movable_control::is_movable() const
-		{
-			return m_movable;
-		}
-
-		void movable_control::set_movable(bool movable)
-		{
-			m_movable = movable;
-		}
-
-
 		// push_button implementation
 
 		push_button::push_button(std::function<void()> push_action, const std::string& text, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const unsigned int font_size)

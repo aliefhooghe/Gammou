@@ -23,7 +23,7 @@ namespace Gammou {
 			virtual void open(void *parent_window) =0;
 			virtual void close(void) =0;
 
-			//	abstract_window override
+			//	abstract_window override   (visibilité ?)
 			virtual void resize(const unsigned int width, const unsigned int height) override;
 
 		private:

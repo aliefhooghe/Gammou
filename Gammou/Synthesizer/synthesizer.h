@@ -31,7 +31,7 @@ namespace Gammou {
 						const unsigned int master_to_polyphonic_count = 2,
 						const unsigned int polyphonic_to_master_count = 2,
 						const unsigned int sample_rate = 44100,
-						const float zero_lifetime = 1.0);
+						const float zero_lifetime = 0.25);
 
 			~synthesizer();
 
@@ -65,6 +65,7 @@ namespace Gammou {
 			unsigned int get_automation_input_count() const;
 			void set_automation_value(const double value, const unsigned int automation_id);
 
+			unsigned int get_channel_count() const;
 		private:
 			unsigned int get_new_channel();
 			void free_channel(const std::vector<unsigned int>::iterator& it);

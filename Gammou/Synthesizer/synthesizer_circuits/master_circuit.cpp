@@ -55,6 +55,8 @@ namespace Gammou {
 		{
 			add_component(component);
 			m_sound_component_manager.register_observer(component);
+			component->on_channel_change(0);
+			component->initialize_process();
 		}
 
 		void master_circuit::set_sample_rate(const double sample_rate)
@@ -67,13 +69,13 @@ namespace Gammou {
 			m_main_input.set_input_buffer_ptr(input);
 			m_main_output.set_output_pointer(output);
 			execute_program();
-
 		}
 
 		void master_circuit::notify_circuit_change()
 		{
 			next_process_cycle();
 			make_component_current_cycle_program(&m_main_output);
+			make_component_current_cycle_program(&m_output_to_polyphonic);
 		}
 
 	} /* Sound */

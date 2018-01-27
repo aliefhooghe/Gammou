@@ -7,7 +7,7 @@ namespace Gammou {
 
 		void draw_link(cairo_t *cr, const float x_input, const float y_input, const float x_output, const float y_output, const View::color color)
 		{
-			const float D = min(std::fabs(x_output - x_input), 70.0);
+			const float D = std::min<float>(std::fabs(x_output - x_input), 70.0);
 
 			cairo_move_to(cr, x_input, y_input);
 			cairo_curve_to(cr, x_input + D, y_input, x_output - D, y_output, x_output, y_output);

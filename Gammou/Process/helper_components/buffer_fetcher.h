@@ -42,7 +42,7 @@ namespace Gammou {
 				m_buffer_ptr = input_pointer;
 			}
 
-			T fetch_output(const unsigned int output_id)
+			virtual T fetch_output(const unsigned int output_id)
 			{
 				if (m_buffer_ptr == nullptr )
 					return T();

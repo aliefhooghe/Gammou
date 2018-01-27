@@ -37,30 +37,6 @@ namespace Gammou {
 
 		//--------------
 
-		class movable_control : public control {
-
-		public:
-			movable_control(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height);
-			movable_control(const rectangle& rect);
-			virtual ~movable_control() {}
-
-			bool is_movable() const;
-			void set_movable(bool movable);
-
-			virtual bool on_mouse_drag(const mouse_button button, const int x, const int y, const int dx, const int dy) override;
-
-			bool on_mouse_wheel(const float d) override
-			{
-				resize(get_width() + 5 * d, get_height() + 5 * d);
-				return true;
-			}
-
-		private:
-			bool m_movable;
-		};
-
-		//--------------
-
 		class push_button : public control {
 
 		public: 

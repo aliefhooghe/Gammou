@@ -13,6 +13,8 @@ namespace Gammou {
 
         class abstract_plugin_factory{
 
+			//// TODO 
+
         public:
 			abstract_plugin_factory(const std::string& name, const std::string& description, unsigned int factory_id);
 			virtual ~abstract_plugin_factory() {}

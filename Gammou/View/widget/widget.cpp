@@ -3,8 +3,6 @@
 #include "panel.h"
 #include "../../debug.h"
 
-#define RECT_REDRAW_SHIFT 10
-
 namespace Gammou {
 
 	namespace View {
@@ -160,15 +158,8 @@ namespace Gammou {
 
 		void widget::redraw()
 		{
-			rectangle rect = m_absolute_rect;
-
-			rect.x = (rect.x > RECT_REDRAW_SHIFT) ? (rect.x - RECT_REDRAW_SHIFT) : 0;
-			rect.y = (rect.y > RECT_REDRAW_SHIFT) ? (rect.y - RECT_REDRAW_SHIFT) : 0;
-			rect.height += RECT_REDRAW_SHIFT * 2;
-			rect.width += RECT_REDRAW_SHIFT * 2;
-
 			if (m_parent != nullptr)
-				m_parent->redraw_rect(rect);
+				m_parent->redraw_rect(m_absolute_rect);
 		}
 
 

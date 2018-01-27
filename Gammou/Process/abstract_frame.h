@@ -82,7 +82,7 @@ namespace Gammou {
 			std::vector<abstract_component<T>*> m_component_to_initialize;
 			std::vector<T> m_program_memory;
 
-			subject<abstract_frame<T> > m_link_monitor;
+			subject<abstract_frame<T> > m_self_subject;
 
 			unsigned int m_process_cycle;
 		};
@@ -94,8 +94,8 @@ namespace Gammou {
 			: m_program(),
 			m_component_to_initialize(),
 			m_program_memory(FRAME_INITIAL_MEM),
-			m_link_monitor(this),
-			m_process_cycle(42)
+			m_self_subject(this),
+			m_process_cycle(42) // Intitial process cycle (!= from the abstract_component one)
 		{
 		}
 
@@ -111,7 +111,7 @@ namespace Gammou {
 			if( component->get_frame() != nullptr)
 				throw std::domain_error("Can't add component that is already on a frame");
 
-			m_link_monitor.register_observer(&(component->m_frame));
+			m_self_subject.register_observer(&(component->m_frame));
 			notify_circuit_change();
 		}
 
@@ -153,7 +153,7 @@ namespace Gammou {
 				// todo touver une solution !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				// todo touver une solution !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 					abstract_component<T> *src_component[16];  	// <- !!!!!!!!!!!!!!!!!
-					unsigned int src_output_id[16];
+					unsigned int src_output_id[16];				// <- !!!!!!!!!!!!!!!!!
 
 					//	Update memory size if needed
 					if( ic > m_program_memory.size() )

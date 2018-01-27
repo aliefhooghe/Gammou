@@ -7,7 +7,10 @@ namespace Gammou {
 
 	namespace View {
 
-
+		rectangle::rectangle()
+			: x(0), y(0), width(0), height(0)
+		{
+		}
 
 		rectangle::rectangle(const int px, const int py, const int width, const int height)
 			: x(px), y(py), width(width), height(height)
@@ -118,8 +121,8 @@ namespace Gammou {
 
 			void centered_circle(cairo_t * cr, const rectangle & rect, const float radius)
 			{
-				const float cx = static_cast<float>(rect.x) + static_cast<float>(rect.width) / 2.0;
-				const float cy = static_cast<float>(rect.y) + static_cast<float>(rect.height) / 2.0;
+				const float cx = static_cast<float>(rect.x) + static_cast<float>(rect.width) / 2.0f;
+				const float cy = static_cast<float>(rect.y) + static_cast<float>(rect.height) / 2.0f;
 				circle(cr, cx, cy, radius);
 			}
 

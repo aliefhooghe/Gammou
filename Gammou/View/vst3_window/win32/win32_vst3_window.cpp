@@ -4,6 +4,7 @@
 #include "win32_vst3_window.h"
 
 #define WNDCLASS_NAME "WNDCLASS_NAME"
+#define RECT_REDRAW_SHIFT 10
 
 namespace Gammou {
 
@@ -71,10 +72,23 @@ namespace Gammou {
 				DestroyWindow(m_plugin_window);
 		}
 
-		void win32_vst3_window::redraw_rect(rectangle & rect)
+		void win32_vst3_window::redraw_rect(const rectangle & rect)
 		{
+			rectangle to_draw;
+
+			to_draw.x = (rect.x > RECT_REDRAW_SHIFT) ? (rect.x - RECT_REDRAW_SHIFT) : 0;
+			to_draw.y = (rect.y > RECT_REDRAW_SHIFT) ? (rect.y - RECT_REDRAW_SHIFT) : 0;
+			to_draw.width = rect.width + RECT_REDRAW_SHIFT * 2;
+			to_draw.height = rect.height + RECT_REDRAW_SHIFT * 2;
+
 			RECT win32_rect = 
-			{ (LONG)rect.x , (LONG)rect.y, (LONG)rect.x + (LONG)rect.width, (LONG)rect.y + (LONG)rect.height };
+			{ 
+				(LONG)to_draw.x , 
+				(LONG)to_draw.y, 
+				(LONG)to_draw.x + (LONG)to_draw.width, 
+				(LONG)to_draw.y + (LONG)to_draw.height 
+			};
+
 			InvalidateRect(m_plugin_window, &win32_rect, true);
 		}
 

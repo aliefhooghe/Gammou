@@ -23,7 +23,7 @@ namespace Gammou {
 			void close(void) override;
 	
 			// pannel override
-			void redraw_rect(rectangle& rect) override;
+			void redraw_rect(const rectangle& rect) override;
 
 			//	widget override
 			void redraw(void) override;

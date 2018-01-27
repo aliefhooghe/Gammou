@@ -37,9 +37,9 @@ namespace Gammou {
 			unsigned int get_factory_id() const;
 			virtual unsigned int save_state(data_destination& data) { return 0; };
 
-		protected:
 			virtual void on_sample_rate_change(const double new_sample_rate) {};
 			virtual void on_channel_change(const unsigned int new_chanel) {};
+		protected:
 			
 			double get_sample_duration() const;
 			double get_sample_rate() const;
@@ -57,7 +57,6 @@ namespace Gammou {
 
 			friend class multi_channel_data;
 			
-
 		public:
 			polyphonic_sound_component(
 								const std::string& name,
@@ -70,9 +69,9 @@ namespace Gammou {
 			unsigned int get_channel_count() const;
 			unsigned int get_current_working_channel() const;
 
-		private:
+			// Not virtual, should not be modified
 			void on_channel_change(const unsigned int new_chanel) override;
-
+		private:
 			const unsigned int m_channels_count;
 			unsigned int m_current_working_channel;
 
@@ -80,8 +79,6 @@ namespace Gammou {
 			double m_sample_duration;
 			unsigned int m_factory_id;
 		};
-
-
 
 		////-///
 

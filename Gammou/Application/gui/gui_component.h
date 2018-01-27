@@ -3,6 +3,7 @@
 
 #include <map>
 #include <mutex>
+#include <algorithm>
 #include "view.h"
 #include "synthesizer.h"
 

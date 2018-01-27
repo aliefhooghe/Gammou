@@ -18,12 +18,12 @@ namespace Gammou {
 		{
 		}
 
-		void abstract_panel::redraw_rect(rectangle & rect)
+		void abstract_panel::redraw_rect(const rectangle & rect)
 		{
 			abstract_panel *parent = get_parent();
 
 			if (parent != nullptr)
-				parent->redraw_rect(rect);
+				parent->redraw_rect(rect.translate(get_x(), get_y()));
 		}
 
 

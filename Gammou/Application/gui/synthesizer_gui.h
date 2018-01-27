@@ -39,6 +39,9 @@ namespace Gammou {
 				Sound::sound_component *sum2 = new Sound::static_prod<2>(1);
 				Sound::sound_component *sum3 = new Sound::static_prod<2>(1);
 
+				Sound::sound_component *f1 = new Sound::fpb1(1);
+				Sound::sound_component *f2 = new Sound::fpb1(1);
+
 				synthesizer_mutex->lock();
 
 				synthesizer->add_sound_component_on_master_circuit(osc);
@@ -48,6 +51,8 @@ namespace Gammou {
 				synthesizer->add_sound_component_on_master_circuit(sum1);
 				synthesizer->add_sound_component_on_master_circuit(sum2);
 				synthesizer->add_sound_component_on_master_circuit(sum3);
+				synthesizer->add_sound_component_on_master_circuit(f1);
+				synthesizer->add_sound_component_on_master_circuit(f2);
 
 				synthesizer_mutex->unlock();
 
@@ -58,8 +63,10 @@ namespace Gammou {
 				gui_sound_component *c21 = new gui_sound_component(sum1, synthesizer_mutex, 330, 100);
 				gui_sound_component *c22 = new gui_sound_component(sum2, synthesizer_mutex, 360, 125);
 				gui_sound_component *c23 = new gui_sound_component(sum3, synthesizer_mutex, 390, 140);
+				gui_sound_component *gf1 = new gui_sound_component(f1, synthesizer_mutex, 410, 160);
+				gui_sound_component *gf2 = new gui_sound_component(f2, synthesizer_mutex, 430, 180);
 
-				gui_master_circuit *master = new gui_master_circuit(synthesizer, synthesizer_mutex, 0, 0, 500, 600);
+				gui_master_circuit *master = new gui_master_circuit(synthesizer, synthesizer_mutex, 0, 0, 800, 800);
 
 				master->add_gui_component(c);
 				master->add_gui_component(cc);
@@ -68,6 +75,8 @@ namespace Gammou {
 				master->add_gui_component(c21);
 				master->add_gui_component(c22);
 				master->add_gui_component(c23);
+				master->add_gui_component(gf1);
+				master->add_gui_component(gf2);
 
 				add_widget(master);
 
@@ -86,6 +95,13 @@ namespace Gammou {
 				Sound::sound_component *psum2 = new Sound::static_prod<2>(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
 				Sound::sound_component *psum3 = new Sound::static_prod<2>(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
 
+
+				Sound::sound_component *pf1 = new Sound::fpb1(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
+				Sound::sound_component *pf2 = new Sound::fpb1(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
+
+				Sound::sound_component *ppsum = new Sound::static_sum<5>(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
+				Sound::sound_component *ppsum1 = new Sound::static_sum<5>(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
+
 				synthesizer_mutex->lock();
 
 				synthesizer->add_sound_component_on_polyphonic_circuit(posc);
@@ -95,6 +111,11 @@ namespace Gammou {
 				synthesizer->add_sound_component_on_polyphonic_circuit(psum);
 				synthesizer->add_sound_component_on_polyphonic_circuit(psum1);
 				synthesizer->add_sound_component_on_polyphonic_circuit(psum2);
+				synthesizer->add_sound_component_on_polyphonic_circuit(pf1);
+				synthesizer->add_sound_component_on_polyphonic_circuit(pf2);
+				synthesizer->add_sound_component_on_polyphonic_circuit(ppsum);
+				synthesizer->add_sound_component_on_polyphonic_circuit(ppsum1);
+
 
 				synthesizer_mutex->unlock();
 
@@ -105,8 +126,13 @@ namespace Gammou {
 				gui_sound_component *pc21 = new gui_sound_component(psum1, synthesizer_mutex, 330, 100);
 				gui_sound_component *pc22 = new gui_sound_component(psum2, synthesizer_mutex, 360, 125);
 				gui_sound_component *pc23 = new gui_sound_component(psum3, synthesizer_mutex, 390, 140);
+				gui_sound_component *pgf1 = new gui_sound_component(pf1, synthesizer_mutex, 410, 160);
+				gui_sound_component *pgf2 = new gui_sound_component(pf2, synthesizer_mutex, 430, 180);
 
-				gui_polyphonic_circuit *poly = new gui_polyphonic_circuit(synthesizer, synthesizer_mutex, 500, 0, 500, 600);
+				gui_sound_component *ppc2 = new gui_sound_component(ppsum, synthesizer_mutex, 300, 85);
+				gui_sound_component *ppc21 = new gui_sound_component(ppsum1, synthesizer_mutex, 330, 100);
+
+				gui_polyphonic_circuit *poly = new gui_polyphonic_circuit(synthesizer, synthesizer_mutex, 800, 0, 800, 800);
 
 				poly->add_gui_component(pc);
 				poly->add_gui_component(pcc);
@@ -115,6 +141,10 @@ namespace Gammou {
 				poly->add_gui_component(pc21);
 				poly->add_gui_component(pc22);
 				poly->add_gui_component(pc23);
+				poly->add_gui_component(pgf1);
+				poly->add_gui_component(pgf2);
+				poly->add_gui_component(ppc2);
+				poly->add_gui_component(ppc21);
 
 				add_widget(poly);
 			}
