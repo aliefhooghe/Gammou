@@ -27,11 +27,11 @@ namespace Gammou {
 			synthesizer(const unsigned int main_input_count,
 						const unsigned int main_output_count,
 						const unsigned int channel_count,
-						const unsigned int automation_count,
+						const unsigned int parameter_count,
 						const unsigned int master_to_polyphonic_count = 2,
 						const unsigned int polyphonic_to_master_count = 2,
 						const unsigned int sample_rate = 44100,
-						const float zero_lifetime = 0.25);
+						const float zero_lifetime = 0.1);
 
 			~synthesizer();
 
@@ -62,8 +62,8 @@ namespace Gammou {
 			Process::abstract_component<double> *get_master_circuit_automation_input();
 
 			//
-			unsigned int get_automation_input_count() const;
-			void set_automation_value(const double value, const unsigned int automation_id);
+			unsigned int get_parameter_input_count() const;
+			void set_parameter_value(const double value, const unsigned int automation_id);
 
 			unsigned int get_channel_count() const;
 		private:

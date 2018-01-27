@@ -6,6 +6,7 @@
 #include "cairo_definition.h"
 #include "widget\widget.h"
 #include "widget\panel.h"
+#include "widget\page_container.h"
 #include "abstract_window.h"
 
 #include "widget\common_widgets.h"

@@ -22,7 +22,7 @@ namespace Gammou {
 		public:
 			master_circuit(
 						const unsigned int master_to_polyphonic_output_count,
-						const unsigned int automation_input_count,
+						const unsigned int parameter_input_count,
 						const unsigned int main_input_count,
 						const unsigned int main_output_count,
 						const unsigned int input_from_polyphonic_count
@@ -40,13 +40,13 @@ namespace Gammou {
 			
 			std::vector<double> m_master_to_polyphonic_buffer;
 			std::vector<double> m_polyphonic_to_master_buffer;
-			std::vector<double> m_automation_buffer;
+			std::vector<double> m_parameter_buffer;
 
 			Process::vector_fetcher_component<double> m_main_input;
 			Process::vector_filler_component<double> m_output_to_polyphonic;
 			Process::vector_fetcher_component<double> m_from_polyphonic_input;
 			Process::vector_filler_component<double> m_main_output;
-			Process::vector_fetcher_component<double> m_automation_input;
+			Process::vector_fetcher_component<double> m_parameter_input;
 
 			sound_component_manager m_sound_component_manager;
 		};

@@ -17,7 +17,7 @@ namespace Gammou {
 			:
 			m_synthesizer_mutex(),
 			m_synthesizer(2, 2, GAMMOU_SYNTHESIZER_CHANNEL_COUNT, GAMMOU_VST_AUTOMATION_INPUT_COUNT),
-			m_window(&m_synthesizer, &m_synthesizer_mutex, 1600, 800)
+			m_window(&m_synthesizer, &m_synthesizer_mutex, 800, 800)
 		{
 			DEBUG_PRINT("Gammou CTOR\n");
 		}
@@ -43,11 +43,11 @@ namespace Gammou {
 			//	Create Midi Input
 			addEventInput(USTRING("Midi In"), 1); // 1 channel
 
-			// Create Automation inputs
-			const unsigned int automation_count = m_synthesizer.get_automation_input_count();
+			// Create Parameter inputs
+			const unsigned int parameter_count = m_synthesizer.get_parameter_input_count();
 
-			for (unsigned int i = 0; i < automation_count; ++i) {
-				std::string param_name = ("Automation " + std::to_string(i));
+			for (unsigned int i = 0; i < parameter_count; ++i) {
+				std::string param_name = ("Parameter " + std::to_string(i));
 				parameters.addParameter(new Steinberg::Vst::Parameter(USTRING(param_name.c_str()), i));
 			}
 
@@ -90,7 +90,7 @@ namespace Gammou {
 		{
 			lock_synthesizer();
 
-			// Input parameter change (Automation input)
+			// Input parameter change (Parameter input)
 			Steinberg::Vst::IParameterChanges *const param_changes = data.inputParameterChanges;
 
 			if (param_changes != nullptr) {
@@ -108,7 +108,7 @@ namespace Gammou {
 
 						if (Steinberg::kResultTrue == 
 							param_data->getPoint(data_count - 1, sample_offset, value))
-							m_synthesizer.set_automation_value(value, param_id);
+							m_synthesizer.set_parameter_value(value, param_id);
 					}
 				}
 			}
@@ -153,8 +153,8 @@ namespace Gammou {
 
 			const unsigned int nbSamples = data.numSamples;
 
-			double input[2] = { 0.0, 0.0 };
-			double output[2] = { 0.0, 0.0 };
+			double input[2];
+			double output[2];
 
 			if (processSetup.symbolicSampleSize == Steinberg::Vst::kSample32) { // 32 bits
 				float *output_buffer_left = data.outputs[0].channelBuffers32[0];
@@ -166,7 +166,7 @@ namespace Gammou {
 				for (unsigned int i = 0; i < nbSamples; 
 					++i, ++output_buffer_left, ++output_buffer_right, ++input_buffer_left, ++input_buffer_right) {
 
-					input[0] = 440.0;// static_cast<double>(*input_buffer_left);
+					input[0] = static_cast<double>(*input_buffer_left);
 					input[1] = static_cast<double>(*input_buffer_right);
 
 					m_synthesizer.process(input, output);
@@ -185,7 +185,7 @@ namespace Gammou {
 				for (unsigned int i = 0; i < nbSamples; 
 					++i, ++output_buffer_left, ++output_buffer_right, ++input_buffer_left, ++input_buffer_right) {
 
-					input[0] = 440.0;// *input_buffer_left;
+					input[0] = *input_buffer_left;
 					input[1] = *input_buffer_right;
 
 					m_synthesizer.process(input, output);

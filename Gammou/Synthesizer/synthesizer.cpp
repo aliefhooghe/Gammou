@@ -156,7 +156,7 @@ namespace Gammou {
 
 		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_automation_input()
 		{
-			return &(m_polyphonic_circuit.m_automation_input);
+			return &(m_polyphonic_circuit.m_parameter_input);
 		}
 
 		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_output()
@@ -188,18 +188,18 @@ namespace Gammou {
 
 		Process::abstract_component<double> *synthesizer::get_master_circuit_automation_input()
 		{
-			return &(m_master_circuit.m_automation_input);
+			return &(m_master_circuit.m_parameter_input);
 		}
 
-		unsigned int synthesizer::get_automation_input_count() const
+		unsigned int synthesizer::get_parameter_input_count() const
 		{
-			return m_master_circuit.m_automation_buffer.size();
+			return m_master_circuit.m_parameter_buffer.size();
 		}
 
-		void synthesizer::set_automation_value(const double value, const unsigned int automation_id)
+		void synthesizer::set_parameter_value(const double value, const unsigned int automation_id)
 		{
 			// TODO safer ???
-			m_master_circuit.m_automation_buffer[automation_id] = value;
+			m_master_circuit.m_parameter_buffer[automation_id] = value;
 		}
 
 		unsigned int synthesizer::get_channel_count() const
@@ -350,6 +350,7 @@ namespace Gammou {
 			17740,
 			18792,
 			19912,
+			21098,
 			21098,
 			21098};
 

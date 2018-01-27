@@ -6,8 +6,6 @@
 #include "polyphonic_circuit.h"
 
 
-#define SOUND_EPSILON 0.00003	//( ~= 1 / (2^15))
-
 namespace Gammou {
 
 	namespace Sound {
@@ -121,13 +119,13 @@ namespace Gammou {
 			:
 			m_gpar_input(channel_count),
 			m_input_from_master("Master Out", master->m_master_to_polyphonic_buffer),
-			m_automation_input("Automations", master->m_automation_buffer),
+			m_parameter_input("Parameters", master->m_parameter_buffer),
 			m_output_to_master(master->m_polyphonic_to_master_buffer),
 			m_sound_component_manager(channel_count)
 		{
 			add_sound_component(&m_gpar_input);
 			add_component(&m_input_from_master);
-			add_component(&m_automation_input);
+			add_component(&m_parameter_input);
 			add_component(&m_output_to_master);
 		}
 

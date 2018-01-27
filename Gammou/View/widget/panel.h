@@ -7,6 +7,7 @@
 #include "widget.h"
 
 
+
 namespace Gammou {
 
 	namespace View {
@@ -24,12 +25,12 @@ namespace Gammou {
 			color get_background_color(void);
 
 		protected:
-			
-			virtual widget *get_focused_widget(void) const =0;
-			virtual widget *get_draging_widget(void) const =0;
-			virtual widget *get_draging_widget(mouse_button& button) const = 0;
+			virtual void draw_background(cairo_t *cr);
+
+			void get_ownership(widget *child);
+			void release_widget(widget *child);
+
 		private:
-			//virtual widget *get_widget_at_position(const unsigned int x, const unsigned int y) const = 0; //
 			color m_background_color;
 		};
 
@@ -61,19 +62,18 @@ namespace Gammou {
 				const int dx, const int dy) override;
 			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y) override;
 
-		protected:
 			virtual void draw(cairo_t *cr) override;
-
-			virtual void draw_background(cairo_t *cr);
+		
+		protected:
 			virtual void draw_widgets(cairo_t *cr);
 			
-			void add_widget(widget_type *w);
+			void add_widget(widget_type *w);		//	Panel get widget ownership and have to destroy it unless it is removed
 			void remove_widget(widget_type *w);
 
 			
-			widget_type *get_focused_widget(void) const override;
-			widget_type *get_draging_widget(void) const override;
-			widget_type *get_draging_widget(mouse_button& button) const override;
+			widget_type *get_focused_widget(void) const;// override;
+			widget_type *get_draging_widget(void) const;// override;
+			widget_type *get_draging_widget(mouse_button& button) const;// override;
 			
 			std::deque<widget_type*> m_widgets;
 
@@ -229,14 +229,6 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		inline void panel<widget_type>::draw_background(cairo_t * cr)
-		{
-			cairo_helper::set_source_color(cr, get_background_color());
-			cairo_rectangle(cr, 0, 0, get_width(), get_height());
-			cairo_fill(cr);
-		}
-
-		template<class widget_type>
 		inline void panel<widget_type>::draw_widgets(cairo_t * cr)
 		{
 			for (widget *w : m_widgets) {
@@ -314,13 +306,14 @@ namespace Gammou {
 			if (w == nullptr)
 				return;
 			m_widgets.push_back(w);
-			w->m_parent = this;
+			get_ownership(w);
 			redraw();
 		}
 
 		template<class widget_type>
 		inline void panel<widget_type>::remove_widget(widget_type * w)
 		{
+			release_widget(w);
 			m_widgets.erase(std::remove(m_widgets.begin(), m_widgets.end(), w), m_widgets.end());
 
 			if (m_focused_widget == w)

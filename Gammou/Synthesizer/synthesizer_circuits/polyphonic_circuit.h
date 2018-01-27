@@ -7,6 +7,8 @@
 #include "../sound_component/sound_component.h"
 #include "master_circuit.h"
 
+#define SOUND_EPSILON 0.00003	//( ~= 1 / (2^15))
+
 namespace Gammou {
 
 	namespace Sound {
@@ -87,7 +89,7 @@ namespace Gammou {
 
 			polyphonic_circuit_GPAR_input m_gpar_input;
 			Process::vector_fetcher_component<double> m_input_from_master;
-			Process::vector_fetcher_component<double> m_automation_input;
+			Process::vector_fetcher_component<double> m_parameter_input;
 			polyphonic_circuit_output m_output_to_master;
 			sound_component_manager m_sound_component_manager;
 		};

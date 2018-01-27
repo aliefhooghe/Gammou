@@ -66,7 +66,7 @@ namespace Gammou {
 				gui_sound_component *gf1 = new gui_sound_component(f1, synthesizer_mutex, 410, 160);
 				gui_sound_component *gf2 = new gui_sound_component(f2, synthesizer_mutex, 430, 180);
 
-				gui_master_circuit *master = new gui_master_circuit(synthesizer, synthesizer_mutex, 0, 0, 800, 800);
+				gui_master_circuit *master = new gui_master_circuit(synthesizer, synthesizer_mutex, 0, 0, 800, 800, View::create_color((unsigned char)50u, (unsigned char)50u, (unsigned char)50u));
 
 				master->add_gui_component(c);
 				master->add_gui_component(cc);
@@ -77,9 +77,6 @@ namespace Gammou {
 				master->add_gui_component(c23);
 				master->add_gui_component(gf1);
 				master->add_gui_component(gf2);
-
-				add_widget(master);
-
 
 				/*
 					POLYPHONIC
@@ -132,7 +129,7 @@ namespace Gammou {
 				gui_sound_component *ppc2 = new gui_sound_component(ppsum, synthesizer_mutex, 300, 85);
 				gui_sound_component *ppc21 = new gui_sound_component(ppsum1, synthesizer_mutex, 330, 100);
 
-				gui_polyphonic_circuit *poly = new gui_polyphonic_circuit(synthesizer, synthesizer_mutex, 800, 0, 800, 800);
+				gui_polyphonic_circuit *poly = new gui_polyphonic_circuit(synthesizer, synthesizer_mutex, 0, 0, 800, 800, View::create_color((unsigned char)50u, (unsigned char)50u, (unsigned char)50u));
 
 				poly->add_gui_component(pc);
 				poly->add_gui_component(pcc);
@@ -146,13 +143,33 @@ namespace Gammou {
 				poly->add_gui_component(ppc2);
 				poly->add_gui_component(ppc21);
 
-				add_widget(poly);
+
+				/////////
+
+				pages = new View::page_container(0, 0, 800, 800, View::cl_bisque);
+
+				pages->add_page(master);
+				pages->add_page(poly);
+				page_id = 0;
+				pages->select_page(page_id);
+	
+				add_widget(pages);
+	
+				add_widget(new View::push_button([&] 
+				{ 
+					page_id = (page_id == 0) ? 1 : 0;
+					pages->select_page(page_id);
+				}
+				, "Change page", 730, 0));
 			}
 			
 			~synthesizer_gui() 
 			{
 			}
 
+		private:
+			View::page_container *pages;
+			unsigned int page_id;
 		};
 	}
 }

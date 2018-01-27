@@ -11,6 +11,8 @@ namespace Gammou {
 
 	namespace View {
 
+
+		// Todo : Utile ?
 		class control : public widget {
 
 		public:
@@ -37,6 +39,7 @@ namespace Gammou {
 
 		//--------------
 
+		// Todo : Rien de control utilisé (Enabled)
 		class push_button : public control {
 
 		public: 

@@ -15,7 +15,6 @@ namespace Gammou {
 			
 			//	a panel is a widget-container widget
 			friend class abstract_panel;
-			template<class widget_type> friend class panel;
 
 		public:
 			//	x,y in parent coordinate system
@@ -52,9 +51,9 @@ namespace Gammou {
 			virtual bool on_mouse_drag_start(const mouse_button button, const int x, const int y);
 			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y);
 
-		protected:
 			virtual void draw(cairo_t *cr) = 0;
-
+		protected:
+			
 			virtual void set_pos(const unsigned int x, const unsigned int y);
 			virtual void resize(const unsigned int width, const unsigned int height);
 			virtual void set_rect(const rectangle& rect);

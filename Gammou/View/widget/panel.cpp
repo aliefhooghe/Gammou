@@ -38,6 +38,25 @@ namespace Gammou {
 			return m_background_color;
 		}
 
+		void abstract_panel::draw_background(cairo_t * cr)
+		{
+			cairo_helper::set_source_color(cr, get_background_color());
+			cairo_rectangle(cr, 0, 0, get_width(), get_height());
+			cairo_fill(cr);
+		}
+
+		void abstract_panel::get_ownership(widget * child)
+		{
+			if( child != nullptr)
+				child->m_parent = this;
+		}
+
+		void abstract_panel::release_widget(widget * w)
+		{
+			if (w != nullptr && w->m_parent == this)
+				w->m_parent = nullptr;
+		}
+
 
 
 	} /* View */
