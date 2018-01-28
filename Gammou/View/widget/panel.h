@@ -268,7 +268,7 @@ namespace Gammou {
 					ret = m_focused_widget->on_mouse_exit();
 				if (w != nullptr)
 					ret |= w->on_mouse_enter();
-				m_focused_widget = get_widget_at_position(x, y);
+				m_focused_widget = w;
 			}
 
 			if (m_draging_widget != nullptr)

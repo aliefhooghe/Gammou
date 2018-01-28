@@ -17,8 +17,8 @@ namespace Gammou {
 			abstract_plugin_factory(const std::string& name, const std::string& description, unsigned int factory_id);
 			virtual ~abstract_plugin_factory() {}
 
-			const std::string& get_name();
-			const std::string& get_description();
+			const std::string& get_name() const;
+			const std::string& get_description() const;
 			const request_form_descriptor& get_request_form() const;
 			
 			abstract_sound_component *get_new_sound_component(data_source& source, const unsigned int channel_count);

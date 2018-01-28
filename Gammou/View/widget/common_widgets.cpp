@@ -94,10 +94,9 @@ namespace Gammou {
 
 		bool push_button::on_mouse_drag_end(const mouse_button button, const int x, const int y)
 		{
+			// On recoit ce msg si le drag a commencé sur le bouton
 			if (button == mouse_button::LeftButton) {
-				if ( is_focused() )
-					m_push_action();
-
+				m_push_action();
 				m_pushed = false;
 				redraw();
 				return true;
@@ -121,7 +120,7 @@ namespace Gammou {
 
 		bool push_button::on_mouse_button_up(mouse_button button, const int cx, const int cy)
 		{
-			if (button == mouse_button::LeftButton && m_pushed) {
+			if (button == mouse_button::LeftButton) {
 				m_pushed = false;
 				m_push_action();
 				redraw();

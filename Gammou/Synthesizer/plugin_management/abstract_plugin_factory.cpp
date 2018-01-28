@@ -12,12 +12,12 @@ namespace Gammou {
 		{
 		}
 
-		const std::string & abstract_plugin_factory::get_name()
+		const std::string & abstract_plugin_factory::get_name() const
 		{
 			return m_name;
 		}
 
-		const std::string & abstract_plugin_factory::get_description()
+		const std::string & abstract_plugin_factory::get_description() const
 		{
 			return m_description;
 		}

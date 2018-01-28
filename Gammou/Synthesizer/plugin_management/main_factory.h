@@ -25,8 +25,13 @@ namespace Gammou {
 			main_factory();
 			~main_factory();
 
+			//-------------
 			unsigned int load_factory(const std::string& file_path);
 			void register_factory(abstract_plugin_factory *factory);
+
+			//--------------
+			const std::string& get_factory_name(const unsigned int factory_id);
+			const std::string& get_factory_description(const unsigned int factory_id);
 
 			const request_form_descriptor& get_plugin_request_form(const unsigned int factory_id) const;
 
@@ -35,8 +40,9 @@ namespace Gammou {
 			
 			void delete_sound_component(abstract_sound_component *component);
 
-			abstract_plugin_factory *factory_by_id(const unsigned int factory_id) const;
 		private:
+			abstract_plugin_factory *factory_by_id(const unsigned int factory_id) const;
+		
 			std::map<unsigned int, std::pair<plugin_lib, abstract_plugin_factory*> > m_plugin_factory;
 		};
 

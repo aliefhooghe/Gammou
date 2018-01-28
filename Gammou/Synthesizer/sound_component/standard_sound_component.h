@@ -9,6 +9,11 @@ namespace Gammou {
 
 	namespace Sound {
 
+
+		/*
+			Juste pour les essais, pas definitif
+		*/
+
 		class sin_oscilator : public sound_component {
 
 		public:

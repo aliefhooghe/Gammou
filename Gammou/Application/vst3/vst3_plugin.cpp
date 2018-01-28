@@ -17,7 +17,7 @@ namespace Gammou {
 			:
 			m_synthesizer_mutex(),
 			m_synthesizer(2, 2, GAMMOU_SYNTHESIZER_CHANNEL_COUNT, GAMMOU_VST_AUTOMATION_INPUT_COUNT),
-			m_window(&m_synthesizer, &m_synthesizer_mutex, 800, 800)
+			m_window(&m_synthesizer, &m_synthesizer_mutex, 800 + 120, 800)
 		{
 			DEBUG_PRINT("Gammou CTOR\n");
 		}

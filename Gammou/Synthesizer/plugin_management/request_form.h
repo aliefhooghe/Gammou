@@ -90,6 +90,7 @@ namespace Gammou {
 		
 		public:
 			answer_form_descriptor();
+			~answer_form_descriptor() {}
 
 			void add_file_path(const std::string& file_path);
 			void add_integer(const int integer);

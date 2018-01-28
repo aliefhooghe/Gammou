@@ -24,7 +24,7 @@ namespace Gammou {
 
 		void sin_oscilator::process(const double input[])
 		{
-			m_output[0] = std::sin(m_freq_integral + input[1]);
+			m_output[0] = std::sin(6.28318530718 * m_freq_integral + input[1]);
 			m_freq_integral = m_freq_integral + (get_sample_duration() * input[0]);
 		}
 
