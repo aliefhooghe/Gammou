@@ -9,9 +9,7 @@
 #include "../../Synthesizer/plugin_management/main_factory.h"
 #include "../../Synthesizer/builtin_components.h"
 
-
 #define GAMMOU_SYNTHESIZER_CHANNEL_COUNT 128
-
 
 namespace Gammou {
 

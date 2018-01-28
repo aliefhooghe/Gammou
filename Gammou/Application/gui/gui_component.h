@@ -7,6 +7,7 @@
 #include "view.h"
 #include "synthesizer.h"
 
+#include "gui_color_palette.h"
 
 namespace Gammou {
 
@@ -61,6 +62,7 @@ namespace Gammou {
 			inline void unlock_circuit() { m_circuit_mutex->unlock(); }
 
 			bool m_frozen;
+			bool m_is_moving;
 			std::mutex *m_circuit_mutex;
 
 			// cf schema
@@ -71,10 +73,6 @@ namespace Gammou {
 			float m_font_size;
 			float m_name_height;
 			float m_border_width;
-			View::color m_socket_color;
-			View::color m_font_color;
-			View::color m_component_border_color;
-			View::color m_component_color;
 		};
 
 		/*
@@ -110,9 +108,9 @@ namespace Gammou {
 		public:
 			abstract_gui_component_map(
 				std::mutex *circuit_mutex, const unsigned int x, const unsigned int y,
-				const unsigned int width, const unsigned int height, const View::color background);
+				const unsigned int width, const unsigned int height, const View::color background = Palette::background);
 			abstract_gui_component_map(std::mutex *circuit_mutex, const View::rectangle& rect,
-				const View::color background);
+				const View::color background = Palette::background);
 			virtual ~abstract_gui_component_map() {}
 
 			virtual void add_gui_component(abstract_gui_component *component);
@@ -143,10 +141,6 @@ namespace Gammou {
 			unsigned int m_linking_output_id;
 			float m_linking_x;
 			float m_linking_y;
-
-
-			View::color m_linking_color;
-			View::color m_link_color;
 		};
 
 	} /* Gui */

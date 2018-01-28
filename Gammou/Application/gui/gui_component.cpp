@@ -24,17 +24,14 @@ namespace Gammou {
 			const unsigned int x, const unsigned int y, const unsigned int initial_input_count, const unsigned int initial_output_count)
 			: View::panel<View::widget>(x, y, 90, 10 + 15 * max(initial_input_count, initial_output_count)),
 				m_frozen(false),
-				m_circuit_mutex(circuit_mutex)
+				m_circuit_mutex(circuit_mutex),
+			m_is_moving(false)
 		{
 			m_l1 = 40;
 			m_rec_radius = 5.0;
 			m_socket_radius = 3.0;
 			m_socket_size = 9;
-			m_socket_color = View::cl_firebrick;
-			m_component_color = View::create_color((unsigned char)70, (unsigned char)70, (unsigned char)70);
 			m_font_size = 11;
-			m_component_border_color = View::create_color((unsigned char)247, (unsigned char)191, (unsigned char)0);
-			m_font_color = View::cl_lightgrey;
 			m_name_height = m_font_size;
 			m_border_width = 1.0;
 		}
@@ -138,13 +135,19 @@ namespace Gammou {
 			const Process::abstract_component<double> *component = get_component();
 
 			// draw component
+			View::color component_background;
+
+			if (m_is_moving)
+				component_background = Palette::moving_component_background;
+			else
+				component_background = Palette::component_background;
+
 
 			View::cairo_helper::rounded_rectangle(cr, 0, 0, get_width(), get_height(), m_rec_radius);
-
-			View::cairo_helper::set_source_color(cr, m_component_color);
+			View::cairo_helper::set_source_color(cr, component_background);
 			cairo_fill_preserve(cr);
 
-			View::cairo_helper::set_source_color(cr, m_component_border_color);
+			View::cairo_helper::set_source_color(cr, Palette::component_border);
 			cairo_set_line_width(cr, m_border_width);
 			cairo_stroke(cr);
 
@@ -152,7 +155,7 @@ namespace Gammou {
 
 			cairo_set_font_size(cr, m_font_size);
 			cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-			View::cairo_helper::set_source_color(cr, m_font_color);
+			View::cairo_helper::set_source_color(cr, Palette::component_font_color);
 			View::cairo_helper::show_centered_text(cr, View::rectangle(0, 0, get_width(), m_name_height * 1.5)
 				, component->get_name());
 
@@ -174,11 +177,11 @@ namespace Gammou {
 
 					// socket
 					View::cairo_helper::circle(cr, cx, cy, m_socket_radius);
-					View::cairo_helper::set_source_color(cr, m_socket_color);
+					View::cairo_helper::set_source_color(cr, Palette::component_socket_color);
 					cairo_fill(cr);
 
 					// name
-					View::cairo_helper::set_source_color(cr, m_font_color);
+					View::cairo_helper::set_source_color(cr, Palette::component_font_color);
 					View::cairo_helper::show_left_aligned_text(cr, View::rectangle(m_socket_size, ty, m_l1 - m_socket_size, socket_rect_height),
 						component->get_input_name(i));
 
@@ -196,11 +199,11 @@ namespace Gammou {
 
 					// socket
 					View::cairo_helper::circle(cr, cx, cy, m_socket_radius);
-					View::cairo_helper::set_source_color(cr, m_socket_color);
+					View::cairo_helper::set_source_color(cr, Palette::component_socket_color);
 					cairo_fill(cr);
 
 					// name
-					View::cairo_helper::set_source_color(cr, m_font_color);
+					View::cairo_helper::set_source_color(cr, Palette::component_font_color);
 					View::cairo_helper::show_right_aligned_text(cr, View::rectangle(static_cast<float>(get_width()) - m_l1, ty, m_l1 - m_socket_size,
 						socket_rect_height), component->get_output_name(i));
 
@@ -236,7 +239,7 @@ namespace Gammou {
 		{
 			if (!is_frozen()) {
 				m_border_width = 2.0;
-				m_component_color = View::create_color((unsigned char)90, (unsigned char)90, (unsigned char)90);
+				m_is_moving = true;
 				redraw();
 			}
 
@@ -247,7 +250,7 @@ namespace Gammou {
 		{
 			if (!is_frozen()) {
 				m_border_width = 1.0;
-				m_component_color = View::create_color((unsigned char)70, (unsigned char)70, (unsigned char)70);
+				m_is_moving = false;
 				redraw();
 				return true;
 			}
@@ -294,8 +297,6 @@ namespace Gammou {
 			m_linking_x(0.0),
 			m_linking_y(0.0)
 		{
-			m_linking_color = View::create_color((unsigned char)45, (unsigned char)160, (unsigned char)255);
-			m_link_color = View::create_color((unsigned char)43, (unsigned char)236, (unsigned char)198);
 		}
 
 		abstract_gui_component_map::abstract_gui_component_map(
@@ -341,7 +342,7 @@ namespace Gammou {
 						src->get_output_pos(output_id, x1, y1);
 						gui_component->get_input_pos(i, x2, y2);
 
-						draw_link(cr, x1, y1, x2, y2, m_link_color);
+						draw_link(cr, x1, y1, x2, y2, Palette::link_color);
 					}
 				}
 			}
@@ -351,10 +352,10 @@ namespace Gammou {
 				float x, y;
 					
 				if (!(m_linking_component->get_output_pos(m_linking_output_id, x, y))) {
-					DEBUG_PRINT("ERROR OID %d\n", m_linking_output_id);
+					DEBUG_PRINT("ERROR OutputID %d\n", m_linking_output_id);
 				}
 				else{
-					draw_link(cr, x, y, m_linking_x, m_linking_y, m_linking_color);
+					draw_link(cr, x, y, m_linking_x, m_linking_y, Palette::linking_color);
 				}
 			}
 

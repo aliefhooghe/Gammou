@@ -137,6 +137,7 @@ namespace Gammou {
 
 		Steinberg::tresult PLUGIN_API abstract_vst3_view::onKeyDown(Steinberg::char16 key, Steinberg::int16 keyMsg, Steinberg::int16 modifiers)
 		{
+			DEBUG_PRINT("KEY\n");
 			const keycode k = vst3_keycode_to_gammou_keycode(key, keyMsg);
 			return m_window->sys_key_down(k) ? Steinberg::kResultTrue : Steinberg::kResultFalse;
 		}

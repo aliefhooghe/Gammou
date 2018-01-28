@@ -13,7 +13,7 @@ namespace Gammou {
 			init_main_factory();
 
 
-			set_background_color(View::cl_pink); // for gui debuging
+			set_background_color(View::cl_yellowgreen); // for gui debuging
 
 			/*
 			MASTER
@@ -72,7 +72,7 @@ namespace Gammou {
 
 			gui_sound_component *gtest_facto = new gui_sound_component(test_facto, synthesizer_mutex, 400, 700);
 
-			gui_master_circuit *master = new gui_master_circuit(synthesizer, synthesizer_mutex, 0, 0, 800, 800, View::create_color((unsigned char)50u, (unsigned char)50u, (unsigned char)50u));
+			gui_master_circuit *master = new gui_master_circuit(synthesizer, synthesizer_mutex, 0, 0, 800, 800);
 
 			master->add_gui_component(c);
 			master->add_gui_component(cc);
@@ -136,7 +136,7 @@ namespace Gammou {
 			gui_sound_component *ppc2 = new gui_sound_component(ppsum, synthesizer_mutex, 300, 85);
 			gui_sound_component *ppc21 = new gui_sound_component(ppsum1, synthesizer_mutex, 330, 100);
 
-			gui_polyphonic_circuit *poly = new gui_polyphonic_circuit(synthesizer, synthesizer_mutex, 0, 0, 800, 800, View::create_color((unsigned char)50u, (unsigned char)50u, (unsigned char)50u));
+			gui_polyphonic_circuit *poly = new gui_polyphonic_circuit(synthesizer, synthesizer_mutex, 0, 0, 800, 800);
 
 			poly->add_gui_component(pc);
 			poly->add_gui_component(pcc);
@@ -152,7 +152,7 @@ namespace Gammou {
 
 			/////////
 
-			pages = new View::page_container(120, 0, 800, 800, View::cl_bisque);
+			pages = new View::page_container(120, 0, 800, 800, View::cl_chartreuse);
 
 			pages->add_page(master);
 			pages->add_page(poly);
@@ -169,9 +169,15 @@ namespace Gammou {
 			, "Change page", 705, 0));
 
 
-			View::list_box *lb = new View::list_box(0, 0, 120, 800, 40, View::cl_chartreuse, View::cl_white, View::cl_black, 15);
+			View::list_box *lb = 
+				new View::list_box(0, 0, 120, 800, 40, 
+					Palette::list_box_selected_item_color, 
+					Palette::list_box_background, 
+					Palette::list_box_border_color, 
+					Palette::list_box_font_color, 
+					12);
 			
-			for (unsigned int i = 0; i < 250; ++i)
+			for (unsigned int i = 0; i < 100; ++i)
 				lb->add_item("Choice" + std::to_string(i));
 
 			lb->select_item(1);
