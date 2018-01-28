@@ -28,12 +28,13 @@ namespace Gammou {
 			unsigned int get_height(void) const;
 			const rectangle& get_absolute_rect() const;
 
-			virtual bool contains(const int px, const int py) const;
-			virtual bool contains(const rectangle& rect) const;
-
 			virtual void redraw();
 
 			// x and y in widget coordinate system after this line
+			
+			virtual bool contains(const int px, const int py) const;
+			virtual bool contains(const rectangle& rect) const;
+			
 			virtual bool on_key_up(const keycode key);
 			virtual bool on_key_down(const keycode key);
 
@@ -60,11 +61,11 @@ namespace Gammou {
 
 			void redraw_parent();
 			abstract_panel *get_parent();
-			const rectangle get_relative_rect() const;
+			const rectangle get_relative_rect() const;	//	self coordinate system
 			
 		private:
 			abstract_panel *m_parent;
-			rectangle m_absolute_rect;
+			rectangle m_absolute_rect;		//	Parent coordinate system
 		};
 
 	} /* View */

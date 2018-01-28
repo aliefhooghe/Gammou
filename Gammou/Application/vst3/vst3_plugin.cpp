@@ -106,6 +106,8 @@ namespace Gammou {
 						double value;
 						// For le moment, only the last point
 
+						DEBUG_PRINT("Parameter data : id = %u, %u values\n", param_id, data_count);
+
 						if (Steinberg::kResultTrue == 
 							param_data->getPoint(data_count - 1, sample_offset, value))
 							m_synthesizer.set_parameter_value(value, param_id);
@@ -166,7 +168,7 @@ namespace Gammou {
 				for (unsigned int i = 0; i < nbSamples; 
 					++i, ++output_buffer_left, ++output_buffer_right, ++input_buffer_left, ++input_buffer_right) {
 
-					input[0] = static_cast<double>(*input_buffer_left);
+					input[0] = 2000.0;//static_cast<double>(*input_buffer_left);
 					input[1] = static_cast<double>(*input_buffer_right);
 
 					m_synthesizer.process(input, output);

@@ -179,7 +179,7 @@ namespace Gammou {
 
 		unsigned int page_container::get_page_count() const
 		{
-			return m_pages.size();
+			return static_cast<unsigned int>(m_pages.size());
 		}
 
 		widget * page_container::get_page(const unsigned int page_id) const

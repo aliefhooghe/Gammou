@@ -211,7 +211,7 @@ namespace Gammou {
 		template<class T>
 		const unsigned int abstract_component<T>::get_output_count() const noexcept
 		{
-			return m_output_name.size();
+			return static_cast<unsigned int>(m_output_name.size());
 		}
 
 		template<class T>

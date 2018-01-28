@@ -83,7 +83,6 @@ namespace Gammou {
 
 		bool widget::contains(const int px, const int py) const 
 		{
-			//DEBUG_PRINT("contain(%d, %d")
 			return get_relative_rect().contains(px, py);
 		}
 
@@ -153,7 +152,7 @@ namespace Gammou {
 
 		const rectangle widget::get_relative_rect() const
 		{
-			return rectangle(0, 0, m_absolute_rect.width, m_absolute_rect.height);
+			return rectangle(0, 0, get_width(), get_height());
 		}
 
 		void widget::redraw()

@@ -143,7 +143,6 @@ namespace Gammou {
 				poly->add_gui_component(ppc2);
 				poly->add_gui_component(ppc21);
 
-
 				/////////
 
 				pages = new View::page_container(0, 0, 800, 800, View::cl_bisque);
@@ -160,7 +159,7 @@ namespace Gammou {
 					page_id = (page_id == 0) ? 1 : 0;
 					pages->select_page(page_id);
 				}
-				, "Change page", 730, 0));
+				, "Change page", 705, 0));
 			}
 			
 			~synthesizer_gui() 

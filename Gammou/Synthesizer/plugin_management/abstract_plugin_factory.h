@@ -13,8 +13,6 @@ namespace Gammou {
 
         class abstract_plugin_factory{
 
-			//// TODO 
-
         public:
 			abstract_plugin_factory(const std::string& name, const std::string& description, unsigned int factory_id);
 			virtual ~abstract_plugin_factory() {}
@@ -27,7 +25,7 @@ namespace Gammou {
 			abstract_sound_component *get_new_sound_component(const answer_form_descriptor& answer, const unsigned int channel_count);
 
 			unsigned int get_factory_id() const;
-			void delete_sound_component(abstract_sound_component *component) const;
+			void delete_sound_component(abstract_sound_component*component) const;
 
 		protected:
 			virtual abstract_sound_component *create_sound_component(data_source& source, const unsigned int channel_count) = 0;

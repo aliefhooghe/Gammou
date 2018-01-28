@@ -37,8 +37,9 @@ namespace Gammou {
 
 			void process(const double input[], double output[]);
 
-			void send_note_on(const char midi_note, const double velocity);
-			void send_note_off(const char midi_note, const double velocity);
+			// Midi note : 
+			void send_note_on(const unsigned int midi_note, const double velocity);
+			void send_note_off(const unsigned int midi_note, const double velocity);
 
 			void add_sound_component_on_master_circuit(abstract_sound_component *component);
 			void add_sound_component_on_polyphonic_circuit(polyphonic_sound_component *component);
@@ -73,7 +74,6 @@ namespace Gammou {
 			master_circuit m_master_circuit;
 			polyphonic_circuit m_polyphonic_circuit;
 			
-
 			// Channels allocation
 			std::vector<unsigned int> m_channels;
 			std::vector<unsigned int>::iterator m_running_channels_end;
@@ -83,9 +83,9 @@ namespace Gammou {
 			unsigned int m_channel_zero_lifetime; // No const (set_sample rate)
 
 			// Channel note
-			std::vector<unsigned char> m_channels_midi_note;
+			std::vector<unsigned int> m_channels_midi_note;
 
-			static const double m_note_frequencies[127];
+			static const double m_note_frequencies[128];
 		};
 
 

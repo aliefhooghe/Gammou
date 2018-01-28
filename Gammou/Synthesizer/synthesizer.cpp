@@ -56,7 +56,7 @@ namespace Gammou {
 
 					if( (--(m_channels_lifetime[current_channel])) == 0u){
 						// no more lifetime
-						DEBUG_PRINT("free:%d\n", current_channel);
+						//DEBUG_PRINT("free:%d\n", current_channel);
 						free_channel(it);
 						continue;
 					}
@@ -73,17 +73,17 @@ namespace Gammou {
 		}
 
 
-		void synthesizer::send_note_on(const char midi_note, const double velocity)
+		void synthesizer::send_note_on(const unsigned int midi_note, const double velocity)
 		{
 			const unsigned int channel = get_new_channel();
 
 			if( channel != INVALID_CHANNEL ){
 
-				DEBUG_PRINT("on : %d (n = %d), fr = %f)\n", channel, midi_note, m_note_frequencies[(int)midi_note]);
+				DEBUG_PRINT("on : %d (n = %d), fr = %f)\n", channel, midi_note, m_note_frequencies[midi_note]);
 
 				m_channels_midi_note[channel] = midi_note;
 				m_polyphonic_circuit.initialize_channel(channel);
-				m_polyphonic_circuit.set_channel_pitch(channel, m_note_frequencies[(int)midi_note]);
+				m_polyphonic_circuit.set_channel_pitch(channel, m_note_frequencies[midi_note]);
 				m_polyphonic_circuit.set_channel_attack_velocity(channel, velocity);
 				m_polyphonic_circuit.set_channel_gate_state(channel, true);
 				// default value (avoid undetermined component behavior)
@@ -98,13 +98,13 @@ namespace Gammou {
 			// Else do nothing
 		}
 
-		void synthesizer::send_note_off(char midi_note, const double velocity)
+		void synthesizer::send_note_off(const unsigned int midi_note, const double velocity)
 		{
 			for(auto it = m_channels.begin(); it != m_running_channels_end; ++it){
 				const unsigned int channel = *it;
 
 				if( m_channels_midi_note[channel] == midi_note ) {
-					DEBUG_PRINT("off: %d\n", channel);
+					//DEBUG_PRINT("off: %d\n", channel);
 					m_channels_midi_note[channel] = NO_NOTE;
 					m_polyphonic_circuit.set_channel_release_velocity(channel, velocity);
 					m_polyphonic_circuit.set_channel_gate_state(channel, false);
@@ -193,7 +193,7 @@ namespace Gammou {
 
 		unsigned int synthesizer::get_parameter_input_count() const
 		{
-			return m_master_circuit.m_parameter_buffer.size();
+			return static_cast<unsigned int>(m_master_circuit.m_parameter_buffer.size());
 		}
 
 		void synthesizer::set_parameter_value(const double value, const unsigned int automation_id)
@@ -204,7 +204,7 @@ namespace Gammou {
 
 		unsigned int synthesizer::get_channel_count() const
 		{
-			return m_channels.size();
+			return static_cast<unsigned int>(m_channels.size());
 		}
 
 
@@ -224,135 +224,136 @@ namespace Gammou {
 
 
 
-
-		const double synthesizer::m_note_frequencies[127] = { // todo mieux
-			16.3,
-			17.3,
-			18.3,
-			19.4,
-			20.5,
-			21.8,
-			23.1,
-			24.5,
-			26.0,
-			27.5,
-			29.1,
-			30.8,
-			32.7,
-			34.6,
-			36.7,
-			38.9,
-			41.2,
-			43.6,
-			46.2,
-			49.0,
-			51.9,
-			55.0,
-			58.0,
-			62.0,
-			65,
-			69,
-			74,
-			78,
-			83,
-			87,
-			92.5,
-			98,
-			104,
-			110,
-			117,
-			123,
-			131,
-			139,
-			147,
-			156,
-			165,
-			175,
-			185,
-			196,
-			208,
-			220,
-			233,
-			247,
-			262,
-			277,
-			294,
-			311,
-			330,
-			349,
-			370,
-			392,
-			415,
-			440,
-			466,
-			494,
-			523,
-			554,
-			587,
-			622,
-			659,
-			698.5,
-			740,
-			784,
-			831,
-			880,
-			932,
-			988,
-			1046.5,
-			1109,
-			1175,
-			1244.5,
-			1318.5,
-			1397,
-			1480,
-			1568,
-			1661,
-			1760,
-			1865,
-			1975,
-			2093,
-			2217,
-			2349,
-			2489,
-			2637,
-			2794,
-			2960,
-			3136,
-			3322,
-			3520,
-			3729,
-			3951,
-			4186,
-			4435,
-			4698,
-			4978,
-			5274,
-			5588,
-			5920,
-			6272,
-			6645,
-			7040,
-			7458,
-			7902,
-			8372,
-			8870,
-			9396,
-			9956,
-			10548,
-			11176,
-			11840,
-			12544,
-			13290,
-			14080,
-			14918,
-			15804,
-			16744,
-			17740,
-			18792,
-			19912,
-			21098,
-			21098,
-			21098};
+		const double synthesizer::m_note_frequencies[128] =
+		{
+			8.176,
+			8.662,
+			9.177,
+			9.723,
+			10.301,
+			10.913,
+			11.562,
+			12.250,
+			12.978,
+			13.750,
+			14.568,
+			15.434,
+			16.352,
+			17.324,
+			18.354,
+			19.445,
+			20.602,
+			21.827,
+			23.125,
+			24.500,
+			25.957,
+			27.500,
+			29.135,
+			30.868,
+			32.703,
+			34.648,
+			36.708,
+			38.891,
+			41.203,
+			43.654,
+			46.249,
+			48.999,
+			51.913,
+			55.000,
+			58.270,
+			61.735,
+			65.406,
+			69.296,
+			73.416,
+			77.782,
+			82.407,
+			87.307,
+			92.499,
+			97.999,
+			103.826,
+			110.000,
+			116.541,
+			123.471,
+			130.813,
+			138.591,
+			146.832,
+			155.563,
+			164.814,
+			174.614,
+			184.997,
+			195.998,
+			207.652,
+			220.000,
+			233.082,
+			246.942,
+			261.626,
+			277.183,
+			293.665,
+			311.127,
+			329.628,
+			349.228,
+			369.994,
+			391.995,
+			415.305,
+			440.000,
+			466.164,
+			493.883,
+			523.251,
+			554.365,
+			587.330,
+			622.254,
+			659.255,
+			698.456,
+			739.989,
+			783.991,
+			830.609,
+			880.000,
+			932.328,
+			987.767,
+			1046.502,
+			1108.731,
+			1174.659,
+			1244.508,
+			1318.510,
+			1396.913,
+			1479.978,
+			1567.982,
+			1661.219,
+			1760.000,
+			1864.655,
+			1975.533,
+			2093.005,
+			2217.461,
+			2349.318,
+			2489.016,
+			2637.020,
+			2793.826,
+			2959.955,
+			3135.963,
+			3322.438,
+			3520.000,
+			3729.310,
+			3951.066,
+			4186.009,
+			4434.922,
+			4698.636,
+			4978.032,
+			5274.041,
+			5587.652,
+			5919.911,
+			6271.927,
+			6644.875,
+			7040.000,
+			7458.620,
+			7902.133,
+			8372.018,
+			8869.844,
+			9397.273,
+			9956.063,
+			10548.080,
+			11175.300,
+			11839.820,
+			12543.850 };
 
 	} /* Sound */
 

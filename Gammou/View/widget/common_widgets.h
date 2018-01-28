@@ -43,7 +43,7 @@ namespace Gammou {
 		class push_button : public control {
 
 		public: 
-			push_button(std::function<void()> push_action, const std::string& text, const unsigned int x, const unsigned int y, const unsigned int width = 70, const unsigned int height = 20, const unsigned int font_size = 10);
+			push_button(std::function<void()> push_action, const std::string& text, const unsigned int x, const unsigned int y, const unsigned int width = 95, const unsigned int height = 27, const unsigned int font_size = 10);
 			virtual ~push_button() {};
 
 			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y) override;

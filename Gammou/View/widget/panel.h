@@ -153,10 +153,9 @@ namespace Gammou {
 		template<class widget_type>
 		inline bool panel<widget_type>::on_mouse_move(const int x, const int y)
 		{
+			widget_type *const w = get_widget_at_position(x, y);
 
 			if (m_focused_widget == nullptr) {
-				widget_type *const w = get_widget_at_position(x, y);
-
 				if (w != nullptr) {
 					m_focused_widget = w;
 					return w->on_mouse_enter();
@@ -165,16 +164,12 @@ namespace Gammou {
 					return false;
 				}
 			}
-			else if (m_focused_widget->contains(x - m_focused_widget->get_x(), 
-				y - m_focused_widget->get_y())){
-
+			else if( m_focused_widget == w ){
 				return m_focused_widget->on_mouse_move(
 					x - m_focused_widget->get_x(),
 					y - m_focused_widget->get_y());
 			}
 			else {
-				widget_type *const w = get_widget_at_position(x, y);
-
 				bool ret = m_focused_widget->on_mouse_exit();
 
 				if (w != nullptr)

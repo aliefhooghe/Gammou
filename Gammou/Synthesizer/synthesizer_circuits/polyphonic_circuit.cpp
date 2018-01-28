@@ -84,7 +84,7 @@ namespace Gammou {
 
 		polyphonic_circuit_output::polyphonic_circuit_output(std::vector<double>& output_buffer)
 			: 
-			abstract_sound_component("Master In", output_buffer.size(), 0),
+			abstract_sound_component("Master In", static_cast<unsigned int>(output_buffer.size()), 0),
 			m_buffer_ptr(output_buffer.data()),
 			m_last_out_was_zero(false)
 		{

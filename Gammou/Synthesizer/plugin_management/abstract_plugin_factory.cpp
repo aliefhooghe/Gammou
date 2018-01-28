@@ -1,3 +1,4 @@
+
 #include "abstract_plugin_factory.h"
 
 namespace Gammou {
@@ -29,7 +30,7 @@ namespace Gammou {
 		abstract_sound_component * abstract_plugin_factory::get_new_sound_component(data_source & source, const unsigned int channel_count)
 		{
 			abstract_sound_component *component = create_sound_component(source, channel_count);
-			stamp_sound_component(component);
+			stamp_sound_component(component);	//	set factory ID
 			return component;
 		}
 

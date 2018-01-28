@@ -44,7 +44,7 @@ namespace Gammou {
 			const Process::abstract_component<double> *component = get_component();
 
 			if (component != nullptr) {
-				const unsigned int ic = get_component()->get_input_count();
+				const unsigned int ic = component->get_input_count();
 
 				if (input_id < ic) {
 					const float socket_rect_height = static_cast<float>(get_height() - m_name_height) / static_cast<float>(ic);
@@ -61,18 +61,24 @@ namespace Gammou {
 
 		bool abstract_gui_component::get_output_pos(const unsigned int output_id, float & x, float & y)
 		{
-			const unsigned int oc = get_component()->get_output_count();
+			const Process::abstract_component<double> *component = get_component();
 
-			if (output_id > oc) {
-				return false;
+			if (component != nullptr) {
+				const unsigned int oc = component->get_output_count();
+
+				if (output_id < oc) {
+					const float socket_rect_height = static_cast<float>(get_height() - m_name_height) / static_cast<float>(oc);
+
+					x = get_x() + static_cast<float>(get_width()) - (m_socket_size / 2.0);
+					y = get_y() + m_name_height + (static_cast<float>(output_id) + 0.5) * socket_rect_height;
+
+					return true;
+				}
+
+				
 			}
 
-			const float socket_rect_height = static_cast<float>(get_height() - m_name_height) / static_cast<float>(oc);
-
-			x = get_x() + static_cast<float>(get_width()) - (m_socket_size / 2.0);
-			y = get_y() + m_name_height + (static_cast<float>(output_id) + 0.5) * socket_rect_height;
-
-			return true;
+			return false;
 		}
 
 		int abstract_gui_component::output_id_by_pos(const float x, const float y) const
@@ -83,7 +89,7 @@ namespace Gammou {
 
 			if (component != nullptr
 				&& ((get_width() - self_x) < m_l1 / 2.0)) {
-				const unsigned int oc = component->get_output_count();
+				const int oc = component->get_output_count();	//	int because of (ret >= oc)
 				const float socket_rect_height = static_cast<float>(get_height() - m_name_height) / static_cast<float>(oc);
 
 				if (oc != 0) {
@@ -109,7 +115,7 @@ namespace Gammou {
 
 			if (component != nullptr
 				&& (self_x < m_l1)) {
-				const unsigned int ic = component->get_input_count();
+				const int ic = component->get_input_count();
 				const float socket_rect_height = static_cast<float>(get_height() - m_name_height) / static_cast<float>(ic);
 
 				if (ic != 0) {
@@ -245,19 +251,23 @@ namespace Gammou {
 				redraw();
 				return true;
 			}
+
+			return false;
 		}
 
 		bool abstract_gui_component::on_mouse_dbl_click(const int x, const int y)
 		{
 			bool ret;
-
-			lock_circuit();
 			const unsigned int input_id = input_id_by_pos(x + get_x(), y + get_y());
 
 			if (input_id != -1) {
 				ret = true; // event handled
 				DEBUG_PRINT("Disconect input %d\n", input_id);
+
+				lock_circuit();
 				get_component()->disconnect_input(input_id);
+				unlock_circuit();
+
 				redraw_parent();
 			}
 			else {
@@ -265,7 +275,6 @@ namespace Gammou {
 				ret = false;
 			}
 				
-			unlock_circuit();
 			return ret;
 		}
 
@@ -315,7 +324,7 @@ namespace Gammou {
 		{
 			draw_background(cr);
 
-			lock_circuit();
+			//lock_circuit();
 
 			// Draw links
 
@@ -350,7 +359,7 @@ namespace Gammou {
 			}
 
 			draw_widgets(cr);
-			unlock_circuit();
+			//unlock_circuit();
 		}
 
 		void abstract_gui_component_map::connect(abstract_gui_component * src, const unsigned int src_output_id, 
@@ -379,9 +388,9 @@ namespace Gammou {
 			abstract_gui_component *focused_component = get_focused_widget();
 
 			if (focused_component != nullptr) {
-				lock_circuit();
+				//lock_circuit();
 				int output_id = focused_component->output_id_by_pos(x, y);
-				unlock_circuit();
+				//unlock_circuit();
 
 				DEBUG_PRINT("Start linking from output_id = %d\n", output_id);
 
@@ -402,14 +411,15 @@ namespace Gammou {
 				abstract_gui_component *dst = get_focused_widget();
 				
 				if (dst != nullptr) {
-					lock_circuit();
 					const int input_id = dst->input_id_by_pos(x, y);
 					
 					DEBUG_PRINT("INPUT ID = %d\n", input_id);
 
-					if (input_id != -1)
+					if (input_id != -1) {
+						lock_circuit();
 						connect(m_linking_component, m_linking_output_id, dst, input_id);
-					unlock_circuit();
+						unlock_circuit();
+					}
 				}
 
 				m_is_linking = false;

@@ -5,7 +5,7 @@
 
 #include "sound_component_manager.h"
 #include "multi_channel_data_container.h"
-#include "../plugin/data_stream.h"
+#include "../plugin_management/data_stream.h"
 
 /*
  * 		Channels data types
