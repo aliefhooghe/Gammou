@@ -25,11 +25,13 @@ namespace Gammou {
 			~synthesizer_gui();
 
 		private:
+			void add_plugin_factory(Sound::abstract_plugin_factory *factory);
 			void init_main_factory(); // Load all built-in and plug in component
 
+			View::list_box *m_plugin_list_box;
 
+			std::vector<unsigned int> m_factory_ids;
 			Sound::main_factory m_main_factory;
-			View::page_container *pages;
 			unsigned int page_id;
 		};
 	}

@@ -269,7 +269,6 @@ namespace Gammou {
 					ret |= w->on_mouse_enter();
 				m_focused_widget = w;
 			}
-			// TODO : ELSE { MOUSE_MOVE(FOCUSED); } ??
 
 			if (m_draging_widget != nullptr)
 				ret |= m_draging_widget->on_mouse_drag(button,

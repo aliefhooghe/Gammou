@@ -73,6 +73,11 @@ namespace Gammou {
 			m_plugin_factory[factory->get_factory_id()] = std::make_pair(lib, factory);
 		}
 
+		bool main_factory::check_factory_presence(const unsigned int factory_id) const
+		{
+			return (m_plugin_factory.find(factory_id) != m_plugin_factory.end());
+		}
+
 		const std::string & main_factory::get_factory_name(const unsigned int factory_id)
 		{
 			const abstract_plugin_factory *factory = factory_by_id(factory_id);
@@ -85,7 +90,7 @@ namespace Gammou {
 			return factory->get_description();
 		}
 
-		const request_form_descriptor & main_factory::get_plugin_request_form(const unsigned int factory_id) const
+		const request_form & main_factory::get_plugin_request_form(const unsigned int factory_id) const
 		{
 			const abstract_plugin_factory *factory = factory_by_id(factory_id);
 			return factory->get_request_form();
@@ -97,7 +102,7 @@ namespace Gammou {
 			return factory->get_new_sound_component(data, channel_count);
 		}
 
-		abstract_sound_component * main_factory::get_new_sound_component(const unsigned int factory_id, const answer_form_descriptor & answer_form, const unsigned int channel_count)
+		abstract_sound_component * main_factory::get_new_sound_component(const unsigned int factory_id, const answer_form & answer_form, const unsigned int channel_count)
 		{
 			abstract_plugin_factory *factory = factory_by_id(factory_id);
 			return factory->get_new_sound_component(answer_form, channel_count);

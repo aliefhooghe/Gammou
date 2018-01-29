@@ -27,6 +27,18 @@ namespace Gammou {
 			DEBUG_PRINT("Gammou DTOR\n");
 		}
 
+		inline void Plugin::lock_synthesizer()
+		{
+			m_synthesizer_mutex.lock();
+			DEBUG_PRINT("Plugin Lock\n");
+		}
+
+		inline void Plugin::unlock_synthesizer()
+		{
+			m_synthesizer_mutex.unlock();
+			DEBUG_PRINT("Plugin UNLock\n");
+		}
+
 		Steinberg::tresult PLUGIN_API Plugin::initialize(FUnknown * context)
 		{
 			Steinberg::tresult result = SingleComponentEffect::initialize(context);

@@ -4,7 +4,8 @@
 #include <map>
 #include <mutex>
 #include <algorithm>
-#include "view.h"
+#include <view.h>
+
 #include "synthesizer.h"
 
 #include "gui_properties.h"
@@ -59,6 +60,7 @@ namespace Gammou {
 
 			inline void lock_circuit() { m_circuit_mutex->lock(); }
 			inline void unlock_circuit() { m_circuit_mutex->unlock(); }
+
 		private:
 			bool m_is_linking;
 			bool m_is_moving;
@@ -105,10 +107,18 @@ namespace Gammou {
 
 		public:
 			abstract_gui_component_map(
-				std::mutex *circuit_mutex, const unsigned int x, const unsigned int y,
-				const unsigned int width, const unsigned int height, const View::color background = GuiProperties::background);
-			abstract_gui_component_map(std::mutex *circuit_mutex, const View::rectangle& rect,
+				std::mutex *circuit_mutex,
+				const unsigned int x, 
+				const unsigned int y,
+				const unsigned int width,
+				const unsigned int height, 
 				const View::color background = GuiProperties::background);
+
+			abstract_gui_component_map(
+				std::mutex *circuit_mutex, 
+				const View::rectangle& rect,
+				const View::color background = GuiProperties::background);
+
 			virtual ~abstract_gui_component_map() {}
 
 			virtual void add_gui_component(abstract_gui_component *component);
@@ -117,8 +127,8 @@ namespace Gammou {
 				const int dx, const int dy) override;
 			virtual bool on_mouse_drag_start(const View::mouse_button button, const int x, const int y) override;
 			virtual bool on_mouse_drag_end(const View::mouse_button button, const int x, const int y) override;
-
 			virtual bool on_mouse_dbl_click(const int x, const int y) override;
+
 		protected:
 			virtual void draw(cairo_t *cr);
 

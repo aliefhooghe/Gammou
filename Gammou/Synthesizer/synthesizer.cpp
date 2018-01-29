@@ -121,13 +121,13 @@ namespace Gammou {
 			m_master_circuit.add_sound_component(component);
 		}
 
-		void synthesizer::add_sound_component_on_polyphonic_circuit(polyphonic_sound_component *component)
+		void synthesizer::add_sound_component_on_polyphonic_circuit(abstract_sound_component *component)
 		{
 			if (component->get_channel_count() != get_channel_count())
 				throw std::domain_error("Component's channel count does not fit");
 
 			//  Initialize component for each running channel
-			for (auto it = m_channels.begin(); it != m_running_channels_end; ) {
+			for (auto it = m_channels.begin(); it != m_running_channels_end; ++it) {
 				const unsigned int current_channel = *it;
 				component->on_channel_change(current_channel);
 				component->initialize_process();

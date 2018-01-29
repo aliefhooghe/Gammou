@@ -18,7 +18,13 @@ namespace Gammou {
 
 		gui_sound_component::~gui_sound_component()
 		{
-			// TODO PROBABLEMENT : delete sound_componnt
+			// TODO : Factory delete !
+			delete m_sound_component;
+		}
+
+		unsigned int gui_sound_component::get_sound_component_factory_id() const
+		{
+			return m_sound_component->get_factory_id();
 		}
 
 		Process::abstract_component<double>* gui_sound_component::get_component() const

@@ -1,4 +1,7 @@
 
+#ifndef GAMMOU_MAIN_FACTORY_H_
+#define GAMMOU_MAIN_FACTORY_H_
+
 #include <map>
 #include "abstract_plugin_factory.h"
 
@@ -28,15 +31,16 @@ namespace Gammou {
 			//-------------
 			unsigned int load_factory(const std::string& file_path);
 			void register_factory(abstract_plugin_factory *factory);
+			bool check_factory_presence(const unsigned int factory_id) const;
 
 			//--------------
 			const std::string& get_factory_name(const unsigned int factory_id);
 			const std::string& get_factory_description(const unsigned int factory_id);
 
-			const request_form_descriptor& get_plugin_request_form(const unsigned int factory_id) const;
+			const request_form& get_plugin_request_form(const unsigned int factory_id) const;
 
 			abstract_sound_component *get_new_sound_component(const unsigned int factory_id, data_source& data, const unsigned int channel_count);
-			abstract_sound_component *get_new_sound_component(const unsigned int factory_id, const answer_form_descriptor& answer_form, const unsigned int channel_count);
+			abstract_sound_component *get_new_sound_component(const unsigned int factory_id, const answer_form& answer_form, const unsigned int channel_count);
 			
 			void delete_sound_component(abstract_sound_component *component);
 
@@ -49,3 +53,5 @@ namespace Gammou {
 	}
 
 }
+
+#endif

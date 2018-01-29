@@ -39,6 +39,8 @@ namespace Gammou {
 
 			virtual void on_sample_rate_change(const double new_sample_rate) {};
 			virtual void on_channel_change(const unsigned int new_chanel) {};
+
+			virtual unsigned int get_channel_count() const { return 1;  }
 		protected:
 			
 			double get_sample_duration() const;
@@ -66,10 +68,11 @@ namespace Gammou {
 
 			virtual ~polyphonic_sound_component() {}
 
-			unsigned int get_channel_count() const;
+			// Not virtual, should not be modified
+
+			unsigned int get_channel_count() const override;
 			unsigned int get_current_working_channel() const;
 
-			// Not virtual, should not be modified
 			void on_channel_change(const unsigned int new_chanel) override;
 		private:
 			const unsigned int m_channels_count;

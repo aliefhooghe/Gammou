@@ -3,7 +3,6 @@
 
 #include "abstract_component.h"
 
-
 #define FRAME_INITIAL_MEM 16
 
 namespace Gammou {

@@ -314,8 +314,12 @@ namespace Gammou {
 		 */
 
 		abstract_gui_component_map::abstract_gui_component_map(
-			std::mutex *circuit_mutex, const unsigned int x, const unsigned int y, const unsigned int width,
-			const unsigned int height, const View::color background)
+			std::mutex *circuit_mutex, 
+			const unsigned int x,
+			const unsigned int y, 
+			const unsigned int width,
+			const unsigned int height, 
+			const View::color background)
 			: panel<abstract_gui_component>(x, y, width, height, background),
 			m_circuit_mutex(circuit_mutex),
 			m_is_linking(false),
@@ -330,7 +334,9 @@ namespace Gammou {
 		}
 
 		abstract_gui_component_map::abstract_gui_component_map(
-			std::mutex *circuit_mutex, const View::rectangle & rect, const View::color background)
+			std::mutex *circuit_mutex,
+			const View::rectangle & rect, 
+			const View::color background)
 			: panel<abstract_gui_component>(rect, background),
 			m_circuit_mutex(circuit_mutex),
 			m_is_linking(false),

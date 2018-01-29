@@ -55,34 +55,34 @@ namespace Gammou {
 
 		/////////////////////////////
 
-		request_form_descriptor::request_form_descriptor()
+		request_form::request_form()
 		{
 		}
 
-		unsigned int request_form_descriptor::get_request_count() const
+		unsigned int request_form::get_request_count() const
 		{
 			return static_cast<unsigned int>(m_index.size());
 		}
 
-		void request_form_descriptor::add_file_request(const std::string & name, const std::string & description, const std::string & ext)
+		void request_form::add_file_request(const std::string & name, const std::string & description, const std::string & ext)
 		{
 			m_file_request.emplace_back(name, description, ext);
 			m_index.push_back(std::make_pair(request_form_field_type::FILE_PATH, static_cast<unsigned int>(m_file_request.size()) - 1));
 		}
 
-		void request_form_descriptor::add_int_request(const std::string & name, const std::string & description, const int min, const int max)
+		void request_form::add_int_request(const std::string & name, const std::string & description, const int min, const int max)
 		{
 			m_integer_request.emplace_back(name, description, min, max);
 			m_index.push_back(std::make_pair(request_form_field_type::INTEGER, static_cast<unsigned int>(m_integer_request.size()) - 1));
 		}
 
-		void request_form_descriptor::add_enum_request(const std::string& name, const std::string& description, const std::vector<std::string>& choices)
+		void request_form::add_enum_request(const std::string& name, const std::string& description, const std::vector<std::string>& choices)
 		{
 			m_enum_request.emplace_back(name, description, choices);
 			m_index.push_back(std::make_pair(request_form_field_type::ENUM, static_cast<unsigned int>(m_enum_request.size()) - 1));
 		}
 
-		const request_form_field_type request_form_descriptor::get_field_type(const unsigned int index) const
+		const request_form_field_type request_form::get_field_type(const unsigned int index) const
 		{
 			if (index >= m_index.size())
 				throw std::range_error("Invalid index");
@@ -90,7 +90,7 @@ namespace Gammou {
 			return m_index[index].first;
 		}
 
-		const file_request_descriptor & request_form_descriptor::get_file_request(const unsigned int index) const
+		const file_request_descriptor & request_form::get_file_request(const unsigned int index) const
 		{
 			if (index >= m_index.size())
 				throw std::range_error("Invalid index");
@@ -101,7 +101,7 @@ namespace Gammou {
 			return m_file_request[i];
 		}
 
-		const integer_request_descriptor & request_form_descriptor::get_integer_request(const unsigned int index) const
+		const integer_request_descriptor & request_form::get_integer_request(const unsigned int index) const
 		{
 			if (index >= m_index.size())
 				throw std::range_error("Invalid index");
@@ -111,7 +111,7 @@ namespace Gammou {
 			return m_integer_request[i];
 		}
 
-		const enum_request_descriptor & request_form_descriptor::get_enum_request(const unsigned int index) const
+		const enum_request_descriptor & request_form::get_enum_request(const unsigned int index) const
 		{
 			if (index >= m_index.size())
 				throw std::range_error("Invalid index");
@@ -135,29 +135,29 @@ namespace Gammou {
 		////////////////////
 
 
-		answer_form_descriptor::answer_form_descriptor()
+		answer_form::answer_form()
 		{
 		}
 
-		void answer_form_descriptor::add_file_path(const std::string & file_path)
+		void answer_form::add_file_path(const std::string & file_path)
 		{
 			m_file_path.emplace_back(file_path);
 			m_index.push_back(std::make_pair(request_form_field_type::FILE_PATH, static_cast<unsigned int>(m_file_path.size()) - 1));
 		}
 
-		void answer_form_descriptor::add_integer(const int integer)
+		void answer_form::add_integer(const int integer)
 		{
 			m_integer.push_back(integer);
 			m_index.push_back(std::make_pair(request_form_field_type::INTEGER, static_cast<unsigned int>(m_integer.size()) - 1));
 		}
 
-		void answer_form_descriptor::add_enum_choice(const unsigned int choice)
+		void answer_form::add_enum_choice(const unsigned int choice)
 		{
 			m_integer.push_back(choice);
 			m_index.push_back(std::make_pair(request_form_field_type::ENUM, static_cast<unsigned int>(m_enum_choice.size()) - 1));
 		}
 
-		const std::string & answer_form_descriptor::get_file_path(const unsigned int index) const
+		const std::string & answer_form::get_file_path(const unsigned int index) const
 		{
 			if (index >= m_index.size())
 				throw std::range_error("Invalid index");
@@ -168,7 +168,7 @@ namespace Gammou {
 			return m_file_path[i];
 		}
 
-		const int answer_form_descriptor::get_integer(const unsigned int index) const
+		const int answer_form::get_integer(const unsigned int index) const
 		{
 			if (index >= m_index.size())
 				throw std::range_error("Invalid index");
@@ -178,7 +178,7 @@ namespace Gammou {
 			return m_integer[i];
 		}
 
-		const unsigned int answer_form_descriptor::get_enum_choice(const unsigned int index) const
+		const unsigned int answer_form::get_enum_choice(const unsigned int index) const
 		{
 			if (index >= m_index.size())
 				throw std::range_error("Invalid index");

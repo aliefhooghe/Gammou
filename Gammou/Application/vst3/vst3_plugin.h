@@ -47,8 +47,8 @@ namespace Gammou {
 			Steinberg::IPlugView *PLUGIN_API createView(const char* name) SMTG_OVERRIDE;
 
 		private:
-			inline void lock_synthesizer() { m_synthesizer_mutex.lock();  }
-			inline void unlock_synthesizer() { m_synthesizer_mutex.unlock();  }
+			inline void lock_synthesizer();
+			inline void unlock_synthesizer();
 
 			std::mutex m_synthesizer_mutex;
 			Sound::synthesizer m_synthesizer;

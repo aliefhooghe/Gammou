@@ -8,10 +8,17 @@ namespace Gammou {
 
 
 
-		list_box::list_box(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, 
-			const unsigned int displayed_items_count, const color selected_item_color, 
-			const color background, const color border_color, const color font_color, const unsigned int font_size)
+		list_box::list_box(
+			const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, 
+			const unsigned int displayed_items_count, 
+			std::function<void(unsigned int)> on_select,
+			const color selected_item_color, 
+			const color background, 
+			const color border_color, 
+			const color font_color, 
+			const unsigned int font_size)
 			: widget(x, y, width, height),
+			m_on_select(on_select),
 			m_selected_color(selected_item_color),
 			m_background_color(background),
 			m_font_color(font_color),
@@ -24,9 +31,17 @@ namespace Gammou {
 		{
 		}
 
-		list_box::list_box(const rectangle & rect, const unsigned int displayed_items_count, const color selected_item_color, 
-			const color background, const color border_color, const color font_color, const unsigned int font_size)
+		list_box::list_box(
+			const rectangle & rect,
+			const unsigned int displayed_items_count, 
+			std::function<void(unsigned int)> on_select,
+			const color selected_item_color, 
+			const color background, 
+			const color border_color, 
+			const color font_color, 
+			const unsigned int font_size)
 			: widget(rect),
+			m_on_select(on_select),
 			m_selected_color(selected_item_color),
 			m_background_color(background),
 			m_font_color(font_color),
@@ -169,6 +184,7 @@ namespace Gammou {
 				if (new_selected < static_cast<int>(m_items.size()) &&
 					new_selected != m_selected_id) {
 					m_selected_id = new_selected;
+					m_on_select(m_selected_id);
 					redraw();
 				}
 			}

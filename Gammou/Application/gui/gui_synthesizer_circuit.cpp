@@ -10,17 +10,69 @@ namespace Gammou {
 		*/
 
 		abstract_gui_synthesizer_circuit::abstract_gui_synthesizer_circuit(
-			Sound::synthesizer * synthesizer, std::mutex * synthesizer_mutex, 
+			Sound::main_factory *main_factory,
+			Sound::synthesizer * synthesizer, 
+			std::mutex * synthesizer_mutex, 
 			unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const View::color background)
 			: abstract_gui_component_map(synthesizer_mutex, x, y, width, height, background),
-			m_synthesizer(synthesizer)
+			m_synthesizer(synthesizer),
+			m_synthesizer_mutex(synthesizer_mutex),
+			m_main_factory(main_factory),
+			m_creation_factory_id(Sound::NO_FACTORY)
 		{
 		}
 
-		abstract_gui_synthesizer_circuit::abstract_gui_synthesizer_circuit(Sound::synthesizer * synthesizer, std::mutex * synthesizer_mutex, const View::rectangle & rect, const View::color background)
+		abstract_gui_synthesizer_circuit::abstract_gui_synthesizer_circuit(
+			Sound::main_factory *main_factory,
+			Sound::synthesizer * synthesizer,
+			std::mutex * synthesizer_mutex, const View::rectangle & rect, const View::color background)
 			: abstract_gui_component_map(synthesizer_mutex, rect, background),
-			m_synthesizer(synthesizer)
+			m_synthesizer(synthesizer),
+			m_synthesizer_mutex(synthesizer_mutex),
+			m_main_factory(main_factory),
+			m_creation_factory_id(Sound::NO_FACTORY)
 		{
+		}
+
+		bool abstract_gui_synthesizer_circuit::on_mouse_dbl_click(const int x, const int y)
+		{
+
+			if (!abstract_gui_component_map::on_mouse_dbl_click(x, y) 
+				&& m_creation_factory_id != Sound::NO_FACTORY) {
+
+				DEBUG_PRINT("Create Componnent\n");
+
+				const Sound::request_form& requests = m_main_factory->get_plugin_request_form(m_creation_factory_id);
+				
+				if (requests.get_request_count() != 0) // TODO Handle requests
+					throw std::runtime_error("Factory Request not handled!");
+			
+				const Sound::answer_form answers;
+
+				Sound::abstract_sound_component *sound_component = 
+					m_main_factory->get_new_sound_component(m_creation_factory_id, answers, m_synthesizer->get_channel_count());
+
+				gui_sound_component *gui_component =
+					new gui_sound_component(sound_component, m_synthesizer_mutex, x, y);
+
+				lock_circuit();
+				add_sound_component_to_frame(sound_component);
+				unlock_circuit();
+
+				add_gui_component(gui_component);	
+			}
+
+			return true;
+		}
+
+		void abstract_gui_synthesizer_circuit::select_component_creation_factory_id(const unsigned int factory_id)
+		{
+			DEBUG_PRINT("Set Factory Id = %u\n", factory_id);
+
+			if (m_main_factory->check_factory_presence(factory_id))
+				m_creation_factory_id = factory_id;
+			else
+				DEBUG_PRINT("Unregisterd Factory");
 		}
 
 		/*
@@ -28,18 +80,28 @@ namespace Gammou {
 		*/
 
 		gui_master_circuit::gui_master_circuit(
-			Sound::synthesizer * synthesizer, std::mutex *synthesizer_mutex, 
+			Sound::main_factory *main_factory, 
+			Sound::synthesizer * synthesizer, 
+			std::mutex *synthesizer_mutex,
 			const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const View::color background)
-			: abstract_gui_synthesizer_circuit(synthesizer, synthesizer_mutex, x, y, width, height, background)
+			: abstract_gui_synthesizer_circuit(main_factory, synthesizer, synthesizer_mutex, x, y, width, height, background)
 		{
 			add_internal_components(synthesizer_mutex);
 		}
 
-		gui_master_circuit::gui_master_circuit(Sound::synthesizer * synthesizer, std::mutex *synthesizer_mutex,
+		gui_master_circuit::gui_master_circuit(
+			Sound::main_factory *main_factory, 
+			Sound::synthesizer * synthesizer, 
+			std::mutex *synthesizer_mutex,
 			const View::rectangle & rect, const View::color background)
-			: abstract_gui_synthesizer_circuit(synthesizer, synthesizer_mutex, rect, background)
+			: abstract_gui_synthesizer_circuit(main_factory, synthesizer, synthesizer_mutex, rect, background)
 		{
 			add_internal_components(synthesizer_mutex);
+		}
+
+		void gui_master_circuit::add_sound_component_to_frame(Sound::abstract_sound_component * sound_component)
+		{
+			m_synthesizer->add_sound_component_on_master_circuit(sound_component);
 		}
 
 		void gui_master_circuit::add_internal_components(std::mutex *synthesizer_mutex)
@@ -78,18 +140,29 @@ namespace Gammou {
 			gui polyphonic circuit implementation
 		*/
 
-		gui_polyphonic_circuit::gui_polyphonic_circuit(Sound::synthesizer * synthesizer, std::mutex * synthesizer_mutex, unsigned int x, 
+		gui_polyphonic_circuit::gui_polyphonic_circuit(
+			Sound::main_factory *main_factory,
+			Sound::synthesizer * synthesizer, 
+			std::mutex * synthesizer_mutex, unsigned int x, 
 			const unsigned int y, const unsigned int width, const unsigned height, const View::color background)
-			: abstract_gui_synthesizer_circuit(synthesizer, synthesizer_mutex, x, y, width, height, background)
+			: abstract_gui_synthesizer_circuit(main_factory, synthesizer, synthesizer_mutex, x, y, width, height, background)
 		{
 			add_internal_components(synthesizer_mutex);
 		}
 
-		gui_polyphonic_circuit::gui_polyphonic_circuit(Sound::synthesizer * synthesizer, std::mutex * synthesizer_mutex,
+		gui_polyphonic_circuit::gui_polyphonic_circuit(
+			Sound::main_factory *main_factory,
+			Sound::synthesizer * synthesizer, 
+			std::mutex * synthesizer_mutex,
 			const View::rectangle & rect, const View::color background)
-			: abstract_gui_synthesizer_circuit(synthesizer, synthesizer_mutex, rect, background)
+			: abstract_gui_synthesizer_circuit(main_factory, synthesizer, synthesizer_mutex, rect, background)
 		{
 			add_internal_components(synthesizer_mutex);
+		}
+
+		void gui_polyphonic_circuit::add_sound_component_to_frame(Sound::abstract_sound_component * sound_component)
+		{
+			m_synthesizer->add_sound_component_on_polyphonic_circuit(sound_component);
 		}
 
 		void gui_polyphonic_circuit::add_internal_components(std::mutex * synthesizer_mutex)
@@ -112,6 +185,8 @@ namespace Gammou {
 					synthesizer_mutex, 10, 10));
 		}
 
-	} /* Gui */
+
+
+} /* Gui */
 
 } /* Gammou */

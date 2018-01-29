@@ -18,7 +18,7 @@ namespace Gammou {
 
 		widget::~widget()
 		{
-			DEBUG_PRINT("Widget DTOR\n");
+			//DEBUG_PRINT("Widget DTOR\n");
 		}
 
 		bool widget::on_key_up(const keycode key)
@@ -133,9 +133,11 @@ namespace Gammou {
 		void widget::set_rect(const rectangle & rect)
 		{
 			//	TODO lever des exceptions
-			if( rect.x >= 0 && rect.y >= 0 
+			if (rect.x >= 0 && rect.y >= 0
 				&& rect.width > 0 && rect.height > 0)
 				m_absolute_rect = rect;
+			else
+				throw std::domain_error("Invalid widget rect");
 			redraw();
 		}
 

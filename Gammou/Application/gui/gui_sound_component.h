@@ -24,6 +24,7 @@ namespace Gammou {
 			virtual ~gui_sound_component();
 			
 			// FACTORY STUFF TO DO
+			unsigned int get_sound_component_factory_id() const;
 
 		protected:
 			Process::abstract_component<double> *get_component() const override;

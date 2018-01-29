@@ -22,7 +22,7 @@ namespace Gammou {
 			return m_description;
 		}
 
-		const request_form_descriptor & abstract_plugin_factory::get_request_form() const
+		const request_form & abstract_plugin_factory::get_request_form() const
 		{
 			return m_request_form;
 		}
@@ -34,7 +34,7 @@ namespace Gammou {
 			return component;
 		}
 
-		abstract_sound_component * abstract_plugin_factory::get_new_sound_component(const answer_form_descriptor & answer, const unsigned int channel_count)
+		abstract_sound_component * abstract_plugin_factory::get_new_sound_component(const answer_form & answer, const unsigned int channel_count)
 		{
 			abstract_sound_component *component = create_sound_component(answer, channel_count);
 			stamp_sound_component(component);

@@ -133,7 +133,7 @@ namespace Gammou {
 		{
 		}
 
-		void polyphonic_circuit::add_sound_component(polyphonic_sound_component *component)
+		void polyphonic_circuit::add_sound_component(abstract_sound_component *component)
 		{
 			// Component channel alredy checked and Initialized by synthesizer
 			add_component(component);

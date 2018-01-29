@@ -10,31 +10,18 @@ namespace Gammou {
 			: View::generic_window(width, height)
 		{
 
-			init_main_factory();
-
-
-			set_background_color(View::cl_yellowgreen); // for gui debuging
+			set_background_color(View::cl_chartreuse); // for gui debuging
 
 			/*
 			MASTER
 			*/
 
 
-			//essai factory
-
-			const Sound::request_form_descriptor& form = m_main_factory.get_plugin_request_form(12345);
-			const Sound::answer_form_descriptor answer;
-
-			DEBUG_PRINT("Form_desc(12345) has %d request\n", form.get_request_count());
-
-			Sound::abstract_sound_component *test_facto = m_main_factory.get_new_sound_component(12345, answer, 1);
-
 			//
 
 			Sound::sound_component *osc = new Sound::sin_oscilator(1);
 			Sound::sound_component *osc1 = new Sound::sin_oscilator(1);
 			Sound::sound_component *osc2 = new Sound::sin_oscilator(1);
-
 
 			Sound::sound_component *sum = new Sound::static_sum<5>(1);
 			Sound::sound_component *sum1 = new Sound::static_sum<5>(1);
@@ -56,8 +43,6 @@ namespace Gammou {
 			synthesizer->add_sound_component_on_master_circuit(f1);
 			synthesizer->add_sound_component_on_master_circuit(f2);
 
-			synthesizer->add_sound_component_on_master_circuit(test_facto);
-
 			synthesizer_mutex->unlock();
 
 			gui_sound_component *c = new gui_sound_component(osc, synthesizer_mutex, 1, 1);
@@ -70,20 +55,17 @@ namespace Gammou {
 			gui_sound_component *gf1 = new gui_sound_component(f1, synthesizer_mutex, 410, 160);
 			gui_sound_component *gf2 = new gui_sound_component(f2, synthesizer_mutex, 430, 180);
 
-			gui_sound_component *gtest_facto = new gui_sound_component(test_facto, synthesizer_mutex, 400, 700);
+			gui_master_circuit *gui_master = new gui_master_circuit(&m_main_factory, synthesizer, synthesizer_mutex, 0, 0, 800, 800);
 
-			gui_master_circuit *master = new gui_master_circuit(synthesizer, synthesizer_mutex, 0, 0, 800, 800);
-
-			master->add_gui_component(c);
-			master->add_gui_component(cc);
-			master->add_gui_component(ccc);
-			master->add_gui_component(c2);
-			master->add_gui_component(c21);
-			master->add_gui_component(c22);
-			master->add_gui_component(c23);
-			master->add_gui_component(gf1);
-			master->add_gui_component(gf2);
-			master->add_gui_component(gtest_facto);
+			gui_master->add_gui_component(c);
+			gui_master->add_gui_component(cc);
+			gui_master->add_gui_component(ccc);
+			gui_master->add_gui_component(c2);
+			gui_master->add_gui_component(c21);
+			gui_master->add_gui_component(c22);
+			gui_master->add_gui_component(c23);
+			gui_master->add_gui_component(gf1);
+			gui_master->add_gui_component(gf2);
 
 			/*
 			POLYPHONIC
@@ -106,6 +88,11 @@ namespace Gammou {
 			Sound::sound_component *ppsum = new Sound::static_sum<5>(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
 			Sound::sound_component *ppsum1 = new Sound::static_sum<5>(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
 
+			Sound::sound_component *pm1 = new Sound::static_prod<2>(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
+			Sound::sound_component *pm2 = new Sound::static_prod<2>(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
+			Sound::sound_component *pm3 = new Sound::static_prod<2>(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
+			Sound::sound_component *pm4 = new Sound::static_prod<2>(GAMMOU_SYNTHESIZER_CHANNEL_COUNT);
+
 			synthesizer_mutex->lock();
 
 			synthesizer->add_sound_component_on_polyphonic_circuit(posc);
@@ -120,6 +107,10 @@ namespace Gammou {
 			synthesizer->add_sound_component_on_polyphonic_circuit(ppsum);
 			synthesizer->add_sound_component_on_polyphonic_circuit(ppsum1);
 
+			synthesizer->add_sound_component_on_polyphonic_circuit(pm1);
+			synthesizer->add_sound_component_on_polyphonic_circuit(pm2);
+			synthesizer->add_sound_component_on_polyphonic_circuit(pm3);
+			synthesizer->add_sound_component_on_polyphonic_circuit(pm4);
 
 			synthesizer_mutex->unlock();
 
@@ -136,62 +127,88 @@ namespace Gammou {
 			gui_sound_component *ppc2 = new gui_sound_component(ppsum, synthesizer_mutex, 300, 85);
 			gui_sound_component *ppc21 = new gui_sound_component(ppsum1, synthesizer_mutex, 330, 100);
 
-			gui_polyphonic_circuit *poly = new gui_polyphonic_circuit(synthesizer, synthesizer_mutex, 0, 0, 800, 800);
+			gui_sound_component *gpm1 = new gui_sound_component(pm1, synthesizer_mutex, 500, 500);
+			gui_sound_component *gpm2 = new gui_sound_component(pm2, synthesizer_mutex, 500, 500);
+			gui_sound_component *gpm3 = new gui_sound_component(pm3, synthesizer_mutex, 500, 500);
+			gui_sound_component *gpm4 = new gui_sound_component(pm4, synthesizer_mutex, 500, 500);
 
-			poly->add_gui_component(pc);
-			poly->add_gui_component(pcc);
-			poly->add_gui_component(pccc);
-			poly->add_gui_component(pc2);
-			poly->add_gui_component(pc21);
-			poly->add_gui_component(pc22);
-			poly->add_gui_component(pc23);
-			poly->add_gui_component(pgf1);
-			poly->add_gui_component(pgf2);
-			poly->add_gui_component(ppc2);
-			poly->add_gui_component(ppc21);
+			gui_polyphonic_circuit *gui_poly = new gui_polyphonic_circuit(&m_main_factory, synthesizer, synthesizer_mutex, 0, 0, 800, 800);
+
+			gui_poly->add_gui_component(pc);
+			gui_poly->add_gui_component(pcc);
+			gui_poly->add_gui_component(pccc);
+			gui_poly->add_gui_component(pc2);
+			gui_poly->add_gui_component(pc21);
+			gui_poly->add_gui_component(pc22);
+			gui_poly->add_gui_component(pc23);
+			gui_poly->add_gui_component(pgf1);
+			gui_poly->add_gui_component(pgf2);
+			gui_poly->add_gui_component(ppc2);
+			gui_poly->add_gui_component(ppc21);
+
+			gui_poly->add_gui_component(gpm1);
+			gui_poly->add_gui_component(gpm2);
+			gui_poly->add_gui_component(gpm3);
+			gui_poly->add_gui_component(gpm4);
 
 			/////////
 
-			pages = new View::page_container(120, 0, 800, 800, View::cl_chartreuse);
+			View::page_container *pages = new View::page_container(120, 0, 800, 800, View::cl_chartreuse);
 
-			pages->add_page(master);
-			pages->add_page(poly);
+			pages->add_page(gui_master);
+			pages->add_page(gui_poly);
 			page_id = 0;
 			pages->select_page(page_id);
 
 			add_widget(pages);
 
-			add_widget(new View::push_button([&]
+			add_widget(new View::push_button([&, pages]
 			{
 				page_id = (page_id == 0) ? 1 : 0;
 				pages->select_page(page_id);
 			}
 			, "Change page", 705, 0));
 
+			////////////
 
-			View::list_box *lb = 
-				new View::list_box(0, 0, 120, 800, 40, 
+			
+
+			m_plugin_list_box = 
+				new View::list_box(
+					0, 0, 120, 800, 40, 
+					[&, gui_poly, gui_master](unsigned int id) 
+					{
+						gui_poly->select_component_creation_factory_id(m_factory_ids[id]);
+						gui_master->select_component_creation_factory_id(m_factory_ids[id]);
+					},
 					GuiProperties::list_box_selected_item_color, 
 					GuiProperties::list_box_background, 
 					GuiProperties::list_box_border_color, 
 					GuiProperties::list_box_font_color, 
 					12);
-			
-			for (unsigned int i = 0; i < 100; ++i)
-				lb->add_item("Choice" + std::to_string(i));
 
-			lb->select_item(1);
+			add_widget(m_plugin_list_box);
 
-			add_widget(lb);
+			///////////
+
+			init_main_factory();
 		}
 
 		synthesizer_gui::~synthesizer_gui()
 		{
+			// Plugin list box deleted by panel
+		}
+
+		void synthesizer_gui::add_plugin_factory(Sound::abstract_plugin_factory * factory)
+		{
+			m_main_factory.register_factory(factory);
+			m_plugin_list_box->add_item(factory->get_name());
+			m_factory_ids.push_back(factory->get_factory_id());
 		}
 
 		void synthesizer_gui::init_main_factory()
 		{
-			m_main_factory.register_factory(new Sound::sin_factory());
+			add_plugin_factory(new Sound::Builtin::sin_factory());
 		}
 
 

@@ -1,3 +1,7 @@
+#ifndef GAMMOU_LIST_BOX_H
+#define GAMMOU_LIST_BOX_H
+
+#include <functional>
 
 #include <vector>
 #include <string>
@@ -12,11 +16,29 @@ namespace Gammou {
 		class list_box : public widget {
 
 		public: 
-			list_box(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, 
-				const unsigned int displayed_items_count, const color selected_item_color, const color background, 
-				const color border_color, const color font_color, const unsigned int font_size);
-			list_box(const rectangle& rect, const unsigned int displayed_items_count,const color selected_item_color, const color background,
-				const color border_color, const color font_color, const unsigned int font_size);
+			list_box(
+				const unsigned int x, 
+				const unsigned int y, 
+				const unsigned int width, 
+				const unsigned int height, 
+				const unsigned int displayed_items_count, 
+				std::function<void(unsigned int)> on_select = [](unsigned int id) {},
+				const color selected_item_color = cl_azure, 
+				const color background = cl_white, 
+				const color border_color = cl_black, 
+				const color font_color = cl_black, 
+				const unsigned int font_size = 11);
+
+			list_box(
+				const rectangle& rect, 
+				const unsigned int displayed_items_count,
+				std::function<void(unsigned int)> on_select = [](unsigned int id) {},
+				const color selected_item_color = cl_azure,
+				const color background = cl_white,
+				const color border_color = cl_black,
+				const color font_color = cl_black,
+				const unsigned int font_size = 11);
+
 			~list_box() {}
 
 
@@ -37,6 +59,8 @@ namespace Gammou {
 			void scroll(const int distance);
 			void update_selected(const int y);
 
+			std::function<void(unsigned int)> m_on_select;
+
 			const color m_selected_color;
 			const color m_background_color;
 			const color m_font_color;
@@ -53,3 +77,5 @@ namespace Gammou {
 	}
 
 }
+
+#endif

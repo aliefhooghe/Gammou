@@ -72,7 +72,7 @@ namespace Gammou {
 				const unsigned int channel_count);
 			~polyphonic_circuit();
 
-			void add_sound_component(polyphonic_sound_component *component);
+			void add_sound_component(abstract_sound_component *component);
 			void set_sample_rate(const double sample_rate);
 
 			// Return whether the last output was ZERO

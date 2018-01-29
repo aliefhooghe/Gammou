@@ -59,10 +59,10 @@ namespace Gammou {
 		
 		/////
 
-		class request_form_descriptor {
+		class request_form {
 
 		public:
-			request_form_descriptor();
+			request_form();
 
 			unsigned int get_request_count() const;
 			void add_file_request(const std::string& name, const std::string& description, const std::string& ext);
@@ -86,11 +86,11 @@ namespace Gammou {
 		///////
 
 
-		class answer_form_descriptor {
+		class answer_form {
 		
 		public:
-			answer_form_descriptor();
-			~answer_form_descriptor() {}
+			answer_form();
+			~answer_form() {}
 
 			void add_file_path(const std::string& file_path);
 			void add_integer(const int integer);
