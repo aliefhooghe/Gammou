@@ -18,7 +18,7 @@ namespace Gammou {
 
 		gui_sound_component::~gui_sound_component()
 		{
-			// PROBABLEMENT : delete sound_componnt
+			// TODO PROBABLEMENT : delete sound_componnt
 		}
 
 		Process::abstract_component<double>* gui_sound_component::get_component() const

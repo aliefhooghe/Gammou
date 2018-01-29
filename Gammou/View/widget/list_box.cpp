@@ -105,7 +105,7 @@ namespace Gammou {
 					m_first_displayed + m_displayed_item_count);
 
 			// Background
-			cairo_helper::rounded_rectangle(cr, 0, 0, get_width(), get_height(), 2.0);
+			cairo_helper::rounded_rectangle(cr, 0, 0, static_cast<float>(get_width()), static_cast<float>(get_height()), 2.0);
 			cairo_helper::set_source_color(cr, m_background_color);
 			cairo_fill(cr);
 
@@ -133,7 +133,7 @@ namespace Gammou {
 			}
 
 			// Border (after Items to avoid overlap)
-			cairo_helper::rounded_rectangle(cr, 0, 0, get_width(), get_height(), 2.0);
+			cairo_helper::rounded_rectangle(cr, 0, 0, static_cast<float>(get_width()), static_cast<float>(get_height()), 2.0);
 			cairo_helper::set_source_color(cr, m_border_color);
 			cairo_stroke(cr);
 		}

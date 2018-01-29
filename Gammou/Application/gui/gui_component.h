@@ -34,10 +34,10 @@ namespace Gammou {
 			virtual ~abstract_gui_component() {}
 
 			// Parent coordinate system
-			virtual bool get_input_pos(const unsigned int input_id, float& x, float& y);
-			virtual bool get_output_pos(const unsigned int output_id, float& x, float& y);
-			virtual int output_id_by_pos(const float x, const float y) const;
-			virtual int input_id_by_pos(const float x, const float y) const;
+			virtual bool get_input_pos(const unsigned int input_id, float& x, float& y) const;
+			virtual bool get_output_pos(const unsigned int output_id, float& x, float& y) const;
+			virtual int get_output_id_by_pos(const float x, const float y) const;
+			virtual int get_input_id_by_pos(const float x, const float y) const;
 
 			virtual unsigned int save_sound_component_state(Sound::data_destination& data) { return 0; }
 			virtual unsigned int get_sound_component_factory_id() const { return Sound::NO_FACTORY;  }
@@ -48,8 +48,8 @@ namespace Gammou {
 			virtual bool on_mouse_drag(const View::mouse_button button, const int x, const int y, const int dx, const int dy) override;
 			virtual bool on_mouse_drag_start(const View::mouse_button, const int x, const int y) override;
 			virtual bool on_mouse_drag_end(const View::mouse_button, const int x, const int y) override;
-
-			virtual bool on_mouse_dbl_click(const int x, const int y) override;
+			virtual bool on_mouse_move(const int x, const int y) override;
+			virtual bool on_mouse_exit() override;
 
 		protected:
 			virtual void draw(cairo_t *cr) override;
@@ -57,13 +57,14 @@ namespace Gammou {
 			bool is_frozen();
 			void set_frozen(const bool state = true);
 
-		private:
 			inline void lock_circuit() { m_circuit_mutex->lock(); }
 			inline void unlock_circuit() { m_circuit_mutex->unlock(); }
-
+		private:
 			bool m_frozen;
 			bool m_is_moving;
 			std::mutex *m_circuit_mutex;
+
+			int m_highlighted_output_id; // -1 if nothing 
 
 			// cf schema
 			float m_l1;
@@ -78,6 +79,7 @@ namespace Gammou {
 		/*
 		
 		*/
+
 		class default_gui_component : public abstract_gui_component {
 
 		public:
@@ -120,19 +122,21 @@ namespace Gammou {
 			virtual bool on_mouse_drag_start(const View::mouse_button button, const int x, const int y) override;
 			virtual bool on_mouse_drag_end(const View::mouse_button button, const int x, const int y) override;
 
+			virtual bool on_mouse_dbl_click(const int x, const int y) override;
 		protected:
 			virtual void draw(cairo_t *cr);
 
-			virtual void connect(abstract_gui_component* src, const unsigned int output_id,
+			void connect(abstract_gui_component* src, const unsigned int output_id,
 				abstract_gui_component *dst, const unsigned int input_id);
-		private:
+			void disconnect(abstract_gui_component *component, const unsigned int input_id);
+
 			inline void lock_circuit() { m_circuit_mutex->lock();  }
 			inline void unlock_circuit() { m_circuit_mutex->unlock(); }
 
 			unsigned int get_input_count(abstract_gui_component *component);
 			abstract_gui_component *get_input_src(abstract_gui_component *component, const unsigned int input_id, 
 				unsigned int& src_output_id);
-
+		private:
 			std::map<Process::abstract_component<double>*, abstract_gui_component*> m_component_association;
 			std::mutex *m_circuit_mutex;
 
@@ -141,6 +145,10 @@ namespace Gammou {
 			unsigned int m_linking_output_id;
 			float m_linking_x;
 			float m_linking_y;
+
+			bool m_socket_highlighting;
+			float m_highlighted_socket_x;
+			float m_highlighted_socket_y;
 		};
 
 	} /* Gui */

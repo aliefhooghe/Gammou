@@ -44,26 +44,34 @@ namespace Gammou {
 
 		void gui_master_circuit::add_internal_components(std::mutex *synthesizer_mutex)
 		{
+			// Todo position
 			add_gui_component(
 				new default_gui_component(
 					m_synthesizer->get_master_circuit_automation_input(), 
-					synthesizer_mutex, 10, 10));
+					synthesizer_mutex, 50, 50));
 			add_gui_component(
 				new default_gui_component(
 					m_synthesizer->get_master_circuit_polyphonic_input(),
-					synthesizer_mutex, 10, 10));
+					synthesizer_mutex, 60, 60));
 			add_gui_component(
 				new default_gui_component(
 					m_synthesizer->get_master_circuit_polyphonic_output() ,
-					synthesizer_mutex, 10, 10));
+					synthesizer_mutex, 70, 70));
 			add_gui_component(
 				new default_gui_component(
 					m_synthesizer->get_master_main_input() ,
-					synthesizer_mutex, 10, 10));
+					synthesizer_mutex, 80, 80));
 			add_gui_component(
 				new default_gui_component(
 					m_synthesizer->get_master_main_output() ,
-					synthesizer_mutex, 10, 10));
+					synthesizer_mutex, 90, 90));
+
+		//	for(unsigned int i = 0; i < 2 ; ++i)
+		//		m_synthesizer->get_master_circuit_polyphonic_input()->connect_to(
+		//			i,
+		//			m_synthesizer->get_master_main_output(),
+		//			i
+		//	);
 		}
 
 		/*
