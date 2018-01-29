@@ -171,10 +171,10 @@ namespace Gammou {
 
 			View::list_box *lb = 
 				new View::list_box(0, 0, 120, 800, 40, 
-					Palette::list_box_selected_item_color, 
-					Palette::list_box_background, 
-					Palette::list_box_border_color, 
-					Palette::list_box_font_color, 
+					GuiProperties::list_box_selected_item_color, 
+					GuiProperties::list_box_background, 
+					GuiProperties::list_box_border_color, 
+					GuiProperties::list_box_font_color, 
 					12);
 			
 			for (unsigned int i = 0; i < 100; ++i)

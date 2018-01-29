@@ -7,7 +7,7 @@
 #include "view.h"
 #include "synthesizer.h"
 
-#include "gui_color_palette.h"
+#include "gui_properties.h"
 
 namespace Gammou {
 
@@ -54,26 +54,22 @@ namespace Gammou {
 		protected:
 			virtual void draw(cairo_t *cr) override;
 
-			bool is_frozen();
-			void set_frozen(const bool state = true);
+			bool is_linking();
+			void set_linking(const bool state = true);
 
 			inline void lock_circuit() { m_circuit_mutex->lock(); }
 			inline void unlock_circuit() { m_circuit_mutex->unlock(); }
 		private:
-			bool m_frozen;
+			bool m_is_linking;
 			bool m_is_moving;
 			std::mutex *m_circuit_mutex;
 
-			int m_highlighted_output_id; // -1 if nothing 
+			int m_focused_output_id; // -1 if nothing 
 
 			// cf schema
 			float m_l1;
-			float m_rec_radius;
-			float m_socket_radius;
 			float m_socket_size;
-			float m_font_size;
 			float m_name_height;
-			float m_border_width;
 		};
 
 		/*
@@ -110,9 +106,9 @@ namespace Gammou {
 		public:
 			abstract_gui_component_map(
 				std::mutex *circuit_mutex, const unsigned int x, const unsigned int y,
-				const unsigned int width, const unsigned int height, const View::color background = Palette::background);
+				const unsigned int width, const unsigned int height, const View::color background = GuiProperties::background);
 			abstract_gui_component_map(std::mutex *circuit_mutex, const View::rectangle& rect,
-				const View::color background = Palette::background);
+				const View::color background = GuiProperties::background);
 			virtual ~abstract_gui_component_map() {}
 
 			virtual void add_gui_component(abstract_gui_component *component);

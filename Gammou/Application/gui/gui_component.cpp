@@ -23,18 +23,15 @@ namespace Gammou {
 			std::mutex *circuit_mutex,
 			const unsigned int x, const unsigned int y, const unsigned int initial_input_count, const unsigned int initial_output_count)
 			: View::panel<View::widget>(x, y, 90, 10 + 15 * max(initial_input_count, initial_output_count)),
-				m_frozen(false),
+				m_is_linking(false),
 				m_is_moving(false),
 				m_circuit_mutex(circuit_mutex),
-				m_highlighted_output_id(-1)
+				m_focused_output_id(-1)
 		{
+			// Todo this goto properties
 			m_l1 = 40;
-			m_rec_radius = 5.0;
-			m_socket_radius = 3.0;
 			m_socket_size = 9;
-			m_font_size = 11;
-			m_name_height = m_font_size;
-			m_border_width = 1.0;
+			m_name_height = GuiProperties::component_font_size;
 		}
 
 		bool abstract_gui_component::get_input_pos(const unsigned int input_id, float & x, float & y) const
@@ -135,19 +132,25 @@ namespace Gammou {
 
 			// draw component
 			View::color component_background;
+			float border_width;
 
-			if (m_is_moving)
-				component_background = Palette::moving_component_background;
-			else
-				component_background = Palette::component_background;
+			if (m_is_moving) {
+				border_width = GuiProperties::moving_component_border_width;
+				component_background = GuiProperties::moving_component_background;
+			}
+			else {
+				border_width = GuiProperties::component_border_width;
+				component_background = GuiProperties::component_background;
+			}
 
 
-			View::cairo_helper::rounded_rectangle(cr, 0, 0, get_width(), get_height(), m_rec_radius);
+			View::cairo_helper::rounded_rectangle(cr, 0, 0, get_width(), get_height(), 
+				GuiProperties::component_rectangle_corner_radius);
 			View::cairo_helper::set_source_color(cr, component_background);
 			cairo_fill_preserve(cr);
 
-			View::cairo_helper::set_source_color(cr, Palette::component_border);
-			cairo_set_line_width(cr, m_border_width);
+			View::cairo_helper::set_source_color(cr, GuiProperties::component_border);
+			cairo_set_line_width(cr, border_width);
 			cairo_stroke(cr);
 
 			if (component == nullptr)
@@ -155,9 +158,9 @@ namespace Gammou {
 
 			// draw name
 
-			cairo_set_font_size(cr, m_font_size);
+			cairo_set_font_size(cr, GuiProperties::component_font_size);
 			cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-			View::cairo_helper::set_source_color(cr, Palette::component_font_color);
+			View::cairo_helper::set_source_color(cr, GuiProperties::component_font_color);
 			View::cairo_helper::show_centered_text(cr, View::rectangle(0, 0, get_width(), m_name_height * 1.5)
 				, component->get_name());
 
@@ -179,18 +182,18 @@ namespace Gammou {
 					View::color socket_color;
 
 					// socket
-					View::cairo_helper::circle(cr, cx, cy, m_socket_radius);
+					View::cairo_helper::circle(cr, cx, cy, GuiProperties::component_socket_radius);
 					
 					if (component->get_input_src(i) == nullptr)
-						socket_color = Palette::component_input_socket_color;
+						socket_color = GuiProperties::component_input_socket_color;
 					else
-						socket_color = Palette::component_linked_input_socket_color;
+						socket_color = GuiProperties::component_linked_input_socket_color;
 
 					View::cairo_helper::set_source_color(cr, socket_color);
 					cairo_fill(cr);
 
 					// name
-					View::cairo_helper::set_source_color(cr, Palette::component_font_color);
+					View::cairo_helper::set_source_color(cr, GuiProperties::component_font_color);
 					View::cairo_helper::show_left_aligned_text(cr, View::rectangle(m_socket_size, ty, m_l1 - m_socket_size, socket_rect_height),
 						component->get_input_name(i));
 
@@ -206,40 +209,47 @@ namespace Gammou {
 					const float ty = m_name_height + static_cast<float>(i) * socket_rect_height;
 					const float cy = m_name_height + (static_cast<float>(i) + 0.5) * socket_rect_height;
 					View::color socket_color;
+					float socket_radius;
 
 					// socket
-					View::cairo_helper::circle(cr, cx, cy, m_socket_radius);
 
-					if (static_cast<int>(i) == m_highlighted_output_id)
-						socket_color = View::cl_pink;
-					else
-						socket_color = Palette::component_output_socket_color;
+					if (static_cast<int>(i) == m_focused_output_id) {
+						socket_radius = GuiProperties::focused_component_socket_radius;
+						socket_color = GuiProperties::focused_component_output_socket_color;
+					}
+					else {
+						socket_radius = GuiProperties::component_socket_radius;
+						socket_color = GuiProperties::component_output_socket_color;
+					}
 
+					View::cairo_helper::circle(cr, cx, cy, socket_radius);
 					View::cairo_helper::set_source_color(cr, socket_color);
 					cairo_fill(cr);
 
 					// name
-					View::cairo_helper::set_source_color(cr, Palette::component_font_color);
-					View::cairo_helper::show_right_aligned_text(cr, View::rectangle(static_cast<float>(get_width()) - m_l1, ty, m_l1 - m_socket_size,
+					View::cairo_helper::set_source_color(cr, GuiProperties::component_font_color);
+					View::cairo_helper::show_right_aligned_text(cr, View::rectangle(static_cast<float>(get_width()) - m_l1, ty,m_l1 - m_socket_size,
 						socket_rect_height), component->get_output_name(i));
 				}
 			}
 
 		}
 
-		bool abstract_gui_component::is_frozen()
+		bool abstract_gui_component::is_linking()
 		{
-			return m_frozen;
+			return m_is_linking;
 		}
 
-		void abstract_gui_component::set_frozen(const bool state)
+		void abstract_gui_component::set_linking(const bool state)
 		{
-			m_frozen = state;
+			if( !state )
+				m_focused_output_id = -1;
+			m_is_linking = state;
 		}
 
 		bool abstract_gui_component::on_mouse_drag(const View::mouse_button button, const int x, const int y, const int dx, const int dy)
 		{
-			if (!is_frozen()) {
+			if (!is_linking()) {
 				const View::rectangle rect = get_absolute_rect().translate(dx, dy);
 				if (get_parent()->contains(rect)) {
 					set_rect(rect);
@@ -252,10 +262,9 @@ namespace Gammou {
 
 		bool abstract_gui_component::on_mouse_drag_start(const View::mouse_button, const int x, const int y)
 		{
-			m_highlighted_output_id = -1;
+			//m_focused_output_id = -1;
 
-			if (!is_frozen()) {
-				m_border_width = 2.0;
+			if (!is_linking()) {
 				m_is_moving = true;
 				redraw();
 			}
@@ -265,8 +274,7 @@ namespace Gammou {
 
 		bool abstract_gui_component::on_mouse_drag_end(const View::mouse_button, const int x, const int y)
 		{
-			if (!is_frozen()) {
-				m_border_width = 1.0;
+			if (!is_linking()) {
 				m_is_moving = false;
 				redraw();
 				return true;
@@ -277,11 +285,13 @@ namespace Gammou {
 
 		bool abstract_gui_component::on_mouse_move(const int x, const int y)
 		{
-			const int output_id = get_output_id_by_pos(get_x() + x, get_y() + y);
+			if (!m_is_linking) {
+				const int output_id = get_output_id_by_pos(get_x() + x, get_y() + y);
 
-			if (m_highlighted_output_id != output_id) {
-				m_highlighted_output_id = output_id;
-				redraw();
+				if (m_focused_output_id != output_id) {
+					m_focused_output_id = output_id;
+					redraw();
+				}
 			}
 
 			return true;
@@ -289,7 +299,13 @@ namespace Gammou {
 
 		bool abstract_gui_component::on_mouse_exit()
 		{
-			m_highlighted_output_id;
+	
+			if ( !m_is_linking 
+				&& m_focused_output_id != -1) {
+				m_focused_output_id = -1;
+				redraw();
+			}
+
 			return true;
 		}
 
@@ -357,7 +373,7 @@ namespace Gammou {
 						src->get_output_pos(output_id, x1, y1);
 						gui_component->get_input_pos(i, x2, y2);
 
-						draw_link(cr, x1, y1, x2, y2, Palette::link_color);
+						draw_link(cr, x1, y1, x2, y2, GuiProperties::link_color);
 					}
 				}
 			}
@@ -370,7 +386,7 @@ namespace Gammou {
 					DEBUG_PRINT("ERROR OutputID %d\n", m_linking_output_id);
 				}
 				else{
-					draw_link(cr, x, y, m_linking_x, m_linking_y, Palette::linking_color);
+					draw_link(cr, x, y, m_linking_x, m_linking_y, GuiProperties::linking_color);
 				}
 			}
 
@@ -379,7 +395,7 @@ namespace Gammou {
 			// Highlight socket
 			
 			if (m_socket_highlighting) {
-				View::cairo_helper::set_source_color(cr, Palette::highlight_socket_color);
+				View::cairo_helper::set_source_color(cr, GuiProperties::highlight_socket_color);
 				View::cairo_helper::circle(cr, m_highlighted_socket_x, m_highlighted_socket_y, 4.0);
 				cairo_fill(cr);
 			}
@@ -450,7 +466,7 @@ namespace Gammou {
 					m_is_linking = true;
 					m_linking_output_id = output_id;
 					m_linking_component = focused_component;
-					focused_component->set_frozen(); // prenvent from moving while being linked
+					focused_component->set_linking(); // prenvent from moving while being linked
 				}
 			}
 
@@ -476,7 +492,7 @@ namespace Gammou {
 				}
 
 				m_is_linking = false;
-				m_linking_component->set_frozen(false);
+				m_linking_component->set_linking(false);
 				redraw();
 			}
 
