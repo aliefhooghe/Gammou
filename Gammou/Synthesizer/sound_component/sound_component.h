@@ -71,9 +71,13 @@ namespace Gammou {
 			// Not virtual, should not be modified
 
 			unsigned int get_channel_count() const override;
-			unsigned int get_current_working_channel() const;
+			
 
 			void on_channel_change(const unsigned int new_chanel) override;
+
+		protected:
+			unsigned int get_current_working_channel() const;
+
 		private:
 			const unsigned int m_channels_count;
 			unsigned int m_current_working_channel;

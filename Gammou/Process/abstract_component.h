@@ -90,6 +90,7 @@ namespace Gammou {
 			abstract_component<T> *get_input_src(const unsigned int input_id,
 				unsigned int& output_id);
 			abstract_component<T> *get_input_src(const unsigned int input_id);
+			bool is_input_connected(const unsigned int input_id);
 
 			static const std::string default_input_name(const unsigned int input_id);
 			static const std::string default_output_name(const unsigned int output_id);
@@ -107,6 +108,7 @@ namespace Gammou {
 			void pop_output();
 
 			virtual void on_input_connection(const unsigned int input_id) {};
+			virtual void on_input_deconnection(const unsigned int input_id) {};
 		private:
 			bool update_process_cyle(const unsigned int cycle) noexcept;
 
@@ -190,7 +192,6 @@ namespace Gammou {
 				m_input_name[i] = default_input_name(i);
 			for(unsigned int i = 0; i < output_count; ++i)
 				m_output_name[i] = default_output_name(i);
-
 		}
 
 		template<class T>
@@ -264,6 +265,7 @@ namespace Gammou {
 				throw std::out_of_range("Invalid input id");
 
 			m_input[input_id].disconnect();
+			on_input_deconnection(input_id);
 
 			if (frame != nullptr )
 				frame->notify_circuit_change();
@@ -286,6 +288,12 @@ namespace Gammou {
 				throw std::out_of_range("Invalid input id");
 
 			return m_input[input_id].get_subject_resource();
+		}
+
+		template<class T>
+		bool abstract_component<T>::is_input_connected(const unsigned int input_id)
+		{
+			return (get_input_src(input_id) != nullptr);
 		}
 
 		template<class T>

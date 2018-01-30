@@ -53,8 +53,8 @@ namespace Gammou {
 			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y);
 
 			virtual void draw(cairo_t *cr) = 0;
+
 		protected:
-			
 			virtual void set_pos(const unsigned int x, const unsigned int y);
 			virtual void resize(const unsigned int width, const unsigned int height);
 			virtual void set_rect(const rectangle& rect);

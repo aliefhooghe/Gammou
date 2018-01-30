@@ -209,6 +209,7 @@ namespace Gammou {
 		void synthesizer_gui::init_main_factory()
 		{
 			add_plugin_factory(new Sound::Builtin::sin_factory());
+			add_plugin_factory(new Sound::Builtin::debug_factory());
 		}
 
 

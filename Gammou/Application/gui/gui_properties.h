@@ -46,6 +46,8 @@ namespace Gammou {
 
 
 			// Components
+			const float component_width = 90;
+
 			const float component_font_size = 11.0;
 			const float component_rectangle_corner_radius = 5.0;
 			const float component_border_width = 1.0;

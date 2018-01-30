@@ -53,7 +53,9 @@ namespace Gammou {
 
 		template<class ResourceType, class NotificationTagType>
 		observer<ResourceType, NotificationTagType>::observer() :
-			m_subject(nullptr), m_previous_observer(nullptr), m_next_observer(nullptr)
+			m_subject(nullptr), 
+			m_previous_observer(nullptr), 
+			m_next_observer(nullptr)
 		{
 		}
 

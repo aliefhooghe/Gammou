@@ -62,6 +62,9 @@ namespace Gammou {
 			inline void unlock_circuit() { m_circuit_mutex->unlock(); }
 
 		private:
+			void update_size();
+			static unsigned int component_height_by_socket_count(const unsigned int socket_count);
+
 			bool m_is_linking;
 			bool m_is_moving;
 			std::mutex *m_circuit_mutex;

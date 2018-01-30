@@ -6,6 +6,6 @@
 */
 
 #include "builtin_components\sin_component.h"
-
+#include "builtin_components\debug_component.h"
 
 #endif

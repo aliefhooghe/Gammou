@@ -22,7 +22,10 @@ namespace Gammou {
 		abstract_gui_component::abstract_gui_component(
 			std::mutex *circuit_mutex,
 			const unsigned int x, const unsigned int y, const unsigned int initial_input_count, const unsigned int initial_output_count)
-			: View::panel<View::widget>(x, y, 90, 10 + 15 * max(initial_input_count, initial_output_count)),
+			: View::panel<View::widget>(
+				x, y, 
+				GuiProperties::component_width, 
+				component_height_by_socket_count(max(initial_input_count, initial_output_count))),
 				m_is_linking(false),
 				m_is_moving(false),
 				m_circuit_mutex(circuit_mutex),
@@ -247,6 +250,24 @@ namespace Gammou {
 			m_is_linking = state;
 		}
 
+		void abstract_gui_component::update_size()
+		{
+			const Process::abstract_component<double> *const component = get_component();
+
+			if (component != nullptr) {
+				const unsigned int ic = component->get_input_count();
+				const unsigned int oc = component->get_output_count();
+				const unsigned int socket_count = std::max<unsigned int>(ic, oc);
+
+				resize(get_width(), component_height_by_socket_count(socket_count));
+			}
+		}
+
+		unsigned int abstract_gui_component::component_height_by_socket_count(const unsigned int socket_count)
+		{
+			return GuiProperties::component_font_size + 15 * socket_count;
+		}
+
 		bool abstract_gui_component::on_mouse_drag(const View::mouse_button button, const int x, const int y, const int dx, const int dy)
 		{
 			if (!is_linking()) {
@@ -418,6 +439,7 @@ namespace Gammou {
 				lock_circuit();
 				c_src->connect_to(src_output_id, c_dst, dst_input_id);
 				unlock_circuit();
+				dst->update_size();
 			}
 		}
 
@@ -429,6 +451,7 @@ namespace Gammou {
 				lock_circuit();
 				c_component->disconnect_input(input_id);
 				unlock_circuit();
+				component->update_size();
 			}
 		}
 
@@ -547,8 +570,6 @@ namespace Gammou {
 
 			return nullptr;
 		}
-
-
 
 
 

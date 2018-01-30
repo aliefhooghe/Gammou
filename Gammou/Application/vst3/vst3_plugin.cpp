@@ -30,13 +30,13 @@ namespace Gammou {
 		inline void Plugin::lock_synthesizer()
 		{
 			m_synthesizer_mutex.lock();
-			DEBUG_PRINT("Plugin Lock\n");
+		//	DEBUG_PRINT("Plugin Lock\n");
 		}
 
 		inline void Plugin::unlock_synthesizer()
 		{
 			m_synthesizer_mutex.unlock();
-			DEBUG_PRINT("Plugin UNLock\n");
+		//	DEBUG_PRINT("Plugin UNLock\n");
 		}
 
 		Steinberg::tresult PLUGIN_API Plugin::initialize(FUnknown * context)
@@ -180,7 +180,7 @@ namespace Gammou {
 				for (unsigned int i = 0; i < nbSamples; 
 					++i, ++output_buffer_left, ++output_buffer_right, ++input_buffer_left, ++input_buffer_right) {
 
-					input[0] = 2000.0;//static_cast<double>(*input_buffer_left);
+					input[0] = 400.0;//static_cast<double>(*input_buffer_left);
 					input[1] = static_cast<double>(*input_buffer_right);
 
 					m_synthesizer.process(input, output);
