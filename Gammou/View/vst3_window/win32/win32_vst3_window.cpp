@@ -11,7 +11,8 @@ namespace Gammou {
 	namespace View {
 
 		win32_vst3_window::win32_vst3_window(const unsigned int width, const unsigned int height)
-			: abstract_vst3_window(width, height), m_has_focus(false)
+			: abstract_vst3_window(width, height), m_has_focus(false),
+				m_plugin_window(nullptr)
 		{
 			WNDCLASS window_class;
 
@@ -27,14 +28,12 @@ namespace Gammou {
 			window_class.lpszClassName = TEXT(WNDCLASS_NAME);
 
 			RegisterClass(&window_class);
-
-			m_plugin_window = nullptr;
 		}
 
 		win32_vst3_window::~win32_vst3_window()
 		{
-			if( m_plugin_window != nullptr )
-				DestroyWindow(m_plugin_window);
+			close();
+			DEBUG_PRINT("Win32 Vst3 Window DTOR\n");
 		}
 
 		abstract_vst3_view * win32_vst3_window::create_vst3_view_instance()
@@ -200,12 +199,12 @@ namespace Gammou {
 		win32_vst3_view::win32_vst3_view(win32_vst3_window * window)
 			: abstract_vst3_view(window)
 		{
-			DEBUG_PRINT("View CTOR\n");
+			DEBUG_PRINT("Win32 Vst3 View CTOR\n");
 		}
 
 		win32_vst3_view::~win32_vst3_view()
 		{
-			DEBUG_PRINT("View DTOR\n");
+			DEBUG_PRINT("Win32 Vst3 View View DTOR\n");
 		}
 
 		Steinberg::tresult PLUGIN_API win32_vst3_view::isPlatformTypeSupported(Steinberg::FIDString type)

@@ -13,6 +13,7 @@ namespace Gammou {
 		public:
 			abstract_gui_synthesizer_circuit(
 				Sound::main_factory *main_factory,
+				const unsigned int components_channel_count,
 				Sound::synthesizer *synthesizer, 
 				std::mutex *synthesizer_mutex,
 				unsigned int x, 
@@ -23,6 +24,7 @@ namespace Gammou {
 
 			abstract_gui_synthesizer_circuit(
 				Sound::main_factory *main_factory,
+				const unsigned int component_channel_count,
 				Sound::synthesizer *synthesizer, 
 				std::mutex *synthesizer_mutex,
 				const View::rectangle& rect, 
@@ -44,7 +46,9 @@ namespace Gammou {
 
 		private:
 			std::mutex *const m_synthesizer_mutex;
-			Sound::main_factory *m_main_factory;
+			Sound::main_factory *const m_main_factory;
+
+			const unsigned int m_components_channel_count;
 			unsigned int m_creation_factory_id;
 		};
 

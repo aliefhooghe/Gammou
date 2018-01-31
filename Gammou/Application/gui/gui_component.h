@@ -130,7 +130,9 @@ namespace Gammou {
 				const int dx, const int dy) override;
 			virtual bool on_mouse_drag_start(const View::mouse_button button, const int x, const int y) override;
 			virtual bool on_mouse_drag_end(const View::mouse_button button, const int x, const int y) override;
+
 			virtual bool on_mouse_dbl_click(const int x, const int y) override;
+			virtual bool on_mouse_button_down(const View::mouse_button button, const int x, const int y) override;
 
 		protected:
 			virtual void draw(cairo_t *cr);

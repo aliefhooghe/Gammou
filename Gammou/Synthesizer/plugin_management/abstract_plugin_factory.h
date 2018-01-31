@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "../../debug.h"
 #include "request_form.h"
 #include "../sound_component/sound_component.h"
 #include "data_stream.h"

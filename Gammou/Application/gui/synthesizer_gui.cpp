@@ -197,6 +197,7 @@ namespace Gammou {
 		synthesizer_gui::~synthesizer_gui()
 		{
 			// Plugin list box deleted by panel
+			DEBUG_PRINT("Syn Gui DTOR\n");
 		}
 
 		void synthesizer_gui::add_plugin_factory(Sound::abstract_plugin_factory * factory)

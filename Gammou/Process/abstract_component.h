@@ -5,7 +5,9 @@
 #include <string>
 #include <stdexcept>
 
+#include "../debug.h"
 #include "observer.h"
+
 
 namespace Gammou {
 
@@ -18,12 +20,15 @@ namespace Gammou {
 		/*! \class component_link
 		*  \brief Describe a component input as a link to another component output
 		*/
-		template<class T>
+		template<class T> // todo rename to component input
 		class component_link: public observer<abstract_component<T> > {
 
 		public:
 			component_link();
-			~component_link() {}
+			~component_link()
+			{
+				DEBUG_PRINT("Component Link DTOR\n");
+			}
 
 			void set_src_output_id(const unsigned int output_id);
 			unsigned int get_src_output_id() const;
@@ -44,7 +49,7 @@ namespace Gammou {
 			~frame_observer() {}
 
 		private:
-			void on_subject_destruction();
+			void on_subject_destruction() override;
 			abstract_component<T> *m_owner;
 		};
 
@@ -150,8 +155,10 @@ namespace Gammou {
 		template<class T>
 		void component_link<T>::on_notify(const unsigned int popped_output_id)
 		{
-			if( popped_output_id == m_src_output_id )
+			// TODO Frame notify ?
+			if (popped_output_id == m_src_output_id) {
 				observer<abstract_component<T> >::disconnect();
+			}
 		}
 		/*
 		* 		Frame link implementation
@@ -167,6 +174,8 @@ namespace Gammou {
 		void frame_observer<T>::on_subject_destruction()
 		{
 			const unsigned int ic = m_owner->get_input_count();
+
+			// If frame is destroyed, then all components have to be disconected
 
 			for(unsigned int i = 0; i < ic; ++i)
 				m_owner->disconnect_input(i);
@@ -198,9 +207,15 @@ namespace Gammou {
 		abstract_component<T>::~abstract_component()
 		{
 			abstract_frame<T> *const frame = get_frame();
+			const std::string name = get_name();
 
+			DEBUG_PRINT("Component DTOR : '%s'\n", name.c_str());
+
+			// TODO : Problemmmmmm
 			if( frame != nullptr )
 				frame->notify_circuit_change();
+
+
 		}
 
 		template<class T>
@@ -244,7 +259,7 @@ namespace Gammou {
 
 			if (frame == nullptr || frame != dst->get_frame())
 				throw std::domain_error("Component are not on the same frame");
-
+			
 			if (output_id >= get_output_count() )
 				throw std::out_of_range("Invalid output id");
 			if (dst_input_id >= dst->get_input_count() )
@@ -259,16 +274,20 @@ namespace Gammou {
 		template<class T>
 		void abstract_component<T>::disconnect_input(const unsigned int input_id)
 		{
-			abstract_frame<T> *const frame = get_frame();
-
-			if (input_id >= get_input_count() )
+			if (input_id >= get_input_count())
 				throw std::out_of_range("Invalid input id");
 
-			m_input[input_id].disconnect();
-			on_input_deconnection(input_id);
+			if (is_input_connected(input_id)) {
+				abstract_frame<T> *const frame = get_frame();
 
-			if (frame != nullptr )
-				frame->notify_circuit_change();
+				m_input[input_id].disconnect();
+				on_input_deconnection(input_id);
+
+				//// TODO Frame should be notified directly by input.disconect
+				if (frame != nullptr)
+					frame->notify_circuit_change();
+			}
+			
 		}
 
 		template<class T>
@@ -314,7 +333,6 @@ namespace Gammou {
 			}
 		}
 
-
 		// Protected
 
 		template<class T>
@@ -353,6 +371,9 @@ namespace Gammou {
 		{
 			if( get_input_count() == 0 )
 				throw std::domain_error("No input to pop");
+
+			DEBUG_PRINT("Component pop input\n");
+
 			m_input.pop_back();
 			m_input_name.pop_back();
 		}
@@ -375,7 +396,11 @@ namespace Gammou {
 		{
 			if( get_output_count() == 0 )
 				throw std::domain_error("No output to pop");
+			
 			m_output_name.pop_back();
+
+			// Notify the componets using the output that it has been deleted
+
 			m_component_subject.notify_observers(get_output_count());
 		}
 

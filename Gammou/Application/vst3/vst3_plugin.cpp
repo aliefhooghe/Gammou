@@ -19,24 +19,24 @@ namespace Gammou {
 			m_synthesizer(2, 2, GAMMOU_SYNTHESIZER_CHANNEL_COUNT, GAMMOU_VST_AUTOMATION_INPUT_COUNT),
 			m_window(&m_synthesizer, &m_synthesizer_mutex, 800 + 120, 800)
 		{
-			DEBUG_PRINT("Gammou CTOR\n");
+			DEBUG_PRINT("Gammou Plugin CTOR\n");
 		}
 
 		Plugin::~Plugin()
 		{
-			DEBUG_PRINT("Gammou DTOR\n");
+			DEBUG_PRINT("Gammou Plugin DTOR\n");
 		}
 
 		inline void Plugin::lock_synthesizer()
 		{
 			m_synthesizer_mutex.lock();
-		//	DEBUG_PRINT("Plugin Lock\n");
+			//DEBUG_PRINT("Plugin Lock\n");
 		}
 
 		inline void Plugin::unlock_synthesizer()
 		{
 			m_synthesizer_mutex.unlock();
-		//	DEBUG_PRINT("Plugin UNLock\n");
+			//DEBUG_PRINT("Plugin UNLock\n");
 		}
 
 		Steinberg::tresult PLUGIN_API Plugin::initialize(FUnknown * context)

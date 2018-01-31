@@ -48,7 +48,7 @@ namespace Gammou {
 
 		master_circuit::~master_circuit()
 		{
-
+			DEBUG_PRINT("Master DTOR\n");
 		}
 
 		void master_circuit::add_sound_component(abstract_sound_component *component)
@@ -73,6 +73,7 @@ namespace Gammou {
 
 		void master_circuit::notify_circuit_change()
 		{
+			DEBUG_PRINT("Master Sart Update.\n");
 			next_process_cycle();
 			make_component_current_cycle_program(&m_main_output);
 			make_component_current_cycle_program(&m_output_to_polyphonic);

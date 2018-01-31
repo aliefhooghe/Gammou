@@ -40,7 +40,7 @@ namespace Gammou {
 
 		synthesizer::~synthesizer()
 		{
-
+			DEBUG_PRINT("Synthesizer DTOR\n");
 		}
 
 		void synthesizer::process(const double input[], double output[])

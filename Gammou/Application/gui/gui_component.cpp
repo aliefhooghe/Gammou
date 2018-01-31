@@ -530,19 +530,28 @@ namespace Gammou {
 
 		bool abstract_gui_component_map::on_mouse_dbl_click(const int x, const int y)
 		{
-			abstract_gui_component *component = get_focused_widget();
+			return false;
+		}
 
-			if (component != nullptr) {
-				const int input_id = component->get_input_id_by_pos(x, y);
+		bool abstract_gui_component_map::on_mouse_button_down(const View::mouse_button button, const int x, const int y)
+		{
 
-				if (input_id != -1) {
-					disconnect(component, input_id);
-					redraw();
-					return true;
+			if (button == View::mouse_button::RightButton) {
+				abstract_gui_component *component = get_focused_widget();
+
+				if (component != nullptr) {
+					const int input_id = component->get_input_id_by_pos(x, y);
+
+					if (input_id != -1) {
+						disconnect(component, input_id);
+						redraw();
+						return true;
+					}
 				}
+
 			}
 
-			return false;
+			return View::panel<abstract_gui_component>::on_mouse_button_down(button, x, y);
 		}
 
 		unsigned int abstract_gui_component_map::get_input_count(abstract_gui_component * component)

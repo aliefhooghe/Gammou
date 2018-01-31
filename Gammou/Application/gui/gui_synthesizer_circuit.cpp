@@ -11,6 +11,7 @@ namespace Gammou {
 
 		abstract_gui_synthesizer_circuit::abstract_gui_synthesizer_circuit(
 			Sound::main_factory *main_factory,
+			const unsigned int components_channel_count,
 			Sound::synthesizer * synthesizer, 
 			std::mutex * synthesizer_mutex, 
 			unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const View::color background)
@@ -18,18 +19,21 @@ namespace Gammou {
 			m_synthesizer(synthesizer),
 			m_synthesizer_mutex(synthesizer_mutex),
 			m_main_factory(main_factory),
+			m_components_channel_count(components_channel_count),
 			m_creation_factory_id(Sound::NO_FACTORY)
 		{
 		}
 
 		abstract_gui_synthesizer_circuit::abstract_gui_synthesizer_circuit(
 			Sound::main_factory *main_factory,
+			const unsigned int components_channel_count,
 			Sound::synthesizer * synthesizer,
 			std::mutex * synthesizer_mutex, const View::rectangle & rect, const View::color background)
 			: abstract_gui_component_map(synthesizer_mutex, rect, background),
 			m_synthesizer(synthesizer),
 			m_synthesizer_mutex(synthesizer_mutex),
 			m_main_factory(main_factory),
+			m_components_channel_count(components_channel_count),
 			m_creation_factory_id(Sound::NO_FACTORY)
 		{
 		}
@@ -40,8 +44,6 @@ namespace Gammou {
 			if (!abstract_gui_component_map::on_mouse_dbl_click(x, y) 
 				&& m_creation_factory_id != Sound::NO_FACTORY) {
 
-				DEBUG_PRINT("Create Componnent\n");
-
 				const Sound::request_form& requests = m_main_factory->get_plugin_request_form(m_creation_factory_id);
 				
 				if (requests.get_request_count() != 0) // TODO Handle requests
@@ -49,8 +51,10 @@ namespace Gammou {
 			
 				const Sound::answer_form answers;
 
+				DEBUG_PRINT("Creating a %u-channel component\n", m_components_channel_count);
+
 				Sound::abstract_sound_component *sound_component = 
-					m_main_factory->get_new_sound_component(m_creation_factory_id, answers, m_synthesizer->get_channel_count());
+					m_main_factory->get_new_sound_component(m_creation_factory_id, answers, m_components_channel_count);
 
 				gui_sound_component *gui_component =
 					new gui_sound_component(sound_component, m_synthesizer_mutex, x, y);
@@ -84,7 +88,9 @@ namespace Gammou {
 			Sound::synthesizer * synthesizer, 
 			std::mutex *synthesizer_mutex,
 			const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const View::color background)
-			: abstract_gui_synthesizer_circuit(main_factory, synthesizer, synthesizer_mutex, x, y, width, height, background)
+			: abstract_gui_synthesizer_circuit(
+				main_factory, 1u, synthesizer, synthesizer_mutex, 
+				x, y, width, height, background)
 		{
 			add_internal_components(synthesizer_mutex);
 		}
@@ -94,7 +100,9 @@ namespace Gammou {
 			Sound::synthesizer * synthesizer, 
 			std::mutex *synthesizer_mutex,
 			const View::rectangle & rect, const View::color background)
-			: abstract_gui_synthesizer_circuit(main_factory, synthesizer, synthesizer_mutex, rect, background)
+			: abstract_gui_synthesizer_circuit(
+				main_factory, 1u,synthesizer, synthesizer_mutex,
+				rect, background)
 		{
 			add_internal_components(synthesizer_mutex);
 		}
@@ -145,7 +153,9 @@ namespace Gammou {
 			Sound::synthesizer * synthesizer, 
 			std::mutex * synthesizer_mutex, unsigned int x, 
 			const unsigned int y, const unsigned int width, const unsigned height, const View::color background)
-			: abstract_gui_synthesizer_circuit(main_factory, synthesizer, synthesizer_mutex, x, y, width, height, background)
+			: abstract_gui_synthesizer_circuit(
+				main_factory, synthesizer->get_channel_count(), synthesizer, 
+				synthesizer_mutex, x, y, width, height, background)
 		{
 			add_internal_components(synthesizer_mutex);
 		}
@@ -155,7 +165,9 @@ namespace Gammou {
 			Sound::synthesizer * synthesizer, 
 			std::mutex * synthesizer_mutex,
 			const View::rectangle & rect, const View::color background)
-			: abstract_gui_synthesizer_circuit(main_factory, synthesizer, synthesizer_mutex, rect, background)
+			: abstract_gui_synthesizer_circuit(
+				main_factory, synthesizer->get_channel_count(), synthesizer,
+				synthesizer_mutex, rect, background)
 		{
 			add_internal_components(synthesizer_mutex);
 		}

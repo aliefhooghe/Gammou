@@ -2,6 +2,7 @@
 #ifndef OBSERVER_H_
 #define OBSERVER_H_
 
+#include "../debug.h"
 
 namespace Gammou {
 
@@ -9,13 +10,22 @@ namespace Gammou {
 
 		template<class ResourceType, class NotificationTagType = unsigned int> class subject;
 
+
+		/*
+				Observer 
+		*/
+
 		template<class ResourceType, class NotificationTagType = unsigned int>
 		class observer{
 			friend class subject<ResourceType, NotificationTagType>;
 
 		public:
 			observer();
+			observer(observer<ResourceType, NotificationTagType>& src) noexcept;
+			observer(observer<ResourceType, NotificationTagType>&& old) noexcept;
+
 			virtual ~observer();
+
 			ResourceType *get_subject_resource() const;
 			void disconnect();
 
@@ -32,6 +42,9 @@ namespace Gammou {
 			observer<ResourceType, NotificationTagType> *m_next_observer;
 		};
 
+		/*
+			Subject
+		*/
 
 		template<class ResourceType, class NotificationTagType>
 		class subject{
@@ -39,7 +52,7 @@ namespace Gammou {
 
 		public:
 			subject(ResourceType * const source);
-			~subject();
+			virtual ~subject();
 
 			void register_observer(observer<ResourceType, NotificationTagType> *link);
 			void notify_observers(const NotificationTagType notification_tag);
@@ -51,6 +64,10 @@ namespace Gammou {
 
 
 
+		/*
+			Observer Implementation
+		*/
+
 		template<class ResourceType, class NotificationTagType>
 		observer<ResourceType, NotificationTagType>::observer() :
 			m_subject(nullptr), 
@@ -60,9 +77,35 @@ namespace Gammou {
 		}
 
 		template<class ResourceType, class NotificationTagType>
+		observer<ResourceType, NotificationTagType>::observer(observer<ResourceType, NotificationTagType>& src) noexcept :
+			m_subject(src.m_subject),
+			m_previous_observer(nullptr),
+			m_next_observer(nullptr)
+		{
+			DEBUG_PRINT("Copy obs\n");
+			
+			if (m_subject != nullptr)
+				m_subject->register_observer(this);
+		}
+
+		template<class ResourceType, class NotificationTagType>
+		observer<ResourceType, NotificationTagType>::observer(observer<ResourceType, NotificationTagType>&& old) noexcept :
+			m_subject(old.m_subject),
+			m_previous_observer(old.m_previous_observer),
+			m_next_observer(old.m_next_observer)
+		{
+			DEBUG_PRINT("Move obs\n");
+			old.m_subject = nullptr;
+			old.m_previous_observer = nullptr;
+			old.m_next_observer = nullptr;
+		}
+
+		template<class ResourceType, class NotificationTagType>
 		observer<ResourceType, NotificationTagType>::~observer()
 		{
+			DEBUG_PRINT("Component Link DTOR, disconecting...");
 			disconnect();
+			DEBUG_PRINT("OK\n");
 		}
 
 		template<class ResourceType, class NotificationTagType>
@@ -118,7 +161,7 @@ namespace Gammou {
 		}
 
 		/*
-		*
+		*	Subject Implementation
 		*/
 
 		template<class ResourceType, class NotificationTagType>
