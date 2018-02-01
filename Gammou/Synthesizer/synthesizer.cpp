@@ -79,7 +79,7 @@ namespace Gammou {
 
 			if( channel != INVALID_CHANNEL ){
 
-				DEBUG_PRINT("on : %d (n = %d), fr = %f)\n", channel, midi_note, m_note_frequencies[midi_note]);
+				//DEBUG_PRINT("on : %d (n = %d), fr = %f)\n", channel, midi_note, m_note_frequencies[midi_note]);
 
 				m_channels_midi_note[channel] = midi_note;
 				m_polyphonic_circuit.initialize_channel(channel);
@@ -92,7 +92,7 @@ namespace Gammou {
 				m_channels_lifetime[channel] = m_channel_zero_lifetime;
 			}
 			else {
-				DEBUG_PRINT("No more channel\n");
+				DEBUG_PRINT("No more channel for note on\n");
 			}
 
 			// Else do nothing

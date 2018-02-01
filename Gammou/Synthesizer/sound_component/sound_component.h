@@ -35,7 +35,7 @@ namespace Gammou {
 			virtual ~abstract_sound_component() {}
 
 			unsigned int get_factory_id() const;
-			virtual unsigned int save_state(data_destination& data) { return 0; };
+			virtual unsigned int save_state(data_sink& data) { return 0; };
 
 			virtual void on_sample_rate_change(const double new_sample_rate) {};
 			virtual void on_channel_change(const unsigned int new_chanel) {};

@@ -40,7 +40,7 @@ namespace Gammou {
 			virtual int get_output_id_by_pos(const float x, const float y) const;
 			virtual int get_input_id_by_pos(const float x, const float y) const;
 
-			virtual unsigned int save_sound_component_state(Sound::data_destination& data) { return 0; }
+			virtual unsigned int save_sound_component_state(Sound::data_sink& data) { return 0; }
 			virtual unsigned int get_sound_component_factory_id() const { return Sound::NO_FACTORY;  }
 
 			virtual Process::abstract_component<double> *get_component() const = 0;

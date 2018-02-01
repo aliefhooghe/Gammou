@@ -2,8 +2,6 @@
 #ifndef OBSERVER_H_
 #define OBSERVER_H_
 
-#include "../debug.h"
-
 namespace Gammou {
 
 	namespace Process{
@@ -81,9 +79,7 @@ namespace Gammou {
 			m_subject(src.m_subject),
 			m_previous_observer(nullptr),
 			m_next_observer(nullptr)
-		{
-			DEBUG_PRINT("Copy obs\n");
-			
+		{			
 			if (m_subject != nullptr)
 				m_subject->register_observer(this);
 		}
@@ -94,7 +90,6 @@ namespace Gammou {
 			m_previous_observer(old.m_previous_observer),
 			m_next_observer(old.m_next_observer)
 		{
-			DEBUG_PRINT("Move obs\n");
 			old.m_subject = nullptr;
 			old.m_previous_observer = nullptr;
 			old.m_next_observer = nullptr;
@@ -103,9 +98,7 @@ namespace Gammou {
 		template<class ResourceType, class NotificationTagType>
 		observer<ResourceType, NotificationTagType>::~observer()
 		{
-			DEBUG_PRINT("Component Link DTOR, disconecting...");
 			disconnect();
-			DEBUG_PRINT("OK\n");
 		}
 
 		template<class ResourceType, class NotificationTagType>

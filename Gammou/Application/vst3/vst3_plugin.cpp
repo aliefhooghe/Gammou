@@ -5,8 +5,6 @@
 
 #include "vst3_plugin.h"
 
-#include <Windows.h> // a supprimer
-
 namespace Gammou {
 
 	namespace Vst {
@@ -219,6 +217,7 @@ namespace Gammou {
 		{
 			// Host ask to change
 			// TODO check coherence with synthesizer
+			// And peut etre permetre au synthé de changer la ocnfiguration ?
 			if (numIns != 1 ||
 				numOuts != 1 ||
 				outputs[0] != Steinberg::Vst::SpeakerArr::kStereo ||
@@ -228,16 +227,175 @@ namespace Gammou {
 				return Steinberg::kResultOk;
 		}
 
+		// TODO ne pas, oublier get_editor state
+
+		Steinberg::tresult PLUGIN_API Plugin::setState(Steinberg::IBStream * state)
+		{
+			// read
+
+			if (state != nullptr) {
+				unsigned int integer = 4243;
+
+				DEBUG_PRINT("Read State :");
+
+				if (state->read(&integer, 4) != Steinberg::kResultOk) {
+					DEBUG_PRINT(" Read Error");
+				}
+				else {
+					DEBUG_PRINT(" integer = %u\n", integer);
+				}
+			}
+
+			return Steinberg::kNotImplemented;
+		}
+
+		Steinberg::tresult PLUGIN_API Plugin::getState(Steinberg::IBStream * state)
+		{
+			// write
+			unsigned int integer = 543210;
+
+			DEBUG_PRINT("Write State\n");
+
+			if (state->write(&integer, 4) != Steinberg::kResultOk)
+				DEBUG_PRINT("Write Error\n");
+
+			return Steinberg::kResultOk;
+		}
+
 
 		Steinberg::IPlugView *Plugin::createView(const char* name)
 		{
 			return m_window.create_vst3_view_instance();
 		}
 
+		/*
+			Persistence management
+		*/
+
+		static Steinberg::IBStream::IStreamSeekMode gammou_to_steinberg_seek_mode(
+			Sound::data_stream::seek_mode mode)
+		{
+
+			switch (mode)
+			{
+			case Sound::data_stream::seek_mode::SET:
+				return  Steinberg::IBStream::kIBSeekSet;
+				break;
+
+			case Sound::data_stream::seek_mode::CURRENT:
+				return Steinberg::IBStream::kIBSeekCur;
+				break;
+
+			case Sound::data_stream::seek_mode::END:
+				return Steinberg::IBStream::kIBSeekEnd;
+				break;
+			}
+		}
+
+		vst3_data_source::vst3_data_source(Steinberg::IBStream * stream)
+			: m_stream(stream)
+		{
+		}
+
+		vst3_data_source::~vst3_data_source()
+		{
+		}
+
+		bool vst3_data_source::seek(const unsigned int offset, Sound::data_stream::seek_mode mode)
+		{
+			const Steinberg::IBStream::IStreamSeekMode steinberg_mode = gammou_to_steinberg_seek_mode(mode);
+			return (m_stream->seek(offset, steinberg_mode) == Steinberg::kResultOk);
+		}
+
+		unsigned int vst3_data_source::tell()
+		{
+			Steinberg::int64 pos;
+			if (m_stream->tell(&pos) == Steinberg::kResultOk)
+				return static_cast<unsigned int>(pos);
+			else
+				return 0;
+		}
+
+		unsigned int vst3_data_source::read(void * data, const unsigned int size)
+		{
+			Steinberg::int32 nb_read;
+			if (m_stream->read(data, size, &nb_read) == Steinberg::kResultOk)
+				return static_cast<unsigned int>(nb_read);
+			else
+				return 0u;
+		}
 
 
-	} /*  Vst */
+		vst3_data_sink::vst3_data_sink(Steinberg::IBStream * stream)
+			: m_stream(stream)
+		{
+		}
+
+		vst3_data_sink::~vst3_data_sink()
+		{
+		}
+
+		bool vst3_data_sink::seek(const unsigned int offset, Sound::data_stream::seek_mode mode)
+		{
+			const Steinberg::IBStream::IStreamSeekMode steinberg_mode = gammou_to_steinberg_seek_mode(mode);
+			return (m_stream->seek(offset, steinberg_mode) == Steinberg::kResultOk);
+		}
+
+		unsigned int vst3_data_sink::tell()
+		{
+			Steinberg::int64 pos;
+			if (m_stream->tell(&pos) == Steinberg::kResultOk)
+				return static_cast<unsigned int>(pos);
+			else
+				return 0;
+		}
+
+		unsigned int vst3_data_sink::write(void * data, const unsigned int size)
+		{
+			Steinberg::int32 nb_written;
+			if (m_stream->write(data, size, &nb_written) == Steinberg::kResultOk)
+				return static_cast<unsigned int>(nb_written);
+			else
+				return 0;
+		}
+
+} /*  Vst */
 
 
 } /* Gammou */
 
+
+/*
+struct component_data {
+	unsigned size;
+	void *data;
+};
+
+struct component_state {
+	unsigned int factory_id;
+	unsigned int gui_x;
+	unsigned int gui_y;
+	component_data data;
+};
+
+struct link {
+	int src_id;  // position dans le deque
+	int output_id;
+	int dst;_id
+	int input_id;
+};
+
+struct circuit_state {
+	unsigned int component_count;
+	unsigned int link_count;
+
+	component_state *components;
+	link *links;	//	link après ! (cas des cycles)
+};
+
+struct plugin_state {
+	circuit_state master_state;
+	circuit_state poly_state;
+};
+
+*/

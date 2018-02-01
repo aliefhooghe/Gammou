@@ -70,11 +70,11 @@ namespace Gammou {
 			void add_widget(widget_type *w);		//	Panel get widget ownership and have to destroy it unless it is removed
 			void remove_widget(widget_type *w);
 
-			widget_type *get_focused_widget(void) const;	// override;
-			widget_type *get_draging_widget(void) const;	// override;
-			widget_type *get_draging_widget(mouse_button& button) const;	// override;
+			widget_type *get_focused_widget(void) const;	
+			widget_type *get_draging_widget(void) const;	
+			widget_type *get_draging_widget(mouse_button& button) const;	
 			
-			std::deque<widget_type*> m_widgets;
+			std::deque<widget_type*> m_widgets;		
 
 		private:
 			widget_type *get_widget_at_position(const unsigned int x, const unsigned int y) const;

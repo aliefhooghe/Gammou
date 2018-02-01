@@ -67,6 +67,7 @@ namespace Gammou {
 			void set_parameter_value(const double value, const unsigned int automation_id);
 
 			unsigned int get_channel_count() const;
+
 		private:
 			unsigned int get_new_channel();
 			void free_channel(const std::vector<unsigned int>::iterator& it);
