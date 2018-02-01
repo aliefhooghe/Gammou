@@ -1,4 +1,6 @@
 
+#include <map>
+
 #include "gui_synthesizer_circuit.h"
 
 namespace Gammou {
@@ -79,126 +81,213 @@ namespace Gammou {
 				DEBUG_PRINT("Unregisterd Factory");
 		}
 
-		/*
-			gui master circuit implementation
-		*/
-
-		gui_master_circuit::gui_master_circuit(
-			Sound::main_factory *main_factory, 
-			Sound::synthesizer * synthesizer, 
-			std::mutex *synthesizer_mutex,
-			const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const View::color background)
-			: abstract_gui_synthesizer_circuit(
-				main_factory, 1u, synthesizer, synthesizer_mutex, 
-				x, y, width, height, background)
+		bool abstract_gui_synthesizer_circuit::save_state(Sound::data_sink & data)
 		{
-			add_internal_components(synthesizer_mutex);
+			Persistence::circuit_record_header record_header;
+
+			// component -> record_id association
+			std::map<abstract_gui_component*, uint32_t> component_record_id;
+
+			uint32_t component_counter = 0u;
+			uint32_t link_counter = 0u;
+
+			DEBUG_PRINT("CIRCUIT SAVE STATE\n");
+
+			//	We skip header 
+			const unsigned int start_pos = data.tell();
+			data.seek(sizeof(record_header));
+			
+			// save components
+
+			for (abstract_gui_component *component : m_widgets) {
+				// Check that component is not an internal circuit process component
+				if (component->get_sound_component_factory_id() != Sound::NO_FACTORY) {
+					component_record_id[component] = component_counter;
+					save_component_state(data, component); 
+					component_counter++;
+				}
+			}
+
+			// save links
+
+			for (abstract_gui_component *component : m_widgets) {
+				const unsigned int ic = component->get_component()->get_input_count();
+				unsigned int dst_record_id;
+				
+				if (component->get_sound_component_factory_id() == Sound::NO_FACTORY) {
+					const uint8_t internal_id = get_component_internal_id(component);
+					dst_record_id = component_record_id_by_internal_id(internal_id);
+				}
+				else {
+					dst_record_id = component_record_id[component];
+				}
+
+				for (unsigned int input_id = 0; input_id < ic; ++input_id) {
+					unsigned int output_id;
+					abstract_gui_component *src = get_input_src(component, input_id, output_id);
+							
+					// something linked to input
+					if (src != nullptr) {
+						unsigned int src_record_id;
+					
+						if (src->get_sound_component_factory_id() == Sound::NO_FACTORY) { //	src is an internal component 
+							const uint8_t internal_id = get_component_internal_id(src);
+							src_record_id = component_record_id_by_internal_id(internal_id);
+						}
+						else { // src is factory-builded sound_component
+							src_record_id = component_record_id[src];
+						}
+
+						save_link(data, src_record_id, output_id, dst_record_id, input_id);
+						link_counter++;
+					}
+				}
+			}
+			
+			record_header.component_count = component_counter;
+			record_header.link_count = link_counter;
+
+			// save header 
+			const unsigned int current_pos = data.tell();
+
+			data.seek(start_pos, Gammou::Sound::data_stream::seek_mode::SET);
+			data.write(&record_header, sizeof(record_header));
+			data.seek(current_pos, Gammou::Sound::data_stream::seek_mode::SET);
+
+			return true;
 		}
 
-		gui_master_circuit::gui_master_circuit(
-			Sound::main_factory *main_factory, 
-			Sound::synthesizer * synthesizer, 
-			std::mutex *synthesizer_mutex,
-			const View::rectangle & rect, const View::color background)
-			: abstract_gui_synthesizer_circuit(
-				main_factory, 1u,synthesizer, synthesizer_mutex,
-				rect, background)
+		bool abstract_gui_synthesizer_circuit::load_state(Sound::data_source & data)
 		{
-			add_internal_components(synthesizer_mutex);
+			//	Delete current content
+			reset_content();
+			
+			//---
+			Persistence::circuit_record_header record_header;
+			
+			// Reading header
+			data.read(&record_header, sizeof(record_header));
+
+			DEBUG_PRINT("CIRCUIT LOAD STATE : ");
+			DEBUG_PRINT("  -> %u components\n", record_header.component_count);
+			DEBUG_PRINT("  -> %u links\n", record_header.link_count);
+			
+			// record_id -> component association
+			std::vector<abstract_gui_component*> gui_components(record_header.component_count);  
+
+			// Loading components (This add them on circuit)
+			for (unsigned int i = 0; i < record_header.component_count; ++i)
+				gui_components[i] = load_component(data);
+
+			// Loading links
+			for (unsigned int i = 0; i < record_header.link_count; ++i) {
+				Persistence::link_record link;
+
+				DEBUG_PRINT("LOAD LINK\n");
+
+				// Read link
+				data.read(&link, sizeof(link));
+				
+				// TODO More verif
+				abstract_gui_component *src = gui_components[link.src_id];
+				abstract_gui_component *dst = gui_components[link.dst_id];
+
+				connect(src, link.output_id, dst, link.input_id);
+			}
+
+			return true;
 		}
 
-		void gui_master_circuit::add_sound_component_to_frame(Sound::abstract_sound_component * sound_component)
+		void abstract_gui_synthesizer_circuit::save_component_state(Sound::data_sink& data, abstract_gui_component * component)
 		{
-			m_synthesizer->add_sound_component_on_master_circuit(sound_component);
+			if (component->get_sound_component_factory_id() == Sound::NO_FACTORY)
+				throw std::domain_error("It is impossible to save a 'NO_FACTORY' component's state");
+
+			Persistence::component_record_header record_header;
+			Persistence::buffer_data_sink sound_component_state;
+
+			record_header.factory_id = component->get_sound_component_factory_id();
+			record_header.gui_x_pos = component->get_x();
+			record_header.gui_y_pos = component->get_y();
+			record_header.data_size = component->save_sound_component_state(sound_component_state);
+
+			DEBUG_PRINT("COMPONENT SAVE STATE (factory id = %u)\n", record_header.factory_id);
+
+			data.write(&record_header, sizeof(record_header));	//	Write header
+			sound_component_state.flush_data(data);				//	Write Sound Component data
 		}
 
-		void gui_master_circuit::add_internal_components(std::mutex *synthesizer_mutex)
+		abstract_gui_component *abstract_gui_synthesizer_circuit::load_component(Sound::data_source & data)
 		{
-			// Todo position
-			add_gui_component(
-				new default_gui_component(
-					m_synthesizer->get_master_circuit_automation_input(), 
-					synthesizer_mutex, 50, 50));
-			add_gui_component(
-				new default_gui_component(
-					m_synthesizer->get_master_circuit_polyphonic_input(),
-					synthesizer_mutex, 60, 60));
-			add_gui_component(
-				new default_gui_component(
-					m_synthesizer->get_master_circuit_polyphonic_output() ,
-					synthesizer_mutex, 70, 70));
-			add_gui_component(
-				new default_gui_component(
-					m_synthesizer->get_master_main_input() ,
-					synthesizer_mutex, 80, 80));
-			add_gui_component(
-				new default_gui_component(
-					m_synthesizer->get_master_main_output() ,
-					synthesizer_mutex, 90, 90));
+			Persistence::component_record_header record_header;
 
-		//	for(unsigned int i = 0; i < 2 ; ++i)
-		//		m_synthesizer->get_master_circuit_polyphonic_input()->connect_to(
-		//			i,
-		//			m_synthesizer->get_master_main_output(),
-		//			i
-		//	);
+			// Read header
+			data.read(&record_header, sizeof(record_header));
+
+			// We do not have this plugin factory
+			if (! m_main_factory->check_factory_presence(record_header.factory_id)) {
+				// Todo dummy component
+				throw std::domain_error("Unknown factory !!!");
+			}
+
+			// To do Restriction on size, via decorateur
+			// Build component from data
+			Sound::abstract_sound_component *sound_component =
+				m_main_factory->get_new_sound_component(record_header.factory_id, data,
+					m_components_channel_count);
+			
+			//	Add process component on frame
+			lock_circuit();
+			add_sound_component_to_frame(sound_component);
+			unlock_circuit();
+
+			// Build coresponding gui_component, according to header
+			gui_sound_component *gui_component =
+				new gui_sound_component(sound_component, m_synthesizer_mutex, 
+					record_header.gui_x_pos, record_header.gui_y_pos);
+
+			add_gui_component(gui_component);
+
+			return gui_component;
 		}
 
-		/*
-			gui polyphonic circuit implementation
-		*/
-
-		gui_polyphonic_circuit::gui_polyphonic_circuit(
-			Sound::main_factory *main_factory,
-			Sound::synthesizer * synthesizer, 
-			std::mutex * synthesizer_mutex, unsigned int x, 
-			const unsigned int y, const unsigned int width, const unsigned height, const View::color background)
-			: abstract_gui_synthesizer_circuit(
-				main_factory, synthesizer->get_channel_count(), synthesizer, 
-				synthesizer_mutex, x, y, width, height, background)
+		void abstract_gui_synthesizer_circuit::save_link(Sound::data_sink& data, const unsigned int src_record_id, 
+			const unsigned int output_id, const unsigned int dst_record_id, const unsigned int input_id)
 		{
-			add_internal_components(synthesizer_mutex);
+			Persistence::link_record link;
+
+			DEBUG_PRINT("LINK SAVE\n");
+
+			link.src_id = static_cast<uint32_t>(src_record_id);
+			link.output_id = static_cast<uint32_t>(output_id);
+			link.dst_id = static_cast<uint32_t>(dst_record_id);
+			link.input_id = static_cast<uint32_t>(input_id);
+
+			data.write(&link, sizeof(link));
 		}
 
-		gui_polyphonic_circuit::gui_polyphonic_circuit(
-			Sound::main_factory *main_factory,
-			Sound::synthesizer * synthesizer, 
-			std::mutex * synthesizer_mutex,
-			const View::rectangle & rect, const View::color background)
-			: abstract_gui_synthesizer_circuit(
-				main_factory, synthesizer->get_channel_count(), synthesizer,
-				synthesizer_mutex, rect, background)
+		void abstract_gui_synthesizer_circuit::reset_content()
 		{
-			add_internal_components(synthesizer_mutex);
+			std::deque<abstract_gui_component*> temp(m_widgets);
+
+			for (abstract_gui_component * component : temp) {
+				if (component->get_sound_component_factory_id() != Sound::NO_FACTORY )
+					remove_widget(component);
+			}
 		}
 
-		void gui_polyphonic_circuit::add_sound_component_to_frame(Sound::abstract_sound_component * sound_component)
+		uint32_t abstract_gui_synthesizer_circuit::component_record_id_by_internal_id(const uint8_t internal_id)
 		{
-			m_synthesizer->add_sound_component_on_polyphonic_circuit(sound_component);
+			return 0xFFFFFF00 | internal_id;
 		}
 
-		void gui_polyphonic_circuit::add_internal_components(std::mutex * synthesizer_mutex)
+		bool abstract_gui_synthesizer_circuit::is_internal_component_record_id(const uint32_t id)
 		{
-			add_gui_component(
-				new default_gui_component(
-					m_synthesizer->get_polyphonic_circuit_automation_input(),
-					synthesizer_mutex, 10, 10));
-			add_gui_component(
-				new default_gui_component(
-					m_synthesizer->get_polyphonic_circuit_gpar_input(),
-					synthesizer_mutex, 10, 10));
-			add_gui_component(
-				new default_gui_component(
-					m_synthesizer->get_polyphonic_circuit_master_input(),
-					synthesizer_mutex, 10, 10));
-			add_gui_component(
-				new default_gui_component(
-					m_synthesizer->get_polyphonic_circuit_output(),
-					synthesizer_mutex, 10, 10));
+			return (0xFFFFFF00 & id) == 0xFFFFFF00;
 		}
 
 
 
-} /* Gui */
+	} /* Gui */
 
 } /* Gammou */

@@ -56,10 +56,10 @@ namespace Gammou {
 		{
 			if(component == nullptr)
 				throw std::domain_error("Cannot stamp null component");
-			else if (component->m_factory_id == NO_FACTORY)
-				component->m_factory_id = m_factory_id;
-			else if (component->m_factory_id != m_factory_id)
+			else if (component->m_factory_id != NO_FACTORY && component->m_factory_id != m_factory_id)
 				throw std::domain_error("Sound component is already stamped");
+			else
+				component->m_factory_id = m_factory_id;
 		}
 
 

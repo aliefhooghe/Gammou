@@ -231,35 +231,24 @@ namespace Gammou {
 
 		Steinberg::tresult PLUGIN_API Plugin::setState(Steinberg::IBStream * state)
 		{
-			// read
-
 			if (state != nullptr) {
-				unsigned int integer = 4243;
-
-				DEBUG_PRINT("Read State :");
-
-				if (state->read(&integer, 4) != Steinberg::kResultOk) {
-					DEBUG_PRINT(" Read Error");
-				}
-				else {
-					DEBUG_PRINT(" integer = %u\n", integer);
-				}
+				vst3_data_source data(state);
+				if(m_window.load_state(data))
+					return Steinberg::kResultOk;
 			}
 
-			return Steinberg::kNotImplemented;
+			return Steinberg::kResultFalse;
 		}
 
 		Steinberg::tresult PLUGIN_API Plugin::getState(Steinberg::IBStream * state)
 		{
-			// write
-			unsigned int integer = 543210;
-
-			DEBUG_PRINT("Write State\n");
-
-			if (state->write(&integer, 4) != Steinberg::kResultOk)
-				DEBUG_PRINT("Write Error\n");
-
-			return Steinberg::kResultOk;
+			if (state != nullptr) {
+				vst3_data_sink data(state);
+				if(m_window.save_state(data))
+					return Steinberg::kResultOk;
+			}
+			
+			return Steinberg::kResultFalse;
 		}
 
 
@@ -282,12 +271,13 @@ namespace Gammou {
 				return  Steinberg::IBStream::kIBSeekSet;
 				break;
 
-			case Sound::data_stream::seek_mode::CURRENT:
-				return Steinberg::IBStream::kIBSeekCur;
-				break;
-
 			case Sound::data_stream::seek_mode::END:
 				return Steinberg::IBStream::kIBSeekEnd;
+				break;
+
+			//case Sound::data_stream::seek_mode::CURRENT:
+			default:
+				return Steinberg::IBStream::kIBSeekCur;
 				break;
 			}
 		}
@@ -363,39 +353,3 @@ namespace Gammou {
 
 
 } /* Gammou */
-
-
-/*
-struct component_data {
-	unsigned size;
-	void *data;
-};
-
-struct component_state {
-	unsigned int factory_id;
-	unsigned int gui_x;
-	unsigned int gui_y;
-	component_data data;
-};
-
-struct link {
-	int src_id;  // position dans le deque
-	int output_id;
-	int dst;_id
-	int input_id;
-};
-
-struct circuit_state {
-	unsigned int component_count;
-	unsigned int link_count;
-
-	component_state *components;
-	link *links;	//	link après ! (cas des cycles)
-};
-
-struct plugin_state {
-	circuit_state master_state;
-	circuit_state poly_state;
-};
-
-*/

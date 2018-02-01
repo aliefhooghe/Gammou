@@ -68,6 +68,7 @@ namespace Gammou {
 
 		public:
 			vst3_data_source(Steinberg::IBStream *stream);
+			vst3_data_source(vst3_data_source&) = delete;
 			~vst3_data_source();
 
 			bool seek(const unsigned int offset, Sound::data_stream::seek_mode mode) override;
@@ -82,6 +83,7 @@ namespace Gammou {
 
 		public:
 			vst3_data_sink(Steinberg::IBStream *stream);
+			vst3_data_sink(vst3_data_sink&) = delete;
 			~vst3_data_sink();
 
 			bool seek(const unsigned int offset, Sound::data_stream::seek_mode mode) override;

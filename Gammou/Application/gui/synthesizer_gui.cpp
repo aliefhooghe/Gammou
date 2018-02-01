@@ -1,3 +1,5 @@
+
+#include "../persistence/synthesizer_persistence.h"
 #include "synthesizer_gui.h"
 
 
@@ -9,17 +11,16 @@ namespace Gammou {
 			const unsigned int height)
 			: View::generic_window(width, height)
 		{
-
 			set_background_color(View::cl_chartreuse); // for gui debuging
 
 
-			gui_master_circuit *gui_master = new gui_master_circuit(&m_main_factory, synthesizer, synthesizer_mutex, 0, 0, 800, 800);
-			gui_polyphonic_circuit *gui_poly = new gui_polyphonic_circuit(&m_main_factory, synthesizer, synthesizer_mutex, 0, 0, 800, 800);
+			m_gui_master_circuit = new gui_master_circuit(&m_main_factory, synthesizer, synthesizer_mutex, 0, 0, 800, 800);
+			m_gui_polyphonic_circuit = new gui_polyphonic_circuit(&m_main_factory, synthesizer, synthesizer_mutex, 0, 0, 800, 800);
 
 			View::page_container *pages = new View::page_container(120, 0, 800, 800, View::cl_chartreuse);
 
-			pages->add_page(gui_master);
-			pages->add_page(gui_poly);
+			pages->add_page(m_gui_master_circuit);
+			pages->add_page(m_gui_polyphonic_circuit);
 			page_id = 0;
 			pages->select_page(page_id);
 
@@ -37,10 +38,10 @@ namespace Gammou {
 			m_plugin_list_box = 
 				new View::list_box(
 					0, 0, 120, 800, 40, 
-					[&, gui_poly, gui_master](unsigned int id) 
+					[&](unsigned int id) 
 					{
-						gui_poly->select_component_creation_factory_id(m_factory_ids[id]);
-						gui_master->select_component_creation_factory_id(m_factory_ids[id]);
+						m_gui_polyphonic_circuit->select_component_creation_factory_id(m_factory_ids[id]);
+						m_gui_master_circuit->select_component_creation_factory_id(m_factory_ids[id]);
 					},
 					GuiProperties::list_box_selected_item_color, 
 					GuiProperties::list_box_background, 
@@ -57,8 +58,24 @@ namespace Gammou {
 
 		synthesizer_gui::~synthesizer_gui()
 		{
-			// Plugin list box deleted by panel
+			// widgets deleted by panel
 			DEBUG_PRINT("Syn Gui DTOR\n");
+		}
+
+		bool synthesizer_gui::save_state(Sound::data_sink & data)
+		{
+			DEBUG_PRINT("SYN SAVE STATE\n");
+			m_gui_master_circuit->save_state(data);
+			m_gui_polyphonic_circuit->save_state(data);
+			return true;
+		}
+
+		bool synthesizer_gui::load_state(Sound::data_source & data)
+		{
+			DEBUG_PRINT("SYN LOAD STATE\n");
+			m_gui_master_circuit->load_state(data);
+			m_gui_polyphonic_circuit->load_state(data);
+			return true;
 		}
 
 		void synthesizer_gui::add_plugin_factory(Sound::abstract_plugin_factory * factory)
