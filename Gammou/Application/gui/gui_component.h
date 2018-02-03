@@ -147,6 +147,7 @@ namespace Gammou {
 			unsigned int get_input_count(abstract_gui_component *component);
 			abstract_gui_component *get_input_src(abstract_gui_component *component, const unsigned int input_id, 
 				unsigned int& src_output_id);
+
 		private:
 			std::map<Process::abstract_component<double>*, abstract_gui_component*> m_component_association;
 			std::mutex *m_circuit_mutex;

@@ -103,7 +103,7 @@ namespace Gammou {
 				// Check that component is not an internal circuit process component
 				if (component->get_sound_component_factory_id() != Sound::NO_FACTORY) {
 					component_record_id[component] = component_counter;
-					save_component_state(data, component); 
+					save_component(data, component);
 					component_counter++;
 				}
 			}
@@ -111,12 +111,14 @@ namespace Gammou {
 			// save links
 
 			for (abstract_gui_component *component : m_widgets) {
+
 				const unsigned int ic = component->get_component()->get_input_count();
-				unsigned int dst_record_id;
-				
+				uint32_t dst_record_id;
+
+				//	Getting dst component record_id
 				if (component->get_sound_component_factory_id() == Sound::NO_FACTORY) {
 					const uint8_t internal_id = get_component_internal_id(component);
-					dst_record_id = component_record_id_by_internal_id(internal_id);
+					dst_record_id = Persistence::record_id_by_internal_component_id(internal_id);
 				}
 				else {
 					dst_record_id = component_record_id[component];
@@ -132,7 +134,7 @@ namespace Gammou {
 					
 						if (src->get_sound_component_factory_id() == Sound::NO_FACTORY) { //	src is an internal component 
 							const uint8_t internal_id = get_component_internal_id(src);
-							src_record_id = component_record_id_by_internal_id(internal_id);
+							src_record_id = Persistence::record_id_by_internal_component_id(internal_id);
 						}
 						else { // src is factory-builded sound_component
 							src_record_id = component_record_id[src];
@@ -173,11 +175,11 @@ namespace Gammou {
 			DEBUG_PRINT("  -> %u links\n", record_header.link_count);
 			
 			// record_id -> component association
-			std::vector<abstract_gui_component*> gui_components(record_header.component_count);  
+			std::vector<abstract_gui_component*> loaded_gui_components(record_header.component_count);  
 
 			// Loading components (This add them on circuit)
 			for (unsigned int i = 0; i < record_header.component_count; ++i)
-				gui_components[i] = load_component(data);
+				loaded_gui_components[i] = load_component(data);
 
 			// Loading links
 			for (unsigned int i = 0; i < record_header.link_count; ++i) {
@@ -187,18 +189,37 @@ namespace Gammou {
 
 				// Read link
 				data.read(&link, sizeof(link));
-				
-				// TODO More verif
-				abstract_gui_component *src = gui_components[link.src_id];
-				abstract_gui_component *dst = gui_components[link.dst_id];
 
+				abstract_gui_component *src = nullptr;
+				abstract_gui_component *dst = nullptr;
+
+
+				//	if link src is an internal circuit component				
+				if (Persistence::record_id_is_internal_component(link.src_record_id)) {
+					const uint8_t internal_component_id = Persistence::internal_component_id_by_record_id(link.src_record_id);
+					src = gui_component_by_internal_id(internal_component_id);
+				}
+				else {	//	link src is a factory builded component
+					src = loaded_gui_components[link.src_record_id];
+				}
+
+				// Idem for dst
+				if (Persistence::record_id_is_internal_component(link.dst_record_id)) {
+					const uint8_t internal_component_id = Persistence::internal_component_id_by_record_id(link.dst_record_id);
+					dst = gui_component_by_internal_id(internal_component_id);
+				}
+				else {
+					dst = loaded_gui_components[link.dst_record_id];
+				}
+
+				// connect function manage the lock.
 				connect(src, link.output_id, dst, link.input_id);
 			}
 
 			return true;
 		}
 
-		void abstract_gui_synthesizer_circuit::save_component_state(Sound::data_sink& data, abstract_gui_component * component)
+		void abstract_gui_synthesizer_circuit::save_component(Sound::data_sink& data, abstract_gui_component * component)
 		{
 			if (component->get_sound_component_factory_id() == Sound::NO_FACTORY)
 				throw std::domain_error("It is impossible to save a 'NO_FACTORY' component's state");
@@ -258,9 +279,9 @@ namespace Gammou {
 
 			DEBUG_PRINT("LINK SAVE\n");
 
-			link.src_id = static_cast<uint32_t>(src_record_id);
+			link.src_record_id = static_cast<uint32_t>(src_record_id);
 			link.output_id = static_cast<uint32_t>(output_id);
-			link.dst_id = static_cast<uint32_t>(dst_record_id);
+			link.dst_record_id = static_cast<uint32_t>(dst_record_id);
 			link.input_id = static_cast<uint32_t>(input_id);
 
 			data.write(&link, sizeof(link));
@@ -275,17 +296,6 @@ namespace Gammou {
 					remove_widget(component);
 			}
 		}
-
-		uint32_t abstract_gui_synthesizer_circuit::component_record_id_by_internal_id(const uint8_t internal_id)
-		{
-			return 0xFFFFFF00 | internal_id;
-		}
-
-		bool abstract_gui_synthesizer_circuit::is_internal_component_record_id(const uint32_t id)
-		{
-			return (0xFFFFFF00 & id) == 0xFFFFFF00;
-		}
-
 
 
 	} /* Gui */

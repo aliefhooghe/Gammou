@@ -13,15 +13,13 @@ namespace Gammou {
 
 	namespace Sound {
 
- // 'GPAR' = Gate, Pitch, Attack, Release
-
-		class polyphonic_circuit_GPAR_input : public polyphonic_sound_component {
+		class polyphonic_circuit_midi_input : public polyphonic_sound_component {
 
 			enum Input : unsigned int {GATE = 0, PITCH = 1, ATTACK_VELOCITY = 2, RELEASE_VELOCITY = 3, COUNT = 4};
 
 		public:
-			polyphonic_circuit_GPAR_input(const unsigned int channel_count);
-			~polyphonic_circuit_GPAR_input();
+			polyphonic_circuit_midi_input(const unsigned int channel_count);
+			~polyphonic_circuit_midi_input();
 
 			void process(const double input[]) {} // a stub
 			double fetch_output(const unsigned int output_id);
@@ -87,10 +85,10 @@ namespace Gammou {
 		private:
 			void notify_circuit_change() override;
 
-			polyphonic_circuit_GPAR_input m_gpar_input;
-			Process::vector_fetcher_component<double> m_input_from_master;
+			polyphonic_circuit_midi_input m_midi_input;
+			Process::vector_fetcher_component<double> m_master_output;
 			Process::vector_fetcher_component<double> m_parameter_input;
-			polyphonic_circuit_output m_output_to_master;
+			polyphonic_circuit_output m_master_input;
 			sound_component_manager m_sound_component_manager;
 		};
 

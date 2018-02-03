@@ -48,10 +48,10 @@ namespace Gammou {
 
 			// polyphonic_circuit_ component
 
-			Process::abstract_component<double> *get_polyphonic_circuit_gpar_input();
+			Process::abstract_component<double> *get_polyphonic_circuit_midi_input();
+			Process::abstract_component<double> *get_polyphonic_circuit_master_output();
+			Process::abstract_component<double> *get_polyphonic_circuit_parameter_input();
 			Process::abstract_component<double> *get_polyphonic_circuit_master_input();
-			Process::abstract_component<double> *get_polyphonic_circuit_automation_input();
-			Process::abstract_component<double> *get_polyphonic_circuit_output();
 
 			// master_circuit_ component
 
@@ -60,7 +60,7 @@ namespace Gammou {
 
 			Process::abstract_component<double> *get_master_circuit_polyphonic_input();
 			Process::abstract_component<double> *get_master_circuit_polyphonic_output();
-			Process::abstract_component<double> *get_master_circuit_automation_input();
+			Process::abstract_component<double> *get_master_circuit_parameter_input();
 
 			//
 			unsigned int get_parameter_input_count() const;

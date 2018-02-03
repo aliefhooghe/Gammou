@@ -47,46 +47,78 @@ namespace Gammou {
 				return internal_component_id::INPUT;
 			else if (process_component == m_synthesizer->get_master_main_output())
 				return internal_component_id::OUTPUT;
-			else if (process_component == m_synthesizer->get_master_circuit_automation_input())
+			else if (process_component == m_synthesizer->get_master_circuit_parameter_input())
 				return internal_component_id::PARAMETERS;
-			else if (process_component == m_synthesizer->get_master_circuit_polyphonic_input())
-				return internal_component_id::POLY_OUT;
 			else if (process_component == m_synthesizer->get_master_circuit_polyphonic_output())
+				return internal_component_id::POLY_OUT;
+			else if (process_component == m_synthesizer->get_master_circuit_polyphonic_input())
 				return internal_component_id::POLY_IN;
 			else
 				throw std::domain_error("Component is not master Internal\n");
 		}
 
+		abstract_gui_component * gui_master_circuit::gui_component_by_internal_id(const uint8_t internal_id)
+		{
+			
+			switch (internal_id)
+			{
+
+			case internal_component_id::INPUT:
+				return m_main_input;
+				break;
+
+			case internal_component_id::OUTPUT:
+				return m_main_output;
+				break;
+
+			case internal_component_id::PARAMETERS:
+				return m_parameter_input;
+				break;
+
+			case internal_component_id::POLY_IN:
+				return m_polyphonic_input;
+				break;
+			
+			case internal_component_id::POLY_OUT:
+				return m_polyphonic_output;
+				break;
+
+			default:
+				throw std::domain_error("INVALID Internal Id\n");
+				break;
+			}
+
+		}
+
 		void gui_master_circuit::add_internal_components(std::mutex *synthesizer_mutex)
 		{
 			// Todo position
-			add_gui_component(
-				new default_gui_component(
-					m_synthesizer->get_master_circuit_automation_input(),
-					synthesizer_mutex, 50, 50));
-			add_gui_component(
-				new default_gui_component(
-					m_synthesizer->get_master_circuit_polyphonic_input(),
-					synthesizer_mutex, 60, 60));
-			add_gui_component(
-				new default_gui_component(
-					m_synthesizer->get_master_circuit_polyphonic_output(),
-					synthesizer_mutex, 70, 70));
-			add_gui_component(
-				new default_gui_component(
-					m_synthesizer->get_master_main_input(),
-					synthesizer_mutex, 80, 80));
-			add_gui_component(
-				new default_gui_component(
-					m_synthesizer->get_master_main_output(),
-					synthesizer_mutex, 90, 90));
 
-			//	for(unsigned int i = 0; i < 2 ; ++i)
-			//		m_synthesizer->get_master_circuit_polyphonic_input()->connect_to(
-			//			i,
-			//			m_synthesizer->get_master_main_output(),
-			//			i
-			//	);
+			m_polyphonic_input = new default_gui_component(
+				m_synthesizer->get_master_circuit_polyphonic_input(),
+				synthesizer_mutex, 50, 10);
+
+			m_polyphonic_output = new default_gui_component(
+				m_synthesizer->get_master_circuit_polyphonic_output(),
+				synthesizer_mutex, 200, 10);
+
+			m_main_input = new default_gui_component(
+				m_synthesizer->get_master_main_input(),
+				synthesizer_mutex, 50, 200);
+
+			m_main_output = new default_gui_component(
+				m_synthesizer->get_master_main_output(),
+				synthesizer_mutex, 200, 200);
+
+			m_parameter_input = new default_gui_component(
+				m_synthesizer->get_master_circuit_parameter_input(),
+				synthesizer_mutex, 50, 350);
+
+			add_gui_component(m_parameter_input);
+			add_gui_component(m_polyphonic_input);
+			add_gui_component(m_polyphonic_output);
+			add_gui_component(m_main_input);
+			add_gui_component(m_main_output);
 		}
 
 	} /* Gui */

@@ -144,24 +144,24 @@ namespace Gammou {
 
 		// polyphonic_circuit_ component
 
-		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_gpar_input()
+		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_midi_input()
 		{
-			return &(m_polyphonic_circuit.m_gpar_input);
+			return &(m_polyphonic_circuit.m_midi_input);
 		}
 
-		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_master_input()
+		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_master_output()
 		{
-			return &(m_polyphonic_circuit.m_input_from_master);
+			return &(m_polyphonic_circuit.m_master_output);
 		}
 
-		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_automation_input()
+		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_parameter_input()
 		{
 			return &(m_polyphonic_circuit.m_parameter_input);
 		}
 
-		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_output()
+		Process::abstract_component<double> *synthesizer::get_polyphonic_circuit_master_input()
 		{
-			return &(m_polyphonic_circuit.m_output_to_master);
+			return &(m_polyphonic_circuit.m_master_input);
 		}
 
 		// master_circuit_ component
@@ -176,17 +176,17 @@ namespace Gammou {
 			return  &(m_master_circuit.m_main_output);
 		}
 
-		Process::abstract_component<double> *synthesizer::get_master_circuit_polyphonic_input()
-		{
-			return &(m_master_circuit.m_from_polyphonic_input);
-		}
-
 		Process::abstract_component<double> *synthesizer::get_master_circuit_polyphonic_output()
 		{
-			return &(m_master_circuit.m_output_to_polyphonic);
+			return &(m_master_circuit.m_polyphonic_output);
 		}
 
-		Process::abstract_component<double> *synthesizer::get_master_circuit_automation_input()
+		Process::abstract_component<double> *synthesizer::get_master_circuit_polyphonic_input()
+		{
+			return &(m_master_circuit.m_polyphonic_input);
+		}
+
+		Process::abstract_component<double> *synthesizer::get_master_circuit_parameter_input()
 		{
 			return &(m_master_circuit.m_parameter_input);
 		}

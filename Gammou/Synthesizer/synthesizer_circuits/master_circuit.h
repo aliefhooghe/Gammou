@@ -44,8 +44,8 @@ namespace Gammou {
 			std::vector<double> m_parameter_buffer;
 
 			Process::vector_fetcher_component<double> m_main_input;
-			Process::vector_filler_component<double> m_output_to_polyphonic;
-			Process::vector_fetcher_component<double> m_from_polyphonic_input;
+			Process::vector_filler_component<double> m_polyphonic_input;
+			Process::vector_fetcher_component<double> m_polyphonic_output;
 			Process::vector_filler_component<double> m_main_output;
 			Process::vector_fetcher_component<double> m_parameter_input;
 

@@ -24,15 +24,15 @@ namespace Gammou {
 			m_polyphonic_to_master_buffer(input_from_polyphonic_count),
 			m_parameter_buffer(parameter_input_count), 
 			m_main_input("Input", main_input_count),
-			m_output_to_polyphonic("Polyphonic In", m_master_to_polyphonic_buffer),
-			m_from_polyphonic_input("Polyphonic Out", m_polyphonic_to_master_buffer),
+			m_polyphonic_input("Polyphonic In", m_master_to_polyphonic_buffer),
+			m_polyphonic_output("Polyphonic Out", m_polyphonic_to_master_buffer),
 			m_main_output("Output", main_output_count),
 			m_parameter_input("Parameters", m_parameter_buffer),
 			m_sound_component_manager(1) //  1 channel
 		{
 			add_component(&m_main_input);
-			add_component(&m_output_to_polyphonic);
-			add_component(&m_from_polyphonic_input);
+			add_component(&m_polyphonic_input);
+			add_component(&m_polyphonic_output);
 			add_component(&m_main_output);
 			add_component(&m_parameter_input);
 
@@ -76,7 +76,7 @@ namespace Gammou {
 			DEBUG_PRINT("Master Sart Update.\n");
 			next_process_cycle();
 			make_component_current_cycle_program(&m_main_output);
-			make_component_current_cycle_program(&m_output_to_polyphonic);
+			make_component_current_cycle_program(&m_polyphonic_input);
 		}
 
 	} /* Sound */

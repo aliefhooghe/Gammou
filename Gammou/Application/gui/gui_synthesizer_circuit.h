@@ -41,7 +41,9 @@ namespace Gammou {
 		protected:
 			// Warning : Synthesizer Mutex is alredy lock when add_sound_component_to_frame is called
 			virtual void add_sound_component_to_frame(Sound::abstract_sound_component *sound_component) = 0;
+
 			virtual uint8_t get_component_internal_id(abstract_gui_component *component) = 0;
+			virtual abstract_gui_component *gui_component_by_internal_id(const uint8_t internal_id) = 0;
 
 			void lock_circuit() { m_synthesizer_mutex->lock(); }
 			void unlock_circuit() { m_synthesizer_mutex->unlock(); }
@@ -49,17 +51,12 @@ namespace Gammou {
 			Sound::synthesizer *const m_synthesizer;
 
 		private:
-			void save_component_state(Sound::data_sink& data, abstract_gui_component *component);
+			void save_component(Sound::data_sink& data, abstract_gui_component *component);
 			abstract_gui_component *load_component(Sound::data_source& data); // Add the process_component on the frame
 			void save_link(Sound::data_sink& data, const unsigned int src_record_id, const unsigned int output_id,
 				const unsigned int dst_record_id, const unsigned int input_id);
 
 			void reset_content();
-
-			uint32_t component_record_id_by_internal_id(const uint8_t built_in_id);
-			bool is_internal_component_record_id(const uint32_t id);
-
-
 			//----------------
 			
 			std::mutex *const m_synthesizer_mutex;
