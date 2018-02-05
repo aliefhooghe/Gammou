@@ -44,14 +44,24 @@ namespace Gammou {
 		void win32_vst3_window::resize(const unsigned int width, const unsigned int height)
 		{
 			abstract_vst3_window::resize(width, height);
-			if (m_plugin_window != nullptr) 
-				SetWindowPos(m_plugin_window, nullptr, 0, 0, width, height, SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
+
+			if (m_plugin_window != nullptr) {
+				const unsigned int system_width = get_system_window_width();
+				const unsigned int system_height = get_system_window_height();
+				SetWindowPos(m_plugin_window, nullptr, 0, 0, system_width, system_height, SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
+			}
 		}
 
 		void win32_vst3_window::open(void * parent_window)
 		{
+			// Widget coordinate
 			const unsigned int width = get_width();
 			const unsigned int height = get_height();
+
+			// System coordinate
+			const unsigned int system_width = get_system_window_width();
+			const unsigned int system_height = get_system_window_height();
+
 			HWND parent_hwnd = (HWND)parent_window;
 		
 			if (m_plugin_window != nullptr) 
@@ -59,7 +69,7 @@ namespace Gammou {
 
 			m_plugin_window = CreateWindow(TEXT(WNDCLASS_NAME), TEXT(""/*titre*/),
 				WS_CHILD | WS_VISIBLE ,
-				0, 0, width, height,
+				0, 0, system_width, system_height,
 				parent_hwnd, nullptr, nullptr, this);
 
 			resize(width, height);
@@ -71,7 +81,7 @@ namespace Gammou {
 				DestroyWindow(m_plugin_window);
 		}
 
-		void win32_vst3_window::redraw_rect(const rectangle & rect)
+		void win32_vst3_window::system_redraw_rect(const rectangle & rect)
 		{
 			rectangle to_draw;
 
@@ -80,17 +90,16 @@ namespace Gammou {
 			to_draw.width = rect.width + RECT_REDRAW_SHIFT * 2;
 			to_draw.height = rect.height + RECT_REDRAW_SHIFT * 2;
 
-			RECT win32_rect = 
-			{ 
-				(LONG)to_draw.x , 
-				(LONG)to_draw.y, 
-				(LONG)to_draw.x + (LONG)to_draw.width, 
-				(LONG)to_draw.y + (LONG)to_draw.height 
+			RECT win32_rect =
+			{
+				(LONG)to_draw.x ,
+				(LONG)to_draw.y,
+				(LONG)to_draw.x + (LONG)to_draw.width,
+				(LONG)to_draw.y + (LONG)to_draw.height
 			};
 
 			InvalidateRect(m_plugin_window, &win32_rect, true);
 		}
-
 
 		void win32_vst3_window::redraw(void)
 		{
@@ -113,20 +122,27 @@ namespace Gammou {
 
 					case WM_PAINT:
 					{
+						// System coordinate
+						const unsigned int system_width = vst3_win->get_system_window_width();
+						const unsigned int system_height = vst3_win->get_system_window_height();
+
 						PAINTSTRUCT ps;
+
 						HDC screen_dc = BeginPaint(window, &ps);
 						HDC mem_dc = CreateCompatibleDC(screen_dc);
-						HBITMAP mem_bitmap = CreateCompatibleBitmap(screen_dc, vst3_win->get_width(), vst3_win->get_height());
+						HBITMAP mem_bitmap = CreateCompatibleBitmap(screen_dc, system_width, system_height);
+
 						SelectObject(mem_dc, mem_bitmap);
 						
 						cairo_surface_t *cairo_surface = cairo_win32_surface_create(mem_dc);
 						cairo_t *cr = cairo_create(cairo_surface);
+
 						vst3_win->sys_draw(cr);		
 						cairo_surface_finish(cairo_surface);
 						cairo_destroy(cr);
 						cairo_surface_destroy(cairo_surface);
 
-						BitBlt(screen_dc, 0, 0, vst3_win->get_width(), vst3_win->get_height(), mem_dc, 0, 0, SRCCOPY);
+						BitBlt(screen_dc, 0, 0, system_width, system_height, mem_dc, 0, 0, SRCCOPY);
 
 						DeleteObject(mem_bitmap);
 						DeleteDC(mem_dc);

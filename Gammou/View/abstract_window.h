@@ -18,6 +18,7 @@ namespace Gammou {
 			//	'Low level' callback, called by system event processing, 
 			//	and translated into 'higher level' events.
 			//	/!\ system musn't call directly event handlers !!
+			//	In window system coordinate
 			void sys_draw(cairo_t *cr);
 			bool sys_mouse_move(const unsigned int cx, const unsigned int cy);
 			bool sys_mouse_enter(void);
@@ -29,15 +30,27 @@ namespace Gammou {
 			bool sys_key_down(const keycode key);
 			bool sys_key_up(const keycode key);
 
+			unsigned int get_system_window_width() const;
+			unsigned int get_system_window_height() const;
+
+			// Open and close here ?
+
 			//	Feature to be implemented
 			//bool open_file ? // TODO
 
-		private:
-			//	Window's widget should not be resized
-			void resize(const unsigned int w, const unsigned int h) override {}
+			void scale(const float scaling_factor);
+			
+			void redraw_rect(const rectangle& rect) override;
+			virtual void system_redraw_rect(const rectangle& rect) =0;
 
+		private:
+			float m_scale_factor;
+			
 			unsigned int m_cursor_x;
 			unsigned int m_cursor_y;
+			
+
+
 			bool m_is_draging;
 			mouse_button m_draging_button;
 			unsigned int m_pressed_mouse_button_count;

@@ -22,8 +22,8 @@ namespace Gammou {
 			void open(void *parent_window) override;
 			void close(void) override;
 	
-			// pannel override
-			void redraw_rect(const rectangle& rect) override;
+			// abstract_window override
+			void system_redraw_rect(const rectangle& rect) override;
 
 			//	widget override
 			void redraw(void) override;
@@ -44,7 +44,6 @@ namespace Gammou {
 			Steinberg::tresult PLUGIN_API isPlatformTypeSupported(Steinberg::FIDString type) SMTG_OVERRIDE;
 			void attachedToParent() SMTG_OVERRIDE;
 			void removedFromParent() SMTG_OVERRIDE;
-
 		};
 
 	} /* View */

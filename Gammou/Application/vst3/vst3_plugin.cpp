@@ -178,7 +178,7 @@ namespace Gammou {
 				for (unsigned int i = 0; i < nbSamples; 
 					++i, ++output_buffer_left, ++output_buffer_right, ++input_buffer_left, ++input_buffer_right) {
 
-					input[0] = 400.0;//static_cast<double>(*input_buffer_left);
+					input[0] = static_cast<double>(*input_buffer_left);
 					input[1] = static_cast<double>(*input_buffer_right);
 
 					m_synthesizer.process(input, output);

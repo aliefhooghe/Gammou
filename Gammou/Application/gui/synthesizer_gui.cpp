@@ -54,6 +54,8 @@ namespace Gammou {
 			///////////
 
 			init_main_factory();
+
+			scale(1.3f);
 		}
 
 		synthesizer_gui::~synthesizer_gui()
@@ -89,6 +91,8 @@ namespace Gammou {
 		{
 			add_plugin_factory(new Sound::Builtin::sin_factory());
 			add_plugin_factory(new Sound::Builtin::debug_factory());
+			add_plugin_factory(new Sound::Builtin::product_factory());
+			add_plugin_factory(new Sound::Builtin::fpb1_factory());
 		}
 
 

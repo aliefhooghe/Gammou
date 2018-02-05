@@ -101,8 +101,13 @@ namespace Gammou {
 
 		void abstract_vst3_window::resize(const unsigned int width, const unsigned int height)
 		{
-			if (m_current_view != nullptr)
-				m_current_view->resize(width, height);
+			abstract_window::resize(width, height);
+
+			if (m_current_view != nullptr) {
+				const unsigned int system_width = get_system_window_width();
+				const unsigned int system_height = get_system_window_height();
+				m_current_view->resize(system_width, system_height);
+			}
 		}
 
 

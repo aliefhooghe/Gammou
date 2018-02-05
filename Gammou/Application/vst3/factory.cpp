@@ -6,7 +6,7 @@
 
 #include "vst3_plugin.h"
 
-#define stringPluginName "Gammou"
+#define plugin_name_string "Gammou"
 
 Steinberg::FUnknown *createGammouInstance(void *context)
 {
@@ -23,17 +23,17 @@ bool DeinitModule()
 	return true;
 }
 
-BEGIN_FACTORY_DEF("vendor",
-					"url",
-					"email")
+BEGIN_FACTORY_DEF("Arthur Liefhooghe",
+					"",
+					"aliefhooghe@enseirb-matmeca.fr")
 
 	DEF_CLASS2(
 		INLINE_UID(42, 43, 44, 45),
 		PClassInfo::kManyInstances,
 		kVstAudioEffectClass,
-		stringPluginName,
+		plugin_name_string,
 		0,			// Non distributable
-		Steinberg::Vst::PlugType::kInstrumentSynth,
+		Steinberg::Vst::PlugType::kFxInstrument,
 		"0.0.0.0",
 		kVstVersionString,
 		createGammouInstance)
