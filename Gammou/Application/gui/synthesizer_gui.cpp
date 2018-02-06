@@ -55,23 +55,6 @@ namespace Gammou {
 
 			init_main_factory();
 
-			//////////////////////////////////
-			//////////////////////////////////
-			//////////////////////////////////
-			//////////////////////////////////
-			//////////////////////////////////
-			//////////////////////////////////
-
-			View::scrollable_panel<View::widget> *test = new View::scrollable_panel<View::widget>(50, 70, 350, 350, View::cl_aquamarine);
-
-			test->add_widget(new View::push_button([]() {}, "Ok", 10, 20));
-			test->add_widget(new View::push_button([]() {}, "Ok", 10, 80));
-			test->add_widget(new View::push_button([]() {}, "Ok", 10, 140));
-			test->add_widget(new View::push_button([]() {}, "Ok", 10, 180));
-			test->add_widget(new View::push_button([]() {}, "Ok", 10, 253));
-
-			add_widget(test);
-
 		//	scale(0.5f);
 		}
 

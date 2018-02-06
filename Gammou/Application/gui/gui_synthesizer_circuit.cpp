@@ -59,7 +59,7 @@ namespace Gammou {
 					m_main_factory->get_new_sound_component(m_creation_factory_id, answers, m_components_channel_count);
 
 				gui_sound_component *gui_component =
-					new gui_sound_component(sound_component, m_synthesizer_mutex, x, y);
+					new gui_sound_component(sound_component, m_synthesizer_mutex, convert_x(x), convert_y(y));
 
 				lock_circuit();
 				add_sound_component_to_frame(sound_component);

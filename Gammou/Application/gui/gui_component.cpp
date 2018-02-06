@@ -341,7 +341,7 @@ namespace Gammou {
 			const unsigned int width,
 			const unsigned int height, 
 			const View::color background)
-			: panel<abstract_gui_component>(x, y, width, height, background),
+			: scrollable_panel<abstract_gui_component>(x, y, width, height, background),
 			m_circuit_mutex(circuit_mutex),
 			m_is_linking(false),
 			m_linking_component(nullptr),
@@ -352,13 +352,14 @@ namespace Gammou {
 			m_highlighted_socket_x(0.0),
 			m_highlighted_socket_y(0.0)
 		{
+			set_sroll_method(View::scrollable_panel<abstract_gui_component>::scroll_method::DRAG_SCROLL);
 		}
 
 		abstract_gui_component_map::abstract_gui_component_map(
 			std::mutex *circuit_mutex,
 			const View::rectangle & rect, 
 			const View::color background)
-			: panel<abstract_gui_component>(rect, background),
+			: scrollable_panel<abstract_gui_component>(rect, background),
 			m_circuit_mutex(circuit_mutex),
 			m_is_linking(false),
 			m_linking_component(nullptr),
@@ -369,6 +370,7 @@ namespace Gammou {
 			m_highlighted_socket_x(0.0),
 			m_highlighted_socket_y(0.0)
 		{
+			set_sroll_method(View::scrollable_panel<abstract_gui_component>::scroll_method::DRAG_SCROLL);
 		}
 
 		void abstract_gui_component_map::add_gui_component(abstract_gui_component * component)
@@ -381,9 +383,9 @@ namespace Gammou {
 			}
 		}
 
-		void abstract_gui_component_map::draw(cairo_t * cr)
+		void abstract_gui_component_map::draw_content(cairo_t * cr)
 		{
-			draw_background(cr);
+			// Background drawn by scrolable_panel
 
 			// Draw links
 
@@ -461,25 +463,30 @@ namespace Gammou {
 
 			if (m_is_linking) {
 				const abstract_gui_component *const component = get_focused_widget();
-				
+
+				const unsigned int map_x = convert_x(x);
+				const unsigned int map_y = convert_y(y);
+
 				if (component != nullptr) {
-					const int input_id = component->get_input_id_by_pos(x, y);
+					// x,y converted into map coord
+					const int input_id = component->get_input_id_by_pos(map_x, map_y);
 
 					if (input_id != -1) {
-						float x, y;
-						component->get_input_pos(input_id, x, y);
+						float fx, fy;
+						component->get_input_pos(input_id, fx, fy);/// already in map coord
 						m_socket_highlighting = true;
-						m_highlighted_socket_x = x;
-						m_highlighted_socket_y = y;
+						m_highlighted_socket_x = fx;
+						m_highlighted_socket_y = fy;
 					}
 				}
 
-				m_linking_x = x;
-				m_linking_y = y;
+				m_linking_x = map_x;
+				m_linking_y = map_y;
 				redraw();
 			}
-
-			return View::panel<abstract_gui_component>::on_mouse_drag(button, x, y, dx, dy);
+			
+			View::scrollable_panel<abstract_gui_component>::on_mouse_drag(button, x, y, dx, dy);
+			return true;
 		}
 
 		bool abstract_gui_component_map::on_mouse_drag_start(const View::mouse_button button, const int x, const int y)
@@ -487,7 +494,10 @@ namespace Gammou {
 			abstract_gui_component *focused_component = get_focused_widget();
 
 			if (focused_component != nullptr) {
-				int output_id = focused_component->get_output_id_by_pos(x, y);
+				const unsigned int map_x = convert_x(x);
+				const unsigned int map_y = convert_y(y);
+
+				int output_id = focused_component->get_output_id_by_pos(map_x, map_y);
 
 				DEBUG_PRINT("Start linking from output_id = %d\n", output_id);
 
@@ -495,24 +505,27 @@ namespace Gammou {
 					m_is_linking = true;
 					m_linking_output_id = output_id;
 					m_linking_component = focused_component;
+
+					set_scrollable(false); // prevent drag from scrolling the map
 					focused_component->set_linking(); // prenvent from moving while being linked
 				}
 			}
 
-			return View::panel<abstract_gui_component>::on_mouse_drag_start(button, x, y);
+			return View::scrollable_panel<abstract_gui_component>::on_mouse_drag_start(button, x, y);
 		}
 
 		bool abstract_gui_component_map::on_mouse_drag_end(const View::mouse_button button, const int x, const int y)
 		{
-			
-
 			if (m_is_linking) {
 				abstract_gui_component *dst = get_focused_widget();
 				
 				m_socket_highlighting = false;
 
 				if (dst != nullptr) {
-					const int input_id = dst->get_input_id_by_pos(x, y);
+					const unsigned int map_x = convert_x(x);
+					const unsigned int map_y = convert_y(y);
+
+					const int input_id = dst->get_input_id_by_pos(map_x, map_y);
 					
 					DEBUG_PRINT("INPUT ID = %d\n", input_id);
 
@@ -522,15 +535,11 @@ namespace Gammou {
 
 				m_is_linking = false;
 				m_linking_component->set_linking(false);
+				set_scrollable(true);
 				redraw();
 			}
 
-			return View::panel<abstract_gui_component>::on_mouse_drag_end(button, x, y);
-		}
-
-		bool abstract_gui_component_map::on_mouse_dbl_click(const int x, const int y)
-		{
-			return false;
+			return View::scrollable_panel<abstract_gui_component>::on_mouse_drag_end(button, x, y);
 		}
 
 		bool abstract_gui_component_map::on_mouse_button_down(const View::mouse_button button, const int x, const int y)
@@ -540,7 +549,9 @@ namespace Gammou {
 				abstract_gui_component *component = get_focused_widget();
 
 				if (component != nullptr) {
-					const int input_id = component->get_input_id_by_pos(x, y);
+					const int input_id = component->get_input_id_by_pos(convert_x(x), convert_y(y));
+
+					DEBUG_PRINT("INPUTID = %d\n", input_id);
 
 					if (input_id != -1) {
 						disconnect(component, input_id);
@@ -551,7 +562,7 @@ namespace Gammou {
 
 			}
 
-			return View::panel<abstract_gui_component>::on_mouse_button_down(button, x, y);
+			return View::scrollable_panel<abstract_gui_component>::on_mouse_button_down(button, x, y);
 		}
 
 		unsigned int abstract_gui_component_map::get_input_count(abstract_gui_component * component)

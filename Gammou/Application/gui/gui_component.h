@@ -106,7 +106,7 @@ namespace Gammou {
 		
 		*/
 
-		class abstract_gui_component_map : public View::panel<abstract_gui_component> {
+		class abstract_gui_component_map : public View::scrollable_panel<abstract_gui_component> {
 
 		public:
 			abstract_gui_component_map(
@@ -131,11 +131,10 @@ namespace Gammou {
 			virtual bool on_mouse_drag_start(const View::mouse_button button, const int x, const int y) override;
 			virtual bool on_mouse_drag_end(const View::mouse_button button, const int x, const int y) override;
 
-			virtual bool on_mouse_dbl_click(const int x, const int y) override;
 			virtual bool on_mouse_button_down(const View::mouse_button button, const int x, const int y) override;
 
 		protected:
-			virtual void draw(cairo_t *cr);
+			void draw_content(cairo_t *cr) override;
 
 			void connect(abstract_gui_component* src, const unsigned int output_id,
 				abstract_gui_component *dst, const unsigned int input_id);
