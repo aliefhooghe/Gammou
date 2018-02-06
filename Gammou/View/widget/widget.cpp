@@ -91,12 +91,12 @@ namespace Gammou {
 			return get_relative_rect().contains(rect);
 		}
 
-		unsigned int widget::get_x(void) const
+		int widget::get_x(void) const
 		{
 			return m_absolute_rect.x;
 		}
 
-		unsigned int widget::get_y(void) const
+		int widget::get_y(void) const
 		{
 			return m_absolute_rect.y;
 		}

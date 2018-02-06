@@ -42,7 +42,8 @@ namespace Gammou {
 		{
 			cairo_helper::set_source_color(cr, get_background_color());
 			cairo_rectangle(cr, 0, 0, get_width(), get_height());
-			cairo_fill(cr);
+			cairo_fill_preserve(cr);
+			cairo_clip(cr); // to be sure that nothing will be drawn outside
 		}
 
 		void abstract_panel::get_ownership(widget * child)

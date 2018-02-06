@@ -55,7 +55,24 @@ namespace Gammou {
 
 			init_main_factory();
 
-			scale(1.3f);
+			//////////////////////////////////
+			//////////////////////////////////
+			//////////////////////////////////
+			//////////////////////////////////
+			//////////////////////////////////
+			//////////////////////////////////
+
+			View::scrollable_panel<View::widget> *test = new View::scrollable_panel<View::widget>(50, 70, 350, 350, View::cl_aquamarine);
+
+			test->add_widget(new View::push_button([]() {}, "Ok", 10, 20));
+			test->add_widget(new View::push_button([]() {}, "Ok", 10, 80));
+			test->add_widget(new View::push_button([]() {}, "Ok", 10, 140));
+			test->add_widget(new View::push_button([]() {}, "Ok", 10, 180));
+			test->add_widget(new View::push_button([]() {}, "Ok", 10, 253));
+
+			add_widget(test);
+
+		//	scale(0.5f);
 		}
 
 		synthesizer_gui::~synthesizer_gui()
@@ -93,6 +110,7 @@ namespace Gammou {
 			add_plugin_factory(new Sound::Builtin::debug_factory());
 			add_plugin_factory(new Sound::Builtin::product_factory());
 			add_plugin_factory(new Sound::Builtin::fpb1_factory());
+			add_plugin_factory(new Sound::Builtin::adsr_env_factory());
 		}
 
 

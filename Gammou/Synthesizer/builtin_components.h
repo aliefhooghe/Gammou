@@ -9,5 +9,6 @@
 #include "builtin_components\debug_component.h"
 #include "builtin_components\product_component.h"
 #include "builtin_components\fpb1.h"
+#include "builtin_components\adsr_env.h"
 
 #endif

@@ -7,6 +7,7 @@
 #include "widget\widget.h"
 #include "widget\panel.h"
 #include "widget\page_container.h"
+#include "widget\scrollable_panel.h"
 #include "widget\list_box.h"
 #include "abstract_window.h"
 

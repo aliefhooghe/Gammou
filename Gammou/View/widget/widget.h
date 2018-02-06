@@ -22,8 +22,8 @@ namespace Gammou {
 			widget(const rectangle& rect);
 			virtual ~widget();
 
-			unsigned int get_x(void) const;
-			unsigned int get_y(void) const;
+			int get_x(void) const;
+			int get_y(void) const;
 			unsigned int get_width(void) const;
 			unsigned int get_height(void) const;
 			const rectangle& get_absolute_rect() const;
