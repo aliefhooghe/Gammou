@@ -5,187 +5,248 @@ namespace Gammou {
 
 	namespace Sound {
 
+		//	Abstract request field implementation
 
-
-		request_descriptor::request_descriptor(const std::string & name, const std::string & description)
+		abstract_request_field::abstract_request_field(const std::string & name, const std::string & description)
 			: m_name(name), m_description(description)
 		{
 		}
 
-		const std::string & request_descriptor::get_name() const
+		const std::string & abstract_request_field::get_name() const
 		{
 			return m_name;
 		}
 
-		const std::string & request_descriptor::get_description() const
+		const std::string & abstract_request_field::get_description() const
 		{
 			return m_description;
 		}
 
-		//////////////
+		const range_request_field & abstract_request_field::get_range_request() const
+		{
+			throw std::runtime_error("Request field is not a range request");
+		}
 
+		const choice_request_field & abstract_request_field::get_choice_request_field() const
+		{
+			throw std::runtime_error("Request field is not a choice request");
+		}
 
+		const file_path_request_field & abstract_request_field::get_file_path_request() const
+		{
+			throw std::runtime_error("Request field is not a file path request");
+		}
 
+		//----------
 
-		file_request_descriptor::file_request_descriptor(const std::string & name, const std::string & description, const std::string & extension)
-			: request_descriptor(name, description), m_extension(extension)
+		// Range request implementation
+
+		range_request_field::range_request_field(const std::string & name, const std::string & description, const int min, const int max)
+			: abstract_request_field(name, description),
+			m_min(min), m_max(max)
 		{
 		}
 
-		const std::string & file_request_descriptor::get_extension() const
+		const abstract_request_field::type range_request_field::get_type() const
 		{
-			return m_extension;
+			return type::RANGE;
 		}
 
-		integer_request_descriptor::integer_request_descriptor(const std::string & name, const std::string & description, const int min, const int max)
-			: request_descriptor(name, description), m_min(min), m_max(max)
+		const range_request_field & range_request_field::get_range_request() const
 		{
+			return (*this);
 		}
 
-		int integer_request_descriptor::get_min() const
+		const int range_request_field::get_min() const
 		{
 			return m_min;
 		}
 
-		int integer_request_descriptor::get_max() const
+		const int range_request_field::get_max() const
 		{
 			return m_max;
 		}
 
+		//-----------
 
-		/////////////////////////////
+		// File Path request implementation
 
-		request_form::request_form()
+		file_path_request_field::file_path_request_field(const std::string & name, const std::string & description, const std::string extension)
+			: abstract_request_field(name, description),
+			m_file_extension(extension)
 		{
 		}
 
-		unsigned int request_form::get_request_count() const
+		const  abstract_request_field::type file_path_request_field::get_type() const
 		{
-			return static_cast<unsigned int>(m_index.size());
+			return type::FILE_PATH;
 		}
 
-		void request_form::add_file_request(const std::string & name, const std::string & description, const std::string & ext)
+		const file_path_request_field & file_path_request_field::get_file_path_request() const
 		{
-			m_file_request.emplace_back(name, description, ext);
-			m_index.push_back(std::make_pair(request_form_field_type::FILE_PATH, static_cast<unsigned int>(m_file_request.size()) - 1));
+			return (*this);
 		}
 
-		void request_form::add_int_request(const std::string & name, const std::string & description, const int min, const int max)
+		const std::string & file_path_request_field::get_file_extension() const
 		{
-			m_integer_request.emplace_back(name, description, min, max);
-			m_index.push_back(std::make_pair(request_form_field_type::INTEGER, static_cast<unsigned int>(m_integer_request.size()) - 1));
+			return m_file_extension;
 		}
 
-		void request_form::add_enum_request(const std::string& name, const std::string& description, const std::vector<std::string>& choices)
-		{
-			m_enum_request.emplace_back(name, description, choices);
-			m_index.push_back(std::make_pair(request_form_field_type::ENUM, static_cast<unsigned int>(m_enum_request.size()) - 1));
-		}
+		//---------------
 
-		const request_form_field_type request_form::get_field_type(const unsigned int index) const
-		{
-			if (index >= m_index.size())
-				throw std::range_error("Invalid index");
-			
-			return m_index[index].first;
-		}
+		// Choice request implementation
 
-		const file_request_descriptor & request_form::get_file_request(const unsigned int index) const
-		{
-			if (index >= m_index.size())
-				throw std::range_error("Invalid index");
-			else if (m_index[index].first != request_form_field_type::FILE_PATH)
-				throw std::domain_error("request type is not FILE_PATH");
-			
-			const unsigned int i = m_index[index].second;
-			return m_file_request[i];
-		}
-
-		const integer_request_descriptor & request_form::get_integer_request(const unsigned int index) const
-		{
-			if (index >= m_index.size())
-				throw std::range_error("Invalid index");
-			else if (m_index[index].first != request_form_field_type::INTEGER)
-				throw std::domain_error("request type is not INTEGER");
-			const unsigned int i = m_index[index].second;
-			return m_integer_request[i];
-		}
-
-		const enum_request_descriptor & request_form::get_enum_request(const unsigned int index) const
-		{
-			if (index >= m_index.size())
-				throw std::range_error("Invalid index");
-			else if (m_index[index].first != request_form_field_type::ENUM)
-				throw std::domain_error("request type is not ENUM");
-			const unsigned int i = m_index[index].second;
-			return m_enum_request[i];
-		}
-
-
-		enum_request_descriptor::enum_request_descriptor(const std::string & name, const std::string & description, const std::vector<std::string>& choices)
-			: request_descriptor(name, description), m_choices(choices)
+		choice_request_field::choice_request_field(const std::string & name, const std::string& description)
+			: abstract_request_field(name, description)
 		{
 		}
 
-		const std::vector<std::string>& enum_request_descriptor::get_choices() const
+		const abstract_request_field::type choice_request_field::get_type() const
 		{
-			return m_choices;
+			return type::CHOICE;
 		}
 
-		////////////////////
+		const choice_request_field & choice_request_field::get_choice_request_field() const
+		{
+			return (*this);
+		}
+
+		const unsigned int choice_request_field::get_choice_count() const
+		{
+			return static_cast<unsigned int>(m_choices.size());
+		}
+
+		const std::string & choice_request_field::get_choice_name(const unsigned int index) const
+		{
+			// TODO: safer
+			return m_choices[index];
+		}
 
 
-		answer_form::answer_form()
+		////////////////////////////////////////////
+		////////////////////////////////////////////
+
+		// Abstract request form implementation
+
+		abstract_request_form::abstract_request_form(const std::string & name)
+			: m_name(name)
 		{
 		}
 
-		void answer_form::add_file_path(const std::string & file_path)
+		const std::string & abstract_request_form::get_name() const
 		{
-			m_file_path.emplace_back(file_path);
-			m_index.push_back(std::make_pair(request_form_field_type::FILE_PATH, static_cast<unsigned int>(m_file_path.size()) - 1));
+			return m_name;
 		}
 
-		void answer_form::add_integer(const int integer)
+		const field_list_request_form & abstract_request_form::get_field_list_request_form() const
 		{
-			m_integer.push_back(integer);
-			m_index.push_back(std::make_pair(request_form_field_type::INTEGER, static_cast<unsigned int>(m_integer.size()) - 1));
+			throw std::runtime_error("Request form is not a field list request");
 		}
 
-		void answer_form::add_enum_choice(const unsigned int choice)
+
+		//---------
+
+		// Choice node request form implementation
+
+		const choice_node_request_form & abstract_request_form::get_choice_node_request_form() const
 		{
-			m_integer.push_back(choice);
-			m_index.push_back(std::make_pair(request_form_field_type::ENUM, static_cast<unsigned int>(m_enum_choice.size()) - 1));
+			throw std::runtime_error("Request form is not a choice node request");
 		}
 
-		const std::string & answer_form::get_file_path(const unsigned int index) const
+		field_list_request_form::field_list_request_form(const std::string & name)
+			: abstract_request_form(name)
 		{
-			if (index >= m_index.size())
-				throw std::range_error("Invalid index");
-			else if (m_index[index].first != request_form_field_type::FILE_PATH)
-				throw std::domain_error("answer type is not FILE_PATH");
-
-			const unsigned int i = m_index[index].second;
-			return m_file_path[i];
 		}
 
-		const int answer_form::get_integer(const unsigned int index) const
+		const abstract_request_form::type field_list_request_form::get_type() const
 		{
-			if (index >= m_index.size())
-				throw std::range_error("Invalid index");
-			else if (m_index[index].first != request_form_field_type::INTEGER)
-				throw std::domain_error("answer type is not INTEGER");
-			const unsigned int i = m_index[index].second;
-			return m_integer[i];
+			return type::FIELD_LIST;
 		}
 
-		const unsigned int answer_form::get_enum_choice(const unsigned int index) const
+		const field_list_request_form & field_list_request_form::get_field_list_request_form() const
 		{
-			if (index >= m_index.size())
-				throw std::range_error("Invalid index");
-			else if (m_index[index].first != request_form_field_type::ENUM)
-				throw std::domain_error("request type is not ENUM");
-			const unsigned int i = m_index[index].second;
-			return m_enum_choice[i];
+			return (*this);
+		}
+
+
+		const unsigned int field_list_request_form::get_field_count() const
+		{
+			return static_cast<unsigned int>(m_fields.size());
+		}
+
+		const abstract_request_field & field_list_request_form::get_request_field(const unsigned int index) const
+		{
+			return *(m_fields[index]);
+		}
+
+		//-----------
+
+		// Choice node request form implementation
+
+		choice_node_request_form::choice_node_request_form(const std::string & name)
+			: abstract_request_form(name)
+		{
+		}
+
+		const unsigned int choice_node_request_form::get_choice_count() const
+		{
+			return static_cast<unsigned int>(m_choices.size());
+		}
+
+		const abstract_request_form & choice_node_request_form::get_choice(const unsigned int index) const
+		{
+			return *(m_choices[index]);
+		}
+
+		const abstract_request_form::type choice_node_request_form::get_type() const
+		{
+			return type::CHOICE_NODE;
+		}
+
+		const choice_node_request_form & choice_node_request_form::get_choice_node_request_form() const
+		{
+			return (*this);
+		}
+
+		//-----------
+
+		// Empty request form implementation
+
+		empty_request_form::empty_request_form()
+			: abstract_request_form("")
+		{
+		}
+
+		const abstract_request_form::type empty_request_form::get_type() const
+		{
+			return type::EMPTY;
+		}
+
+		//////////////////////////////////////
+		//////////////////////////////////////
+
+
+		/*
+			Interface for request field creation
+		*/
+
+		abstract_request_field * create_range_request(const std::string & name, const std::string & description, const int min, const int max)
+		{
+			return new range_request_field(name, description, min, max);
+		}
+
+		abstract_request_field * create_file_path_request(const std::string & name, const std::string & description, const std::string & extension)
+		{
+			return new file_path_request_field(name, description, extension);
+		}
+
+		/*
+		Interface for request form creation
+		*/
+
+		std::unique_ptr<abstract_request_form> create_empty_request_form()
+		{
+			return std::unique_ptr<abstract_request_form>(new empty_request_form());
 		}
 
 } /* Sound */

@@ -10,6 +10,7 @@ namespace Gammou {
 		abstract_plugin_factory::abstract_plugin_factory(const std::string& name, const std::string& description, const unsigned int factory_id)
 			: m_name(name), m_description(m_name), m_factory_id(factory_id)
 		{
+			
 		}
 
 		const std::string & abstract_plugin_factory::get_name() const
@@ -22,9 +23,11 @@ namespace Gammou {
 			return m_description;
 		}
 
-		const request_form & abstract_plugin_factory::get_request_form() const
+		const abstract_request_form & abstract_plugin_factory::get_request_form()
 		{
-			return m_request_form;
+			if (!m_plugin_request_form)
+				m_plugin_request_form = create_plugin_request_form();
+			return (*m_plugin_request_form);
 		}
 
 		abstract_sound_component * abstract_plugin_factory::get_new_sound_component(data_source & source, const unsigned int channel_count)
@@ -50,6 +53,11 @@ namespace Gammou {
 		{
 			if( component != nullptr)
 				delete component;
+		}
+
+		std::unique_ptr<abstract_request_form> abstract_plugin_factory::create_plugin_request_form()
+		{
+			return create_empty_request_form(); // Default implementation
 		}
 		
 		void abstract_plugin_factory::stamp_sound_component(abstract_sound_component * component) const

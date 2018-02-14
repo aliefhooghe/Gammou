@@ -37,7 +37,7 @@ namespace Gammou {
 			const std::string& get_factory_name(const unsigned int factory_id);
 			const std::string& get_factory_description(const unsigned int factory_id);
 
-			const request_form& get_plugin_request_form(const unsigned int factory_id) const;
+			const abstract_request_form& get_plugin_request_form(const unsigned int factory_id);
 
 			abstract_sound_component *get_new_sound_component(const unsigned int factory_id, data_source& data, const unsigned int channel_count);
 			abstract_sound_component *get_new_sound_component(const unsigned int factory_id, const answer_form& answer_form, const unsigned int channel_count);

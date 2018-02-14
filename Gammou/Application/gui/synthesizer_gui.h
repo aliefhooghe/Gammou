@@ -1,4 +1,7 @@
-#pragma once
+
+#ifndef GAMMOU_SYNTHESIZER_GUI_H_
+#define GAMMOU_SYNTHESIZER_GUI_H_
+
 
 #include <mutex>
 
@@ -46,3 +49,5 @@ namespace Gammou {
 		};
 	}
 }
+
+#endif

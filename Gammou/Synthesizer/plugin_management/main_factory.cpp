@@ -90,9 +90,9 @@ namespace Gammou {
 			return factory->get_description();
 		}
 
-		const request_form & main_factory::get_plugin_request_form(const unsigned int factory_id) const
+		const abstract_request_form & main_factory::get_plugin_request_form(const unsigned int factory_id)
 		{
-			const abstract_plugin_factory *factory = factory_by_id(factory_id);
+			abstract_plugin_factory *factory = factory_by_id(factory_id);
 			return factory->get_request_form();
 		}
 

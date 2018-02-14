@@ -1,3 +1,5 @@
+#ifndef GAMMOU_GUI_PROPERTIES_H_
+#define GAMMOU_GUI_PROPERTIES_H_
 
 #include "view.h"
 
@@ -60,3 +62,5 @@ namespace Gammou {
 	}
 
 } /* Gammou */
+
+#endif

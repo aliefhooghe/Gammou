@@ -46,9 +46,10 @@ namespace Gammou {
 			if (!abstract_gui_component_map::on_mouse_dbl_click(x, y) 
 				&& m_creation_factory_id != Sound::NO_FACTORY) {
 
-				const Sound::request_form& requests = m_main_factory->get_plugin_request_form(m_creation_factory_id);
-				
-				if (requests.get_request_count() != 0) // TODO Handle requests
+				const Sound::abstract_request_form& requests = m_main_factory->get_plugin_request_form(m_creation_factory_id);
+				const Sound::abstract_request_form::type type = requests.get_type();
+
+				if (type != Sound::abstract_request_form::type::EMPTY) // TODO Handle requests
 					throw std::runtime_error("Factory Request not handled!");
 			
 				const Sound::answer_form answers;

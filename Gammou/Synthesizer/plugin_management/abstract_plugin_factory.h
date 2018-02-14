@@ -20,7 +20,7 @@ namespace Gammou {
 
 			const std::string& get_name() const;
 			const std::string& get_description() const;
-			const request_form& get_request_form() const;
+			const abstract_request_form& get_request_form();
 			
 			abstract_sound_component *get_new_sound_component(data_source& source, const unsigned int channel_count);
 			abstract_sound_component *get_new_sound_component(const answer_form& answer, const unsigned int channel_count);
@@ -29,6 +29,7 @@ namespace Gammou {
 			void delete_sound_component(abstract_sound_component*component) const;
 
 		protected:
+			virtual std::unique_ptr<abstract_request_form> create_plugin_request_form();
 			virtual abstract_sound_component *create_sound_component(data_source& source, const unsigned int channel_count) = 0;
 			virtual abstract_sound_component *create_sound_component(const answer_form& answer_form, const unsigned int channel_count) = 0;
 
@@ -39,7 +40,7 @@ namespace Gammou {
 			const std::string m_description;
 			const unsigned int m_factory_id;
 
-			request_form m_request_form;
+			std::unique_ptr<abstract_request_form> m_plugin_request_form;
         };
 		
     } /* Sound */
