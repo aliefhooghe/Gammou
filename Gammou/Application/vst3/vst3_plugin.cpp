@@ -116,7 +116,7 @@ namespace Gammou {
 						double value;
 						// For le moment, only the last point
 
-						DEBUG_PRINT("Parameter data : id = %u, %u values\n", param_id, data_count);
+						//DEBUG_PRINT("Parameter data : id = %u, %u values\n", param_id, data_count);
 
 						if (Steinberg::kResultTrue == 
 							param_data->getPoint(data_count - 1, sample_offset, value))
@@ -186,6 +186,8 @@ namespace Gammou {
 					*output_buffer_left = static_cast<float>(output[0]);
 					*output_buffer_right = static_cast<float>(output[1]);
 				}
+
+				
 			}
 			else { // 64 bit
 				double *output_buffer_left = data.outputs[0].channelBuffers64[0];

@@ -11,5 +11,5 @@
 #define DEBUG_PRINT(...) std::fprintf(stderr, __VA_ARGS__)
 #endif
 //#else
-//#define DEBUG_PRINT(...)
+//#define DEBUG_PRINT(...) ((void)__VA_ARGS__)
 //#endif
