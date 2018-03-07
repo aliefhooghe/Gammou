@@ -7,14 +7,14 @@ namespace Gammou {
 
 		// Control implementation
 
-		control::control(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height)
-			: widget(x, y, width, height), m_focused(false)
+		control::control(const int x, const int y, const unsigned int width, const unsigned int height)
+			: widget(x, y, width, height), m_focused(false), m_enabled(true)
 		{
 
 		}
 
 		control::control(const rectangle & rect)
-			: widget(rect)
+			: widget(rect), m_focused(false), m_enabled(true)
 		{
 		}
 
@@ -56,7 +56,7 @@ namespace Gammou {
 
 		// push_button implementation
 
-		push_button::push_button(std::function<void()> push_action, const std::string& text, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const unsigned int font_size)
+		push_button::push_button(std::function<void(push_button*)> push_action, const std::string& text, const int x, const int y, const unsigned int width, const unsigned int height, const unsigned int font_size)
 			: m_pushed(false),  m_push_action(push_action), 
 			m_text(text), m_font_size(font_size), control(x, y, width, height)
 		{
@@ -75,10 +75,15 @@ namespace Gammou {
 				offset = 1.0;
 			}
 
-			if (is_focused())
-				cairo_helper::set_source_color(cr, cl_lightblue);
-			else
-				cairo_helper::set_source_color(cr, cl_gainsboro);
+			if (is_enabled()) {
+				if (is_focused())
+					cairo_helper::set_source_color(cr, cl_lightblue);
+				else
+					cairo_helper::set_source_color(cr, cl_gainsboro);
+			}
+			else {
+				cairo_helper::set_source_color(cr, cl_gray);
+			}
 			
 			cairo_helper::rounded_rectangle(cr, offset / 2.0f, offset / 2.0f, get_width() - offset, get_height() - offset, 2.0f * offset);
 			cairo_fill_preserve(cr);
@@ -95,8 +100,8 @@ namespace Gammou {
 		bool push_button::on_mouse_drag_end(const mouse_button button, const int x, const int y)
 		{
 			// On recoit ce msg si le drag a commencé sur le bouton
-			if (button == mouse_button::LeftButton) {
-				m_push_action();
+			if (button == mouse_button::LeftButton && is_enabled()) {
+				m_push_action(this);
 				m_pushed = false;
 				redraw();
 				return true;
@@ -108,7 +113,7 @@ namespace Gammou {
 
 		bool push_button::on_mouse_button_down(mouse_button button, const int cx, const int cy)
 		{
-			if (button == mouse_button::LeftButton) {
+			if (button == mouse_button::LeftButton && is_enabled()) {
 				m_pushed = true;
 				redraw();
 				return true;
@@ -120,9 +125,9 @@ namespace Gammou {
 
 		bool push_button::on_mouse_button_up(mouse_button button, const int cx, const int cy)
 		{
-			if (button == mouse_button::LeftButton) {
+			if (button == mouse_button::LeftButton && is_enabled()) {
+				m_push_action(this);
 				m_pushed = false;
-				m_push_action();
 				redraw();
 				return true;
 			}
@@ -156,7 +161,58 @@ namespace Gammou {
 			return m_pushed;
 		}
 
+		/*
+		*	Knob
+		*/
 
+		knob::knob(const int x, const int y, const unsigned int size)
+			: control(x, y, size, size), m_angle(0.0f)
+		{
+		}
+
+		void knob::draw(cairo_t * cr)
+		{
+			const float offset = 0.5f * static_cast<float>(get_width());
+			const float radius = 0.4f * static_cast<float>(get_width());
+			
+			const float theta = 0.2;
+			
+			cairo_set_line_width(cr, 3.5);
+
+			cairo_helper::set_source_color(cr, cl_lightgrey);
+			cairo_arc(cr, offset, offset, radius, 1.57 + theta, 1.57 - theta);
+			cairo_stroke(cr);
+
+			cairo_helper::set_source_color(cr, cl_blueviolet);
+
+			if( m_angle >= 0.0)
+				cairo_arc(cr, offset, offset, radius, -1.57, -1.57 + m_angle);
+			else
+				cairo_arc_negative(cr, offset, offset, radius, -1.57 + 0.0, -1.57 + m_angle);
+
+			cairo_line_to(cr, offset, offset);
+
+			cairo_stroke(cr);
+		}
+
+		bool knob::on_mouse_drag(const mouse_button button, const int x, const int y, const int dx, const int dy)
+		{
+			const float borne = 3.14 - 0.2;
+
+			m_angle -= (dy * 0.1);
+
+			if (m_angle < -borne)
+				m_angle = -borne;
+			else if( m_angle > borne)
+				m_angle = borne;
+
+			redraw();
+
+			const float value = (m_angle + borne) / (2.0 * borne);
+
+			DEBUG_PRINT("value = %f dB\n",20 * log10f(value));
+			return true;
+		}
 
 } /* View */
 

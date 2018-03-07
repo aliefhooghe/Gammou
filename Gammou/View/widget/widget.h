@@ -18,7 +18,7 @@ namespace Gammou {
 
 		public:
 			//	x,y in parent coordinate system
-			widget(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height);
+			widget(const int x, const int y, const unsigned int width, const unsigned int height);
 			widget(const rectangle& rect);
 			virtual ~widget();
 
@@ -55,7 +55,7 @@ namespace Gammou {
 			virtual void draw(cairo_t *cr) = 0;
 
 		protected:
-			virtual void set_pos(const unsigned int x, const unsigned int y);
+			virtual void set_pos(const int x, const int y);
 			virtual void resize(const unsigned int width, const unsigned int height);
 			virtual void set_rect(const rectangle& rect);
 

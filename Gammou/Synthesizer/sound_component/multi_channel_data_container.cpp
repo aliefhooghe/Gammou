@@ -10,6 +10,7 @@ namespace Gammou {
 			: m_owner(owner)
 		{
 			m_channels_count = owner->get_channel_count();
+			//DEBUG_PRINT("New Multi channel data (channel_count = %d\n", m_channels_count);
 		}
 
 		unsigned int multi_channel_data::get_channels_count()

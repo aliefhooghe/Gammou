@@ -16,7 +16,7 @@ namespace Gammou {
 		class control : public widget {
 
 		public:
-			control(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height);
+			control(const int x, const int y, const unsigned int width, const unsigned int height);
 			control(const rectangle& rect);
 			virtual ~control() {};
 
@@ -43,7 +43,8 @@ namespace Gammou {
 		class push_button : public control {
 
 		public: 
-			push_button(std::function<void()> push_action, const std::string& text, const unsigned int x, const unsigned int y, const unsigned int width = 95, const unsigned int height = 27, const unsigned int font_size = 10);
+			push_button(std::function<void(push_button*)> push_action, const std::string& text, const int x, const int y, const unsigned int width = 95, const unsigned int height = 27, const unsigned int font_size = 10);
+			// todo rectangle ctor
 			virtual ~push_button() {};
 
 			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y) override;
@@ -52,13 +53,14 @@ namespace Gammou {
 			virtual bool on_mouse_enter(void);
 			virtual bool on_mouse_exit(void);
 
+			void set_text(std::string& text);
+		
 		protected:
 			virtual void draw(cairo_t *cr) override;
-			void set_text(std::string& text);
-
 			bool is_pushed(void) const;
+
 		private:
-			std::function<void()> m_push_action;
+			std::function<void(push_button*)> m_push_action;
 			std::string m_text;
 			const unsigned int m_font_size;
 			bool m_pushed;
@@ -68,6 +70,22 @@ namespace Gammou {
 
 
 		//	TODO :	Slider, knob, toolbar, tabpanel, .... 
+
+		class knob : public control {
+
+		public:
+			knob(const int x, const int y, const unsigned int size = 50);
+			virtual ~knob() {}
+
+			virtual void draw(cairo_t *cr) override;
+			virtual bool on_mouse_drag(const mouse_button button, const int x, const int y,
+				const int dx, const int dy) override;
+
+		protected:
+		private:
+			float m_angle;
+		};
+
 
 	} /* View */
 

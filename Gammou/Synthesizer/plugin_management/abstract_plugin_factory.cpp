@@ -37,7 +37,7 @@ namespace Gammou {
 			return component;
 		}
 
-		abstract_sound_component * abstract_plugin_factory::get_new_sound_component(const answer_form & answer, const unsigned int channel_count)
+		abstract_sound_component * abstract_plugin_factory::get_new_sound_component(const abstract_form_answer& answer, const unsigned int channel_count)
 		{
 			abstract_sound_component *component = create_sound_component(answer, channel_count);
 			stamp_sound_component(component);

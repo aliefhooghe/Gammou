@@ -6,7 +6,7 @@
 namespace Gammou {
 
 	namespace View {
-		widget::widget(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height)
+		widget::widget(const int x, const int y, const unsigned int width, const unsigned int height)
 			: m_parent(nullptr), m_absolute_rect(x, y, width, height) 
 		{
 		}
@@ -116,7 +116,7 @@ namespace Gammou {
 			return m_absolute_rect;
 		}
 
-		void widget::set_pos(const unsigned int x, const unsigned int y)
+		void widget::set_pos(const int x, const int y)
 		{
 			m_absolute_rect.x = x;
 			m_absolute_rect.y = y;
@@ -133,8 +133,7 @@ namespace Gammou {
 		void widget::set_rect(const rectangle & rect)
 		{
 			//	TODO lever des exceptions
-			if (rect.x >= 0 && rect.y >= 0
-				&& rect.width > 0 && rect.height > 0)
+			if (rect.width > 0 && rect.height > 0)
 				m_absolute_rect = rect;
 			else
 				throw std::domain_error("Invalid widget rect");

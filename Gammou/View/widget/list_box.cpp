@@ -9,7 +9,7 @@ namespace Gammou {
 
 
 		list_box::list_box(
-			const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, 
+			const int x, const int y, const unsigned int width, const unsigned int height, 
 			const unsigned int displayed_items_count, 
 			std::function<void(unsigned int)> on_select,
 			const color selected_item_color, 

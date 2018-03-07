@@ -45,11 +45,11 @@ namespace Gammou {
 			void set_scrollable(const bool scrolable = true);
 			void set_sroll_method(const scroll_method method);
 
-			unsigned int convert_x(const unsigned int x);
-			unsigned int convert_y(const unsigned int y);
+			int convert_x(const unsigned int x);
+			int convert_y(const unsigned int y);
 		private:
-			unsigned int m_x_origin;
-			unsigned int m_y_origin;
+			int m_x_origin;
+			int m_y_origin;
 			bool m_scrolable;
 			scroll_method m_scroll_method;
 		};
@@ -192,19 +192,8 @@ namespace Gammou {
 		template<class widget_type>
 		 void scrollable_panel<widget_type>::scroll(const int dx, const int dy)
 		 {
-			 const int new_x_origin = dx + static_cast<int>(m_x_origin);
-			 const int new_y_origin = dy + static_cast<int>(m_y_origin);
-
-			 if (new_y_origin > 0)
-				 m_y_origin = static_cast<unsigned int>(new_y_origin);
-			 else
-				 m_y_origin = 0;
-
-			 if (new_x_origin > 0)
-				 m_x_origin = static_cast<unsigned int>(new_x_origin);
-			 else
-				 m_x_origin = 0;
-
+			 m_x_origin += dx;
+			 m_y_origin += dy;
 			 DEBUG_PRINT("SCROLL %d %d\n", dx, dy);
 			 redraw();
 		 }
@@ -222,15 +211,15 @@ namespace Gammou {
 		 }
 
 		 template<class widget_type>
-		 unsigned int scrollable_panel<widget_type>::convert_x(const unsigned int x)
+		 int scrollable_panel<widget_type>::convert_x(const unsigned int x)
 		 {
-			 return x + m_x_origin;
+			 return static_cast<int>(x) + m_x_origin;
 		 }
 
 		 template<class widget_type>
-		 unsigned int scrollable_panel<widget_type>::convert_y(const unsigned int y)
+		 int scrollable_panel<widget_type>::convert_y(const unsigned int y)
 		 {
-			 return y + m_y_origin;
+			 return static_cast<int>(y) + m_y_origin;
 		 }
 
 

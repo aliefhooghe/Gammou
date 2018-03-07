@@ -36,8 +36,9 @@ namespace Gammou {
 			// Open and close here ?
 
 			//	Feature to be implemented
-			//bool open_file ? // TODO
+			virtual bool open_file(std::string& path, const std::string& title, const std::string& ext) =0;
 
+			//---
 			void scale(const float scaling_factor);
 			
 			void redraw_rect(const rectangle& rect) override;

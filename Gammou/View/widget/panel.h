@@ -15,7 +15,7 @@ namespace Gammou {
 		class abstract_panel : public widget {
 
 		public:
-			abstract_panel(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const color background);
+			abstract_panel(const int x, const int y, const unsigned int width, const unsigned int height, const color background);
 			abstract_panel(const rectangle& rect, const color background);
 
 			virtual ~abstract_panel() {}
@@ -40,7 +40,7 @@ namespace Gammou {
 		public:
 			static_assert(std::is_base_of<widget, widget_type>::value, "widget_type must inherit from widget");
 
-			panel(const unsigned int x, const unsigned int y, const unsigned int width,
+			panel(const int x, const int y, const unsigned int width,
 				const unsigned int height, const color background = cl_white);
 			panel(const rectangle& rect, const color background = cl_white);
 
@@ -77,7 +77,7 @@ namespace Gammou {
 			std::deque<widget_type*> m_widgets;		
 
 		private:
-			widget_type *get_widget_at_position(const unsigned int x, const unsigned int y) const;
+			widget_type *get_widget_at_position(const int x, const int y) const;
 
 			widget_type *m_focused_widget;	//	under cursor
 			widget_type *m_draging_widget;
@@ -85,7 +85,7 @@ namespace Gammou {
 		};
 
 		template<class widget_type>
-		panel<widget_type>::panel(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const color background)
+		panel<widget_type>::panel(const int x, const int y, const unsigned int width, const unsigned int height, const color background)
 			: abstract_panel(x, y, width, height, background),
 			m_focused_widget(nullptr),
 			m_draging_widget(nullptr),
@@ -319,7 +319,7 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 widget_type * panel<widget_type>::get_widget_at_position(const unsigned int x, const unsigned int y) const
+		 widget_type * panel<widget_type>::get_widget_at_position(const int x, const int y) const
 		{
 			for (auto it = m_widgets.rbegin(); it != m_widgets.rend(); ++it) {
 				widget_type *const w = (*it);

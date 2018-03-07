@@ -249,6 +249,65 @@ namespace Gammou {
 			return std::unique_ptr<abstract_request_form>(new empty_request_form());
 		}
 
+		/*
+		
+		
+		*/
+
+		// form answer
+
+		abstract_request_form::type empty_answer_form::get_form_type() const
+		{
+			return abstract_request_form::type::EMPTY;
+		}
+
+		// Field Answer
+
+		range_answer::range_answer(const int integer)
+			: m_integer(integer)
+		{
+		}
+
+		abstract_request_field::type range_answer::get_field_type() const
+		{
+			return abstract_request_field::type::RANGE;
+		}
+
+		int range_answer::get_integer() const
+		{
+			return m_integer;
+		}
+
+
+		choice_answer::choice_answer(const unsigned int choice_id)
+			: m_choice_id(choice_id)
+		{
+		}
+
+		abstract_request_field::type choice_answer::get_field_type() const
+		{
+			return abstract_request_field::type::CHOICE;
+		}
+
+		unsigned int choice_answer::get_choice_id() const
+		{
+			return m_choice_id;
+		}
+
+		file_path_answer::file_path_answer(const std::string & path)
+			: m_path(path)
+		{
+		}
+
+		abstract_request_field::type file_path_answer::get_field_type() const
+		{
+			return abstract_request_field::type::FILE_PATH;
+		}
+
+
+
+
+
 } /* Sound */
 
 } /* Gammou */

@@ -52,12 +52,12 @@ namespace Gammou {
 				if (type != Sound::abstract_request_form::type::EMPTY) // TODO Handle requests
 					throw std::runtime_error("Factory Request not handled!");
 			
-				const Sound::answer_form answers;
+				const Sound::empty_answer_form answer;
 
 				DEBUG_PRINT("Creating a %u-channel component\n", m_components_channel_count);
 
 				Sound::abstract_sound_component *sound_component = 
-					m_main_factory->get_new_sound_component(m_creation_factory_id, answers, m_components_channel_count);
+					m_main_factory->get_new_sound_component(m_creation_factory_id, answer, m_components_channel_count);
 
 				gui_sound_component *gui_component =
 					new gui_sound_component(sound_component, m_synthesizer_mutex, convert_x(x), convert_y(y));
@@ -171,7 +171,7 @@ namespace Gammou {
 			// Reading header
 			data.read(&record_header, sizeof(record_header));
 
-			DEBUG_PRINT("CIRCUIT LOAD STATE : ");
+			DEBUG_PRINT("CIRCUIT LOAD STATE : \n");
 			DEBUG_PRINT("  -> %u components\n", record_header.component_count);
 			DEBUG_PRINT("  -> %u links\n", record_header.link_count);
 			
@@ -214,6 +214,7 @@ namespace Gammou {
 				}
 
 				// connect function manage the lock.
+				
 				connect(src, link.output_id, dst, link.input_id);
 			}
 
@@ -252,7 +253,7 @@ namespace Gammou {
 				throw std::domain_error("Unknown factory !!!");
 			}
 
-			// To do Restriction on size, via decorateur
+			// To do Restriction on data size, via decorateur
 			// Build component from data
 			Sound::abstract_sound_component *sound_component =
 				m_main_factory->get_new_sound_component(record_header.factory_id, data,

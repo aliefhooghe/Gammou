@@ -7,7 +7,7 @@ namespace Gammou {
 
 	namespace View {
 	
-		abstract_panel::abstract_panel(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const color background)
+		abstract_panel::abstract_panel(const int x, const int y, const unsigned int width, const unsigned int height, const color background)
 			: widget(x, y, width, height),
 			m_background_color(background)
 		{}

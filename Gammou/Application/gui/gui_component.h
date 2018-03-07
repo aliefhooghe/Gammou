@@ -29,7 +29,7 @@ namespace Gammou {
 		public:
 			abstract_gui_component(
 				std::mutex *circuit_mutex,
-				unsigned int x, const unsigned int y, 
+				const int x, const int y, 
 				const unsigned int initial_input_count, const unsigned int initial_output_count);
 
 			virtual ~abstract_gui_component() {}
@@ -87,7 +87,7 @@ namespace Gammou {
 			default_gui_component(
 				Process::abstract_component<double> *component,
 				std::mutex *circuit_mutex,
-				const unsigned int x, const unsigned int y)
+				const int x, const int y)
 				: abstract_gui_component(circuit_mutex, x, y, component->get_input_count(), component->get_output_count()),
 				m_component(component) {}
 
@@ -111,8 +111,8 @@ namespace Gammou {
 		public:
 			abstract_gui_component_map(
 				std::mutex *circuit_mutex,
-				const unsigned int x, 
-				const unsigned int y,
+				const int x, 
+				const int y,
 				const unsigned int width,
 				const unsigned int height, 
 				const View::color background = GuiProperties::background);

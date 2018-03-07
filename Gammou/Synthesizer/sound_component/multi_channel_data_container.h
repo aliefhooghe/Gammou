@@ -47,6 +47,7 @@ namespace Gammou {
 			multi_channel_variable(polyphonic_sound_component *owner);
 			virtual ~multi_channel_variable() {}
 
+			T operator =(const multi_channel_variable<T>& value);
 			T operator =(const T& value);
 			operator T&();
 
@@ -59,6 +60,13 @@ namespace Gammou {
 			: multi_channel_data(owner),
 			m_data(get_channels_count())
 		{
+		}
+
+		template<class T>
+		T multi_channel_variable<T>::operator=(const multi_channel_variable<T>& value)
+		{
+			const unsigned int channel = get_current_working_channel();
+			return (m_data[channel] = value.m_data[channel]);
 		}
 
 		template<class T>

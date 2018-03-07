@@ -26,11 +26,12 @@ namespace Gammou {
 
 			add_widget(pages);
 
-			add_widget(new View::push_button([&, pages]
-			{
-				page_id = (page_id == 0) ? 1 : 0;
-				pages->select_page(page_id);
-			}
+			add_widget(new View::push_button(
+				[&, pages](View::push_button *self)
+				{
+					page_id = (page_id == 0) ? 1 : 0;
+					pages->select_page(page_id);
+				}
 			, "Change page", 705, 0));
 
 			////////////
@@ -50,6 +51,27 @@ namespace Gammou {
 					12);
 
 			add_widget(m_plugin_list_box);
+			
+			/*add_widget(
+				new View::push_button([&](View::push_button *self){
+					std::string path;
+
+					self->set_enabled(false);
+
+					if (open_file(path, "Title", "wav")) {
+						DEBUG_PRINT("File path : %s\n", path.c_str());
+					}
+					else {
+						DEBUG_PRINT("No File\n");
+					}
+
+					self->set_enabled();
+				}, "OpenFile", 500, 500)
+			);
+			*/
+			add_widget(
+				new View::knob(500, 500)
+			);
 
 			///////////
 
@@ -74,9 +96,10 @@ namespace Gammou {
 
 		bool synthesizer_gui::load_state(Sound::data_source & data)
 		{
-			DEBUG_PRINT("SYN LOAD STATE\n");
+			DEBUG_PRINT("SYN LOAD STATE :\n");
 			m_gui_master_circuit->load_state(data);
 			m_gui_polyphonic_circuit->load_state(data);
+			DEBUG_PRINT("SYN STATE LOADED\n");
 			return true;
 		}
 
@@ -92,8 +115,9 @@ namespace Gammou {
 			add_plugin_factory(new Sound::Builtin::sin_factory());
 			add_plugin_factory(new Sound::Builtin::debug_factory());
 			add_plugin_factory(new Sound::Builtin::product_factory());
-			add_plugin_factory(new Sound::Builtin::fpb1_factory());
+			add_plugin_factory(new Sound::Builtin::fpb2_factory());
 			add_plugin_factory(new Sound::Builtin::adsr_env_factory());
+			add_plugin_factory(new Sound::Builtin::saw_factory());
 		}
 
 

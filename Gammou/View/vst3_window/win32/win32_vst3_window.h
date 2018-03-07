@@ -27,6 +27,9 @@ namespace Gammou {
 
 			//	widget override
 			void redraw(void) override;
+
+			// ------
+			virtual bool open_file(std::string& path, const std::string& title, const std::string& ext);
 		private:
 			static LRESULT CALLBACK windowProc(HWND window, UINT msg, WPARAM w_param, LPARAM l_param);
 			HWND m_plugin_window;

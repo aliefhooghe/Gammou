@@ -40,7 +40,7 @@ namespace Gammou {
 			const abstract_request_form& get_plugin_request_form(const unsigned int factory_id);
 
 			abstract_sound_component *get_new_sound_component(const unsigned int factory_id, data_source& data, const unsigned int channel_count);
-			abstract_sound_component *get_new_sound_component(const unsigned int factory_id, const answer_form& answer_form, const unsigned int channel_count);
+			abstract_sound_component *get_new_sound_component(const unsigned int factory_id, const abstract_form_answer& answer_form, const unsigned int channel_count);
 			
 			void delete_sound_component(abstract_sound_component *component);
 

@@ -31,6 +31,7 @@ namespace Gammou {
 			// Persistence
 			bool save_state(Sound::data_sink& data);
 			bool load_state(Sound::data_source& data);
+
 		private:
 			void add_plugin_factory(Sound::abstract_plugin_factory *factory);
 			void init_main_factory(); // Load all built-in and plug in component

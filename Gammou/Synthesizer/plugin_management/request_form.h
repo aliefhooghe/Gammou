@@ -1,7 +1,6 @@
 #ifndef GAMMOU_REQUEST_FORM_H_
 #define GAMMOU_REQUEST_FORM_H_
 
-
 #include <string>
 #include <vector>
 #include <type_traits>
@@ -230,11 +229,84 @@ namespace Gammou {
 			return form;
 		}
 
+		//-----------------
+		//-----------------
 
-		class answer_form {
 
+
+		/*
+			Draft : 
+
+			-> Answer(field) = 
+					match field with
+						| Range -> int
+						| FilePath -> String
+						| Choice -> int
+
+			-> Answer(form) =
+					match form with
+						| Empty -> void
+						| FieldList(f1, f2, f3, ...) -> (Answer(f1), Answer(f2), Answer(f3), ...)
+						| ChoiceForm(f1, f2, f3, ...) -> (int i, Answer(fi))
+
+		*/
+
+
+		//class abstract_answer_field 
+
+		class abstract_form_answer {
+		
+		public:
+			virtual ~abstract_form_answer() {}
+			virtual abstract_request_form::type get_form_type() const = 0;
 		};
 
+		class empty_answer_form : public abstract_form_answer {
+
+		public:
+			virtual abstract_request_form::type get_form_type() const override;
+		};
+
+		class abstract_field_answer {
+
+		public:
+			virtual ~abstract_field_answer() {}
+			virtual abstract_request_field::type get_field_type() const = 0;
+		};
+
+		class range_answer : public abstract_field_answer {
+		
+		public:
+			range_answer(const int integer);
+
+			abstract_request_field::type get_field_type() const;
+			int get_integer() const;
+
+		private:
+			const int m_integer;
+		};
+
+		class choice_answer : public abstract_field_answer {
+
+		public:
+			choice_answer(const unsigned int choice_id);
+
+			abstract_request_field::type get_field_type() const override;
+			unsigned int get_choice_id() const;
+
+		private:
+			const unsigned int m_choice_id;
+		};
+
+		class file_path_answer : public abstract_field_answer {
+
+		public:
+			file_path_answer(const std::string& path);
+			abstract_request_field::type get_field_type() const;
+
+		private:
+			const std::string m_path;
+		};
 
 	} /* Sound */
 

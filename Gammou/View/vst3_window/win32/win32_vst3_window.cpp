@@ -67,7 +67,7 @@ namespace Gammou {
 			if (m_plugin_window != nullptr) 
 				DestroyWindow(m_plugin_window);
 
-			m_plugin_window = CreateWindow(TEXT(WNDCLASS_NAME), TEXT(""/*titre*/),
+			m_plugin_window = CreateWindow(TEXT(WNDCLASS_NAME), TEXT(""/*title*/),
 				WS_CHILD | WS_VISIBLE ,
 				0, 0, system_width, system_height,
 				parent_hwnd, nullptr, nullptr, this);
@@ -105,6 +105,47 @@ namespace Gammou {
 		{
 			if (m_plugin_window != nullptr)
 				InvalidateRect(m_plugin_window, nullptr, true);
+		}
+
+		bool win32_vst3_window::open_file(std::string & path, const std::string& title, const std::string & ext)
+		{
+			OPENFILENAME dialog;
+			
+			const char *cext = ext.c_str();
+			const unsigned int ext_len = static_cast<unsigned int>(ext.size());
+			char cpath[256] = ""; // ..[0] = '\0'
+
+			char filter[256];
+			
+			// 
+			for (unsigned int i = 0; i < ext_len; ++i) {
+				filter[i] = cext[i];
+				filter[i + ext_len + 3] = cext[i];
+			}
+
+			filter[ext_len] = '\0';
+			filter[ext_len + 1] = '*';
+			filter[ext_len + 2] = '.';
+			filter[(2 * ext_len) + 3] = '\0';
+			filter[(2 * ext_len) + 4] = '\0';
+
+			std::memset(&dialog, 0, sizeof(dialog));
+
+			dialog.lStructSize = sizeof(dialog); 
+			dialog.hwndOwner = nullptr;
+			dialog.hInstance = nullptr; //
+			dialog.lpstrFilter = filter;
+			dialog.lpstrFile = cpath;
+			dialog.nMaxFile = 256;
+			dialog.lpstrTitle = title.c_str();
+			dialog.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+			if (GetOpenFileName(&dialog)) {
+				path = std::string(cpath);
+				return true;
+			}
+
+			return false;
 		}
 
 		LRESULT win32_vst3_window::windowProc(HWND window, UINT msg, WPARAM w_param, LPARAM l_param)

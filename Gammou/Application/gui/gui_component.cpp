@@ -21,7 +21,7 @@ namespace Gammou {
 
 		abstract_gui_component::abstract_gui_component(
 			std::mutex *circuit_mutex,
-			const unsigned int x, const unsigned int y, const unsigned int initial_input_count, const unsigned int initial_output_count)
+			const int x, const int y, const unsigned int initial_input_count, const unsigned int initial_output_count)
 			: View::panel<View::widget>(
 				x, y, 
 				GuiProperties::component_width, 
@@ -80,8 +80,8 @@ namespace Gammou {
 		int abstract_gui_component::get_output_id_by_pos(const float x, const float y) const
 		{
 			const Process::abstract_component<double> *component = get_component();
-			const float self_x = x - get_x();
-			const float self_y = y - get_y();
+			const float self_x = x - static_cast<float>(get_x());
+			const float self_y = y - static_cast<float>(get_y());
 
 			if (component != nullptr
 				&& ((get_width() - self_x) < m_l1 / 2.0)) {
@@ -271,11 +271,8 @@ namespace Gammou {
 		bool abstract_gui_component::on_mouse_drag(const View::mouse_button button, const int x, const int y, const int dx, const int dy)
 		{
 			if (!is_linking()) {
-				const View::rectangle rect = get_absolute_rect().translate(dx, dy);
-				if (get_parent()->contains(rect)) {
-					set_rect(rect);
-					redraw_parent();
-				}
+				set_rect(get_absolute_rect().translate(dx, dy));
+				redraw_parent();
 			}
 			
 			return true;
@@ -336,8 +333,8 @@ namespace Gammou {
 
 		abstract_gui_component_map::abstract_gui_component_map(
 			std::mutex *circuit_mutex, 
-			const unsigned int x,
-			const unsigned int y, 
+			const int x,
+			const int y, 
 			const unsigned int width,
 			const unsigned int height, 
 			const View::color background)
@@ -438,10 +435,20 @@ namespace Gammou {
 			Process::abstract_component<double> *c_dst = dst->get_component();
 
 			if (c_src != nullptr && c_dst != nullptr) {
-				lock_circuit();
-				c_src->connect_to(src_output_id, c_dst, dst_input_id);
-				unlock_circuit();
-				dst->update_size();
+
+				if (c_src->get_output_count() <= src_output_id) {
+					DEBUG_PRINT("Unable to link, %s has not output_id %u\n", c_src->get_name().c_str(), src_output_id);
+				}
+				else if (c_dst->get_input_count() <= dst_input_id)
+				{
+					DEBUG_PRINT("Unable to link, %s has not input_id %u\n", c_dst->get_name().c_str(), dst_input_id);
+				}
+				else {
+					lock_circuit();
+					c_src->connect_to(src_output_id, c_dst, dst_input_id);
+					unlock_circuit();
+					dst->update_size();
+				}
 			}
 		}
 
@@ -464,8 +471,8 @@ namespace Gammou {
 			if (m_is_linking) {
 				const abstract_gui_component *const component = get_focused_widget();
 
-				const unsigned int map_x = convert_x(x);
-				const unsigned int map_y = convert_y(y);
+				const int map_x = convert_x(x);
+				const int map_y = convert_y(y);
 
 				if (component != nullptr) {
 					// x,y converted into map coord
@@ -494,8 +501,8 @@ namespace Gammou {
 			abstract_gui_component *focused_component = get_focused_widget();
 
 			if (focused_component != nullptr) {
-				const unsigned int map_x = convert_x(x);
-				const unsigned int map_y = convert_y(y);
+				const int map_x = convert_x(x);
+				const int map_y = convert_y(y);
 
 				int output_id = focused_component->get_output_id_by_pos(map_x, map_y);
 
@@ -522,8 +529,8 @@ namespace Gammou {
 				m_socket_highlighting = false;
 
 				if (dst != nullptr) {
-					const unsigned int map_x = convert_x(x);
-					const unsigned int map_y = convert_y(y);
+					const int map_x = convert_x(x);
+					const int map_y = convert_y(y);
 
 					const int input_id = dst->get_input_id_by_pos(map_x, map_y);
 					

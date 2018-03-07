@@ -287,7 +287,7 @@ namespace Gammou {
 				if (frame != nullptr)
 					frame->notify_circuit_change();
 			}
-			
+
 		}
 
 		template<class T>

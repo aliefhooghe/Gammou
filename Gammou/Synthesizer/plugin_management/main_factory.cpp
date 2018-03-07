@@ -102,7 +102,7 @@ namespace Gammou {
 			return factory->get_new_sound_component(data, channel_count);
 		}
 
-		abstract_sound_component * main_factory::get_new_sound_component(const unsigned int factory_id, const answer_form & answer_form, const unsigned int channel_count)
+		abstract_sound_component * main_factory::get_new_sound_component(const unsigned int factory_id, const abstract_form_answer& answer_form, const unsigned int channel_count)
 		{
 			abstract_plugin_factory *factory = factory_by_id(factory_id);
 			return factory->get_new_sound_component(answer_form, channel_count);

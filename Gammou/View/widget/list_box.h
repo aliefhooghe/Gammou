@@ -17,8 +17,8 @@ namespace Gammou {
 
 		public: 
 			list_box(
-				const unsigned int x, 
-				const unsigned int y, 
+				const int x, 
+				const int y, 
 				const unsigned int width, 
 				const unsigned int height, 
 				const unsigned int displayed_items_count, 

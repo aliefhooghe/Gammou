@@ -8,7 +8,8 @@
 #include "builtin_components\sin_component.h"
 #include "builtin_components\debug_component.h"
 #include "builtin_components\product_component.h"
-#include "builtin_components\fpb1.h"
+#include "builtin_components\fpb2.h"
 #include "builtin_components\adsr_env.h"
+#include "builtin_components\saw.h"
 
 #endif
