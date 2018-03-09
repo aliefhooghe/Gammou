@@ -9,9 +9,9 @@ namespace Gammou {
 
 
 		gui_sound_component::gui_sound_component(
-			Sound::abstract_sound_component * sound_component, std::mutex *synthesizer_mutex, const unsigned int x, const unsigned int y)
+			Sound::abstract_sound_component * sound_component, /*std::mutex *synthesizer_mutex,*/ const unsigned int x, const unsigned int y)
 			: abstract_gui_component(
-				synthesizer_mutex, x, y, sound_component->get_input_count(), sound_component->get_output_count()),
+				/*synthesizer_mutex,*/ x, y, sound_component->get_input_count(), sound_component->get_output_count()),
 					m_sound_component(sound_component)
 		{
 		}

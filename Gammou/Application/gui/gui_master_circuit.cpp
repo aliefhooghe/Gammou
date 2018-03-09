@@ -11,24 +11,24 @@ namespace Gammou {
 		*/
 
 		gui_master_circuit::gui_master_circuit(
-			Sound::main_factory *main_factory,
+			gui_component_main_factory *complete_component_factory,
 			Sound::synthesizer * synthesizer,
 			std::mutex *synthesizer_mutex,
 			const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const View::color background)
 			: abstract_gui_synthesizer_circuit(
-				main_factory, 1u, synthesizer, synthesizer_mutex,
+				complete_component_factory, 1u, synthesizer, synthesizer_mutex,
 				x, y, width, height, background)
 		{
 			add_internal_components(synthesizer_mutex);
 		}
 
 		gui_master_circuit::gui_master_circuit(
-			Sound::main_factory *main_factory,
+			gui_component_main_factory *complete_component_factory,
 			Sound::synthesizer * synthesizer,
 			std::mutex *synthesizer_mutex,
 			const View::rectangle & rect, const View::color background)
 			: abstract_gui_synthesizer_circuit(
-				main_factory, 1u, synthesizer, synthesizer_mutex,
+				complete_component_factory, 1u, synthesizer, synthesizer_mutex,
 				rect, background)
 		{
 			add_internal_components(synthesizer_mutex);
@@ -96,23 +96,23 @@ namespace Gammou {
 
 			m_polyphonic_input = new default_gui_component(
 				m_synthesizer->get_master_circuit_polyphonic_input(),
-				synthesizer_mutex, 50, 10);
+				/*synthesizer_mutex,*/ 50, 10);
 
 			m_polyphonic_output = new default_gui_component(
 				m_synthesizer->get_master_circuit_polyphonic_output(),
-				synthesizer_mutex, 200, 10);
+				/*synthesizer_mutex,*/ 200, 10);
 
 			m_main_input = new default_gui_component(
 				m_synthesizer->get_master_main_input(),
-				synthesizer_mutex, 50, 200);
+				/*synthesizer_mutex,*/ 50, 200);
 
 			m_main_output = new default_gui_component(
 				m_synthesizer->get_master_main_output(),
-				synthesizer_mutex, 200, 200);
+				/*synthesizer_mutex,*/ 200, 200);
 
 			m_parameter_input = new default_gui_component(
 				m_synthesizer->get_master_circuit_parameter_input(),
-				synthesizer_mutex, 50, 350);
+				/*synthesizer_mutex, */50, 350);
 
 			add_gui_component(m_parameter_input);
 			add_gui_component(m_polyphonic_input);

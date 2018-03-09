@@ -17,7 +17,6 @@ namespace Gammou {
 		void draw_link(cairo_t *cr, const float x_input, const float y_input,
 			const float x_output, const float y_output, const View::color color);
 
-
 		/*
 		
 		*/
@@ -28,7 +27,7 @@ namespace Gammou {
 
 		public:
 			abstract_gui_component(
-				std::mutex *circuit_mutex,
+				/*std::mutex *circuit_mutex,*/
 				const int x, const int y, 
 				const unsigned int initial_input_count, const unsigned int initial_output_count);
 
@@ -58,8 +57,8 @@ namespace Gammou {
 			bool is_linking();
 			void set_linking(const bool state = true);
 
-			inline void lock_circuit() { m_circuit_mutex->lock(); }
-			inline void unlock_circuit() { m_circuit_mutex->unlock(); }
+			//inline void lock_circuit() { m_circuit_mutex->lock(); }
+			//inline void unlock_circuit() { m_circuit_mutex->unlock(); }
 
 		private:
 			void update_size();
@@ -67,7 +66,7 @@ namespace Gammou {
 
 			bool m_is_linking;
 			bool m_is_moving;
-			std::mutex *m_circuit_mutex;
+			//std::mutex *m_circuit_mutex;
 
 			int m_focused_output_id; // -1 if nothing 
 
@@ -86,9 +85,9 @@ namespace Gammou {
 		public:
 			default_gui_component(
 				Process::abstract_component<double> *component,
-				std::mutex *circuit_mutex,
+				/*std::mutex *circuit_mutex,*/
 				const int x, const int y)
-				: abstract_gui_component(circuit_mutex, x, y, component->get_input_count(), component->get_output_count()),
+				: abstract_gui_component(/*circuit_mutex,*/ x, y, component->get_input_count(), component->get_output_count()),
 				m_component(component) {}
 
 			virtual ~default_gui_component() {}

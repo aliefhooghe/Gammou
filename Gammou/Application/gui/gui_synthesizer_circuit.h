@@ -4,6 +4,7 @@
 #include "../../Synthesizer/plugin_management/main_factory.h"
 #include "../persistence/synthesizer_persistence.h"
 #include "gui_sound_component.h"
+#include "gui_component_main_factory.h"
 
 namespace Gammou {
 
@@ -13,7 +14,7 @@ namespace Gammou {
 
 		public:
 			abstract_gui_synthesizer_circuit(
-				Sound::main_factory *main_factory,
+				gui_component_main_factory *m_complete_component_factory,
 				const unsigned int components_channel_count,
 				Sound::synthesizer *synthesizer, 
 				std::mutex *synthesizer_mutex,
@@ -24,7 +25,7 @@ namespace Gammou {
 				const View::color background = GuiProperties::background);
 
 			abstract_gui_synthesizer_circuit(
-				Sound::main_factory *main_factory,
+				gui_component_main_factory *m_complete_component_factory,
 				const unsigned int component_channel_count,
 				Sound::synthesizer *synthesizer, 
 				std::mutex *synthesizer_mutex,
@@ -60,7 +61,7 @@ namespace Gammou {
 			//----------------
 			
 			std::mutex *const m_synthesizer_mutex;
-			Sound::main_factory *const m_main_factory;
+			gui_component_main_factory * const m_complete_component_factory;
 
 			const unsigned int m_components_channel_count;
 			unsigned int m_creation_factory_id;

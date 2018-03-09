@@ -10,8 +10,10 @@
 #include "gui_sound_component.h"
 #include "gui_master_circuit.h"
 #include "gui_polyphonic_circuit.h"
-#include "../../Synthesizer/plugin_management/main_factory.h"
+
+#include "gui_component_main_factory.h"
 #include "../../Synthesizer/builtin_components.h"
+
 
 #define GAMMOU_SYNTHESIZER_CHANNEL_COUNT 128
 
@@ -43,7 +45,7 @@ namespace Gammou {
 
 			// Factory
 			std::vector<unsigned int> m_factory_ids;
-			Sound::main_factory m_main_factory;
+			gui_component_main_factory m_complete_component_factory;
 			
 			// -----
 			unsigned int page_id;

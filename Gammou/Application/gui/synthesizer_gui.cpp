@@ -14,8 +14,8 @@ namespace Gammou {
 			set_background_color(View::cl_chartreuse); // for gui debuging
 
 
-			m_gui_master_circuit = new gui_master_circuit(&m_main_factory, synthesizer, synthesizer_mutex, 0, 0, 800, 800);
-			m_gui_polyphonic_circuit = new gui_polyphonic_circuit(&m_main_factory, synthesizer, synthesizer_mutex, 0, 0, 800, 800);
+			m_gui_master_circuit = new gui_master_circuit(&m_complete_component_factory, synthesizer, synthesizer_mutex, 0, 0, 800, 800);
+			m_gui_polyphonic_circuit = new gui_polyphonic_circuit(&m_complete_component_factory, synthesizer, synthesizer_mutex, 0, 0, 800, 800);
 
 			View::page_container *pages = new View::page_container(120, 0, 800, 800, View::cl_chartreuse);
 
@@ -105,7 +105,7 @@ namespace Gammou {
 
 		void synthesizer_gui::add_plugin_factory(Sound::abstract_plugin_factory * factory)
 		{
-			m_main_factory.register_factory(factory);
+			m_complete_component_factory.register_factory(factory);
 			m_plugin_list_box->add_item(factory->get_name());
 			m_factory_ids.push_back(factory->get_factory_id());
 		}

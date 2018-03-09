@@ -10,24 +10,24 @@ namespace Gammou {
 		*/
 
 		gui_polyphonic_circuit::gui_polyphonic_circuit(
-			Sound::main_factory *main_factory,
+			gui_component_main_factory *complete_component_factory,
 			Sound::synthesizer * synthesizer,
 			std::mutex * synthesizer_mutex, unsigned int x,
 			const unsigned int y, const unsigned int width, const unsigned height, const View::color background)
 			: abstract_gui_synthesizer_circuit(
-				main_factory, synthesizer->get_channel_count(), synthesizer,
+				complete_component_factory, synthesizer->get_channel_count(), synthesizer,
 				synthesizer_mutex, x, y, width, height, background)
 		{
 			add_internal_components(synthesizer_mutex);
 		}
 
 		gui_polyphonic_circuit::gui_polyphonic_circuit(
-			Sound::main_factory *main_factory,
+			gui_component_main_factory *complete_component_factory,
 			Sound::synthesizer * synthesizer,
 			std::mutex * synthesizer_mutex,
 			const View::rectangle & rect, const View::color background)
 			: abstract_gui_synthesizer_circuit(
-				main_factory, synthesizer->get_channel_count(), synthesizer,
+				complete_component_factory, synthesizer->get_channel_count(), synthesizer,
 				synthesizer_mutex, rect, background)
 		{
 			add_internal_components(synthesizer_mutex);
@@ -87,19 +87,19 @@ namespace Gammou {
 		{
 			m_master_out = new default_gui_component(
 				m_synthesizer->get_polyphonic_circuit_master_output(),
-				synthesizer_mutex, 200, 10);
+				/*synthesizer_mutex,*/ 200, 10);
 
 			m_master_in = new default_gui_component(
 				m_synthesizer->get_polyphonic_circuit_master_input(),
-				synthesizer_mutex, 10, 10);
+				/*synthesizer_mutex,*/ 10, 10);
 
 			m_midi_input = new default_gui_component(
 				m_synthesizer->get_polyphonic_circuit_midi_input(),
-				synthesizer_mutex, 200, 10);
+				/*synthesizer_mutex,*/ 200, 10);
 
 			m_parameter_input = new default_gui_component(
 				m_synthesizer->get_polyphonic_circuit_parameter_input(),
-				synthesizer_mutex, 400, 10);
+				/*synthesizer_mutex,*/ 400, 10);
 
 			add_gui_component(m_master_in);
 			add_gui_component(m_master_out);

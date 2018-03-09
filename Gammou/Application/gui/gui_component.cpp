@@ -20,7 +20,7 @@ namespace Gammou {
 		//
 
 		abstract_gui_component::abstract_gui_component(
-			std::mutex *circuit_mutex,
+		/*	std::mutex *circuit_mutex,*/
 			const int x, const int y, const unsigned int initial_input_count, const unsigned int initial_output_count)
 			: View::panel<View::widget>(
 				x, y, 
@@ -28,7 +28,7 @@ namespace Gammou {
 				component_height_by_socket_count(max(initial_input_count, initial_output_count))),
 				m_is_linking(false),
 				m_is_moving(false),
-				m_circuit_mutex(circuit_mutex),
+				//m_circuit_mutex(circuit_mutex),
 				m_focused_output_id(-1)
 		{
 			// Todo this goto properties

@@ -32,8 +32,8 @@ namespace Gammou {
 		PACKED(
 		struct component_record_header{
 			uint32_t factory_id;
-			uint32_t gui_x_pos;
-			uint32_t gui_y_pos;
+			int32_t gui_x_pos;
+			int32_t gui_y_pos;
 			uint32_t data_size;
 		}
 		);

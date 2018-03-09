@@ -12,7 +12,7 @@ namespace Gammou {
 		*/
 
 		abstract_gui_synthesizer_circuit::abstract_gui_synthesizer_circuit(
-			Sound::main_factory *main_factory,
+			gui_component_main_factory *complete_component_factory,
 			const unsigned int components_channel_count,
 			Sound::synthesizer * synthesizer, 
 			std::mutex * synthesizer_mutex, 
@@ -20,21 +20,21 @@ namespace Gammou {
 			: abstract_gui_component_map(synthesizer_mutex, x, y, width, height, background),
 			m_synthesizer(synthesizer),
 			m_synthesizer_mutex(synthesizer_mutex),
-			m_main_factory(main_factory),
+			m_complete_component_factory(complete_component_factory),
 			m_components_channel_count(components_channel_count),
 			m_creation_factory_id(Sound::NO_FACTORY)
 		{
 		}
 
 		abstract_gui_synthesizer_circuit::abstract_gui_synthesizer_circuit(
-			Sound::main_factory *main_factory,
+			gui_component_main_factory *complete_component_factory,
 			const unsigned int components_channel_count,
 			Sound::synthesizer * synthesizer,
 			std::mutex * synthesizer_mutex, const View::rectangle & rect, const View::color background)
 			: abstract_gui_component_map(synthesizer_mutex, rect, background),
 			m_synthesizer(synthesizer),
 			m_synthesizer_mutex(synthesizer_mutex),
-			m_main_factory(main_factory),
+			m_complete_component_factory(complete_component_factory),
 			m_components_channel_count(components_channel_count),
 			m_creation_factory_id(Sound::NO_FACTORY)
 		{
@@ -46,7 +46,7 @@ namespace Gammou {
 			if (!abstract_gui_component_map::on_mouse_dbl_click(x, y) 
 				&& m_creation_factory_id != Sound::NO_FACTORY) {
 
-				const Sound::abstract_request_form& requests = m_main_factory->get_plugin_request_form(m_creation_factory_id);
+				const Sound::abstract_request_form& requests = m_complete_component_factory->get_plugin_request_form(m_creation_factory_id);
 				const Sound::abstract_request_form::type type = requests.get_type();
 
 				if (type != Sound::abstract_request_form::type::EMPTY) // TODO Handle requests
@@ -56,17 +56,20 @@ namespace Gammou {
 
 				DEBUG_PRINT("Creating a %u-channel component\n", m_components_channel_count);
 
-				Sound::abstract_sound_component *sound_component = 
-					m_main_factory->get_new_sound_component(m_creation_factory_id, answer, m_components_channel_count);
-
-				gui_sound_component *gui_component =
-					new gui_sound_component(sound_component, m_synthesizer_mutex, convert_x(x), convert_y(y));
+				gui_component_main_factory::complete_component
+					component = m_complete_component_factory->get_new_complete_component(
+						m_creation_factory_id,
+						convert_x(x),
+						convert_y(y),
+						answer,
+						m_components_channel_count
+					);
 
 				lock_circuit();
-				add_sound_component_to_frame(sound_component);
+				add_sound_component_to_frame(component.second);
 				unlock_circuit();
 
-				add_gui_component(gui_component);	
+				add_gui_component(component.first);	
 			}
 
 			return true;
@@ -76,7 +79,7 @@ namespace Gammou {
 		{
 			DEBUG_PRINT("Set Factory Id = %u\n", factory_id);
 
-			if (m_main_factory->check_factory_presence(factory_id))
+			if (m_complete_component_factory->check_factory_presence(factory_id))
 				m_creation_factory_id = factory_id;
 			else
 				DEBUG_PRINT("Unregisterd Factory");
@@ -248,30 +251,30 @@ namespace Gammou {
 			data.read(&record_header, sizeof(record_header));
 
 			// We do not have this plugin factory
-			if (! m_main_factory->check_factory_presence(record_header.factory_id)) {
+			if (! m_complete_component_factory->check_factory_presence(record_header.factory_id)) {
 				// Todo dummy component
 				throw std::domain_error("Unknown factory !!!");
 			}
 
 			// To do Restriction on data size, via decorateur
 			// Build component from data
-			Sound::abstract_sound_component *sound_component =
-				m_main_factory->get_new_sound_component(record_header.factory_id, data,
+
+			gui_component_main_factory::complete_component
+				component = m_complete_component_factory->get_new_complete_component(
+					record_header.factory_id,
+					record_header.gui_x_pos,
+					record_header.gui_y_pos,
+					data,
 					m_components_channel_count);
-			
+
 			//	Add process component on frame
 			lock_circuit();
-			add_sound_component_to_frame(sound_component);
+			add_sound_component_to_frame(component.second);
 			unlock_circuit();
 
-			// Build coresponding gui_component, according to header
-			gui_sound_component *gui_component =
-				new gui_sound_component(sound_component, m_synthesizer_mutex, 
-					record_header.gui_x_pos, record_header.gui_y_pos);
+			add_gui_component(component.first);
 
-			add_gui_component(gui_component);
-
-			return gui_component;
+			return component.first;
 		}
 
 		void abstract_gui_synthesizer_circuit::save_link(Sound::data_sink& data, const unsigned int src_record_id, 
