@@ -165,8 +165,14 @@ namespace Gammou {
 		*	Knob
 		*/
 
-		knob::knob(const int x, const int y, const unsigned int size)
-			: control(x, y, size, size), m_angle(0.0f)
+		const float knob::theta = 0.2f;
+		const float knob::angle_max = 2.0f * (3.14f - knob::theta);
+
+		knob::knob(std::function<void(knob *kn)> change_action, const int x, const int y, const unsigned int size)
+			: control(x, y, size, size), 
+				m_change_action(change_action),
+				m_angle(0.0f),
+				m_normalized_value(0.0f)
 		{
 		}
 
@@ -175,20 +181,18 @@ namespace Gammou {
 			const float offset = 0.5f * static_cast<float>(get_width());
 			const float radius = 0.4f * static_cast<float>(get_width());
 			
-			const float theta = 0.2;
-			
-			cairo_set_line_width(cr, 3.5);
+			cairo_set_line_width(cr, 3);
 
 			cairo_helper::set_source_color(cr, cl_lightgrey);
+			cairo_new_path(cr);
 			cairo_arc(cr, offset, offset, radius, 1.57 + theta, 1.57 - theta);
 			cairo_stroke(cr);
 
 			cairo_helper::set_source_color(cr, cl_blueviolet);
 
-			if( m_angle >= 0.0)
-				cairo_arc(cr, offset, offset, radius, -1.57, -1.57 + m_angle);
-			else
-				cairo_arc_negative(cr, offset, offset, radius, -1.57 + 0.0, -1.57 + m_angle);
+			cairo_set_line_width(cr, 3.6);
+			cairo_arc(cr, offset, offset, radius, 1.57 + theta, 1.57 + theta + m_angle);
+
 
 			cairo_line_to(cr, offset, offset);
 
@@ -197,21 +201,41 @@ namespace Gammou {
 
 		bool knob::on_mouse_drag(const mouse_button button, const int x, const int y, const int dx, const int dy)
 		{
-			const float borne = 3.14 - 0.2;
-
-			m_angle -= (dy * 0.1);
-
-			if (m_angle < -borne)
-				m_angle = -borne;
-			else if( m_angle > borne)
-				m_angle = borne;
-
-			redraw();
-
-			const float value = (m_angle + borne) / (2.0 * borne);
-
-			DEBUG_PRINT("value = %f dB\n",20 * log10f(value));
+			on_change(dy * 0.1);
+			//DEBUG_PRINT("value = %f dB\n",20 * log10f(value));
 			return true;
+		}
+
+		bool knob::on_mouse_wheel(const float distance)
+		{
+			on_change(-distance * 0.25f);
+			return true;
+		}
+
+		void knob::set_normalized_value(const double normalized_value)
+		{
+			m_normalized_value = normalized_value;
+			m_angle = normalized_value * angle_max;
+			redraw();
+		}
+
+		double knob::get_normalized_value()
+		{
+			return m_normalized_value;
+		}
+
+		void knob::on_change(const float angle_change)
+		{
+			m_angle -= angle_change;
+
+			if (m_angle < 0.0f)
+				m_angle = 0.0f;
+			else if (m_angle > angle_max)
+				m_angle = angle_max;
+
+			m_normalized_value = m_angle / angle_max;
+			m_change_action(this);
+			redraw();
 		}
 
 } /* View */

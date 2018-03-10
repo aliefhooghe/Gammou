@@ -41,8 +41,10 @@ namespace Gammou {
 					0, 0, 120, 800, 40, 
 					[&](unsigned int id) 
 					{
-						m_gui_polyphonic_circuit->select_component_creation_factory_id(m_factory_ids[id]);
-						m_gui_master_circuit->select_component_creation_factory_id(m_factory_ids[id]);
+						const unsigned int factory_id = m_factory_ids[id];
+						DEBUG_PRINT("SELECT factory id %u\n", factory_id);
+						m_gui_polyphonic_circuit->select_component_creation_factory_id(factory_id);
+						m_gui_master_circuit->select_component_creation_factory_id(factory_id);
 					},
 					GuiProperties::list_box_selected_item_color, 
 					GuiProperties::list_box_background, 
@@ -69,9 +71,7 @@ namespace Gammou {
 				}, "OpenFile", 500, 500)
 			);
 			*/
-			add_widget(
-				new View::knob(500, 500)
-			);
+			
 
 			///////////
 
@@ -105,7 +105,14 @@ namespace Gammou {
 
 		void synthesizer_gui::add_plugin_factory(Sound::abstract_plugin_factory * factory)
 		{
-			m_complete_component_factory.register_factory(factory);
+			m_complete_component_factory.register_plugin_factory(factory);
+			m_plugin_list_box->add_item(factory->get_name());
+			m_factory_ids.push_back(factory->get_factory_id());
+		}
+
+		void synthesizer_gui::add_control_factory(complete_component_factory * factory)
+		{
+			m_complete_component_factory.register_complete_factory(factory);
 			m_plugin_list_box->add_item(factory->get_name());
 			m_factory_ids.push_back(factory->get_factory_id());
 		}
@@ -118,6 +125,8 @@ namespace Gammou {
 			add_plugin_factory(new Sound::Builtin::fpb2_factory());
 			add_plugin_factory(new Sound::Builtin::adsr_env_factory());
 			add_plugin_factory(new Sound::Builtin::saw_factory());
+
+			add_control_factory(new knob_complete_component_factory());
 		}
 
 

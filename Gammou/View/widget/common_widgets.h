@@ -73,17 +73,29 @@ namespace Gammou {
 
 		class knob : public control {
 
+
+
 		public:
-			knob(const int x, const int y, const unsigned int size = 50);
+			knob(std::function<void(knob *kn)> change_action, 
+				const int x, const int y, const unsigned int size = 50);
 			virtual ~knob() {}
 
 			virtual void draw(cairo_t *cr) override;
 			virtual bool on_mouse_drag(const mouse_button button, const int x, const int y,
 				const int dx, const int dy) override;
+			virtual bool on_mouse_wheel(const float distance) override;
 
-		protected:
+			void set_normalized_value(const double normalized_value);
+			double get_normalized_value();
 		private:
+			void on_change(const float angle_change);
+
+			std::function<void(knob *kn)> m_change_action;
 			float m_angle;
+			float m_normalized_value;
+			
+			static const float theta;
+			static const float angle_max;
 		};
 
 

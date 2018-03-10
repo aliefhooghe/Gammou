@@ -53,12 +53,10 @@ namespace Gammou {
 
 		protected:
 			virtual void draw(cairo_t *cr) override;
+			void set_autosize(const bool state = true);
 
 			bool is_linking();
 			void set_linking(const bool state = true);
-
-			//inline void lock_circuit() { m_circuit_mutex->lock(); }
-			//inline void unlock_circuit() { m_circuit_mutex->unlock(); }
 
 		private:
 			void update_size();
@@ -66,7 +64,7 @@ namespace Gammou {
 
 			bool m_is_linking;
 			bool m_is_moving;
-			//std::mutex *m_circuit_mutex;
+			bool m_autosize;
 
 			int m_focused_output_id; // -1 if nothing 
 

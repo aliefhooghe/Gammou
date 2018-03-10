@@ -28,7 +28,7 @@ namespace Gammou {
 				component_height_by_socket_count(max(initial_input_count, initial_output_count))),
 				m_is_linking(false),
 				m_is_moving(false),
-				//m_circuit_mutex(circuit_mutex),
+				m_autosize(true),
 				m_focused_output_id(-1)
 		{
 			// Todo this goto properties
@@ -236,6 +236,13 @@ namespace Gammou {
 				}
 			}
 
+			// Contained widget
+			View::panel<>::draw_widgets(cr);
+		}
+
+		void abstract_gui_component::set_autosize(const bool state)
+		{
+			m_autosize = state;
 		}
 
 		bool abstract_gui_component::is_linking()
@@ -254,7 +261,7 @@ namespace Gammou {
 		{
 			const Process::abstract_component<double> *const component = get_component();
 
-			if (component != nullptr) {
+			if (m_autosize && component != nullptr) {
 				const unsigned int ic = component->get_input_count();
 				const unsigned int oc = component->get_output_count();
 				const unsigned int socket_count = std::max<unsigned int>(ic, oc);
@@ -270,32 +277,37 @@ namespace Gammou {
 
 		bool abstract_gui_component::on_mouse_drag(const View::mouse_button button, const int x, const int y, const int dx, const int dy)
 		{
-			if (!is_linking()) {
-				set_rect(get_absolute_rect().translate(dx, dy));
-				redraw_parent();
+			if (!View::panel<>::on_mouse_drag(button, x, y, dx, dy)) {
+				if (!is_linking()) {
+					set_rect(get_absolute_rect().translate(dx, dy));
+					redraw_parent();
+				}
 			}
 			
 			return true;
 		}
 
-		bool abstract_gui_component::on_mouse_drag_start(const View::mouse_button, const int x, const int y)
+		bool abstract_gui_component::on_mouse_drag_start(const View::mouse_button button, const int x, const int y)
 		{
-			//m_focused_output_id = -1;
-
-			if (!is_linking()) {
-				m_is_moving = true;
-				redraw();
+			
+			if (!View::panel<>::on_mouse_drag_start(button, x, y)) {
+				if (!is_linking()) {
+					m_is_moving = true;
+					redraw();
+				}
 			}
 
 			return true;
 		}
 
-		bool abstract_gui_component::on_mouse_drag_end(const View::mouse_button, const int x, const int y)
+		bool abstract_gui_component::on_mouse_drag_end(const View::mouse_button button, const int x, const int y)
 		{
-			if (!is_linking()) {
-				m_is_moving = false;
-				redraw();
-				return true;
+			if (!View::panel<>::on_mouse_drag_end(button, x, y)) {
+				if (!is_linking()) {
+					m_is_moving = false;
+					redraw();
+					return true;
+				}
 			}
 
 			return false;
@@ -303,12 +315,14 @@ namespace Gammou {
 
 		bool abstract_gui_component::on_mouse_move(const int x, const int y)
 		{
-			if (!m_is_linking) {
-				const int output_id = get_output_id_by_pos(get_x() + x, get_y() + y);
+			if (!View::panel<>::on_mouse_move(x, y)) {
+				if (!m_is_linking) {
+					const int output_id = get_output_id_by_pos(get_x() + x, get_y() + y);
 
-				if (m_focused_output_id != output_id) {
-					m_focused_output_id = output_id;
-					redraw();
+					if (m_focused_output_id != output_id) {
+						m_focused_output_id = output_id;
+						redraw();
+					}
 				}
 			}
 
@@ -317,7 +331,8 @@ namespace Gammou {
 
 		bool abstract_gui_component::on_mouse_exit()
 		{
-	
+			View::panel<>::on_mouse_exit();
+
 			if ( !m_is_linking 
 				&& m_focused_output_id != -1) {
 				m_focused_output_id = -1;

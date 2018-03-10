@@ -14,6 +14,8 @@
 #include "gui_component_main_factory.h"
 #include "../../Synthesizer/builtin_components.h"
 
+#include "control_component\knob_component.h"
+
 
 #define GAMMOU_SYNTHESIZER_CHANNEL_COUNT 128
 
@@ -36,6 +38,8 @@ namespace Gammou {
 
 		private:
 			void add_plugin_factory(Sound::abstract_plugin_factory *factory);
+			void add_control_factory(complete_component_factory *factory);
+
 			void init_main_factory(); // Load all built-in and plug in component
 
 			//	UI Widgets 

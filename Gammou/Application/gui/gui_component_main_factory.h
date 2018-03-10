@@ -3,6 +3,7 @@
 
 #include "gui_sound_component.h"
 #include "../../Synthesizer/plugin_management/main_factory.h"
+#include "abstract_gui_component_factory.h" // complete factory (todo rename)
 
 namespace Gammou {
 
@@ -25,13 +26,18 @@ namespace Gammou {
 			complete_component get_new_complete_component(const unsigned int factory_id, const int x, const int y, Sound::data_source& data, const unsigned int channel_count);
 			complete_component get_new_complete_component(const unsigned int factory_id, const int x, const int y,  const Sound::abstract_form_answer& answer_form, const unsigned int channel_count);
 
-			unsigned int load_factory(const std::string& file_path);
-			void register_factory(Sound::abstract_plugin_factory *factory);
+			unsigned int load_plugin_factory(const std::string& file_path);
+			void register_plugin_factory(Sound::abstract_plugin_factory *factory);
+			void register_complete_factory(complete_component_factory *factory);
 			bool check_factory_presence(const unsigned int factory_id) const;
 
 		protected:
 			complete_component create_default_complete_component(const int x, const int y, Sound::abstract_sound_component* sound_component);
 
+		private:
+			complete_component_factory *factory_by_id(const unsigned int factory_id);
+
+			std::map<unsigned int, complete_component_factory*> m_complete_component_factories;
 			Sound::main_factory m_main_factory;
 
 		};
