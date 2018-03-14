@@ -71,7 +71,7 @@ namespace Gammou {
 			vst3_data_source(vst3_data_source&) = delete;
 			~vst3_data_source();
 
-			bool seek(const unsigned int offset, Sound::data_stream::seek_mode mode) override;
+			bool seek(const int offset, Sound::data_stream::seek_mode mode) override;
 			unsigned int tell() override;
 			unsigned int read(void *data, const unsigned int size) override;
 		
@@ -86,7 +86,7 @@ namespace Gammou {
 			vst3_data_sink(vst3_data_sink&) = delete;
 			~vst3_data_sink();
 
-			bool seek(const unsigned int offset, Sound::data_stream::seek_mode mode) override;
+			bool seek(const int offset, Sound::data_stream::seek_mode mode) override;
 			unsigned int tell() override;
 			unsigned int write(void *data, const unsigned int size) override;
 

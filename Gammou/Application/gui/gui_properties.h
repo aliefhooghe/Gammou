@@ -45,8 +45,6 @@ namespace Gammou {
 			 *		Dimension
 			 */
 
-
-
 			// Components
 			const float component_width = 90;
 
@@ -56,7 +54,8 @@ namespace Gammou {
 			const float moving_component_border_width = 2.0;
 			const float component_socket_radius = 3.0;
 			const float focused_component_socket_radius = 4.0;
-
+			
+			const float link_width = 3.0;
 		}
 
 	}

@@ -126,6 +126,9 @@ namespace Gammou {
 			add_plugin_factory(new Sound::Builtin::adsr_env_factory());
 			add_plugin_factory(new Sound::Builtin::saw_factory());
 
+			add_plugin_factory(new Sound::Builtin::perfect_saw_factory());
+			add_plugin_factory(new Sound::Builtin::naive_saw_factory());
+
 			add_control_factory(new knob_complete_component_factory());
 		}
 

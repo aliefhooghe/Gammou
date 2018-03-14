@@ -12,7 +12,7 @@ namespace Gammou {
 			cairo_move_to(cr, x_input, y_input);
 			cairo_curve_to(cr, x_input + D, y_input, x_output - D, y_output, x_output, y_output);
 
-			cairo_set_line_width(cr, 3.0);
+			cairo_set_line_width(cr, GuiProperties::link_width);
 			View::cairo_helper::set_source_color(cr, color);
 			cairo_stroke(cr);
 		}

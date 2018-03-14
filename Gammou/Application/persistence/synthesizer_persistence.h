@@ -57,7 +57,7 @@ namespace Gammou {
 			buffer_data_sink(buffer_data_sink&) = delete;
 			~buffer_data_sink();
 
-			bool seek(const unsigned int offset, Sound::data_stream::seek_mode mode) override;
+			bool seek(const int offset, Sound::data_stream::seek_mode mode) override;
 			unsigned int tell() override;
 			unsigned int write(void *data, const unsigned int size) override;
 
@@ -67,6 +67,23 @@ namespace Gammou {
 			unsigned int m_cursor;
 			unsigned int m_data_size;
 			std::vector<uint8_t> m_buffer;
+		};
+
+		//------
+		
+		class constrained_data_source : public Sound::data_source {
+
+		public:
+			constrained_data_source(Sound::data_source& data, const unsigned int max_forward_offset);
+			
+			bool seek(const int offset, Sound::data_stream::seek_mode mode) override;
+			unsigned int tell() override;
+			unsigned int read(void *data, const unsigned int size) override;
+
+		private:
+			const unsigned int m_start_offset;
+			const unsigned int m_max_forward_offset;
+			Sound::data_source& m_data;
 		};
 
 		//-----

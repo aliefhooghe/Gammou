@@ -256,15 +256,17 @@ namespace Gammou {
 				throw std::domain_error("Unknown factory !!!");
 			}
 
-			// To do Restriction on data size, via decorateur
+			// Restriction on data size, via decorateur
 			// Build component from data
+
+			Persistence::constrained_data_source cdata(data, record_header.data_size);
 
 			gui_component_main_factory::complete_component
 				component = m_complete_component_factory->get_new_complete_component(
 					record_header.factory_id,
 					record_header.gui_x_pos,
 					record_header.gui_y_pos,
-					data,
+					cdata,
 					m_components_channel_count);
 
 			//	Add process component on frame

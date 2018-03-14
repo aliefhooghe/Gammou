@@ -127,24 +127,26 @@ namespace Gammou {
 
 			// Items
 			cairo_set_font_size(cr, m_font_size);
+			cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 			cairo_helper::set_source_color(cr, m_font_color);
 
 			unsigned int j = 0;
 			for (unsigned int i = m_first_displayed; i < end_displayed; ++i, ++j) {
 				const rectangle rect(
-					0,
+					5, // for text
 					static_cast<int>(static_cast<float>(j) * m_item_height),
 					get_width(),
 					static_cast<unsigned int>(m_item_height));
 
 				if (static_cast<int>(i) == get_selected_item()) {
 					cairo_helper::set_source_color(cr, m_selected_color);
-					cairo_rectangle(cr, rect.x, rect.y, rect.width, rect.height);
+					cairo_rectangle(cr, 0, rect.y, rect.width, rect.height);
 					cairo_fill(cr);
 					cairo_helper::set_source_color(cr, m_font_color);
 				}
 
-				cairo_helper::show_centered_text(cr, rect, m_items[i]);
+				//cairo_helper::show_centered_text(cr, rect, m_items[i]);
+				cairo_helper::show_left_aligned_text(cr, rect, m_items[i]);
 			}
 
 			// Border (after Items to avoid overlap)

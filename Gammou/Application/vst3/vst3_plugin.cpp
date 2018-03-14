@@ -167,9 +167,6 @@ namespace Gammou {
 
 			double input[2];
 			double output[2];
-
-			//float debug_max = 0.0f;
-			//float debug_min = 0.0f;
 				
 			if (processSetup.symbolicSampleSize == Steinberg::Vst::kSample32) { // 32 bits
 				float *output_buffer_left = data.outputs[0].channelBuffers32[0];
@@ -186,20 +183,10 @@ namespace Gammou {
 
 					m_synthesizer.process(input, output);
 					
-				/*	const float v = static_cast<float>(output[0]);
-
-					if (v > debug_max) {
-						debug_max = v;
-					}
-					else if (v < debug_min) {
-						debug_min = v;
-					}
-					*/
 					*output_buffer_left = static_cast<float>(output[0]);
 					*output_buffer_right = static_cast<float>(output[1]);
 				}
 
-				//DEBUG_PRINT("[%f, %f]\n", debug_min, debug_max);
 			}
 			else { // 64 bit
 				double *output_buffer_left = data.outputs[0].channelBuffers64[0];
@@ -305,7 +292,7 @@ namespace Gammou {
 		{
 		}
 
-		bool vst3_data_source::seek(const unsigned int offset, Sound::data_stream::seek_mode mode)
+		bool vst3_data_source::seek(const int offset, Sound::data_stream::seek_mode mode)
 		{
 			const Steinberg::IBStream::IStreamSeekMode steinberg_mode = gammou_to_steinberg_seek_mode(mode);
 			return (m_stream->seek(offset, steinberg_mode) == Steinberg::kResultOk);
@@ -339,7 +326,7 @@ namespace Gammou {
 		{
 		}
 
-		bool vst3_data_sink::seek(const unsigned int offset, Sound::data_stream::seek_mode mode)
+		bool vst3_data_sink::seek(const int offset, Sound::data_stream::seek_mode mode)
 		{
 			const Steinberg::IBStream::IStreamSeekMode steinberg_mode = gammou_to_steinberg_seek_mode(mode);
 			return (m_stream->seek(offset, steinberg_mode) == Steinberg::kResultOk);
