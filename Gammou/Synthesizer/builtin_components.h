@@ -16,5 +16,6 @@
 
 #include "builtin_components\perfetc_saw.h"
 #include "builtin_components\naivesaw.h"
+#include "builtin_components\cracra.h"
 
 #endif

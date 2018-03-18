@@ -38,6 +38,7 @@ namespace Gammou {
 			void redraw_rect(const rectangle& rect) override;
 
 			using panel<widget_type>::add_widget; // For test only
+
 		protected:
 			virtual void draw_content(cairo_t *cr);
 

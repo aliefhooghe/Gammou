@@ -5,8 +5,11 @@ namespace Gammou {
 
 	namespace View {
 
-		page_container::page_container(const int x, const int y, const unsigned int width, const unsigned int height, const color background)
-			: abstract_panel(x, y, width, height, background)
+		page_container::page_container(
+			const int x, const int y, 
+			const unsigned int width, const unsigned int height, 
+			const color background)
+			: abstract_panel(x, y, width, height, background) 
 
 		{
 		}

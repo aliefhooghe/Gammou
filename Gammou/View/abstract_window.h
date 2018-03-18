@@ -10,7 +10,7 @@ namespace Gammou {
 		class abstract_window : public panel<widget> {
 		
 		public:
-			//	Width and Height in pixel (todo : abstract size)
+			//	Width and Height in pixel : abstract size, real size depend on scale
 			abstract_window(const unsigned int px_width, const unsigned int px_height);
 			virtual ~abstract_window();
 

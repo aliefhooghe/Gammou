@@ -27,7 +27,8 @@ namespace Gammou {
 				const color background = cl_white, 
 				const color border_color = cl_black, 
 				const color font_color = cl_black, 
-				const unsigned int font_size = 11);
+				const unsigned int font_size = 11,
+				const float border_width = 2.0f);
 
 			list_box(
 				const rectangle& rect, 
@@ -37,7 +38,8 @@ namespace Gammou {
 				const color background = cl_white,
 				const color border_color = cl_black,
 				const color font_color = cl_black,
-				const unsigned int font_size = 11);
+				const unsigned int font_size = 11,
+				const float border_width = 2.0f);
 
 			~list_box() {}
 
@@ -66,6 +68,7 @@ namespace Gammou {
 			const color m_font_color;
 			const color m_border_color;
 			const unsigned int m_font_size;
+			const float m_border_width;
 			const float m_item_height;
 			const unsigned int m_displayed_item_count;
 

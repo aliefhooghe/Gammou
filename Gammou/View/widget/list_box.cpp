@@ -16,7 +16,8 @@ namespace Gammou {
 			const color background, 
 			const color border_color, 
 			const color font_color, 
-			const unsigned int font_size)
+			const unsigned int font_size,
+			const float border_width)
 			: widget(x, y, width, height),
 			m_on_select(on_select),
 			m_selected_color(selected_item_color),
@@ -24,6 +25,7 @@ namespace Gammou {
 			m_font_color(font_color),
 			m_border_color(border_color),
 			m_font_size(font_size),
+			m_border_width(border_width),
 			m_item_height(static_cast<float>(get_height()) / static_cast<float>(displayed_items_count)),
 			m_displayed_item_count(displayed_items_count),
 			m_selected_id(-1),
@@ -39,7 +41,8 @@ namespace Gammou {
 			const color background, 
 			const color border_color, 
 			const color font_color, 
-			const unsigned int font_size)
+			const unsigned int font_size,
+			const float border_width)
 			: widget(rect),
 			m_on_select(on_select),
 			m_selected_color(selected_item_color),
@@ -47,7 +50,10 @@ namespace Gammou {
 			m_font_color(font_color),
 			m_border_color(border_color),
 			m_font_size(font_size),
-			m_item_height(static_cast<float>(get_height()) / static_cast<float>(displayed_items_count)),
+			m_border_width(border_width),
+			m_item_height(
+				(static_cast<float>(get_height()) - 2.0f * border_width)/
+				static_cast<float>(displayed_items_count)),
 			m_displayed_item_count(displayed_items_count),
 			m_selected_id(-1),
 			m_first_displayed(0)
@@ -120,7 +126,7 @@ namespace Gammou {
 					m_first_displayed + m_displayed_item_count);
 
 			// Background
-			cairo_helper::rounded_rectangle(cr, 0, 0, static_cast<float>(get_width()), static_cast<float>(get_height()), 2.0);
+			cairo_rectangle(cr, 0, 0, static_cast<float>(get_width()), static_cast<float>(get_height()));
 			cairo_helper::set_source_color(cr, m_background_color);
 			cairo_fill(cr);
 
@@ -134,7 +140,7 @@ namespace Gammou {
 			for (unsigned int i = m_first_displayed; i < end_displayed; ++i, ++j) {
 				const rectangle rect(
 					5, // for text
-					static_cast<int>(static_cast<float>(j) * m_item_height),
+					static_cast<int>(m_border_width + static_cast<float>(j) * m_item_height),
 					get_width(),
 					static_cast<unsigned int>(m_item_height));
 
@@ -150,7 +156,10 @@ namespace Gammou {
 			}
 
 			// Border (after Items to avoid overlap)
-			cairo_helper::rounded_rectangle(cr, 0, 0, static_cast<float>(get_width()), static_cast<float>(get_height()), 2.0);
+			cairo_rectangle(cr, 
+				0.5f * m_border_width, 0.5f * m_border_width, 
+				static_cast<float>(get_width()) - m_border_width, 
+				static_cast<float>(get_height()) - m_border_width);
 			cairo_helper::set_source_color(cr, m_border_color);
 			cairo_stroke(cr);
 		}

@@ -11,8 +11,8 @@ namespace Gammou {
 		class page_container : public abstract_panel {
 
 		public:
-			page_container(const int x, const int y, const unsigned int width, 
-				const unsigned int height, const color background);
+			page_container(const int x, const int y, const unsigned int width, const unsigned int height, 
+				const color background);
 			page_container(const rectangle& rect, const color background);
 
 			virtual ~page_container();

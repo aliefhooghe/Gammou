@@ -26,10 +26,7 @@ namespace Gammou {
 		class synthesizer_gui : public View::generic_window {
 
 		public:
-			synthesizer_gui(
-				Sound::synthesizer *synthesizer, std::mutex *synthesizer_mutex,
-				unsigned int width, const unsigned int height);
-			
+			synthesizer_gui(Sound::synthesizer *synthesizer, std::mutex *synthesizer_mutex);
 			~synthesizer_gui();
 			
 			// Persistence

@@ -5,8 +5,6 @@ namespace Gammou {
 
 	namespace View {
 
-		// TODO essayer la liste de tache VS 3015 (essai )
-
 		abstract_window::abstract_window(const unsigned int px_width, const unsigned int px_height)
 			: panel(0, 0, px_width, px_height), 
 			m_scale_factor(1.0f),

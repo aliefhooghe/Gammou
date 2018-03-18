@@ -43,7 +43,9 @@ namespace Gammou {
 		class push_button : public control {
 
 		public: 
-			push_button(std::function<void(push_button*)> push_action, const std::string& text, const int x, const int y, const unsigned int width = 95, const unsigned int height = 27, const unsigned int font_size = 10);
+			push_button(
+				std::function<void(push_button*)> push_action, const std::string& text, const int x, const int y, 
+				const unsigned int width = 95, const unsigned int height = 27, const unsigned int font_size = 10);
 			// todo rectangle ctor
 			virtual ~push_button() {};
 
@@ -73,11 +75,12 @@ namespace Gammou {
 
 		class knob : public control {
 
-
-
 		public:
 			knob(std::function<void(knob *kn)> change_action, 
-				const int x, const int y, const unsigned int size = 50);
+				const int x, const int y, 
+				const color on_color = cl_blueviolet, const color off_color = cl_lightgrey, 
+				const unsigned int size = 50);
+
 			virtual ~knob() {}
 
 			virtual void draw(cairo_t *cr) override;
@@ -85,7 +88,7 @@ namespace Gammou {
 				const int dx, const int dy) override;
 			virtual bool on_mouse_wheel(const float distance) override;
 
-			void set_normalized_value(const double normalized_value);
+			void set_normalized_value(const float normalized_value);
 			double get_normalized_value();
 		private:
 			void on_change(const float angle_change);
@@ -94,6 +97,9 @@ namespace Gammou {
 			float m_angle;
 			float m_normalized_value;
 			
+			const color m_on_color;
+			const color m_off_color;
+
 			static const float theta;
 			static const float angle_max;
 		};

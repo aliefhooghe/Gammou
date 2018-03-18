@@ -168,13 +168,20 @@ namespace Gammou {
 		const float knob::theta = 0.2f;
 		const float knob::angle_max = 2.0f * (3.14f - knob::theta);
 
-		knob::knob(std::function<void(knob *kn)> change_action, const int x, const int y, const unsigned int size)
+		knob::knob(
+				std::function<void(knob *kn)> change_action, 
+				const int x, const int y, 
+				const color on_color, 
+				const color off_color,
+				const unsigned int size)
 			: control(x, y, size, size), 
 				m_change_action(change_action),
 				m_angle(0.0f),
-				m_normalized_value(0.0f)
+				m_normalized_value(0.0f),
+				m_on_color(on_color), m_off_color(off_color)
 		{
 		}
+
 
 		void knob::draw(cairo_t * cr)
 		{
@@ -183,12 +190,12 @@ namespace Gammou {
 			
 			cairo_set_line_width(cr, 3);
 
-			cairo_helper::set_source_color(cr, cl_lightgrey);
+			cairo_helper::set_source_color(cr, m_off_color);
 			cairo_new_path(cr);
 			cairo_arc(cr, offset, offset, radius, 1.57 + theta, 1.57 - theta);
 			cairo_stroke(cr);
 
-			cairo_helper::set_source_color(cr, cl_blueviolet);
+			cairo_helper::set_source_color(cr, m_on_color);
 
 			cairo_set_line_width(cr, 3.6);
 			cairo_arc(cr, offset, offset, radius, 1.57 + theta, 1.57 + theta + m_angle);
@@ -201,7 +208,7 @@ namespace Gammou {
 
 		bool knob::on_mouse_drag(const mouse_button button, const int x, const int y, const int dx, const int dy)
 		{
-			on_change(dy * 0.1);
+			on_change(dy * 0.1f);
 			//DEBUG_PRINT("value = %f dB\n",20 * log10f(value));
 			return true;
 		}
@@ -212,7 +219,7 @@ namespace Gammou {
 			return true;
 		}
 
-		void knob::set_normalized_value(const double normalized_value)
+		void knob::set_normalized_value(const float normalized_value)
 		{
 			m_normalized_value = normalized_value;
 			m_angle = normalized_value * angle_max;

@@ -1,23 +1,33 @@
 
 #include "../persistence/synthesizer_persistence.h"
 #include "synthesizer_gui.h"
-
+#include "gui_properties.h"
 
 namespace Gammou {
 
 	namespace Gui {
 
-		synthesizer_gui::synthesizer_gui(Sound::synthesizer * synthesizer, std::mutex * synthesizer_mutex, unsigned int width, 
-			const unsigned int height)
-			: View::generic_window(width, height)
+		synthesizer_gui::synthesizer_gui(Sound::synthesizer * synthesizer, std::mutex * synthesizer_mutex)
+			: View::generic_window(GuiProperties::main_gui_width, GuiProperties::main_gui_height)
 		{
 			set_background_color(View::cl_chartreuse); // for gui debuging
 
+			//  Synthesizer Circuits
 
-			m_gui_master_circuit = new gui_master_circuit(&m_complete_component_factory, synthesizer, synthesizer_mutex, 0, 0, 800, 800);
-			m_gui_polyphonic_circuit = new gui_polyphonic_circuit(&m_complete_component_factory, synthesizer, synthesizer_mutex, 0, 0, 800, 800);
+			m_gui_master_circuit = 
+				new gui_master_circuit(
+					&m_complete_component_factory, synthesizer, synthesizer_mutex, 
+					0, 0, GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height);
 
-			View::page_container *pages = new View::page_container(120, 0, 800, 800, View::cl_chartreuse);
+			m_gui_polyphonic_circuit = 
+				new gui_polyphonic_circuit(
+					&m_complete_component_factory, synthesizer, synthesizer_mutex, 
+					0, 0, GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height);
+
+			View::page_container *pages = 
+				new View::page_container(
+					GuiProperties::main_gui_component_choice_box_width, GuiProperties::main_gui_toolbox_height, 
+					GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height, View::cl_chartreuse);
 
 			pages->add_page(m_gui_master_circuit);
 			pages->add_page(m_gui_polyphonic_circuit);
@@ -26,19 +36,14 @@ namespace Gammou {
 
 			add_widget(pages);
 
-			add_widget(new View::push_button(
-				[&, pages](View::push_button *self)
-				{
-					page_id = (page_id == 0) ? 1 : 0;
-					pages->select_page(page_id);
-				}
-			, "Change page", 705, 0));
-
-			////////////
+			// Component Choice ListBox
 
 			m_plugin_list_box = 
 				new View::list_box(
-					0, 0, 120, 800, 40, 
+					0, GuiProperties::main_gui_toolbox_height - 2, 
+					GuiProperties::main_gui_component_choice_box_width, 
+					GuiProperties::main_gui_component_choice_box_height + 2, 
+					GuiProperties::main_gui_component_choice_box_item_count,
 					[&](unsigned int id) 
 					{
 						const unsigned int factory_id = m_factory_ids[id];
@@ -46,38 +51,47 @@ namespace Gammou {
 						m_gui_polyphonic_circuit->select_component_creation_factory_id(factory_id);
 						m_gui_master_circuit->select_component_creation_factory_id(factory_id);
 					},
-					GuiProperties::list_box_selected_item_color, 
-					GuiProperties::list_box_background, 
-					GuiProperties::list_box_border_color, 
-					GuiProperties::list_box_font_color, 
-					12);
+					GuiProperties::main_gui_list_box_selected_item_color, 
+					GuiProperties::main_gui_list_box_background, 
+					GuiProperties::main_gui_list_box_border_color, 
+					GuiProperties::main_gui_list_box_font_color, 
+					GuiProperties::main_gui_component_choice_box_font_size);
 
 			add_widget(m_plugin_list_box);
-			
-			/*add_widget(
-				new View::push_button([&](View::push_button *self){
-					std::string path;
+						
+			// ToolBox
 
-					self->set_enabled(false);
+			View::panel<> *tool_box =
+				new View::border_panel<>(
+					0, 0,
+					GuiProperties::main_gui_toolbox_width, GuiProperties::main_gui_toolbox_height,
+					GuiProperties::main_gui_tool_box_background, GuiProperties::main_gui_tool_box_border_color);
 
-					if (open_file(path, "Title", "wav")) {
-						DEBUG_PRINT("File path : %s\n", path.c_str());
-					}
-					else {
-						DEBUG_PRINT("No File\n");
-					}
+			tool_box->add_widget(new View::push_button(
+				[&, pages](View::push_button *self)
+			{
+				page_id = (page_id == 0) ? 1 : 0;
+				pages->select_page(page_id);
+			}
+			, "Change page", 705, 0));
 
-					self->set_enabled();
-				}, "OpenFile", 500, 500)
-			);
-			*/
-			
+			const unsigned int offset = (GuiProperties::main_gui_size_unit - 50) / 2;
+
+			tool_box->add_widget(new View::knob(
+				[](View::knob *kn) {},
+				offset + GuiProperties::main_gui_width - GuiProperties::main_gui_size_unit,
+				offset,
+				View::cl_firebrick,
+				View::cl_lightgrey
+				));
+
+			add_widget(tool_box);
 
 			///////////
 
 			init_main_factory();
 
-		//	scale(0.5f);
+			// scale(0.8f); Ableton
 		}
 
 		synthesizer_gui::~synthesizer_gui()
@@ -128,6 +142,7 @@ namespace Gammou {
 
 			add_plugin_factory(new Sound::Builtin::perfect_saw_factory());
 			add_plugin_factory(new Sound::Builtin::naive_saw_factory());
+			add_plugin_factory(new Sound::Builtin::cracra_factory());
 
 			add_control_factory(new knob_complete_component_factory());
 		}

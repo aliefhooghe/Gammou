@@ -15,7 +15,7 @@ namespace Gammou {
 			:
 			m_synthesizer_mutex(),
 			m_synthesizer(2, 2, GAMMOU_SYNTHESIZER_CHANNEL_COUNT, GAMMOU_VST_AUTOMATION_INPUT_COUNT),
-			m_window(&m_synthesizer, &m_synthesizer_mutex, 800 + 120, 800)
+			m_window(&m_synthesizer, &m_synthesizer_mutex)
 		{
 			DEBUG_PRINT("Gammou Plugin CTOR\n");
 		}
@@ -54,9 +54,7 @@ namespace Gammou {
 			addEventInput(USTRING("Midi In"), 1); // 1 channel
 
 			// Create Parameter inputs
-			const unsigned int parameter_count = m_synthesizer.get_parameter_input_count();
-
-			for (unsigned int i = 0; i < parameter_count; ++i) {
+			for (unsigned int i = 0; i < GAMMOU_VST_AUTOMATION_INPUT_COUNT; ++i) {
 				std::string param_name = ("Parameter " + std::to_string(i));
 				parameters.addParameter(new Steinberg::Vst::Parameter(USTRING(param_name.c_str()), i));
 			}
@@ -232,6 +230,8 @@ namespace Gammou {
 
 		Steinberg::tresult PLUGIN_API Plugin::setState(Steinberg::IBStream * state)
 		{
+			// Load State from data
+
 			if (state != nullptr) {
 				vst3_data_source data(state);
 				if (m_window.load_state(data))
@@ -243,12 +243,21 @@ namespace Gammou {
 
 		Steinberg::tresult PLUGIN_API Plugin::getState(Steinberg::IBStream * state)
 		{
+			// Save State To data
+
+			for (unsigned int i = 0; i < GAMMOU_VST_AUTOMATION_INPUT_COUNT; ++i) {
+				const double value = getParamNormalized(i);
+				DEBUG_PRINT("Param %u = %lf\n", i, value);
+			}
+
 			if (state != nullptr) {
 				vst3_data_sink data(state);
 				if(m_window.save_state(data))
 					return Steinberg::kResultOk;
 			}
 			
+			//setParamNormalized
+
 			return Steinberg::kResultFalse;
 		}
 

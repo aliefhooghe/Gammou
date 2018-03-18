@@ -7,7 +7,10 @@ namespace Gammou {
 
 	namespace View {
 	
-		abstract_panel::abstract_panel(const int x, const int y, const unsigned int width, const unsigned int height, const color background)
+		abstract_panel::abstract_panel(
+			const int x, const int y, 
+			const unsigned int width, const unsigned int height, 
+			const color background)
 			: widget(x, y, width, height),
 			m_background_color(background)
 		{}
@@ -29,20 +32,24 @@ namespace Gammou {
 
 		void abstract_panel::set_background_color(const color c)
 		{
-			m_background_color = c;
-			redraw();
+			if (m_background_color != c) {
+				m_background_color = c;
+				redraw();
+			}
 		}
 
-		color abstract_panel::get_background_color(void)
+		color abstract_panel::get_background_color(void) const
 		{
 			return m_background_color;
 		}
 
 		void abstract_panel::draw_background(cairo_t * cr)
 		{
-			cairo_helper::set_source_color(cr, get_background_color());
 			cairo_rectangle(cr, 0, 0, get_width(), get_height());
+
+			cairo_helper::set_source_color(cr, get_background_color());
 			cairo_fill_preserve(cr);
+
 			cairo_clip(cr); // to be sure that nothing will be drawn outside
 		}
 
