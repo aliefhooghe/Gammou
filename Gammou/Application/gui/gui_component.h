@@ -130,6 +130,7 @@ namespace Gammou {
 
 			virtual bool on_mouse_button_down(const View::mouse_button button, const int x, const int y) override;
 
+			virtual void remove_widget(abstract_gui_component *component) override;
 		protected:
 			void draw_content(cairo_t *cr) override;
 

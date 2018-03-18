@@ -19,7 +19,7 @@ namespace Gammou {
 
 		public:
 			observer();
-			observer(observer<ResourceType, NotificationTagType>& src) noexcept;
+			observer(const observer<ResourceType, NotificationTagType>& src) noexcept;
 			observer(observer<ResourceType, NotificationTagType>&& old) noexcept;
 
 			virtual ~observer();
@@ -75,7 +75,7 @@ namespace Gammou {
 		}
 
 		template<class ResourceType, class NotificationTagType>
-		observer<ResourceType, NotificationTagType>::observer(observer<ResourceType, NotificationTagType>& src) noexcept :
+		observer<ResourceType, NotificationTagType>::observer(const observer<ResourceType, NotificationTagType>& src) noexcept :
 			m_subject(src.m_subject),
 			m_previous_observer(nullptr),
 			m_next_observer(nullptr)
@@ -166,6 +166,7 @@ namespace Gammou {
 		template<class ResourceType, class NotificationTagType>
 		subject<ResourceType, NotificationTagType>::~subject()
 		{
+			//DEBUG_PRINT("SUBJECT DTOR\n");
 			if( m_first_observer != nullptr )
 				m_first_observer->notify_subject_destruction();
 		}

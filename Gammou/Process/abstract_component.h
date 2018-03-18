@@ -24,7 +24,8 @@ namespace Gammou {
 		class component_link: public observer<abstract_component<T> > {
 
 		public:
-			component_link();
+			component_link(abstract_component<T> *owner);
+			component_link(const component_link& other) noexcept;
 			~component_link()
 			{
 				DEBUG_PRINT("Component Link DTOR\n");
@@ -32,9 +33,12 @@ namespace Gammou {
 
 			void set_src_output_id(const unsigned int output_id);
 			unsigned int get_src_output_id() const;
+
 			void on_notify(const unsigned int popped_output_id) override;
+			void on_subject_destruction() override;
 
 		private:
+			abstract_component<T> *const m_owner;
 			unsigned int m_src_output_id;
 		};
 
@@ -135,8 +139,18 @@ namespace Gammou {
 		*/
 
 		template<class T>
-		component_link<T>::component_link()
-			: observer<abstract_component<T> >(), m_src_output_id(0)
+		component_link<T>::component_link(abstract_component<T> *owner)
+			: observer<abstract_component<T> >(), 
+				m_src_output_id(0),
+				m_owner(owner)
+		{
+		}
+
+		template<class T>
+		component_link<T>::component_link(const component_link & other) noexcept
+			: observer<abstract_component<T> >(other), 
+				m_src_output_id(other.m_src_output_id),
+				m_owner(other.m_owner)
 		{
 		}
 
@@ -155,10 +169,28 @@ namespace Gammou {
 		template<class T>
 		void component_link<T>::on_notify(const unsigned int popped_output_id)
 		{
-			// TODO Frame notify ?
 			if (popped_output_id == m_src_output_id) {
+
 				observer<abstract_component<T> >::disconnect();
+
+				abstract_frame<T> *frame = m_owner->get_frame();
+				if (frame != nullptr)
+					frame->notify_circuit_change();
 			}
+		}
+
+		template<class T>
+		void component_link<T>::on_subject_destruction()
+		{
+			abstract_frame<T> *frame = m_owner->get_frame();
+
+			DEBUG_PRINT("Link subject Destruction : %s \n",
+				(get_subject_resource() == nullptr) ? "Ok" : "Resource not null");
+
+			
+
+			if (frame != nullptr)
+				frame->notify_circuit_change();
 		}
 		/*
 		* 		Frame link implementation
@@ -189,7 +221,7 @@ namespace Gammou {
 		abstract_component<T>::abstract_component(const std::string& name,
 				const unsigned int input_count, const unsigned int output_count)
 				: m_component_subject(this),
-				m_input(input_count),
+				m_input(input_count, this),
 				m_input_name(input_count),
 				m_output_name(output_count),
 				m_name(name),
@@ -206,16 +238,14 @@ namespace Gammou {
 		template<class T>
 		abstract_component<T>::~abstract_component()
 		{
-			abstract_frame<T> *const frame = get_frame();
+			//abstract_frame<T> *const frame = get_frame();
 			const std::string name = get_name();
 
 			DEBUG_PRINT("Component DTOR : '%s'\n", name.c_str());
 
-			// TODO : Problemmmmmm
-			if( frame != nullptr )
-				frame->notify_circuit_change();
-
-
+			// TODO : Problem : Component not already destroyed here
+			//if( frame != nullptr )
+			//	frame->notify_circuit_change();
 		}
 
 		template<class T>
@@ -355,7 +385,7 @@ namespace Gammou {
 		void abstract_component<T>::push_input()
 		{
 			const unsigned int new_input_id = get_input_count();
-			m_input.push_back(component_link<T>());
+			m_input.push_back(component_link<T>(this));
 			m_input_name.push_back(default_input_name(new_input_id));
 		}
 

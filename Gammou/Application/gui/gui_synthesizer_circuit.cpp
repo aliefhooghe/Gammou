@@ -43,33 +43,46 @@ namespace Gammou {
 		bool abstract_gui_synthesizer_circuit::on_mouse_dbl_click(const int x, const int y)
 		{
 
-			if (!abstract_gui_component_map::on_mouse_dbl_click(x, y) 
-				&& m_creation_factory_id != Sound::NO_FACTORY) {
+			if (!abstract_gui_component_map::on_mouse_dbl_click(x, y)){
+				
+				abstract_gui_component *focused_component = get_focused_widget();
 
-				const Sound::abstract_request_form& requests = m_complete_component_factory->get_plugin_request_form(m_creation_factory_id);
-				const Sound::abstract_request_form::type type = requests.get_type();
+				if (focused_component != nullptr
+					&& focused_component->get_sound_component_factory_id() != Sound::NO_FACTORY) {
+					remove_widget(focused_component);
+					DEBUG_PRINT("Delete component '%s'\n", focused_component->get_component()->get_name().c_str());
+					lock_circuit();
+					delete focused_component;
+					unlock_circuit();
+					DEBUG_PRINT("OK\n");
+				}
+				else if (m_creation_factory_id != Sound::NO_FACTORY) {
 
-				if (type != Sound::abstract_request_form::type::EMPTY) // TODO Handle requests
-					throw std::runtime_error("Factory Request not handled!");
-			
-				const Sound::empty_answer_form answer;
+					const Sound::abstract_request_form& requests = m_complete_component_factory->get_plugin_request_form(m_creation_factory_id);
+					const Sound::abstract_request_form::type type = requests.get_type();
 
-				DEBUG_PRINT("Creating a %u-channel component\n", m_components_channel_count);
+					if (type != Sound::abstract_request_form::type::EMPTY) // TODO Handle requests
+						throw std::runtime_error("Factory Request not handled!");
 
-				gui_component_main_factory::complete_component
-					component = m_complete_component_factory->get_new_complete_component(
-						m_creation_factory_id,
-						convert_x(x),
-						convert_y(y),
-						answer,
-						m_components_channel_count
-					);
+					const Sound::empty_answer_form answer;
 
-				lock_circuit();
-				add_sound_component_to_frame(component.second);
-				unlock_circuit();
+					DEBUG_PRINT("Creating a %u-channel component\n", m_components_channel_count);
 
-				add_gui_component(component.first);	
+					gui_component_main_factory::complete_component
+						component = m_complete_component_factory->get_new_complete_component(
+							m_creation_factory_id,
+							convert_x(x),
+							convert_y(y),
+							answer,
+							m_components_channel_count
+						);
+
+					lock_circuit();
+					add_sound_component_to_frame(component.second);
+					unlock_circuit();
+
+					add_gui_component(component.first);
+				}
 			}
 
 			return true;

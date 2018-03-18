@@ -4,6 +4,7 @@
 
 #include <deque>
 #include <type_traits>
+#include <algorithm>
 #include "widget.h"
 
 
@@ -67,7 +68,7 @@ namespace Gammou {
 			virtual void draw(cairo_t *cr) override;
 		
 			virtual void add_widget(widget_type *w);		//	Panel get widget ownership and have to destroy it unless it is removed
-			void remove_widget(widget_type *w);
+			virtual void remove_widget(widget_type *w);
 		protected:
 			virtual void draw_widgets(cairo_t *cr);
 
