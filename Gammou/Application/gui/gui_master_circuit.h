@@ -9,9 +9,9 @@ namespace Gammou {
 
 		class gui_master_circuit : public abstract_gui_synthesizer_circuit {
 
-			enum internal_component_id : uint8_t
+			enum internal_component_id : uint32_t
 			{
-				INPUT,
+				INPUT = 0u,
 				OUTPUT,
 				PARAMETERS,
 				POLY_IN,
@@ -41,8 +41,8 @@ namespace Gammou {
 
 		protected:
 			void add_sound_component_to_frame(Sound::abstract_sound_component *sound_component) override;
-			uint8_t get_component_internal_id(abstract_gui_component *component) override;
-			abstract_gui_component *gui_component_by_internal_id(const uint8_t internal_id) override;
+			abstract_gui_component *gui_component_by_internal_id(const uint32_t id) override;
+
 		private:
 			void add_internal_components(std::mutex *synthesizer_mutex);
 

@@ -14,7 +14,7 @@ namespace Gammou {
 		Plugin::Plugin()
 			:
 			m_synthesizer_mutex(),
-			m_synthesizer(2, 2, GAMMOU_SYNTHESIZER_CHANNEL_COUNT, GAMMOU_VST_AUTOMATION_INPUT_COUNT),
+			m_synthesizer(2, 2, GAMMOU_SYNTHESIZER_CHANNEL_COUNT, GAMMOU_VST_PARAMETER_INPUT_COUNT),
 			m_window(&m_synthesizer, &m_synthesizer_mutex)
 		{
 			DEBUG_PRINT("Gammou Plugin CTOR\n");
@@ -54,7 +54,7 @@ namespace Gammou {
 			addEventInput(USTRING("Midi In"), 1); // 1 channel
 
 			// Create Parameter inputs
-			for (unsigned int i = 0; i < GAMMOU_VST_AUTOMATION_INPUT_COUNT; ++i) {
+			for (unsigned int i = 0; i < GAMMOU_VST_PARAMETER_INPUT_COUNT; ++i) {
 				std::string param_name = ("Parameter " + std::to_string(i));
 				parameters.addParameter(new Steinberg::Vst::Parameter(USTRING(param_name.c_str()), i));
 			}
@@ -234,6 +234,33 @@ namespace Gammou {
 
 			if (state != nullptr) {
 				vst3_data_source data(state);
+
+				// Loading header
+				Persistence::synthesizer_record_header header;
+				if (data.read(&header, sizeof(header)) != sizeof(header))
+					return Steinberg::kResultFalse;
+
+				// Check magic Id
+				if (std::strncmp(header.magic, "GAMMOU", 6) != 0)
+					return Steinberg::kResultFalse;
+
+				// Check format version
+				if (header.format_version_id != Persistence::gammou_format_version_id)
+					return Steinberg::kResultFalse;
+
+				// Load Parameters
+				if( header.parameter_count != GAMMOU_VST_PARAMETER_INPUT_COUNT )
+					return Steinberg::kResultFalse;
+
+				for (unsigned int i = 0; i < GAMMOU_VST_PARAMETER_INPUT_COUNT; ++i) {
+					double param_value;
+					if (data.read(&param_value, sizeof(double)) != sizeof(double))
+						return Steinberg::kResultFalse;
+
+					setParamNormalized(i, param_value);
+				}
+
+				// Load synthesizer circuits
 				if (m_window.load_state(data))
 					return Steinberg::kResultOk;
 			}
@@ -245,18 +272,32 @@ namespace Gammou {
 		{
 			// Save State To data
 
-			for (unsigned int i = 0; i < GAMMOU_VST_AUTOMATION_INPUT_COUNT; ++i) {
-				const double value = getParamNormalized(i);
-				DEBUG_PRINT("Param %u = %lf\n", i, value);
-			}
-
 			if (state != nullptr) {
 				vst3_data_sink data(state);
-				if(m_window.save_state(data))
+				Persistence::synthesizer_record_header header;
+
+				// Fill header
+				std::memcpy(header.magic, "GAMMOU", 6);
+				header.format_version_id = Persistence::gammou_format_version_id;
+				header.parameter_count = GAMMOU_VST_PARAMETER_INPUT_COUNT;
+
+				// Write header
+				if (data.write(&header, sizeof(header)) != sizeof(header))
+					return Steinberg::kResultFalse;
+
+				// Write Parameters
+				for (unsigned int i = 0; i < GAMMOU_VST_PARAMETER_INPUT_COUNT; ++i) {
+					double param_value = getParamNormalized(i);
+
+					if (data.write(&param_value, sizeof(double)) != sizeof(double))
+						return Steinberg::kResultFalse;
+				}
+
+				// Write synthesizer circuits
+				if (m_window.save_state(data))
 					return Steinberg::kResultOk;
 			}
 			
-			//setParamNormalized
 
 			return Steinberg::kResultFalse;
 		}

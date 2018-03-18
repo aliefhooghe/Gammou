@@ -135,22 +135,6 @@ namespace Gammou {
 
 		//----------------
 
-		bool record_id_is_internal_component(const uint32_t component_record_id)
-		{
-			return INTERNAL_COMPONENT_ID_MASK ==
-				(INTERNAL_COMPONENT_ID_MASK & component_record_id);
-		}
-
-		uint8_t internal_component_id_by_record_id(const uint32_t component_record_id)
-		{
-			return (0xFF & component_record_id);
-		}
-
-		uint32_t record_id_by_internal_component_id(const uint8_t internal_component_id)
-		{
-			return (INTERNAL_COMPONENT_ID_MASK | internal_component_id);
-		}
-
 	} /* Persistence */
 
 } /* Persistence */

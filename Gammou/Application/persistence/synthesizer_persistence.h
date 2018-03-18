@@ -17,6 +17,9 @@ namespace Gammou {
 
 	namespace Persistence {
 
+		// Current Gammou Format
+		const uint32_t gammou_format_version_id = 1u;
+
 		// Size = 16 Bytes
 		PACKED(
 		struct link_record
@@ -46,6 +49,14 @@ namespace Gammou {
 		}
 		);
 
+		// Size = 12 Bytes
+		PACKED(
+		struct synthesizer_record_header {
+			char magic[6];
+			uint32_t format_version_id;
+			uint32_t parameter_count;
+		}
+		);
 
 		//--------
 
@@ -88,12 +99,8 @@ namespace Gammou {
 
 		//-----
 
-		const uint32_t INTERNAL_COMPONENT_ID_MASK = 0xFFFFFF00;
-
-		bool record_id_is_internal_component(const uint32_t component_record_id);
-		uint8_t internal_component_id_by_record_id(const uint32_t component_record_id);
-		uint32_t record_id_by_internal_component_id(const uint8_t internal_component_id);
-
+		// Dummy factory Id fo Internals Components
+		const unsigned int INTERNAL_FACTORY_ID = 0x00000000;
 
 	} /* Persistence */
 

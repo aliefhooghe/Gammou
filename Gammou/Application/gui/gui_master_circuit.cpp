@@ -39,25 +39,7 @@ namespace Gammou {
 			m_synthesizer->add_sound_component_on_master_circuit(sound_component);
 		}
 
-		uint8_t gui_master_circuit::get_component_internal_id(abstract_gui_component * component)
-		{
-			const Process::abstract_component<double> *const process_component = component->get_component();
-
-			if (process_component == m_synthesizer->get_master_main_input())
-				return internal_component_id::INPUT;
-			else if (process_component == m_synthesizer->get_master_main_output())
-				return internal_component_id::OUTPUT;
-			else if (process_component == m_synthesizer->get_master_circuit_parameter_input())
-				return internal_component_id::PARAMETERS;
-			else if (process_component == m_synthesizer->get_master_circuit_polyphonic_output())
-				return internal_component_id::POLY_OUT;
-			else if (process_component == m_synthesizer->get_master_circuit_polyphonic_input())
-				return internal_component_id::POLY_IN;
-			else
-				throw std::domain_error("Component is not master Internal\n");
-		}
-
-		abstract_gui_component * gui_master_circuit::gui_component_by_internal_id(const uint8_t internal_id)
+		abstract_gui_component * gui_master_circuit::gui_component_by_internal_id(const uint32_t internal_id)
 		{
 			
 			switch (internal_id)
@@ -94,25 +76,30 @@ namespace Gammou {
 		{
 			// Todo position
 
-			m_polyphonic_input = new default_gui_component(
+			m_polyphonic_input = new internal_gui_component(
 				m_synthesizer->get_master_circuit_polyphonic_input(),
-				/*synthesizer_mutex,*/ 50, 10);
+				internal_component_id::POLY_IN,
+				50, 10);
 
-			m_polyphonic_output = new default_gui_component(
+			m_polyphonic_output = new internal_gui_component(
 				m_synthesizer->get_master_circuit_polyphonic_output(),
-				/*synthesizer_mutex,*/ 200, 10);
+				internal_component_id::POLY_OUT,
+				200, 10);
 
-			m_main_input = new default_gui_component(
+			m_main_input = new internal_gui_component(
 				m_synthesizer->get_master_main_input(),
-				/*synthesizer_mutex,*/ 50, 200);
+				internal_component_id::INPUT,
+				50, 200);
 
-			m_main_output = new default_gui_component(
+			m_main_output = new internal_gui_component(
 				m_synthesizer->get_master_main_output(),
-				/*synthesizer_mutex,*/ 200, 200);
+				internal_component_id::OUTPUT,
+				200, 200);
 
-			m_parameter_input = new default_gui_component(
+			m_parameter_input = new internal_gui_component(
 				m_synthesizer->get_master_circuit_parameter_input(),
-				/*synthesizer_mutex, */50, 350);
+				internal_component_id::PARAMETERS,
+				50, 350);
 
 			add_gui_component(m_parameter_input);
 			add_gui_component(m_polyphonic_input);

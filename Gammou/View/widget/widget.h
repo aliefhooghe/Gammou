@@ -54,11 +54,11 @@ namespace Gammou {
 
 			virtual void draw(cairo_t *cr) = 0;
 
-		protected:
 			virtual void set_pos(const int x, const int y);
 			virtual void resize(const unsigned int width, const unsigned int height);
 			virtual void set_rect(const rectangle& rect);
 
+		protected:
 			void redraw_parent();
 			abstract_panel *get_parent();
 			const rectangle get_relative_rect() const;	//	self coordinate system

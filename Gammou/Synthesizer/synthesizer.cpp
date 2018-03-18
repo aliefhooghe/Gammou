@@ -96,7 +96,7 @@ namespace Gammou {
 				// default value (avoid undetermined component behavior)
 				m_polyphonic_circuit.set_channel_release_velocity(channel, 0.5);
 
-				m_channels_lifetime[channel] = m_channel_zero_lifetime;
+				m_channels_lifetime[channel] = m_channel_zero_sample_count;
 			}
 			else {
 				DEBUG_PRINT("No more channel for note on\n");

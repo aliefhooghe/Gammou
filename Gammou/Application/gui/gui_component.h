@@ -78,31 +78,6 @@ namespace Gammou {
 		
 		*/
 
-		class default_gui_component : public abstract_gui_component {
-
-		public:
-			default_gui_component(
-				Process::abstract_component<double> *component,
-				/*std::mutex *circuit_mutex,*/
-				const int x, const int y)
-				: abstract_gui_component(/*circuit_mutex,*/ x, y, component->get_input_count(), component->get_output_count()),
-				m_component(component) {}
-
-			virtual ~default_gui_component() {}
-
-			Process::abstract_component<double> *get_component() const override 
-			{ 
-				return m_component; 
-			}
-		
-		protected:
-			Process::abstract_component<double> *const m_component;
-		};
-
-		/*
-		
-		*/
-
 		class abstract_gui_component_map : public View::scrollable_panel<abstract_gui_component> {
 
 		public:

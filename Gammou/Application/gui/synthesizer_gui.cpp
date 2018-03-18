@@ -109,7 +109,17 @@ namespace Gammou {
 		bool synthesizer_gui::save_state(Sound::data_sink & data)
 		{
 			DEBUG_PRINT("SYN SAVE STATE\n");
+
+			// Save Master Volume
+			double master_volume = 0.42; // TODO save ddsfqgqregqef
+
+			if (data.write(&master_volume, sizeof(double)) != sizeof(double))
+				return false;
+
+			// Save Master Circuit
 			m_gui_master_circuit->save_state(data);
+
+			// Save Polyphonic Circuit
 			m_gui_polyphonic_circuit->save_state(data);
 			return true;
 		}
@@ -117,8 +127,21 @@ namespace Gammou {
 		bool synthesizer_gui::load_state(Sound::data_source & data)
 		{
 			DEBUG_PRINT("SYN LOAD STATE :\n");
+
+			// Load Master Volume
+			double master_volume;
+			if (data.read(&master_volume, sizeof(double)) != sizeof(double))
+				return false;
+
+			// Todo apply volume
+			DEBUG_PRINT("MAster Volume = %lf\n", master_volume);
+			
+			// Load Master Circuit 
 			m_gui_master_circuit->load_state(data);
+
+			// Load Polyphonic Circuit
 			m_gui_polyphonic_circuit->load_state(data);
+
 			DEBUG_PRINT("SYN STATE LOADED\n");
 			return true;
 		}

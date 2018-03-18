@@ -43,8 +43,8 @@ namespace Gammou {
 			// Warning : Synthesizer Mutex is alredy lock when add_sound_component_to_frame is called
 			virtual void add_sound_component_to_frame(Sound::abstract_sound_component *sound_component) = 0;
 
-			virtual uint8_t get_component_internal_id(abstract_gui_component *component) = 0;
-			virtual abstract_gui_component *gui_component_by_internal_id(const uint8_t internal_id) = 0;
+			// 
+			virtual abstract_gui_component *gui_component_by_internal_id(const uint32_t id) = 0;
 
 			void lock_circuit() { m_synthesizer_mutex->lock(); }
 			void unlock_circuit() { m_synthesizer_mutex->unlock(); }
@@ -66,6 +66,48 @@ namespace Gammou {
 			const unsigned int m_components_channel_count;
 			unsigned int m_creation_factory_id;
 		};
+
+
+		/*
+		
+		*/
+
+
+		class internal_gui_component : public abstract_gui_component {
+
+		public:
+			internal_gui_component(
+				Process::abstract_component<double> *component, 
+				const uint32_t internal_id,
+				const int x, const int y)
+				: abstract_gui_component(x, y, component->get_input_count(), component->get_output_count()),
+					m_component(component),
+					m_internal_component_id(internal_id) {}
+
+			virtual ~internal_gui_component() {}
+
+			Process::abstract_component<double> *get_component() const override
+			{
+				return m_component;
+			}
+
+			// FACTORY stuff
+			unsigned int get_sound_component_factory_id() const override
+			{
+				return Persistence::INTERNAL_FACTORY_ID;
+			}
+
+			unsigned int save_sound_component_state(Sound::data_sink& data) override
+			{
+				uint32_t id = m_internal_component_id; // for constness
+				return data.write(&id, sizeof(uint32_t));
+			}
+
+		protected:
+			const uint32_t m_internal_component_id;
+			Process::abstract_component<double> *const m_component;
+		};
+
 
 
 	} /* Gui */

@@ -67,7 +67,7 @@ namespace Gammou {
 
 		void master_circuit::set_sample_rate(const double sample_rate)
 		{
-			DEBUG_PRINT("SET MMASTER SAMPLERATE\n");
+			//DEBUG_PRINT("SET MMASTER SAMPLERATE\n");
 			m_sound_component_manager.set_current_samplerate(sample_rate);
 			m_volume_smoothing_fact = MASTER_VOLUME_SMOOTHING_TAU * sample_rate;
 		}
