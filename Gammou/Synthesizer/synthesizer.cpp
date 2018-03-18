@@ -13,26 +13,28 @@ namespace Gammou {
 		*/
 
 		synthesizer::synthesizer(const unsigned int main_input_count,
-									const unsigned int main_output_count,
-									const unsigned int channel_count,
-									const unsigned int automation_count,
-									const unsigned int master_to_polyphonic_count,
-									const unsigned int polyphonic_to_master_count,
-									const unsigned int sample_rate,
-									const float channel_zero_lifetime)
+			const unsigned int main_output_count,
+			const unsigned int channel_count,
+			const unsigned int automation_count,
+			const unsigned int master_to_polyphonic_count,
+			const unsigned int polyphonic_to_master_count,
+			const unsigned int sample_rate,
+			const float channel_zero_lifetime)
 			:
 			m_master_circuit(
-				master_to_polyphonic_count, 
+				master_to_polyphonic_count,
 				automation_count, main_input_count,
-				main_output_count, 
+				main_output_count,
 				polyphonic_to_master_count),
 			m_polyphonic_circuit(&m_master_circuit, channel_count),
 			m_channels(channel_count),
 			m_running_channels_end(m_channels.begin()),
 			m_channels_lifetime(channel_count),
-			m_channel_zero_lifetime(static_cast<unsigned int>(sample_rate * channel_zero_lifetime)),
+			m_channel_zero_lifetime(channel_zero_lifetime),
+			m_channel_zero_sample_count(static_cast<unsigned int>(sample_rate * channel_zero_lifetime)),
 			m_channels_midi_note(channel_count)
 		{
+			DEBUG_PRINT("Synthesizer CTOR\n");
 			m_master_circuit.set_sample_rate(sample_rate);
 			m_polyphonic_circuit.set_sample_rate(sample_rate);
 			std::iota(m_channels.begin(), m_channels.end(), 0u);
@@ -63,15 +65,20 @@ namespace Gammou {
 
 				}
 				else{
-					m_channels_lifetime[current_channel] = m_channel_zero_lifetime;
+					m_channels_lifetime[current_channel] = m_channel_zero_sample_count;
 				}
 
 				++it;
 			}
 
 			m_master_circuit.process(input, output);
+
 		}
 
+		void synthesizer::set_master_volume(const double volume_order)
+		{
+			m_master_circuit.set_volume(volume_order);
+		}
 
 		void synthesizer::send_note_on(const unsigned int midi_note, const double velocity)
 		{
@@ -138,6 +145,7 @@ namespace Gammou {
 
 		void synthesizer::set_sample_rate(const double sample_rate)
 		{
+			m_channel_zero_sample_count = (static_cast<unsigned int>(sample_rate * m_channel_zero_lifetime));
 			m_master_circuit.set_sample_rate(sample_rate);
 			m_polyphonic_circuit.set_sample_rate(sample_rate);
 		}

@@ -10,6 +10,7 @@ namespace Gammou {
 		synthesizer_gui::synthesizer_gui(Sound::synthesizer * synthesizer, std::mutex * synthesizer_mutex)
 			: View::generic_window(GuiProperties::main_gui_width, GuiProperties::main_gui_height)
 		{
+			DEBUG_PRINT("SYN GUI CTOR\n");
 			set_background_color(View::cl_chartreuse); // for gui debuging
 
 			//  Synthesizer Circuits
@@ -77,14 +78,19 @@ namespace Gammou {
 
 			const unsigned int offset = (GuiProperties::main_gui_size_unit - 50) / 2;
 
-			tool_box->add_widget(new View::knob(
-				[](View::knob *kn) {},
+			View::knob *master_volume = new View::knob(
+				[synthesizer](View::knob *kn) 
+				{ 
+					const double norm = kn->get_normalized_value();
+					const double volume = (expf(5.0f * norm) - 1.0) / (expf(5.0f) - 1.0);
+					synthesizer->set_master_volume(volume); 
+				},
 				offset + GuiProperties::main_gui_width - GuiProperties::main_gui_size_unit,
-				offset,
-				View::cl_firebrick,
-				View::cl_lightgrey
-				));
+				offset
+			);
 
+			master_volume->set_normalized_value(1.0); // coherence with synthesizer initial value
+			tool_box->add_widget(master_volume);
 			add_widget(tool_box);
 
 			///////////

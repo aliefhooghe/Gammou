@@ -176,6 +176,8 @@ namespace Gammou {
 				abstract_frame<T> *frame = m_owner->get_frame();
 				if (frame != nullptr)
 					frame->notify_circuit_change();
+
+				// No call to on disconect, Input now doesnt exist
 			}
 		}
 
@@ -187,8 +189,7 @@ namespace Gammou {
 			DEBUG_PRINT("Link subject Destruction : %s \n",
 				(get_subject_resource() == nullptr) ? "Ok" : "Resource not null");
 
-			
-
+			//TODO : m_owner->on_input_deconnection() Pb : Input ID
 			if (frame != nullptr)
 				frame->notify_circuit_change();
 		}
@@ -313,7 +314,6 @@ namespace Gammou {
 				m_input[input_id].disconnect();
 				on_input_deconnection(input_id);
 
-				//// TODO Frame should be notified directly by input.disconect
 				if (frame != nullptr)
 					frame->notify_circuit_change();
 			}

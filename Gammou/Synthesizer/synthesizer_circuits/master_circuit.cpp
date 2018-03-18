@@ -6,7 +6,10 @@
 
  */
 
+
 #include "master_circuit.h"
+
+#define MASTER_VOLUME_SMOOTHING_TAU 0.1
 
 namespace Gammou {
 
@@ -20,6 +23,9 @@ namespace Gammou {
 			const unsigned int main_output_count, 
 			const unsigned int input_from_polyphonic_count)
 			:
+			m_volume_order(1.0),
+			m_volume(1.0),
+			m_volume_smoothing_fact(0.0),
 			m_master_to_polyphonic_buffer(master_to_polyphonic_output_count),
 			m_polyphonic_to_master_buffer(input_from_polyphonic_count),
 			m_parameter_buffer(parameter_input_count), 
@@ -61,7 +67,9 @@ namespace Gammou {
 
 		void master_circuit::set_sample_rate(const double sample_rate)
 		{
+			DEBUG_PRINT("SET MMASTER SAMPLERATE\n");
 			m_sound_component_manager.set_current_samplerate(sample_rate);
+			m_volume_smoothing_fact = MASTER_VOLUME_SMOOTHING_TAU * sample_rate;
 		}
 
 		void master_circuit::process(const double input[], double output[])
@@ -69,6 +77,20 @@ namespace Gammou {
 			m_main_input.set_input_buffer_ptr(input);
 			m_main_output.set_output_pointer(output);
 			execute_program();
+
+			// Apply master volume
+			const unsigned int oc = m_main_output.get_input_count(); // master's output are main_output's input
+
+			for (unsigned int i = 0; i < oc; ++i)
+				output[i] *= m_volume;
+			
+			m_volume = (m_volume_order + m_volume_smoothing_fact * m_volume) / (1.0 + m_volume_smoothing_fact);
+		}
+
+		void master_circuit::set_volume(const double volume_order)
+		{
+			DEBUG_PRINT("MASTER Volume = %lf\n", volume_order);
+			m_volume_order = volume_order;
 		}
 
 		void master_circuit::notify_circuit_change()

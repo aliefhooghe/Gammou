@@ -34,11 +34,16 @@ namespace Gammou {
 			void add_sound_component(abstract_sound_component *component);
 			void set_sample_rate(const double sample_rate);
 			void process(const double input[], double output[]);
+			void set_volume(const double volume_order);
 
 			//void 
 		private:
 			void notify_circuit_change() override;
 			
+			double m_volume_order;
+			double m_volume;
+			double m_volume_smoothing_fact;
+
 			std::vector<double> m_master_to_polyphonic_buffer;
 			std::vector<double> m_polyphonic_to_master_buffer;
 			std::vector<double> m_parameter_buffer;

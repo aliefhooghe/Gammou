@@ -36,6 +36,7 @@ namespace Gammou {
 			~synthesizer();
 
 			void process(const double input[], double output[]);
+			void set_master_volume(const double volume_order); // smoothing is applied by master circuit
 
 			// Midi note : 
 			void send_note_on(const unsigned int midi_note, const double velocity);
@@ -72,6 +73,7 @@ namespace Gammou {
 			unsigned int get_new_channel();
 			void free_channel(const std::vector<unsigned int>::iterator& it);
 
+			// Circuits
 			master_circuit m_master_circuit;
 			polyphonic_circuit m_polyphonic_circuit;
 			
@@ -81,7 +83,8 @@ namespace Gammou {
 
 			//	Channels lifetime
 			std::vector<unsigned int> m_channels_lifetime;
-			unsigned int m_channel_zero_lifetime; // No const (set_sample rate)
+			const double m_channel_zero_lifetime;
+			unsigned int m_channel_zero_sample_count; // No const (set_sample rate)
 
 			// Channel note
 			std::vector<unsigned int> m_channels_midi_note;
