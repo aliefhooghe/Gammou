@@ -97,7 +97,7 @@ namespace Gammou {
 					const unsigned int input_count,
 					const unsigned int output_count,
 					const unsigned int channel_count);
-			virtual ~sound_component();
+			virtual ~sound_component() {}
 
 
 			//	not virtual : if another behaviour is needed, inherit from polyphonic_sound_component

@@ -2,6 +2,8 @@
 #ifndef OBSERVER_H_
 #define OBSERVER_H_
 
+#include "../debug.h"
+
 namespace Gammou {
 
 	namespace Process{
@@ -50,6 +52,8 @@ namespace Gammou {
 
 		public:
 			subject(ResourceType * const source);
+			subject(subject<ResourceType, NotificationTagType>&) = delete;
+
 			virtual ~subject();
 
 			void register_observer(observer<ResourceType, NotificationTagType> *link);
@@ -76,12 +80,12 @@ namespace Gammou {
 
 		template<class ResourceType, class NotificationTagType>
 		observer<ResourceType, NotificationTagType>::observer(const observer<ResourceType, NotificationTagType>& src) noexcept :
-			m_subject(src.m_subject),
+			m_subject(nullptr),
 			m_previous_observer(nullptr),
 			m_next_observer(nullptr)
 		{			
-			if (m_subject != nullptr)
-				m_subject->register_observer(this);
+			if (src.m_subject != nullptr)
+				src.m_subject->register_observer(this);
 		}
 
 		template<class ResourceType, class NotificationTagType>
@@ -166,9 +170,14 @@ namespace Gammou {
 		template<class ResourceType, class NotificationTagType>
 		subject<ResourceType, NotificationTagType>::~subject()
 		{
-			//DEBUG_PRINT("SUBJECT DTOR\n");
-			if( m_first_observer != nullptr )
+			DEBUG_PRINT("SUBJECT DTOR : ");
+			if (m_first_observer != nullptr) {
+				DEBUG_PRINT("Notifying Observers...\n");
 				m_first_observer->notify_subject_destruction();
+			}
+			else {
+				DEBUG_PRINT("No Observers\n");
+			}
 		}
 
 		template<class ResourceType, class NotificationTagType>

@@ -113,10 +113,6 @@ namespace Gammou {
 		{
 		}
 
-		sound_component::~sound_component()
-		{
-		}
-
 		double sound_component::fetch_output(const unsigned int output_id)
 		{
 			return m_output[output_id];
