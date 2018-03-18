@@ -223,6 +223,7 @@ namespace Gammou {
 		{
 			m_normalized_value = normalized_value;
 			m_angle = normalized_value * angle_max;
+			m_change_action(this);
 			redraw();
 		}
 

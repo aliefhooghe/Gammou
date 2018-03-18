@@ -74,11 +74,11 @@ namespace Gammou {
 				page_id = (page_id == 0) ? 1 : 0;
 				pages->select_page(page_id);
 			}
-			, "Change page", 705, 0));
+			, "Change page", 705, 16));
 
 			const unsigned int offset = (GuiProperties::main_gui_size_unit - 50) / 2;
 
-			View::knob *master_volume = new View::knob(
+			m_master_volume = new View::knob(
 				[synthesizer](View::knob *kn) 
 				{ 
 					const double norm = kn->get_normalized_value();
@@ -89,8 +89,8 @@ namespace Gammou {
 				offset
 			);
 
-			master_volume->set_normalized_value(1.0); // coherence with synthesizer initial value
-			tool_box->add_widget(master_volume);
+			m_master_volume->set_normalized_value(1.0); // coherence with synthesizer initial value
+			tool_box->add_widget(m_master_volume);
 			add_widget(tool_box);
 
 			///////////
@@ -111,7 +111,7 @@ namespace Gammou {
 			DEBUG_PRINT("SYN SAVE STATE\n");
 
 			// Save Master Volume
-			double master_volume = 0.42; // TODO save ddsfqgqregqef
+			double master_volume = m_master_volume->get_normalized_value();
 
 			if (data.write(&master_volume, sizeof(double)) != sizeof(double))
 				return false;
@@ -133,8 +133,7 @@ namespace Gammou {
 			if (data.read(&master_volume, sizeof(double)) != sizeof(double))
 				return false;
 
-			// Todo apply volume
-			DEBUG_PRINT("MAster Volume = %lf\n", master_volume);
+			m_master_volume->set_normalized_value(master_volume);
 			
 			// Load Master Circuit 
 			m_gui_master_circuit->load_state(data);

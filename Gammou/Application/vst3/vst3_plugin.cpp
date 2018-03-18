@@ -261,8 +261,13 @@ namespace Gammou {
 				}
 
 				// Load synthesizer circuits
-				if (m_window.load_state(data))
-					return Steinberg::kResultOk;
+				try {
+					if (m_window.load_state(data))
+						return Steinberg::kResultOk;
+				}
+				catch (const std::exception& e) {
+					DEBUG_PRINT("Load State Exception : '%s'\n", e.what());
+				}
 			}
 
 			return Steinberg::kResultFalse;
@@ -294,8 +299,13 @@ namespace Gammou {
 				}
 
 				// Write synthesizer circuits
-				if (m_window.save_state(data))
-					return Steinberg::kResultOk;
+				try {
+					if (m_window.save_state(data))
+						return Steinberg::kResultOk;
+				}
+				catch (const std::exception& e) {
+					DEBUG_PRINT("Save State Exception : '%s'\n", e.what());
+				}
 			}
 			
 
