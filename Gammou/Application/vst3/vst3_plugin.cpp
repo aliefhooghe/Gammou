@@ -113,8 +113,16 @@ namespace Gammou {
 						Steinberg::int32 sample_offset;
 						double value;
 						// For le moment, only the last point
+						
+						DEBUG_PRINT("Parameter data : id = %u, %u values : \n", param_id, data_count);
 
-						//DEBUG_PRINT("Parameter data : id = %u, %u values\n", param_id, data_count);
+						for (unsigned int i = 0; i < data_count; ++i) {
+							double v;
+							Steinberg::int32 o;
+							param_data->getPoint(i, o, v);
+							DEBUG_PRINT("-> value[%u] : v = %lf ; o = %d\n", i, v, o);
+						}
+
 
 						if (Steinberg::kResultTrue == 
 							param_data->getPoint(data_count - 1, sample_offset, value))
@@ -140,10 +148,12 @@ namespace Gammou {
 						switch (event.type) {
 
 						case Steinberg::Vst::Event::kNoteOnEvent:
+							//DEBUG_PRINT("Midi event sampleoffset = %d\n", event.sampleOffset);
 							m_synthesizer.send_note_on(event.noteOn.pitch, event.noteOn.velocity);
 							break;
 
 						case Steinberg::Vst::Event::kNoteOffEvent:
+							//DEBUG_PRINT("Midi event sampleoffset = %d\n", event.sampleOffset);
 							m_synthesizer.send_note_off(event.noteOff.pitch, event.noteOff.velocity);
 							break;
 
@@ -161,7 +171,8 @@ namespace Gammou {
 			//	No Silent flag (Todo check input silent flag)
 			data.outputs[0].silenceFlags = 0;
 
-			const unsigned int nbSamples = data.numSamples;
+			const unsigned int nb_samples = data.numSamples;
+			DEBUG_PRINT("Process %u sample\n", nb_samples);
 
 			double input[2];
 			double output[2];
@@ -173,7 +184,7 @@ namespace Gammou {
 				float *input_buffer_left = data.inputs[0].channelBuffers32[0];
 				float *input_buffer_right = data.inputs[0].channelBuffers32[1];
 
-				for (unsigned int i = 0; i < nbSamples; 
+				for (unsigned int i = 0; i < nb_samples; 
 					++i, ++output_buffer_left, ++output_buffer_right, ++input_buffer_left, ++input_buffer_right) {
 
 					input[0] = static_cast<double>(*input_buffer_left);
@@ -193,7 +204,7 @@ namespace Gammou {
 				double *input_buffer_left = data.inputs[0].channelBuffers64[0];
 				double *input_buffer_right = data.inputs[0].channelBuffers64[1];
 
-				for (unsigned int i = 0; i < nbSamples; 
+				for (unsigned int i = 0; i < nb_samples; 
 					++i, ++output_buffer_left, ++output_buffer_right, ++input_buffer_left, ++input_buffer_right) {
 
 					input[0] = *input_buffer_left;
@@ -257,7 +268,11 @@ namespace Gammou {
 					if (data.read(&param_value, sizeof(double)) != sizeof(double))
 						return Steinberg::kResultFalse;
 
+					// To the host
 					setParamNormalized(i, param_value);
+					
+					// To the Synthesizer
+					m_synthesizer.set_parameter_value(param_value, i);
 				}
 
 				// Load synthesizer circuits
