@@ -55,7 +55,7 @@ namespace Gammou {
 			virtual bool on_mouse_enter(void);
 			virtual bool on_mouse_exit(void);
 
-			void set_text(std::string& text);
+			void set_text(const std::string& text);
 		
 		protected:
 			virtual void draw(cairo_t *cr) override;

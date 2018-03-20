@@ -6,6 +6,8 @@
 #include "../abstract_vst3_window.h"
 #include <Windows.h>
 #include <windowsx.h>
+#undef min
+#undef max
 
 namespace Gammou {
 
@@ -29,11 +31,13 @@ namespace Gammou {
 			void redraw(void) override;
 
 			// ------
-			virtual bool open_file(std::string& path, const std::string& title, const std::string& ext);
+			bool open_file(std::string& path, const std::string& title, const std::string& ext);
+			//void show_cursor(const bool state = true) override;
 		private:
 			static LRESULT CALLBACK windowProc(HWND window, UINT msg, WPARAM w_param, LPARAM l_param);
 			HWND m_plugin_window;
 			bool m_has_focus;
+			bool m_cursor_is_visible;
 		};
 
 

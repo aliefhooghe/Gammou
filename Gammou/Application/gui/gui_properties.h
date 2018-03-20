@@ -33,6 +33,9 @@ namespace Gammou {
 
 			const View::color component_font_color = View::cl_lightgrey;
 
+			const View::color knob_off_color = View::cl_lightgrey;
+			const View::color knob_on_color = 0x932ED6FF;
+
 			/* Main Gui */
 
 			// Listboxs

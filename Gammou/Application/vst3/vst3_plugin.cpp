@@ -39,16 +39,16 @@ namespace Gammou {
 
 		Steinberg::tresult PLUGIN_API Plugin::initialize(FUnknown * context)
 		{
-			Steinberg::tresult result = SingleComponentEffect::initialize(context);
+			const Steinberg::tresult result = SingleComponentEffect::initialize(context);
 
 			if (result != Steinberg::kResultOk)
 				return result;
 
 			// Create Audio Input
-			addAudioInput(USTRING("Stereo In"), Steinberg::Vst::SpeakerArr::kStereo);
+			addAudioInput(USTRING("Stereo Input"), Steinberg::Vst::SpeakerArr::kStereo);
 
 			// Create Audio Output
-			addAudioOutput(USTRING("Stereo Out"), Steinberg::Vst::SpeakerArr::kStereo);
+			addAudioOutput(USTRING("Stereo Output"), Steinberg::Vst::SpeakerArr::kStereo);
 
 			//	Create Midi Input
 			addEventInput(USTRING("Midi In"), 1); // 1 channel
@@ -71,6 +71,8 @@ namespace Gammou {
 
 		Steinberg::tresult PLUGIN_API Plugin::setActive(Steinberg::TBool state)
 		{
+			// Todo
+			DEBUG_PRINT("SET %s\n", state ? "Active" : "Inactive");
 			return Steinberg::kResultOk;
 		}
 
@@ -163,16 +165,12 @@ namespace Gammou {
 			}
 
 			//	Process Audio
-			
-			//if (data.numOutputs == 0) // 
-			//	return Steinberg::kResultOk;
-
 
 			//	No Silent flag (Todo check input silent flag)
 			data.outputs[0].silenceFlags = 0;
 
 			const unsigned int nb_samples = data.numSamples;
-			DEBUG_PRINT("Process %u sample\n", nb_samples);
+			//DEBUG_PRINT("Process %u sample\n", nb_samples);
 
 			double input[2];
 			double output[2];

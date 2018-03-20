@@ -150,7 +150,7 @@ namespace Gammou {
 			return true;
 		}
 
-		void push_button::set_text(std::string & text)
+		void push_button::set_text(const std::string & text)
 		{
 			m_text = text;
 			redraw();

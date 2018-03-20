@@ -11,8 +11,10 @@ namespace Gammou {
 	namespace View {
 
 		win32_vst3_window::win32_vst3_window(const unsigned int width, const unsigned int height)
-			: abstract_vst3_window(width, height), m_has_focus(false),
-				m_plugin_window(nullptr)
+			: abstract_vst3_window(width, height), 
+				m_plugin_window(nullptr),
+				m_has_focus(false),
+				m_cursor_is_visible(true)
 		{
 			WNDCLASS window_class;
 
@@ -109,7 +111,7 @@ namespace Gammou {
 
 		bool win32_vst3_window::open_file(std::string & path, const std::string& title, const std::string & ext)
 		{
-			OPENFILENAME dialog;
+			OPENFILENAMEA dialog;
 			
 			const char *cext = ext.c_str();
 			const unsigned int ext_len = static_cast<unsigned int>(ext.size());
@@ -140,14 +142,22 @@ namespace Gammou {
 			dialog.lpstrTitle = title.c_str();
 			dialog.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
-			if (GetOpenFileName(&dialog)) {
+			if (GetOpenFileNameA(&dialog)) {
 				path = std::string(cpath);
 				return true;
 			}
 
 			return false;
 		}
-
+		/*
+		void win32_vst3_window::show_cursor(const bool state)
+		{
+			if (state != m_cursor_is_visible) {
+				m_cursor_is_visible = state;
+				ShowCursor(state);
+			}
+		}
+		*/
 		LRESULT win32_vst3_window::windowProc(HWND window, UINT msg, WPARAM w_param, LPARAM l_param)
 		{
 			if (msg == WM_CREATE) {
@@ -194,24 +204,32 @@ namespace Gammou {
 					break;
 
 					case WM_MOUSEMOVE:
-						if ( !vst3_win->m_has_focus ) {
+						if ( !vst3_win->m_has_focus ) { // Mouse enter
 							tagTRACKMOUSEEVENT track_mouse_event_param;
 							track_mouse_event_param.cbSize = sizeof(tagTRACKMOUSEEVENT);  // (magnifique)
 							track_mouse_event_param.dwFlags = TME_LEAVE; // demande for leave notification 
 							track_mouse_event_param.hwndTrack = window;
 							TrackMouseEvent(&track_mouse_event_param);
 							vst3_win->sys_mouse_enter();
-							DEBUG_PRINT("ENTER\n");
 							vst3_win->m_has_focus = true;
+
+							// Make cursor invisible in our windows (according to m_cursos_is_visible)
+							//if (!(vst3_win->m_cursor_is_visible)) {
+							//	ShowCursor(false);
+							//}
 						}
 						vst3_win->sys_mouse_move(GET_X_LPARAM(l_param), GET_Y_LPARAM(l_param));
 						return 0;
 						break;
 
 					case WM_MOUSELEAVE:
-						DEBUG_PRINT("EXIT\n");
 						vst3_win->sys_mouse_exit();
 						vst3_win->m_has_focus = false;
+
+						// Restor cursor for the host
+						//if (!(vst3_win->m_cursor_is_visible))
+						//	ShowCursor(true);
+				
 						return 0;
 						break;
 
@@ -250,7 +268,7 @@ namespace Gammou {
 		}
 
 
-		//	win_32_vst3_viw implementation
+		//	win_32_vst3_view implementation
 		//	todo peut etre plus de code dans abstract_vst3_view
 
 		win32_vst3_view::win32_vst3_view(win32_vst3_window * window)

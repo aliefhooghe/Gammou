@@ -37,6 +37,7 @@ namespace Gammou {
 
 			//	Feature to be implemented
 			virtual bool open_file(std::string& path, const std::string& title, const std::string& ext) =0;
+			//virtual void show_cursor(const bool state = true) = 0;
 
 			//---
 			void scale(const float scaling_factor);

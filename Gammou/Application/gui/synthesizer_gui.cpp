@@ -71,10 +71,17 @@ namespace Gammou {
 			tool_box->add_widget(new View::push_button(
 				[&, pages](View::push_button *self)
 			{
-				page_id = (page_id == 0) ? 1 : 0;
+				if (page_id == 0) {
+					page_id = 1;
+					self->set_text("Polyphonic Circuit");
+				}
+				else {
+					page_id = 0;
+					self->set_text("Master Circuit");
+				}
 				pages->select_page(page_id);
 			}
-			, "Change page", 705, 16));
+			, "Master Circuit", 705, 16, 110));
 
 			const unsigned int offset = (GuiProperties::main_gui_size_unit - 50) / 2;
 
@@ -86,7 +93,9 @@ namespace Gammou {
 					synthesizer->set_master_volume(volume); 
 				},
 				offset + GuiProperties::main_gui_width - GuiProperties::main_gui_size_unit,
-				offset
+				offset,
+				GuiProperties::knob_on_color,
+				GuiProperties::knob_off_color
 			);
 
 			m_master_volume->set_normalized_value(1.0); // coherence with synthesizer initial value
@@ -162,15 +171,15 @@ namespace Gammou {
 		void synthesizer_gui::init_main_factory()
 		{
 			add_plugin_factory(new Sound::Builtin::sin_factory());
-			add_plugin_factory(new Sound::Builtin::debug_factory());
+			add_plugin_factory(new Sound::Builtin::sum_component_factory());
 			add_plugin_factory(new Sound::Builtin::product_factory());
 			add_plugin_factory(new Sound::Builtin::fpb2_factory());
 			add_plugin_factory(new Sound::Builtin::adsr_env_factory());
 			add_plugin_factory(new Sound::Builtin::saw_factory());
 
-			add_plugin_factory(new Sound::Builtin::perfect_saw_factory());
+			//add_plugin_factory(new Sound::Builtin::perfect_saw_factory());
 			add_plugin_factory(new Sound::Builtin::naive_saw_factory());
-			add_plugin_factory(new Sound::Builtin::cracra_factory());
+			//add_plugin_factory(new Sound::Builtin::cracra_factory());
 
 			add_control_factory(new knob_complete_component_factory());
 		}

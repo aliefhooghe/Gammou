@@ -1,5 +1,9 @@
 
+#include <algorithm>
+
 #include "gui_component.h"
+
+
 
 namespace Gammou {
 
@@ -25,7 +29,7 @@ namespace Gammou {
 			: View::panel<View::widget>(
 				x, y, 
 				GuiProperties::component_width, 
-				component_height_by_socket_count(max(initial_input_count, initial_output_count))),
+				component_height_by_socket_count(std::max(initial_input_count, initial_output_count))),
 				m_is_linking(false),
 				m_is_moving(false),
 				m_autosize(true),

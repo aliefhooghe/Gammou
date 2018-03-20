@@ -170,13 +170,13 @@ namespace Gammou {
 		template<class ResourceType, class NotificationTagType>
 		subject<ResourceType, NotificationTagType>::~subject()
 		{
-			DEBUG_PRINT("SUBJECT DTOR : ");
+			//DEBUG_PRINT("SUBJECT DTOR : ");
 			if (m_first_observer != nullptr) {
-				DEBUG_PRINT("Notifying Observers...\n");
+				//DEBUG_PRINT("Notifying Observers...\n");
 				m_first_observer->notify_subject_destruction();
 			}
 			else {
-				DEBUG_PRINT("No Observers\n");
+				//DEBUG_PRINT("No Observers\n");
 			}
 		}
 
