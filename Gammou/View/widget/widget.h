@@ -1,6 +1,8 @@
 #ifndef GAMMOU_WIDGET_H_
 #define GAMMOU_WIDGET_H_
 
+#include <stdexcept>
+
 #include "../cairo_definition.h"
 #include "event.h"
 #include "cairo_helper.h"
@@ -9,7 +11,7 @@ namespace Gammou {
 
 	namespace View {
 	
-
+		class abstract_panel;
 
 		class widget {
 			

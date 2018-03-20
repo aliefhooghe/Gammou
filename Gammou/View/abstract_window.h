@@ -50,8 +50,6 @@ namespace Gammou {
 			
 			unsigned int m_cursor_x;
 			unsigned int m_cursor_y;
-			
-
 
 			bool m_is_draging;
 			mouse_button m_draging_button;

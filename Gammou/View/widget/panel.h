@@ -405,7 +405,7 @@ namespace Gammou {
 		 {
 			 if (m_border_color != c) {
 				 m_border_color = c;
-				 redraw();
+				 panel<widget_type>::redraw();
 			 }
 		 }
 
@@ -424,8 +424,8 @@ namespace Gammou {
 			 
 			 cairo_rectangle(
 				 cr, pos, pos, 
-				 static_cast<double>(get_width()) - m_border_width,
-				 static_cast<double>(get_height()) - m_border_width);
+				 static_cast<double>(panel<widget_type>::get_width()) - m_border_width,
+				 static_cast<double>(panel<widget_type>::get_height()) - m_border_width);
 
 			 cairo_helper::set_source_color(cr, m_border_color);
 			 cairo_set_line_width(cr, m_border_width);
