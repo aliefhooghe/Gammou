@@ -1,5 +1,5 @@
 #ifndef GAMMOU_EVENT_H_
-#define GAMMOU_EVENT_H
+#define GAMMOU_EVENT_H_
 
 namespace Gammou {
 
