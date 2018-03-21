@@ -146,7 +146,7 @@ namespace Gammou {
 		template<class widget_type>
 		void scrollable_panel<widget_type>::draw(cairo_t * cr)
 		{
-			draw_background(cr); // Do cliping
+			panel<widget_type>::draw_background(cr); // Do cliping
 			cairo_save(cr);
 			cairo_translate(cr, -static_cast<int>(m_x_origin), -static_cast<int>(m_y_origin));
 			draw_content(cr);
@@ -168,17 +168,17 @@ namespace Gammou {
 		template<class widget_type>
 		void scrollable_panel<widget_type>::redraw_rect(const rectangle & rect)
 		{
-			abstract_panel *const parent = get_parent();
+			abstract_panel *const parent = panel<widget_type>::get_parent();
 
 			if (parent != nullptr) {
 				rectangle real_rect = rect.translate(-static_cast<int>(m_x_origin), -static_cast<int>(m_y_origin));
 
 				// if we contain at least one point of the rect
-				if (real_rect.x <= static_cast<int>(get_width()) &&
-					real_rect.y <= static_cast<int>(get_height()) &&
+				if (real_rect.x <= static_cast<int>(panel<widget_type>::get_width()) &&
+					real_rect.y <= static_cast<int>(panel<widget_type>::get_height()) &&
 					0 <= real_rect.x + static_cast<int>(real_rect.width) &&
 					0 <= real_rect.y + static_cast<int>(real_rect.height)) {
-					parent->redraw_rect(real_rect.translate(get_x() , get_y()));
+					parent->redraw_rect(real_rect.translate(panel<widget_type>::get_x() , panel<widget_type>::get_y()));
 				}
 			}
 		}
@@ -195,8 +195,7 @@ namespace Gammou {
 		 {
 			 m_x_origin += dx;
 			 m_y_origin += dy;
-			 DEBUG_PRINT("SCROLL %d %d\n", dx, dy);
-			 redraw();
+			 panel<widget_type>::redraw();
 		 }
 		 
 		 template<class widget_type>

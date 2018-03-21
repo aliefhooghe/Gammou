@@ -64,6 +64,7 @@ namespace Gammou {
 
 		void push_button::draw(cairo_t * cr)
 		{
+			DEBUG_PRINT("PushButtonDraw\n");
 			float offset;
 
 			if (m_pushed) {
@@ -99,7 +100,7 @@ namespace Gammou {
 
 		bool push_button::on_mouse_drag_end(const mouse_button button, const int x, const int y)
 		{
-			// On recoit ce msg si le drag a commencé sur le bouton
+			// On recoit ce msg si le drag a commencï¿½ sur le bouton
 			if (button == mouse_button::LeftButton && is_enabled()) {
 				m_push_action(this);
 				m_pushed = false;

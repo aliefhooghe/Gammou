@@ -265,6 +265,7 @@ namespace Gammou {
 		template<class widget_type>
 		 void panel<widget_type>::draw(cairo_t * cr)
 		{
+			DEBUG_PRINT("Panel Draw\n");
 			draw_background(cr);
 			draw_widgets(cr);
 		}

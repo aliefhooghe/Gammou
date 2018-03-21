@@ -1,4 +1,4 @@
-#ifdef _WIN32
+
 
 #include "../../../debug.h"
 #include "win32_vst3_window.h"
@@ -309,7 +309,3 @@ namespace Gammou {
 } /* Gammou */
 
 
-
-
-
-#endif // _WIN32

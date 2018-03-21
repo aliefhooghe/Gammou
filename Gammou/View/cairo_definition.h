@@ -7,6 +7,7 @@
 #include <cairo-win32.h>
 #else
 #include <cairo.h>
+#include <cairo-xlib.h>
 #endif
 
 

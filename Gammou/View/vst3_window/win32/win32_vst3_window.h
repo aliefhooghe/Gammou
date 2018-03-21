@@ -24,7 +24,8 @@ namespace Gammou {
 			void open(void *parent_window) override;
 			void close(void) override;
 	
-			// abstract_window override
+	
+			// abstract_window override, todo should be protected
 			void system_redraw_rect(const rectangle& rect) override;
 
 			//	widget override

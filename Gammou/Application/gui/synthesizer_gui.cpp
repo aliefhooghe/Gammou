@@ -169,7 +169,7 @@ namespace Gammou {
 		}
 
 		void synthesizer_gui::init_main_factory()
-		{
+		{/*
 			add_plugin_factory(new Sound::Builtin::sin_factory());
 			add_plugin_factory(new Sound::Builtin::sum_component_factory());
 			add_plugin_factory(new Sound::Builtin::product_factory());
@@ -181,7 +181,9 @@ namespace Gammou {
 			add_plugin_factory(new Sound::Builtin::naive_saw_factory());
 			//add_plugin_factory(new Sound::Builtin::cracra_factory());
 
-			add_control_factory(new knob_complete_component_factory());
+			
+			*/
+			add_control_factory(new knob_complete_component_factory());		
 		}
 
 

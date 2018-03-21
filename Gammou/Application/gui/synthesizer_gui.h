@@ -14,7 +14,7 @@
 #include "gui_component_main_factory.h"
 #include "../../Synthesizer/builtin_components.h"
 
-#include "control_component\knob_component.h"
+#include "control_component/knob_component.h"
 
 
 #define GAMMOU_SYNTHESIZER_CHANNEL_COUNT 128

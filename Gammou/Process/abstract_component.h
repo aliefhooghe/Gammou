@@ -187,7 +187,7 @@ namespace Gammou {
 			abstract_frame<T> *frame = m_owner->get_frame();
 
 			DEBUG_PRINT("Link subject Destruction : %s \n",
-				(get_subject_resource() == nullptr) ? "Ok" : "Resource not null");
+				(observer<abstract_component<T> >::get_subject_resource() == nullptr) ? "Ok" : "Resource not null");
 
 			//TODO : m_owner->on_input_deconnection() Pb : Input ID
 			if (frame != nullptr)

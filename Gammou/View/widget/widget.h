@@ -7,6 +7,8 @@
 #include "event.h"
 #include "cairo_helper.h"
 
+#include "../../debug.h"
+
 namespace Gammou {
 
 	namespace View {
