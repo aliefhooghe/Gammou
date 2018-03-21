@@ -13,8 +13,8 @@
 
 #include "widget/common_widgets.h"
 
-#if defined GAMMOU_VIEW_APP && defined GAMMOU_VIEW_VST3
-#error "Gammou : View : It is impossible to use both vst3 and app window at the same time"
+#if not defined GAMMOU_VIEW_APP && not defined GAMMOU_VIEW_VST3
+#error "Gammou : View : You must define at least one of he option : GAMMOU_VIEW_APP or GAMMOU_VIEW_VST3"
 #endif
 
 // Todo maybe useless (included from final vst3_window\win32\win32_vst3_window.h for exemple
@@ -52,6 +52,9 @@ namespace Gammou {
 	namespace View {
 
 //--------------------
+
+//  Special Window
+
 #ifdef __linux__
 
 #ifdef GAMMOU_VIEW_VST3
@@ -72,12 +75,14 @@ namespace Gammou {
 #endif
 //--------------------
 
-#ifdef GAMMOU_VIEW_VST3
+// Generic window (Only if one target is specified)
+
+#ifdef GAMMOU_VIEW_VST3 and not defined GAMMOU_VIEW_APP
 		typedef generic_vst3_window generic_window;
-#elif defined GAMMOU_VIEW_APP
+#elif  defined GAMMOU_VIEW_APP and not defined GAMMOU_VIEW_VST3
 		typedef generic_app_window generic_window;
 #endif
-
+    
 	}
 
 }
