@@ -7,6 +7,8 @@
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 
+#include <X11/extensions/Xdbe.h>
+
 
 #include "../abstract_app_window.h"
 
@@ -37,6 +39,9 @@ namespace Gammou {
 
                 std::thread m_event_loop_thread;
                 Display *m_display;
+                Window m_window;
+                XdbeBackBuffer m_back_buffer; // doubl buffering
+
                 cairo_surface_t *m_cairo_surface;
 
         };

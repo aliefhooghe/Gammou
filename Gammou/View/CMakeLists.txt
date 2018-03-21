@@ -44,6 +44,6 @@ find_package(Cairo REQUIRED)
 add_library(view STATIC ${WINDOW_SRC} ${WIDGET_SRC})
 
 target_include_directories(view PRIVATE ${Cairo_INCLUDE_DIRS})
-target_link_libraries(view PRIVATE ${Cairo_LIBS} ${WINDOW_SYSTEM_LIB})
+target_link_libraries(view PRIVATE ${Cairo_LIBS} ${WINDOW_SYSTEM_LIB} Xext)
 
 
