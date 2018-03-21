@@ -64,7 +64,6 @@ namespace Gammou {
 
 		void push_button::draw(cairo_t * cr)
 		{
-			DEBUG_PRINT("PushButtonDraw\n");
 			float offset;
 
 			if (m_pushed) {

@@ -13,7 +13,8 @@ int main(){
 	Gammou::Gui::synthesizer_gui window(&synthesizer, &synthesizer_mutex);
 
     while(1){
-        ;
+        char b[256];
+        scanf("%s", b);
     }
 
     return 0;

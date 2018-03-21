@@ -124,20 +124,20 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 panel<widget_type>::panel(const rectangle & rect, const color background)
+		panel<widget_type>::panel(const rectangle & rect, const color background)
 			: abstract_panel(rect, background)
 		{
 		}
 
 		template<class widget_type>
-		 panel<widget_type>::~panel()
+		panel<widget_type>::~panel()
 		{
 			for (widget_type *w : m_widgets)
 				delete w;
 		}
 
 		template<class widget_type>
-		 bool panel<widget_type>::on_key_up(const keycode key)
+		bool panel<widget_type>::on_key_up(const keycode key)
 		{
 			if (m_focused_widget != nullptr)
 				return m_focused_widget->on_key_up(key);
@@ -146,7 +146,7 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 bool panel<widget_type>::on_key_down(const keycode key)
+		bool panel<widget_type>::on_key_down(const keycode key)
 		{
 			if (m_focused_widget != nullptr)
 				return m_focused_widget->on_key_down(key);
@@ -155,13 +155,13 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 bool panel<widget_type>::on_mouse_enter(void)
+		bool panel<widget_type>::on_mouse_enter(void)
 		{
 			return false;
 		}
 
 		template<class widget_type>
-		 bool panel<widget_type>::on_mouse_exit(void)
+		bool panel<widget_type>::on_mouse_exit(void)
 		{
 			bool ret;
 
@@ -179,7 +179,7 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 bool panel<widget_type>::on_mouse_move(const int x, const int y)
+		bool panel<widget_type>::on_mouse_move(const int x, const int y)
 		{
 			widget_type *const w = get_widget_at_position(x, y);
 
@@ -210,7 +210,7 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 bool panel<widget_type>::on_mouse_button_down(const mouse_button button, const int x, const int y)
+		bool panel<widget_type>::on_mouse_button_down(const mouse_button button, const int x, const int y)
 		{
 			if (m_focused_widget != nullptr)
 				return m_focused_widget->on_mouse_button_down(button,
@@ -221,7 +221,7 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 bool panel<widget_type>::on_mouse_button_up(const mouse_button button, const int x, const int y)
+		bool panel<widget_type>::on_mouse_button_up(const mouse_button button, const int x, const int y)
 		{
 			if (m_focused_widget != nullptr)
 				return m_focused_widget->on_mouse_button_up(button,
@@ -232,7 +232,7 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 bool panel<widget_type>::on_mouse_dbl_click(const int x, const int y)
+		bool panel<widget_type>::on_mouse_dbl_click(const int x, const int y)
 		{
 			if (m_focused_widget != nullptr)
 				return m_focused_widget->on_mouse_dbl_click(
@@ -243,7 +243,7 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 bool panel<widget_type>::on_mouse_wheel(const float distance)
+		bool panel<widget_type>::on_mouse_wheel(const float distance)
 		{
 			if (m_focused_widget != nullptr)
 				return m_focused_widget->on_mouse_wheel(distance);
@@ -252,7 +252,7 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 void panel<widget_type>::draw_widgets(cairo_t * cr)
+		void panel<widget_type>::draw_widgets(cairo_t * cr)
 		{
 			for (widget *w : m_widgets) {
 				cairo_save(cr);
@@ -263,9 +263,8 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 void panel<widget_type>::draw(cairo_t * cr)
+		void panel<widget_type>::draw(cairo_t * cr)
 		{
-			DEBUG_PRINT("Panel Draw\n");
 			draw_background(cr);
 			draw_widgets(cr);
 		}
@@ -287,7 +286,7 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 bool panel<widget_type>::on_mouse_drag(const mouse_button button, const int x, const int y, const int dx, const int dy)
+		bool panel<widget_type>::on_mouse_drag(const mouse_button button, const int x, const int y, const int dx, const int dy)
 		{
 			widget_type *w = get_widget_at_position(x, y);
 			bool ret = false;
@@ -310,7 +309,7 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 bool panel<widget_type>::on_mouse_drag_end(const mouse_button button, const int x, const int y)
+		bool panel<widget_type>::on_mouse_drag_end(const mouse_button button, const int x, const int y)
 		{
 			if (m_draging_widget != nullptr) {
 				bool ret = m_draging_widget->on_mouse_drag_end(button,
@@ -325,7 +324,7 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 void panel<widget_type>::add_widget(widget_type * w)
+		void panel<widget_type>::add_widget(widget_type * w)
 		{
 			if (w == nullptr)
 				return;
@@ -349,7 +348,7 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 widget_type * panel<widget_type>::get_widget_at_position(const int x, const int y) const
+		widget_type * panel<widget_type>::get_widget_at_position(const int x, const int y) const
 		{
 			for (auto it = m_widgets.rbegin(); it != m_widgets.rend(); ++it) {
 				widget_type *const w = (*it);
@@ -361,19 +360,19 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		 widget_type * panel<widget_type>::get_focused_widget(void) const
+		widget_type * panel<widget_type>::get_focused_widget(void) const
 		{
 			return m_focused_widget;
 		}
 
 		template<class widget_type>
-		 widget_type * panel<widget_type>::get_draging_widget(void) const
+		widget_type * panel<widget_type>::get_draging_widget(void) const
 		{
 			return m_draging_widget;
 		}
 
 		template<class widget_type>
-		 widget_type * panel<widget_type>::get_draging_widget(mouse_button & button) const
+		widget_type * panel<widget_type>::get_draging_widget(mouse_button & button) const
 		{
 			button = m_draging_button;
 			return m_draging_widget;

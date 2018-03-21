@@ -1,10 +1,13 @@
 
 
 #include <cstring>
+#include <chrono>
 
 #include "x11_app_window.h"
 
-
+#define GAMMOU_X_EVENT_MASK KeyPressMask | KeyReleaseMask | ExposureMask | StructureNotifyMask | \
+                            LeaveWindowMask | PointerMotionMask | ButtonPressMask | ButtonReleaseMask | \
+                            EnterWindowMask
 
 namespace Gammou {
 
@@ -43,8 +46,8 @@ namespace Gammou {
             int found_count;
             XVisualInfo *xvisual_info_found
                 = XGetVisualInfo(m_display,
-                VisualIDMask | VisualScreenMask | 
-                VisualDepthMask, &xvisual_info_template, &found_count);
+                VisualIDMask | VisualScreenMask | VisualDepthMask, 
+                &xvisual_info_template, &found_count);
             
             if( xvisual_info_found == nullptr || found_count < 1 )
                 throw std::runtime_error("No Visual With Double Buffering\n");
@@ -64,9 +67,7 @@ namespace Gammou {
             m_back_buffer = XdbeAllocateBackBufferName(m_display, m_window, XdbeBackground);
             
             //--
-            XSelectInput(m_display, m_window, 
-                KeyPressMask | KeyReleaseMask | ExposureMask | StructureNotifyMask |
-                PointerMotionMask | ButtonPressMask | ButtonReleaseMask);
+            XSelectInput(m_display, m_window, GAMMOU_X_EVENT_MASK);
             XMapWindow(m_display, m_window);
 
             GC graphic_context = XCreateGC(m_display, m_back_buffer, 0, nullptr);
@@ -148,13 +149,15 @@ namespace Gammou {
         
         void x11_app_window::resize(const unsigned int width, const unsigned int height)
         {
-            // Todo
+            // Not Supported
+            throw std::runtime_error("Windos Resizing is not supported with the X Backend\n");
         }
 
 
         void x11_app_window::x_event_loop(x11_app_window *self)
         {
             cairo_t *cr = cairo_create(self->m_cairo_surface);
+
 
             for(;;){
                 XEvent event;
@@ -181,19 +184,32 @@ namespace Gammou {
                         break;
 
                     case ButtonRelease:
-                        switch(event.xbutton.button){
+                        {   
+                            // Double Click Detection
+                            static Time last_time = event.xbutton.time;
+                            Time now = event.xbutton.time;
+                            const Time delta = now - last_time;
+                            
+                            //  
+                            if( delta > 50 && delta < 250 )
+                                self->sys_mouse_dbl_click();
+                            
+                            last_time = now;
+                            
+                            switch(event.xbutton.button){
 
-                            case 1: // left
-                            self->sys_mouse_button_up(mouse_button::LeftButton);
-                            break;
+                                case 1: // left
+                                self->sys_mouse_button_up(mouse_button::LeftButton);
+                                break;
 
-                            case 2: // wheel
-                            self->sys_mouse_button_up(mouse_button::WheelButton);
-                            break;
+                                case 2: // wheel
+                                self->sys_mouse_button_up(mouse_button::WheelButton);
+                                break;
 
-                            case 3: // right
-                            self->sys_mouse_button_up(mouse_button::RightButton);
-                            break;
+                                case 3: // right
+                                self->sys_mouse_button_up(mouse_button::RightButton);
+                                break;
+                            }
                         }
                         break;
 
@@ -225,6 +241,14 @@ namespace Gammou {
                         info.swap_action = XdbeBackground;
                         XdbeSwapBuffers(self->m_display, &info, 1);
                         XFlush(self->m_display);
+                        break;
+
+                    case EnterNotify:
+                        self->sys_mouse_enter();
+                        break;
+                    
+                    case LeaveNotify:
+                        self->on_mouse_exit();
                         break;
                 }
             }
