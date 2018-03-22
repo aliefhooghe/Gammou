@@ -74,7 +74,7 @@ namespace Gammou {
             XSetForeground(m_display, graphic_context, BlackPixel(m_display, screen));
 
             // to be sure that windows is mapped
-            for(XEvent e; e.type != MapNotify; XNextEvent(m_display, &e)) {DEBUG_PRINT("WAIT\n");};
+            for(XEvent e; e.type != MapNotify; XNextEvent(m_display, &e)); 
 
             // Cairo
             
@@ -180,6 +180,18 @@ namespace Gammou {
                             case 3: // right
                             self->sys_mouse_button_down(mouse_button::RightButton);
                             break;
+
+                            case 4:
+                            self->on_mouse_wheel(1.0f);
+                            break;
+
+                            case 5:
+                            self->on_mouse_wheel(-1.0f);
+                            break;
+
+                            default:
+                                DEBUG_PRINT("b = %u\n", event.xbutton.button);
+                                break;
                         }
                         break;
 
@@ -203,12 +215,15 @@ namespace Gammou {
                                 break;
 
                                 case 2: // wheel
+                                DEBUG_PRINT("WHEEL\n");
                                 self->sys_mouse_button_up(mouse_button::WheelButton);
                                 break;
 
                                 case 3: // right
                                 self->sys_mouse_button_up(mouse_button::RightButton);
                                 break;
+
+
                             }
                         }
                         break;
@@ -231,7 +246,6 @@ namespace Gammou {
                         break;
 
                     case Expose:
-                        DEBUG_PRINT("Expose\n");
                         self->sys_draw(cr);
                         cairo_surface_flush(self->m_cairo_surface);
                         
@@ -250,6 +264,11 @@ namespace Gammou {
                     case LeaveNotify:
                         self->on_mouse_exit();
                         break;
+
+                    default:
+                        DEBUG_PRINT(" Unkxnow Event\n");
+                        break;
+
                 }
             }
 
