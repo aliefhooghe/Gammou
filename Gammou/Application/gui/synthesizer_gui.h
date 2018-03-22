@@ -36,6 +36,7 @@ namespace Gammou {
 		private:
 			void add_plugin_factory(Sound::abstract_plugin_factory *factory);
 			void add_control_factory(complete_component_factory *factory);
+			void load_plugin_factory(const std::string& path);
 
 			void init_main_factory(); // Load all built-in and plug in component
 

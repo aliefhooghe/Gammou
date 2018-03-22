@@ -89,13 +89,13 @@ namespace Gammou {
 
 		void master_circuit::set_volume(const double volume_order)
 		{
-			DEBUG_PRINT("MASTER Volume = %lf\n", volume_order);
+			//DEBUG_PRINT("MASTER Volume = %lf\n", volume_order);
 			m_volume_order = volume_order;
 		}
 
 		void master_circuit::notify_circuit_change()
 		{
-			DEBUG_PRINT("Master Sart Update.\n");
+			DEBUG_PRINT("Compiling Master Circuit\n");
 			next_process_cycle();
 			make_component_current_cycle_program(&m_main_output);
 			make_component_current_cycle_program(&m_polyphonic_input);

@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef NDEBUG
+//#ifndef NDEBUG
 
 #ifdef _WIN32
 #include <windows.h>
@@ -9,6 +9,6 @@
 #include <iostream>
 #define DEBUG_PRINT(...) std::fprintf(stderr, __VA_ARGS__)
 #endif
-#else
-#define DEBUG_PRINT(...) ((void)__VA_ARGS__)
-#endif
+//#else
+//#define DEBUG_PRINT(...) ((void)__VA_ARGS__)
+//#endif

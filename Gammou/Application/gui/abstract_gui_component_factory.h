@@ -8,7 +8,7 @@
 namespace Gammou {
 	
 	namespace Gui {
-										// allow use of stamp
+										// protected allow use of stamp
 		class complete_component_factory : protected Sound::abstract_plugin_factory {
 
 		public:

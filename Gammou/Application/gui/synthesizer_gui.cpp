@@ -168,8 +168,20 @@ namespace Gammou {
 			m_factory_ids.push_back(factory->get_factory_id());
 		}
 
+		void synthesizer_gui::load_plugin_factory(const std::string & path)
+		{
+			const unsigned int factory_id = m_complete_component_factory.load_plugin_factory(path);
+
+			DEBUG_PRINT("Loaded Factory : id = %u\n", factory_id);
+
+			m_plugin_list_box->add_item(m_complete_component_factory.get_factory_name(factory_id));
+			m_factory_ids.push_back(factory_id);
+		}
+
+
+
 		void synthesizer_gui::init_main_factory()
-		{/*
+		{
 			add_plugin_factory(new Sound::Builtin::sin_factory());
 			add_plugin_factory(new Sound::Builtin::sum_component_factory());
 			add_plugin_factory(new Sound::Builtin::product_factory());
@@ -181,9 +193,9 @@ namespace Gammou {
 			add_plugin_factory(new Sound::Builtin::naive_saw_factory());
 			//add_plugin_factory(new Sound::Builtin::cracra_factory());
 
-			
-			*/
 			add_control_factory(new knob_complete_component_factory());		
+
+			load_plugin_factory("D:\\Gammou\\build\\Modules\\Plugin1\\x64\\Release\\Plugin1.dll");
 		}
 
 

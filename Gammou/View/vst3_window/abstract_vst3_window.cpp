@@ -4,7 +4,6 @@
 
 #include "pluginterfaces/vst/ivstcontextmenu.h"
 
-#define DEBUG_PRINT(...) {char str[256];sprintf(str, __VA_ARGS__);OutputDebugStringA(str);}
 
 #define TRANSLATE_KEY(vst3key, gammoukey) case Steinberg::vst3key: return gammoukey
 

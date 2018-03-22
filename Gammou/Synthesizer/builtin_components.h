@@ -6,7 +6,7 @@
 */
 
 
-/*
+
 #include "builtin_components\sin_component.h"
 #include "builtin_components\sum_component.h"
 #include "builtin_components\product_component.h"
@@ -17,6 +17,6 @@
 #include "builtin_components\perfetc_saw.h"
 #include "builtin_components\naivesaw.h"
 #include "builtin_components\cracra.h"
-*/
+
 
 #endif
