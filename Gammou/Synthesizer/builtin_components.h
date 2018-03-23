@@ -7,16 +7,18 @@
 
 
 
-#include "builtin_components\sin_component.h"
-#include "builtin_components\sum_component.h"
-#include "builtin_components\product_component.h"
-#include "builtin_components\fpb2.h"
-#include "builtin_components\adsr_env.h"
-#include "builtin_components\saw.h"
+#include "builtin_components/sin_component.h"
 
-#include "builtin_components\perfetc_saw.h"
-#include "builtin_components\naivesaw.h"
-#include "builtin_components\cracra.h"
+/*
+#include "builtin_components/sum_component.h"
+#include "builtin_components/product_component.h"
+#include "builtin_components/fpb2.h"
+#include "builtin_components/adsr_env.h"
+#include "builtin_components/saw.h"
 
+#include "builtin_components/perfetc_saw.h"
+#include "builtin_components/naivesaw.h"
+#include "builtin_components/cracra.h"
+*/
 
 #endif

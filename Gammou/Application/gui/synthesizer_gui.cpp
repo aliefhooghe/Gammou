@@ -183,19 +183,19 @@ namespace Gammou {
 		void synthesizer_gui::init_main_factory()
 		{
 			add_plugin_factory(new Sound::Builtin::sin_factory());
-			add_plugin_factory(new Sound::Builtin::sum_component_factory());
-			add_plugin_factory(new Sound::Builtin::product_factory());
-			add_plugin_factory(new Sound::Builtin::fpb2_factory());
-			add_plugin_factory(new Sound::Builtin::adsr_env_factory());
-			add_plugin_factory(new Sound::Builtin::saw_factory());
+			//add_plugin_factory(new Sound::Builtin::sum_component_factory());
+			//add_plugin_factory(new Sound::Builtin::product_factory());
+			//add_plugin_factory(new Sound::Builtin::fpb2_factory());
+			//add_plugin_factory(new Sound::Builtin::adsr_env_factory());
+			//add_plugin_factory(new Sound::Builtin::saw_factory());
 
 			//add_plugin_factory(new Sound::Builtin::perfect_saw_factory());
-			add_plugin_factory(new Sound::Builtin::naive_saw_factory());
+			//add_plugin_factory(new Sound::Builtin::naive_saw_factory());
 			//add_plugin_factory(new Sound::Builtin::cracra_factory());
 
 			add_control_factory(new knob_complete_component_factory());		
 
-			load_plugin_factory("D:\\Gammou\\build\\Modules\\Plugin1\\x64\\Release\\Plugin1.dll");
+			//load_plugin_factory("D:\\Gammou\\build\\Modules\\Plugin1\\x64\\Release\\Plugin1.dll");
 		}
 
 

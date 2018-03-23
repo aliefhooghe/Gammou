@@ -1,8 +1,9 @@
 #ifndef SIN_COMPONENT_H_
 #define SIN_COMPONENT_H_
 
-#include "../plugin_management/abstract_plugin_factory.h"
+#include <cmath>
 
+#include "../plugin_management/abstract_plugin_factory.h"
 #include "built_in_components_ids.h"
 
 namespace Gammou {

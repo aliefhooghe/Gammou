@@ -2,6 +2,9 @@ cmake_minimum_required (VERSION 3.1)
 
 project (Gammou)
 
+# Vs Code 
+include(CMakeToolsHelpers OPTIONAL)
+
 set(CMAKE_CXX_STANDARD 11)
 
 # Only linux standalone app now
@@ -72,18 +75,19 @@ file(
 )
 
 
-set(VIEW_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/View/")
+set(VIEW_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/View")
 set(PROCESS_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Process")
-set(SYNTHESIZER_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Synthesizer/")
-set(GUI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Application/gui/")
+set(SYNTHESIZER_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Synthesizer")
+set(GUI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Application/gui")
 
+set(RTAUDIO_DIR "${CMAKE_SOURCE_DIR}/../rtaudio")
 
 if(STANDALONE_BUILD)
-    add_executable(gammou_standalone ${STANDALONE_SRC} ${GUI_SRC} ${PERSISTENCE_SRC})
-    target_include_directories(gammou_standalone PRIVATE ${VIEW_INCLUDE_DIR} ${PROCESS_INCLUDE_DIR} ${SYNTHESIZER_INCLUDE_DIR} ${GUI_INCLUDE_DIR} ${Cairo_INCLUDE_DIRS})
+    add_executable(gammou_standalone ${STANDALONE_SRC} ${GUI_SRC} ${PERSISTENCE_SRC} "${RTAUDIO_DIR}/RtAudio.cpp")
+    target_include_directories(gammou_standalone PRIVATE ${VIEW_INCLUDE_DIR} ${PROCESS_INCLUDE_DIR} ${SYNTHESIZER_INCLUDE_DIR} ${GUI_INCLUDE_DIR} ${Cairo_INCLUDE_DIRS} ${RTAUDIO_DIR})
     SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-pthread") # not Ok
-    target_link_libraries(gammou_standalone PRIVATE ${Cairo_LIBS} view synthesizer m)
-    target_compile_definitions(gammou_standalone PRIVATE GAMMOU_VIEW_APP)
+    target_link_libraries(gammou_standalone PRIVATE ${Cairo_LIBS} view synthesizer pulse-simple pulse m)
+    target_compile_definitions(gammou_standalone PRIVATE GAMMOU_VIEW_APP __LINUX_PULSE__)
 endif()
     
 if(VST3_BUILD)

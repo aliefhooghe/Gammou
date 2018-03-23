@@ -158,6 +158,7 @@ namespace Gammou {
         {
             cairo_t *cr = cairo_create(self->m_cairo_surface);
 
+            Time last_time = 0;
 
             for(;;){
                 XEvent event;
@@ -167,6 +168,8 @@ namespace Gammou {
                 switch( event.type ){
 
                     case ButtonPress:
+            
+
                         switch(event.xbutton.button){
 
                             case 1: // left
@@ -189,33 +192,32 @@ namespace Gammou {
                             self->on_mouse_wheel(-1.0f);
                             break;
 
-                            default:
-                                DEBUG_PRINT("b = %u\n", event.xbutton.button);
-                                break;
                         }
                         break;
 
                     case ButtonRelease:
                         {   
+                            const unsigned int button = event.xbutton.button;
+
                             // Double Click Detection
-                            static Time last_time = event.xbutton.time;
-                            Time now = event.xbutton.time;
-                            const Time delta = now - last_time;
-                            
-                            //  
-                            if( delta > 50 && delta < 250 )
-                                self->sys_mouse_dbl_click();
-                            
-                            last_time = now;
-                            
-                            switch(event.xbutton.button){
+
+                            if( button == 1 || button == 2 ){
+                                Time now = event.xbutton.time;
+                                const Time delta = now - last_time;
+                                
+                                //  
+                                if( delta > 50 && delta < 250 )
+                                    self->sys_mouse_dbl_click();
+                                
+                                last_time = now;
+                            }
+                            switch(button){
 
                                 case 1: // left
                                 self->sys_mouse_button_up(mouse_button::LeftButton);
                                 break;
 
                                 case 2: // wheel
-                                DEBUG_PRINT("WHEEL\n");
                                 self->sys_mouse_button_up(mouse_button::WheelButton);
                                 break;
 

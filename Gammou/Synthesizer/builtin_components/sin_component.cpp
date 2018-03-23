@@ -22,7 +22,7 @@ namespace Gammou {
 
 			void sin_component::process(const double input[])
 			{
-				m_output[0] = sin(6.28318530718 * m_frequence_integral + input[1]);
+				m_output[0] = std::sin(6.28318530718 * m_frequence_integral + input[1]);
 				m_frequence_integral += (input[0] * get_sample_duration());
 			}
 
