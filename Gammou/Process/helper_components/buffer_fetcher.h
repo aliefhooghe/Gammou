@@ -44,9 +44,9 @@ namespace Gammou {
 
 			virtual T fetch_output(const unsigned int output_id)
 			{
-				if (m_buffer_ptr == nullptr )
-					return T();
-				else
+				//if (m_buffer_ptr == nullptr )
+				//	return T();
+				//else
 					return m_buffer_ptr[output_id];
 			}
 

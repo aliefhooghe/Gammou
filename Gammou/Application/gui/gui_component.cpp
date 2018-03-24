@@ -494,12 +494,12 @@ namespace Gammou {
 				const int map_y = convert_y(y);
 
 				if (component != nullptr) {
-					// x,y converted into map coord
+					// x,y converted into map coordinate
 					const int input_id = component->get_input_id_by_pos(map_x, map_y);
 
 					if (input_id != -1) {
 						float fx, fy;
-						component->get_input_pos(input_id, fx, fy);/// already in map coord
+						component->get_input_pos(input_id, fx, fy);/// already in map coordinate
 						m_socket_highlighting = true;
 						m_highlighted_socket_x = fx;
 						m_highlighted_socket_y = fy;

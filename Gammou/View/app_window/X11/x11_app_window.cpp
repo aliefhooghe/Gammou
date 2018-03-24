@@ -22,7 +22,7 @@ namespace Gammou {
             if( m_display == nullptr )
                 throw std::runtime_error("Unable to open X Display");
             
-            // Ceeck we can use Xbde
+            // Check we can use Xbde
             int minor_version, major_version;
             if(!XdbeQueryExtension(m_display, &major_version, &minor_version))
                 throw std::runtime_error("Xbde unsuported\n");
@@ -132,6 +132,7 @@ namespace Gammou {
             std::memset(&ev, 0, sizeof(ev));
 
             ev.type = Expose;
+
             ev.xexpose.x = rect.x;
             ev.xexpose.y = rect.y;
             ev.xexpose.width = rect.width;

@@ -5,7 +5,8 @@
 #include "sound_component/sound_component.h"
 #include "synthesizer_circuits/master_circuit.h"
 #include "synthesizer_circuits/polyphonic_circuit.h"
-#include "sound_component/standard_sound_component.h"
+
+#include "builtin_components.h"
 
 
 namespace Gammou {
