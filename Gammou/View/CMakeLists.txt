@@ -18,7 +18,7 @@ if(WIN_32)                  # MICROSOFT WINDOWS
 elseif(UNIX AND NOT APPLE)  # LINUX
     
     if(VIEW_APP)
-        set(WINDOW_SYSTEM_LIB "X11")
+        set(WINDOW_SYSTEM_LIB X11 Xext)
         set(WINDOW_SRC ${WINDOW_SRC} app_window/X11/x11_app_window.cpp)
     endif()
 
@@ -27,7 +27,7 @@ elseif(UNIX AND NOT APPLE)  # LINUX
     endif()
 
 else()
-#elseif(APPLE)           # APPLE OSX
+#elseif(APPLE)           # APPLE OSXs
     message( FATAL_ERROR "unsupported os" )
 endif()
     
@@ -42,8 +42,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules")
 find_package(Cairo REQUIRED)
 
 add_library(view STATIC ${WINDOW_SRC} ${WIDGET_SRC})
-
 target_include_directories(view PRIVATE ${Cairo_INCLUDE_DIRS})
-target_link_libraries(view PRIVATE ${Cairo_LIBS} ${WINDOW_SYSTEM_LIB} Xext)
+target_link_libraries(view PRIVATE ${Cairo_LIBS} ${WINDOW_SYSTEM_LIB})
 
 

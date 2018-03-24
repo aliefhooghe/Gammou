@@ -25,3 +25,4 @@ set(PROCESS_INCLUDE_DIR "../Process")
 add_library(synthesizer STATIC ${SYNTHESIZER_SRC})
 target_include_directories(synthesizer PRIVATE ${PROCESS_INCLUDE_DIR})
 target_link_libraries(synthesizer ${DYNAMIC_LOADING_LIB} m) # m =  standard math lib
+
