@@ -25,8 +25,8 @@ namespace Gammou {
 			virtual ~multi_channel_data() {};
 
 		protected:
-			unsigned int get_channels_count();
-			unsigned int get_current_working_channel();
+			inline unsigned int get_channels_count() const { return m_channels_count; }
+			unsigned int get_current_working_channel() const;
 
 		private:
 			unsigned int m_channels_count;

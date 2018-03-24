@@ -7,6 +7,10 @@ include(CMakeToolsHelpers OPTIONAL)
 
 set(CMAKE_CXX_STANDARD 11)
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
+SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
+SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pg")
+
 # Only linux standalone app now
 
 option(STANDALONE_BUILD "Build a Standalone Application" ON)
@@ -85,7 +89,7 @@ set(RTAUDIO_DIR "${CMAKE_SOURCE_DIR}/../rtaudio")
 if(STANDALONE_BUILD)
     add_executable(gammou_standalone ${STANDALONE_SRC} ${GUI_SRC} ${PERSISTENCE_SRC} "${RTAUDIO_DIR}/RtAudio.cpp")
     target_include_directories(gammou_standalone PRIVATE ${VIEW_INCLUDE_DIR} ${PROCESS_INCLUDE_DIR} ${SYNTHESIZER_INCLUDE_DIR} ${GUI_INCLUDE_DIR} ${Cairo_INCLUDE_DIRS} ${RTAUDIO_DIR})
-    SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-pthread") # not Ok
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread") # not Ok
     target_link_libraries(gammou_standalone PRIVATE ${Cairo_LIBS} view synthesizer pulse-simple pulse m)
     target_compile_definitions(gammou_standalone PRIVATE GAMMOU_VIEW_APP __LINUX_PULSE__)
 endif()

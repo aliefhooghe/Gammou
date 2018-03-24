@@ -24,15 +24,6 @@ namespace Gammou {
 			return m_factory_id;
 		}
 
-		double abstract_sound_component::get_sample_duration() const
-		{
-			return m_sample_duration;
-		}
-
-		double abstract_sound_component::get_sample_rate() const
-		{
-			return m_sample_rate;
-		}
 
 		void abstract_sound_component::on_notify(const sound_component_notification_tag notification_tag)
 		{
@@ -84,10 +75,6 @@ namespace Gammou {
 			return m_channels_count;
 		}
 
-		unsigned int polyphonic_sound_component::get_current_working_channel() const
-		{
-			return m_current_working_channel;
-		}
 
 		void polyphonic_sound_component::on_channel_change(const unsigned int new_chanel)
 		{
