@@ -8,7 +8,7 @@
 #include <windows.h>
 #define DEBUG_PRINT(...) {char str[256];sprintf(str, __VA_ARGS__);OutputDebugStringA(str);}
 #else
-#include <iostream>
+#include <stdio.h>
 #define DEBUG_PRINT(...) std::fprintf(stderr, __VA_ARGS__)
 #endif
 #else

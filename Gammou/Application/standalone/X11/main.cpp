@@ -4,6 +4,7 @@
 #include <synthesizer_gui.h>
 
 #include <unistd.h>
+#include "../debug.h"
 
 #include <RtAudio.h>
 
