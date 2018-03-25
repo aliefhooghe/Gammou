@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.1)
 
 #######################################################
 project(View LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 11 REQUIRED)
+set(CMAKE_CXX_STANDARD 11)
 
 option(VIEW_APP "Provide Application Window class" OFF)
 option(VIEW_VST3 "Provide VST3 Window class" OFF)
@@ -11,13 +11,30 @@ option(VIEW_VST3 "Provide VST3 Window class" OFF)
 #######################################################
 #	Generic Setup
 
-file(
-    GLOB_RECURSE
-    WIDGET_SRC
-    widget/*.cpp
+
+set(WIDGET_SRC
+	widget/cairo_helper.h
+	widget/cairo_helper.cpp
+	widget/color.h
+	widget/color.cpp
+	widget/common_widgets.h
+	widget/common_widgets.cpp
+	widget/event.h
+	widget/list_box.h
+	widget/list_box.cpp
+	widget/page_container.h
+	widget/page_container.cpp
+	widget/panel.h
+	widget/panel.cpp
+	widget/scrollable_panel.h
+	widget/widget.h
+	widget/widget.cpp
 )
 
 add_library(view STATIC 
+	view.h
+	cairo_definition.h
+	abstract_window.h
 	abstract_window.cpp
 	${WIDGET_SRC}
 )

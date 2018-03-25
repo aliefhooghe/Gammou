@@ -32,16 +32,32 @@ set(VIEW_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/View")
 set(SYNTHESIZER_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Synthesizer")
 set(GUI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Application/gui")
 
-file(
-    GLOB_RECURSE
-    GUI_SRC
-    Application/gui/*.cpp
+
+set(GUI_SRC
+	Application/gui/abstract_gui_component_factory.h
+	Application/gui/abstract_gui_component_factory.cpp
+	Application/gui/gui_component.cpp
+	Application/gui/gui_component.h
+	Application/gui/gui_component_main_factory.h
+	Application/gui/gui_component_main_factory.cpp
+	Application/gui/gui_master_circuit.h
+	Application/gui/gui_master_circuit.cpp
+	Application/gui/gui_polyphonic_circuit.h
+	Application/gui/gui_polyphonic_circuit.cpp
+	Application/gui/gui_properties.h
+	Application/gui/gui_sound_component.h
+	Application/gui/gui_sound_component.cpp
+	Application/gui/gui_synthesizer_circuit.h
+	Application/gui/gui_synthesizer_circuit.cpp
+	Application/gui/synthesizer_gui.h
+	Application/gui/synthesizer_gui.cpp
+	Application/gui/control_component/knob_component.h
+	Application/gui/control_component/knob_component.cpp
 )
 
-file(
-    GLOB_RECURSE
-    PERSISTENCE_SRC
-    Application/persistence/*.cpp
+set(PERSISTENCE_SRC
+    Application/persistence/synthesizer_persistence.h
+	Application/persistence/synthesizer_persistence.cpp
 )
 
 if(STANDALONE_BUILD)

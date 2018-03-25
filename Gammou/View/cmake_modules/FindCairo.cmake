@@ -17,7 +17,7 @@ if(WIN32)
     set(Cairo_INCLUDE_DIRS "${Cairo_DIR}/include")
 	set(Cairo_LIB_DIR "${Cairo_DIR}/lib")
 	
-    if("${CMAKE_GENERATOR}" MATCHES "Win64")
+	if("${CMAKE_GENERATOR}" MATCHES "Win64")
 		
 		set(Cairo_LIBS 
 			"${Cairo_LIB_DIR}/x64/${CMAKE_BUILD_TYPE}/cairo.lib" 
@@ -26,7 +26,7 @@ if(WIN32)
 		)
        
     else()
-		 message(FATAL_ERROR "Unimplemented")
+		message(FATAL_ERROR "Unimplemented")
     endif()
 
     find_package_handle_standard_args(Cairo DEFAULT_MSG Cairo_INCLUDE_DIRS Cairo_LIBS)

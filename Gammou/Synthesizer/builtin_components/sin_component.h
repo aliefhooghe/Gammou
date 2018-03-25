@@ -4,7 +4,7 @@
 #include <cmath>
 
 #include "../plugin_management/abstract_plugin_factory.h"
-#include "built_in_components_ids.h"
+#include "builtin_components_ids.h"
 
 namespace Gammou {
 
