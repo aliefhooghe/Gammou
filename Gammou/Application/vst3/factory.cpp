@@ -47,6 +47,7 @@ END_FACTORY
 
 
 // Vst 2
+/*
 #include "public.sdk/source/vst/vst2wrapper/vst2wrapper.h"
 Steinberg::Vst::Vst2Wrapper::AudioEffect *createEffectInstance(audioMasterCallback master)
 {
@@ -56,4 +57,4 @@ Steinberg::Vst::Vst2Wrapper::AudioEffect *createEffectInstance(audioMasterCallba
 		lcid,
 		's0qz', 
 		master);
-}
+}*/

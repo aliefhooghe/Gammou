@@ -2,7 +2,7 @@
 
 #define TESTING
 
-#ifndef NDEBUG || defined(TESTING)
+#if !defined(NDEBUG) || defined(TESTING)
 
 #ifdef _WIN32
 #include <windows.h>

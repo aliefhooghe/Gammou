@@ -1,28 +1,22 @@
+
 cmake_minimum_required (VERSION 3.1)
 
-project (Synthesizer)
-
-set(CMAKE_CXX_STANDARD 11)
+#######################################################
+project(View LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 11 REQUIRED)
  
-set(DYNAMIC_LOADING_LIB "") # Os dependant
- 
-if(WIN_32)                  # MICROSOFT WINDOWS
-    # something to add ?         
-elseif(UNIX)  # LINUX and APPLE OSX
-    set(DYNAMIC_LOADING_LIB "dl") # dlopen, ...
-else()
-    message( FATAL_ERROR "unsupported os" )
-endif()
-    
 file(
     GLOB_RECURSE
     SYNTHESIZER_SRC
     *.cpp
 )
-
+ 
+add_library(synthesizer STATIC ${SYNTHESIZER_SRC})
 set(PROCESS_INCLUDE_DIR "../Process")
 
-add_library(synthesizer STATIC ${SYNTHESIZER_SRC})
-target_include_directories(synthesizer PRIVATE ${PROCESS_INCLUDE_DIR})
-target_link_libraries(synthesizer ${DYNAMIC_LOADING_LIB} m) # m =  standard math lib
+target_include_directories(synthesizer PUBLIC ${PROCESS_INCLUDE_DIR})
 
+           
+if(UNIX)  # LINUX and APPLE OSX
+	target_link_libraries(synthesizer PRIVATE m dl)	#	math.h and dlopen
+endif()
