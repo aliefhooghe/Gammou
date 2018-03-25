@@ -11,8 +11,8 @@ endmacro()
 
 project (Gammou LANGUAGES CXX)
 
-option(STANDALONE_BUILD "Build a Standalone Application" OFF)
-option(VST3_BUILD "Build a VST3 Plugin" ON)
+option(STANDALONE_BUILD "Build a Standalone Application" ON)
+option(VST3_BUILD "Build a VST3 Plugin" OFF)
 
 # Use C++ 11
 set(CMAKE_CXX_STANDARD 11)
@@ -115,8 +115,8 @@ elseif(UNIX AND NOT APPLE)  # LINUX
     if(STANDALONE_BUILD)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 		target_link_libraries(gammou_standalone PRIVATE m pulse-simple pulse)
-        target_compile_definitions(gammou_standalone __LINUX_PULSE__)
-        target_source(gammou_standalone PRIVATE Application/standalone/X11/main.cpp)       
+        target_compile_definitions(gammou_standalone PRIVATE __LINUX_PULSE__)
+        target_sources(gammou_standalone PRIVATE Application/standalone/X11/main.cpp)       
     endif()
     
     if(VST3_BUILD)
