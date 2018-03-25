@@ -11,11 +11,14 @@ endmacro()
 
 project (Gammou LANGUAGES CXX)
 
-option(STANDALONE_BUILD "Build a Standalone Application" ON)
-option(VST3_BUILD "Build a VST3 Plugin" OFF)
+option(STANDALONE_BUILD "Build a Standalone Application" OFF)
+option(VST3_BUILD "Build a VST3 Plugin" ON)
 
 # Use C++ 11
 set(CMAKE_CXX_STANDARD 11)
+
+# Enable cmake FOLDER propertie
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Set output build paths
 set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
@@ -129,4 +132,17 @@ else()
 endif()
 
 
+######################################################
+#	Sound Modules
 
+# Create a module : usage : add_gammou_module(module_name src1.cpp src2.cpp ....)
+macro(add_gammou_module name)
+	set(module_sources ${ARGN})
+	add_library(${name} MODULE ${module_sources})
+	target_link_libraries(${name} PRIVATE synthesizer)
+	target_include_directories(${name} PRIVATE ${SYNTHESIZER_INCLUDE_DIR})
+	set_target_properties(${name} PROPERTIES FOLDER "GammouModules")
+	set_target_properties(${name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/plugins")
+endmacro()
+
+add_gammou_module(Plugin1 Modules/Plugin1/plugin1.cpp)
