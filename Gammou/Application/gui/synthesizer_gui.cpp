@@ -195,10 +195,10 @@ namespace Gammou {
 
 			add_control_factory(new knob_complete_component_factory());		
 
-			//load_plugin_factory("D:\\Gammou\\build\\Modules\\Plugin1\\x64\\Release\\Plugin1.dll");
+
+			load_plugin_factory("D:\\Gammou\\build\\GammouPlugins\\Release\\Plugin1.dll");
+			load_plugin_factory("D:\\Gammou\\build\\GammouPlugins\\Release\\Plugin2.dll");
 		}
-
-
 
 
 	} /* Gui */
