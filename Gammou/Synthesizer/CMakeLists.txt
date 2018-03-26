@@ -19,8 +19,20 @@ set(SYNTHESIZER_SRC
 set(SYNTHESIZER_BUILTIN_COMPONENTS_SRC
 	builtin_components.h
 	builtin_components/builtin_components_ids.h
+	builtin_components/sound_processing_helper.h
+	builtin_components/sound_processing_helper.cpp
+	builtin_components/adsr_env.h
+	builtin_components/adsr_env.cpp
+	builtin_components/lp2.h
+	builtin_components/lp2.cpp
+	builtin_components/product_component.cpp
+	builtin_components/product_component.h
+	builtin_components/saw.h
+	#builtin_components/saw.cpp
 	builtin_components/sin_component.h
 	builtin_components/sin_component.cpp
+	builtin_components/sum_component.h
+	builtin_components/sum_component.cpp
 )
 
 set(PLUGIN_MANAGEMENT_SRC
@@ -50,6 +62,7 @@ add_library(synthesizer STATIC
 )
 
 target_link_libraries(synthesizer PUBLIC process)
+set_property(TARGET synthesizer PROPERTY POSITION_INDEPENDENT_CODE ON)  # Allow plugins to be built
            
 if(UNIX)  # LINUX and APPLE OSX
 	target_link_libraries(synthesizer PRIVATE m dl)	#	math.h and dlopen

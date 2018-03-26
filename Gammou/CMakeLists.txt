@@ -19,8 +19,8 @@ endmacro()
 
 project (Gammou LANGUAGES CXX)
 
-option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" OFF)
-option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" ON)
+option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" ON)
+option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" OFF)
 
 # Hide View Option
 mark_as_advanced(FORCE 
@@ -184,13 +184,13 @@ elseif(UNIX AND NOT APPLE)  # LINUX
     
     if(GAMMOU_STANDALONE_BUILD)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-		target_link_libraries(gammou_standalone PRIVATE m pulse-simple pulse)
-        target_compile_definitions(gammou_standalone PRIVATE __LINUX_PULSE__)
+		target_link_libraries(gammou_standalone PRIVATE m jack) # pulse-simple pulse
+        target_compile_definitions(gammou_standalone PRIVATE __UNIX_JACK__)#__LINUX_PULSE__)
         target_sources(gammou_standalone PRIVATE Application/standalone/X11/main.cpp)       
     endif()
     
     if(GAMMOU_VST3_BUILD)
-        message( FATAL_ERROR "Not implemented" )
+        target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/linuxmain.cpp")
     endif()
     
 else()
@@ -210,9 +210,16 @@ macro(add_gammou_plugin name)
 	add_library(${name} MODULE ${plugin_sources})
 	target_link_libraries(${name} PRIVATE synthesizer)
 	target_include_directories(${name} PRIVATE ${SYNTHESIZER_INCLUDE_DIR})
-	set_target_properties(${name} PROPERTIES FOLDER "GammouPlugins")
-	set_target_properties(${name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/GammouPlugins")
+	set_target_properties(${name} PROPERTIES 
+	    FOLDER "GammouPlugins"
+	    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/GammouPlugins"
+	    PREFIX ""
+	    SUFFIX ".gammou"
+	)
 endmacro()
 
 add_gammou_plugin(Plugin1 Plugins/plugin1.cpp)
 add_gammou_plugin(Plugin2 Plugins/plugin2.cpp)
+
+
+

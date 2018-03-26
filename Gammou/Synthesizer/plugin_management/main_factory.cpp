@@ -45,7 +45,7 @@ namespace Gammou {
 
 			lib.lib_handle = DYNAMIC_LIB_OPEN(file_path.c_str());
 			if (lib.lib_handle == nullptr)
-				throw std::runtime_error("Cannot open module file");
+				throw std::runtime_error("Cannot open Gammou Plugin file");
 
 			factory_make_fct make_factory = nullptr;
 			make_factory = reinterpret_cast<factory_make_fct>(DYNAMIC_LIB_SYMB(lib.lib_handle, GAMMOU_MAKE_FACTORY_SYMBOL));

@@ -1,0 +1,59 @@
+#include "adsr_env.h"
+
+
+namespace Gammou {
+    namespace Sound {
+        namespace Builtin{
+
+            adsr_env::adsr_env(const unsigned int channel_count)
+                : sound_component("AdsrEnv", 5, 1, channel_count),
+					m_gate_fact(this),
+					m_prev_output(this),
+					m_tau_index(this)
+            {
+                set_input_name("Attack", 0);
+				set_input_name("Decay", 1);
+				set_input_name("Sustain", 2);
+				set_input_name("Release", 3);
+				set_input_name("Gate", 4);
+            }
+
+            void adsr_env::initialize_process()
+            {
+                m_gate_fact = 1.001; // 
+				m_prev_output = 0.0;
+				m_tau_index = 0; // attack
+            }
+
+            void adsr_env::process(const double input[])
+            {
+                if (input[4] > 0.5) { // gate on
+						if (m_tau_index == 0){ // on attack
+							if (m_prev_output >= 1.0) { // attack -> decay
+								//DEBUG_PRINT("Attack -> Decay\n");
+								m_tau_index = 1;
+								m_gate_fact = input[2]; // sustain
+							}
+						}
+						else if (m_tau_index == 3) { // on release
+							//DEBUG_PRINT("Release -> Attack\n");
+							m_tau_index = 0; // goto attack
+							m_gate_fact = 1.0;
+						}
+					}
+					else if(m_tau_index != 3 ){
+						//DEBUG_PRINT("* to Release\n");
+						m_tau_index = 3; // goto release
+					}
+
+					const double gate = m_gate_fact * input[4];
+					const double tau = input[m_tau_index];
+					const double fact = tau / get_sample_duration();
+					const double out = (gate + fact * m_prev_output) / (1.0 + fact);
+					
+					m_prev_output = out;
+					m_output[0] = out;
+            }
+        }
+    }
+}
