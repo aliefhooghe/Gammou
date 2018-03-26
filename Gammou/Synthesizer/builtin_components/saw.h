@@ -32,6 +32,7 @@ namespace Gammou {
 					m_slope(this),
 					m_prev_output(this)
 				{
+					DEBUG_PRINT("Saw CTOR\n");
 					set_input_name("Freq", 0);
 				}
 
@@ -72,7 +73,7 @@ namespace Gammou {
 
 				double dirac_filtre(const double t, const double f0)
 				{
-					if (abs(t) <= std::numeric_limits<double>::min()) {
+					if (abs(t) <= std::numeric_limits<float>::min()) {
 						return 2.0 * f0;
 					}
 					else {

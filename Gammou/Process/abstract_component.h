@@ -28,7 +28,7 @@ namespace Gammou {
 			component_link(const component_link& other) noexcept;
 			~component_link()
 			{
-				DEBUG_PRINT("Component Link DTOR\n");
+				//DEBUG_PRINT("Component Link DTOR\n");
 			}
 
 			void set_src_output_id(const unsigned int output_id);
