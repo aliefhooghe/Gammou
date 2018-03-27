@@ -20,6 +20,10 @@ namespace Gammou {
 
 		main_factory::main_factory()
 		{
+#ifdef _WIN32
+			// Avoid error windows showing msg whenLoadLibrary fail
+			SetErrorMode(SEM_FAILCRITICALERRORS);
+#endif
 		}
 
 		main_factory::~main_factory()

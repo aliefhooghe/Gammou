@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <limits>
+#include <algorithm>
 
 #include "../../debug.h"
 #include "../plugin_management/abstract_plugin_factory.h"

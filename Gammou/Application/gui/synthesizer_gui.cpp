@@ -195,9 +195,18 @@ namespace Gammou {
 
 			add_control_factory(new knob_complete_component_factory());		
 
-
-			load_plugin_factory("/home/liefhooghe/Programmes/Gammou/build/GammouPlugins/Plugin1.gammou");
-			load_plugin_factory("/home/liefhooghe/Programmes/Gammou/build/GammouPlugins/Plugin2.gammou");
+			const std::string plugin_dir_path(GAMMOU_PLUGINS_DIRECTORY_PATH);
+	
+			for (auto & p : std::experimental::filesystem::directory_iterator(plugin_dir_path)) {
+				try {
+					const std::string plugin_path(p.path().string());
+					DEBUG_PRINT("Loading %s\n", plugin_path.c_str());
+					load_plugin_factory(plugin_path);
+				}
+				catch(...){
+					DEBUG_PRINT("Failed\n");
+				}
+			}
 		}
 
 

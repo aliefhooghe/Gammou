@@ -19,8 +19,8 @@ endmacro()
 
 project (Gammou LANGUAGES CXX)
 
-option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" ON)
-option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" OFF)
+option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" OFF)
+option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" ON)
 
 # Hide View Option
 mark_as_advanced(FORCE 
@@ -28,8 +28,8 @@ mark_as_advanced(FORCE
 	VIEW_VST
 )	
 
-# Use C++ 11
-set(CMAKE_CXX_STANDARD 11)
+# Use C++ 17
+set(CMAKE_CXX_STANDARD 17)
 
 # Enable cmake FOLDER propertie
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -82,7 +82,8 @@ if(GAMMOU_STANDALONE_BUILD)
 	set(RTAUDIO_DIR "${CMAKE_SOURCE_DIR}/../rtaudio")
 	
     add_executable(gammou_standalone 
-		${GUI_SRC} ${PERSISTENCE_SRC} 
+		${GUI_SRC} 
+		${PERSISTENCE_SRC}
 		"${RTAUDIO_DIR}/RtAudio.cpp"
 	)
 	
@@ -132,7 +133,9 @@ if(GAMMOU_VST3_BUILD)
 		${VST3_SDK_DIR}/public.sdk/source/vst/vstsinglecomponenteffect.cpp
 		Application/vst3/factory.cpp
 		Application/vst3/vst3_plugin.cpp
-		${VST3_PLUGIN_SRC} ${GUI_SRC} ${PERSISTENCE_SRC}
+		${VST3_PLUGIN_SRC} 
+		${GUI_SRC} 
+		${PERSISTENCE_SRC}
 	)
 	
 	target_include_directories(gammou PRIVATE 
@@ -149,6 +152,11 @@ endif()
 
 #################################################
 
+mark_as_advanced(FORCE 
+	VIEW_APP
+	VIEW_VST3
+)
+
 # Build Gammou View lib
 add_subdirectory(View View)
 
@@ -158,10 +166,10 @@ add_subdirectory(Synthesizer Synthesizer)
 if(WIN32)                  # MICROSOFT WINDOWS
     
 	# Set Gammou Plugins Directory
-	#set(GAMMOU_PLUGINS_DIR 
-	#	"**********" 
-	#	CACHE PATH "Choose the gammou Plugins directory"
-	#)
+	set(GAMMOU_PLUGINS_DIR 
+		"D:\\GammouPlugins" 
+		CACHE PATH "Choose the gammou Plugins directory"
+	)
 	
 	if(GAMMOU_STANDALONE_BUILD)
 		message( FATAL_ERROR "Not implemented" )
@@ -172,9 +180,9 @@ if(WIN32)                  # MICROSOFT WINDOWS
 		set_target_properties(gammou PROPERTIES SUFFIX ".vst3")
 		set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory")
 		
-		#target_compile_definitions(gammou PRIVATE 
-		#	GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_DIR}"
-		#)
+		target_compile_definitions(gammou PRIVATE 
+			GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_DIR}"
+		)
 		
 		# Copy the target in VST3 directory	
 		add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
@@ -182,6 +190,11 @@ if(WIN32)                  # MICROSOFT WINDOWS
 
 elseif(UNIX AND NOT APPLE)  # LINUX
     
+	set(GAMMOU_PLUGINS_DIR 
+		"**********" 
+		CACHE PATH "Choose the gammou Plugins directory"
+	)
+	
     if(GAMMOU_STANDALONE_BUILD)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 		target_link_libraries(gammou_standalone PRIVATE m jack) # pulse-simple pulse
@@ -216,10 +229,11 @@ macro(add_gammou_plugin name)
 	    PREFIX ""
 	    SUFFIX ".gammou"
 	)
+	add_post_build_copy(${name} ${GAMMOU_PLUGINS_DIR})
 endmacro()
 
 add_gammou_plugin(Plugin1 Plugins/plugin1.cpp)
-add_gammou_plugin(Plugin2 Plugins/plugin2.cpp)
+#add_gammou_plugin(Plugin2 Plugins/plugin2.cpp)
 
 
 

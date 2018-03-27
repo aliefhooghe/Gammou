@@ -4,6 +4,7 @@
 
 
 #include <mutex>
+#include <filesystem>
 
 #include "../../debug.h"
 #include "view.h"
@@ -16,6 +17,10 @@
 
 #include "control_component/knob_component.h"
 
+
+#ifndef GAMMOU_PLUGINS_DIRECTORY_PATH
+#error "GAMMOU_PLUGINS_DIRECTORY_PATH must be defined"
+#endif
 
 #define GAMMOU_SYNTHESIZER_CHANNEL_COUNT 128
 
