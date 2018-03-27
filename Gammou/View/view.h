@@ -30,6 +30,9 @@
 #ifdef GAMMOU_VIEW_APP
 #include "app_window/X11/x11_app_window.h"
 #endif
+
+
+
 //----------------------------------------------------------------------
 #elif defined(_WIN32)
 
@@ -39,6 +42,21 @@
 
 #ifdef GAMMOU_VIEW_APP
 #error "Gammou : View : Not implemented"
+#endif
+
+
+
+
+//----------------------------------------------------------------------
+#elif defined(__APPLE__)
+//----------------------------------------------------------------------
+
+#ifdef GAMMOU_VIEW_VST3
+#error "Gammou : View : Not implemented"
+#endif
+
+#ifdef GAMMOU_VIEW_APP
+#include "app_window/X11/x11_app_window.h"
 #endif
 
 //----------------------------------------------------------------------
@@ -55,7 +73,7 @@ namespace Gammou {
 
 //  Special Window
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
 
 #ifdef GAMMOU_VIEW_VST3
 		#error "Not Implemented"

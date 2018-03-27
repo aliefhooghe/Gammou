@@ -1,13 +1,14 @@
 #ifndef GAMMOU_WIN32_VST3_WINDOW_H_
 #define GAMMOU_WIN32_VST3_WINDOW_H_
 
-#ifdef _WIN32
 
-#include "../abstract_vst3_window.h"
+#include <cairo-win32.h>
 #include <Windows.h>
 #include <windowsx.h>
 #undef min
 #undef max
+
+#include "../abstract_vst3_window.h"
 
 namespace Gammou {
 
@@ -57,9 +58,5 @@ namespace Gammou {
 	} /* View */
 } /* Gammou */
 
-
-
-
-#endif // _WIN32
 
 #endif /* */

@@ -19,8 +19,8 @@ endmacro()
 
 project (Gammou LANGUAGES CXX)
 
-option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" OFF)
-option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" ON)
+option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" ON)
+option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" OFF)
 
 # Hide View Option
 mark_as_advanced(FORCE 
@@ -28,20 +28,25 @@ mark_as_advanced(FORCE
 	VIEW_VST
 )	
 
-# Use C++ 17
-set(CMAKE_CXX_STANDARD 17)
+# Use C++ 14
+set(CMAKE_CXX_STANDARD 14)
 
 # Enable cmake FOLDER propertie
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Set output build paths
-set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
+set(VST3_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")                         # gammou (VST3)
+set(GAMMOU_PLUGINS_OUTPUT_PATH "${CMAKE_BINARY_DIR}/GammouPlugins")      # gammou Plugins
+set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")                      # View, synthesizer, vstsdk, ....
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")                   # gammou Standalone
 
-#################################################
+# Set Gammou Plugins Directory (The place where gammou will look to load them)
+# Default is where they are built
+set(GAMMOU_PLUGINS_DIR                       
+	${GAMMOU_PLUGINS_OUTPUT_PATH}    
+	CACHE PATH "Choose the gammou Plugins directory"
+)
 
-set(STANDALONE_APPLICATION_SOUND_SYSTEM_LIBS "") # OS dependant sound libs
-set(STANDALONE_APPLICATION_DEFINITION "")        # OS dependant additional definitions
 
 #################################################
 
@@ -77,8 +82,19 @@ set(PERSISTENCE_SRC
 	Application/persistence/synthesizer_persistence.cpp
 )
 
+
+
+
+################################################
+#                                              #
+#       Gammou Standalone Application          #
+#                                              #
+################################################
+
+
 if(GAMMOU_STANDALONE_BUILD)
     set_option(VIEW_APP ON) # Enable Application Window in View
+    
 	set(RTAUDIO_DIR "${CMAKE_SOURCE_DIR}/../rtaudio")
 	
     add_executable(gammou_standalone 
@@ -100,8 +116,43 @@ if(GAMMOU_STANDALONE_BUILD)
 		synthesizer
 	)
 	
-	target_compile_definitions(gammou_standalone PRIVATE GAMMOU_VIEW_APP)
+	target_compile_definitions(gammou_standalone PRIVATE 
+	    GAMMOU_VIEW_APP
+	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_DIR}"
+	)
+	
+	# Os specific addition
+	
+    #if(WIN32)                   # MICROSOFT WINDOWS
+    
+    if(UNIX)                # LINUX and OSX
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+        target_sources(gammou_standalone PRIVATE Application/standalone/X11/main.cpp)
+        
+        # For Rtaudio
+        if(APPLE)               # Only OSX
+            find_library(COREAUDIO_LIB CoreAudio)
+            find_library(COREFOUNDATION_LIB CoreFoundation)
+            target_link_libraries(gammou_standalone ${COREAUDIO_LIB} ${COREFOUNDATION_LIB})
+            target_compile_definitions(gammou_standalone PRIVATE __MACOSX_CORE__)
+        else()                  # Only Linux
+            target_link_libraries(gammou_standalone PRIVATE m stdc++fs jack) # pulse-simple pulse
+            target_compile_definitions(gammou_standalone PRIVATE __UNIX_JACK__)#__LINUX_PULSE__)
+        endif()
+        
+    else()
+        message( FATAL_ERROR "Cant Build gammou standalone on this OS")
+    endif()
+    
+    
+	
 endif()
+
+################################################
+#                                              #
+#       Gammou VST3 Plugin                     #
+#                                              #
+################################################
 
 if(GAMMOU_VST3_BUILD)
     set_option(VIEW_VST3 ON)   # Enable VST3 Window in View
@@ -146,11 +197,37 @@ if(GAMMOU_VST3_BUILD)
 	)
 	
     target_link_libraries(gammou PRIVATE view synthesizer base sdk)	# base and sdk from VST3_SDK
-	target_compile_definitions(gammou PRIVATE GAMMOU_VIEW_VST3)
-	set_target_properties(gammou PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+	target_compile_definitions(gammou PRIVATE 
+	    GAMMOU_VIEW_VST3
+	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_DIR}"
+	)
+	
+	set_target_properties(gammou PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${VST3_OUTPUT_PATH}")
+	
+	# Copy the target in VST3 directory	
+	add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
+	
+	#####
+	
+	# Os specific addition
+	
+    if(WIN32)                   # MICROSOFT WINDOWS
+        target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/dllmain.cpp")
+		set_target_properties(gammou PROPERTIES SUFFIX ".vst3")
+		set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory")
+    elseif(UNIX AND NOT APPLE)  # LINUX
+        target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/linuxmain.cpp")
+    elseif(APPLE)               # Apple OSX
+        target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/macmain.cpp")
+    else()
+        message( FATAL_ERROR "Cant Build a VST3 Plugin on this OS")
+    endif()
+	
 endif()
 
 #################################################
+
+# Inlude Gammou View nd Synthesizer libs
 
 mark_as_advanced(FORCE 
 	VIEW_APP
@@ -163,57 +240,15 @@ add_subdirectory(View View)
 # Build Gammou Synthesizer lib
 add_subdirectory(Synthesizer Synthesizer)
 
-if(WIN32)                  # MICROSOFT WINDOWS
-    
-	# Set Gammou Plugins Directory
-	set(GAMMOU_PLUGINS_DIR 
-		"D:\\GammouPlugins" 
-		CACHE PATH "Choose the gammou Plugins directory"
-	)
-	
-	if(GAMMOU_STANDALONE_BUILD)
-		message( FATAL_ERROR "Not implemented" )
-	endif()
-	
-	if(GAMMOU_VST3_BUILD)
-		target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/dllmain.cpp")
-		set_target_properties(gammou PROPERTIES SUFFIX ".vst3")
-		set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory")
-		
-		target_compile_definitions(gammou PRIVATE 
-			GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_DIR}"
-		)
-		
-		# Copy the target in VST3 directory	
-		add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
-	endif()
+###################################################################################################################################################
+###################################################################################################################################################
+###################################################################################################################################################
 
-elseif(UNIX AND NOT APPLE)  # LINUX
-    
-	set(GAMMOU_PLUGINS_DIR 
-		"**********" 
-		CACHE PATH "Choose the gammou Plugins directory"
-	)
-	
-    if(GAMMOU_STANDALONE_BUILD)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-		target_link_libraries(gammou_standalone PRIVATE m jack) # pulse-simple pulse
-        target_compile_definitions(gammou_standalone PRIVATE __UNIX_JACK__)#__LINUX_PULSE__)
-        target_sources(gammou_standalone PRIVATE Application/standalone/X11/main.cpp)       
-    endif()
-    
-    if(GAMMOU_VST3_BUILD)
-        target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/linuxmain.cpp")
-    endif()
-    
-else()
-#elseif(APPLE)           # APPLE OSX
-    message( FATAL_ERROR "unsupported os" )
-endif()
-
-
-######################################################
-#	Sound Gammou Plugins
+################################################
+#                                              #
+#       Gammou Plugins                         #
+#                                              #
+################################################
 
 
 
@@ -225,12 +260,20 @@ macro(add_gammou_plugin name)
 	target_include_directories(${name} PRIVATE ${SYNTHESIZER_INCLUDE_DIR})
 	set_target_properties(${name} PROPERTIES 
 	    FOLDER "GammouPlugins"
-	    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/GammouPlugins"
+	    LIBRARY_OUTPUT_DIRECTORY ${GAMMOU_PLUGINS_OUTPUT_PATH}
 	    PREFIX ""
 	    SUFFIX ".gammou"
 	)
-	add_post_build_copy(${name} ${GAMMOU_PLUGINS_DIR})
+	
+	if(NOT "${GAMMOU_PLUGINS_OUTPUT_PATH}" STREQUAL "${GAMMOU_PLUGINS_DIR}")
+	    add_post_build_copy(${name} ${GAMMOU_PLUGINS_DIR})
+    endif()
 endmacro()
+
+#############################
+#############################
+
+
 
 add_gammou_plugin(Plugin1 Plugins/plugin1.cpp)
 #add_gammou_plugin(Plugin2 Plugins/plugin2.cpp)

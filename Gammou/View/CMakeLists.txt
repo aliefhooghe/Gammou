@@ -43,7 +43,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules")
 find_package(Cairo REQUIRED)
 
 target_include_directories(view PUBLIC ${Cairo_INCLUDE_DIRS})	#	PUBLIC : Users will have to draw with cairo
-target_link_libraries(view PRIVATE ${Cairo_LIBS} )
+target_link_libraries(view PUBLIC ${Cairo_LIBS} )
 
 #######################################################
 #	Specific Setup
@@ -65,13 +65,16 @@ if(WIN32)                  # MICROSOFT WINDOWS
 	endif()
 	
     
-elseif(UNIX AND NOT APPLE)  # LINUX
+elseif(UNIX)  # LINUX and OSX
     
     if(VIEW_APP)
+        find_package(X11 REQUIRED)
+        find_package(Xext REQUIRED)
 		target_sources(view PRIVATE 
 			app_window/X11/x11_app_window.cpp
 		)
-		target_link_libraries(view PRIVATE X11 Xext)
+		target_include_directories(view PUBLIC ${X11_INCLUDE_DIR} ${Xext_INCLUDE_DIR})  
+		target_link_libraries(view PRIVATE ${X11_LIBRARIES} ${Xext_LIBRARY})
     endif()
 
     if(VIEW_VST3)
@@ -79,8 +82,7 @@ elseif(UNIX AND NOT APPLE)  # LINUX
     endif()
 
 else()
-#elseif(APPLE)           # APPLE OSXs
-    message( FATAL_ERROR "unsupported os (Apple)" )
+    message( FATAL_ERROR "unsupported OS" )
 endif()
     
 
