@@ -74,7 +74,7 @@ namespace Gammou {
 
 				double dirac_filtre(const double t, const double f0)
 				{
-					if (abs(t) <= std::numeric_limits<float>::min()) {
+					if (std::abs(t) <= std::numeric_limits<float>::min()) {
 						return 2.0 * f0;
 					}
 					else {

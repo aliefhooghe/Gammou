@@ -126,16 +126,16 @@ if(GAMMOU_STANDALONE_BUILD)
     #if(WIN32)                   # MICROSOFT WINDOWS
     
     if(UNIX)                # LINUX and OSX
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
         target_sources(gammou_standalone PRIVATE Application/standalone/X11/main.cpp)
         
         # For Rtaudio
         if(APPLE)               # Only OSX
             find_library(COREAUDIO_LIB CoreAudio)
             find_library(COREFOUNDATION_LIB CoreFoundation)
-            target_link_libraries(gammou_standalone ${COREAUDIO_LIB} ${COREFOUNDATION_LIB})
+            target_link_libraries(gammou_standalone PRIVATE ${COREAUDIO_LIB} ${COREFOUNDATION_LIB} pthread)
             target_compile_definitions(gammou_standalone PRIVATE __MACOSX_CORE__)
         else()                  # Only Linux
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
             target_link_libraries(gammou_standalone PRIVATE m stdc++fs jack) # pulse-simple pulse
             target_compile_definitions(gammou_standalone PRIVATE __UNIX_JACK__)#__LINUX_PULSE__)
         endif()
