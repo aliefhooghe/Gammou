@@ -1,26 +1,13 @@
 cmake_minimum_required (VERSION 3.1)
 
-
-# Macro for setting option in subproject
-macro(set_option opt value)
-  set(${opt} ${value} CACHE INTERNAL "" FORCE)
-endmacro()
-
-# Macro to copy target after build
-macro(add_post_build_copy target directory)
-		add_custom_command(TARGET ${target} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${target}> ${directory}
-			COMMENT "Copying ${target} to ${directory}"
-		)
-endmacro()
-
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/util.cmake")
 
 #################################################
 
 project (Gammou LANGUAGES CXX)
 
-option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" ON)
-option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" OFF)
+option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" OFF)
+option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" ON)
 
 # Hide View Option
 mark_as_advanced(FORCE 
@@ -36,7 +23,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Set output build paths
 set(VST3_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")                         # gammou (VST3)
-set(GAMMOU_PLUGINS_OUTPUT_PATH "${CMAKE_BINARY_DIR}/GammouPlugins")      # gammou Plugins
+set(GAMMOU_PLUGINS_OUTPUT_PATH "${CMAKE_BINARY_DIR}/GammouPlugins")     # gammou Plugins
 set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")                      # View, synthesizer, vstsdk, ....
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")                   # gammou Standalone
 
@@ -57,8 +44,6 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
 
 #################################################
 
-set(VIEW_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/View")
-set(SYNTHESIZER_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Synthesizer")
 set(GUI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Application/gui")
 
 
@@ -109,8 +94,6 @@ if(GAMMOU_STANDALONE_BUILD)
 	)
 	
 	target_include_directories(gammou_standalone PRIVATE 
-		${VIEW_INCLUDE_DIR} 
-		${SYNTHESIZER_INCLUDE_DIR} 
 		${GUI_INCLUDE_DIR} 
 		${RTAUDIO_DIR}
 	)
@@ -195,8 +178,6 @@ if(GAMMOU_VST3_BUILD)
 	
 	target_include_directories(gammou PRIVATE 
 		${VST3_SDK_DIR} 
-		${VIEW_INCLUDE_DIR} 
-		${SYNTHESIZER_INCLUDE_DIR} 
 		${GUI_INCLUDE_DIR}
 	)
 	
@@ -209,7 +190,7 @@ if(GAMMOU_VST3_BUILD)
 	set_target_properties(gammou PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${VST3_OUTPUT_PATH}")
 	
 	# Copy the target in VST3 directory	
-	#add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
+	add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
 	
 	#####
 	
@@ -231,7 +212,7 @@ endif()
 
 #################################################
 
-# Inlude Gammou View nd Synthesizer libs
+# Include Gammou View nd Synthesizer libs
 
 mark_as_advanced(FORCE 
 	VIEW_APP
@@ -244,43 +225,14 @@ add_subdirectory(View tmp/View)
 # Build Gammou Synthesizer lib
 add_subdirectory(Synthesizer tmp/Synthesizer)
 
+# Build Plugins
+add_subdirectory(Plugins tmp/Plugins)
+
+
 ###################################################################################################################################################
 ###################################################################################################################################################
 ###################################################################################################################################################
 
-################################################
-#                                              #
-#       Gammou Plugins                         #
-#                                              #
-################################################
-
-
-
-# Create a Gammou plugin : usage : add_gammou_plugin(plugin_name src1.cpp src2.cpp ....)
-macro(add_gammou_plugin name)
-	set(plugin_sources ${ARGN})
-	add_library(${name} MODULE ${plugin_sources})
-	target_link_libraries(${name} PRIVATE synthesizer)
-	target_include_directories(${name} PRIVATE ${SYNTHESIZER_INCLUDE_DIR})
-	set_target_properties(${name} PROPERTIES 
-	    FOLDER "GammouPlugins"
-	    LIBRARY_OUTPUT_DIRECTORY ${GAMMOU_PLUGINS_OUTPUT_PATH}
-	    PREFIX ""
-	    SUFFIX ".gammou"
-	)
-	
-	if(NOT "${GAMMOU_PLUGINS_OUTPUT_PATH}" STREQUAL "${GAMMOU_PLUGINS_DIR}")
-	    add_post_build_copy(${name} ${GAMMOU_PLUGINS_DIR})
-    endif()
-endmacro()
-
-#############################
-#############################
-
-
-
-add_gammou_plugin(Plugin1 Plugins/plugin1.cpp)
-add_gammou_plugin(Plugin2 Plugins/plugin2.cpp)
 
 
 

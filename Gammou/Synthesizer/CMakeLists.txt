@@ -1,5 +1,12 @@
 
 cmake_minimum_required (VERSION 3.1)
+#######################################################
+
+# Guard
+
+if(TARGET synthesizer)
+	return()
+endif()
 
 #######################################################
 project(View LANGUAGES CXX)
@@ -62,6 +69,7 @@ add_library(synthesizer STATIC
 )
 
 target_link_libraries(synthesizer PUBLIC process)
+target_include_directories(synthesizer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 set_property(TARGET synthesizer PROPERTY POSITION_INDEPENDENT_CODE ON)  # Allow Modules objects to be built
            
 if(UNIX)  # LINUX and APPLE OSX

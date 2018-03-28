@@ -2,6 +2,14 @@
 cmake_minimum_required (VERSION 3.1)
 
 #######################################################
+
+# Guard
+
+if(TARGET view)
+	return()
+endif()
+
+#######################################################
 project(View LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 
@@ -42,7 +50,7 @@ add_library(view STATIC
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules")
 find_package(Cairo REQUIRED)
 
-target_include_directories(view PUBLIC ${Cairo_INCLUDE_DIRS})	#	PUBLIC : Users will have to draw with cairo
+target_include_directories(view PUBLIC ${Cairo_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})	
 target_link_libraries(view PUBLIC ${Cairo_LIBS} )
 
 set_property(TARGET view PROPERTY POSITION_INDEPENDENT_CODE ON)  # Allow Modules objects to be built
@@ -58,7 +66,9 @@ if(WIN32)                  # MICROSOFT WINDOWS
 		#	Add Vst3 win32 window files
 		target_include_directories(view PRIVATE ${VST3_SDK_DIR})
 		target_sources(view PRIVATE 
+			vst3_window/abstract_vst3_window.h
 			vst3_window/abstract_vst3_window.cpp
+			vst3_window/win32/win32_vst3_window.h
 			vst3_window/win32/win32_vst3_window.cpp
 			${VST3_SDK_DIR}/public.sdk/source/common/pluginview.cpp
 		)
@@ -74,7 +84,9 @@ elseif(UNIX)  # LINUX and OSX
     if(VIEW_APP)
         find_package(X11 REQUIRED)
         find_package(Xext REQUIRED)
-		target_sources(view PRIVATE 
+		target_sources(view PRIVATE
+			app_window/abstract_app_window.h
+			app_window/X11/x11_app_window.h
 			app_window/X11/x11_app_window.cpp
 		)
 		target_include_directories(view PUBLIC ${X11_INCLUDE_DIR} ${Xext_INCLUDE_DIR})  
@@ -85,7 +97,9 @@ elseif(UNIX)  # LINUX and OSX
 		#	Add Vst3 X11 window files
 		target_include_directories(view PRIVATE ${VST3_SDK_DIR})
 		target_sources(view PRIVATE 
+			vst3_window/abstract_vst3_window.h
 			vst3_window/abstract_vst3_window.cpp
+			vst3_window/X11/x11_vst3_window.h
 			vst3_window/X11/x11_vst3_window.cpp
 			${VST3_SDK_DIR}/public.sdk/source/common/pluginview.cpp
 		)

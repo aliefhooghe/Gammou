@@ -1,5 +1,12 @@
 
 cmake_minimum_required (VERSION 3.1)
+#######################################################
+
+# Guard
+
+if(TARGET process)
+	return()
+endif()
 
 #######################################################
 project(Process LANGUAGES CXX)

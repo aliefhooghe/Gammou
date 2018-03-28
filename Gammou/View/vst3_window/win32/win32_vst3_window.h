@@ -2,7 +2,6 @@
 #define GAMMOU_WIN32_VST3_WINDOW_H_
 
 
-#include <cairo-win32.h>
 #include <Windows.h>
 #include <windowsx.h>
 #undef min

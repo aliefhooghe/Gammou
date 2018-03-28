@@ -1,5 +1,7 @@
 
 
+#include <cairo-win32.h>
+
 #include "../../../debug.h"
 #include "win32_vst3_window.h"
 
