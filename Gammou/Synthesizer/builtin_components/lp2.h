@@ -31,7 +31,6 @@ namespace Gammou {
 				}
 
 			private:
-				multi_channel_variable<double> m_previous_output;
 				multi_channel_variable<double> m_previous_output_deriv;
 			};
 

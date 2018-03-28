@@ -9,7 +9,6 @@ namespace Gammou {
 
             lp2::lp2(const unsigned int channel_count)
                 : sound_component("Lp2", 3, 1, channel_count),
-					m_previous_output(this),
 					m_previous_output_deriv(this)
             {
                 set_input_name("In", 0);
@@ -19,7 +18,7 @@ namespace Gammou {
 
             void lp2::initialize_process()
             {
-                m_previous_output = 0.0;
+                m_output[0] = 0.0;
 				m_previous_output_deriv = 0.0;
             }
 
@@ -31,7 +30,7 @@ namespace Gammou {
 				const double omega0 = 6.28318530718 * constrain_in_range(input[1], 1.0, 16000.0);
 				const double Q = constrain_in_range(input[2], 0.1, 100.0);
 
-				const double y = m_previous_output;
+				const double y = m_output[0];
 				const double yd = m_previous_output_deriv;
 				const double dt = get_sample_duration();
 
@@ -40,10 +39,8 @@ namespace Gammou {
 				const double k3 = yd2(in, omega0, Q, y + (dt / 2.0) * yd + ((dt* dt) / 4.0) * k1, yd + (dt / 2.0) * k2);
 				const double k4 = yd2(in, omega0, Q, y + dt * yd + ((dt*dt) / 2.0) * k2, yd + dt * k3);
 
-				m_previous_output += dt * yd + ((dt * dt) / 6.0) * (k1 + k2 + k3);
+				m_output[0] += dt * yd + ((dt * dt) / 6.0) * (k1 + k2 + k3);
 				m_previous_output_deriv += (dt / 6.0) * (k1 + 2.0 * k2 + 2.0 * k3 + k4);
-
-				m_output[0] = m_previous_output;
             }
         }
     }

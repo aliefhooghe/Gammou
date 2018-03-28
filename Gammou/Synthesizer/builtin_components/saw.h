@@ -30,8 +30,7 @@ namespace Gammou {
 					sound_component("Saw", 1, 1, channel_count),
 					m_time(this),
 					m_next_dirac_time(this),
-					m_slope(this),
-					m_prev_output(this)
+					m_slope(this)
 				{
 					DEBUG_PRINT("Saw CTOR\n");
 					set_input_name("Freq", 0);
@@ -44,7 +43,7 @@ namespace Gammou {
 					m_next_dirac_time = 0.0; 
 					m_slope = 1.0;
 					m_time = 0.0;
-					m_prev_output = 0.0;
+					m_output[0] = 0.0; 
 				}
 
 				void process(const double input[]) override
@@ -58,12 +57,11 @@ namespace Gammou {
 
 					const double R = 0.995;
 					const double dI = integral(t, dt);
-					const double out = dI + R * m_prev_output;
+					const double out = dI + R * m_output[0];
 					 // y(n) = x(n) - x(n-1) + R * y(n-1)
 					 // = y(n) = integral(t, dt) + R * y(n-1)
 	
 					m_output[0] = out;
-					m_prev_output = out;
 
 
 					m_time += dt;
@@ -118,7 +116,7 @@ namespace Gammou {
 				multi_channel_variable<double> m_next_dirac_time;
 				multi_channel_variable<double> m_slope;
 			//	multi_channel_variable<double> m_integral;
-				multi_channel_variable<double> m_prev_output;
+			//	multi_channel_variable<double> m_prev_output;
 			};
 
 			class saw_factory : public plugin_factory {
