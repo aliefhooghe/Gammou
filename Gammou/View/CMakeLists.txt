@@ -45,6 +45,10 @@ find_package(Cairo REQUIRED)
 target_include_directories(view PUBLIC ${Cairo_INCLUDE_DIRS})	#	PUBLIC : Users will have to draw with cairo
 target_link_libraries(view PUBLIC ${Cairo_LIBS} )
 
+set_property(TARGET view PROPERTY POSITION_INDEPENDENT_CODE ON)  # Allow Modules objects to be built
+
+
+
 #######################################################
 #	Specific Setup
 
@@ -78,7 +82,13 @@ elseif(UNIX)  # LINUX and OSX
     endif()
 
     if(VIEW_VST3)
-		message( FATAL_ERROR "Not implemented" )
+		#	Add Vst3 X11 window files
+		target_include_directories(view PRIVATE ${VST3_SDK_DIR})
+		target_sources(view PRIVATE 
+			vst3_window/abstract_vst3_window.cpp
+			vst3_window/X11/x11_vst3_window.cpp
+			${VST3_SDK_DIR}/public.sdk/source/common/pluginview.cpp
+		)
     endif()
 
 else()

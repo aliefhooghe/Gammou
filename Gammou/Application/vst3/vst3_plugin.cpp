@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <cstring>
 
 #include "vst3_plugin.h"
 

@@ -8,6 +8,8 @@ namespace Gammou {
 
 	namespace View {
 
+		class abstract_vst3_view;
+
 		class abstract_vst3_window :  public abstract_window
 		{
 			friend class abstract_vst3_view;
@@ -23,8 +25,8 @@ namespace Gammou {
 			virtual void open(void *parent_window) =0;
 			virtual void close(void) =0;
 
-			//	widget override   (visibilité ?)
-			//	In abstract coordinate (not windows system)
+			//	widget override   (visibilitï¿½ ?)
+			//	Abstract coordinate (not windows system)
 			virtual void resize(const unsigned int width, const unsigned int height) override;
 
 		private:
@@ -40,10 +42,12 @@ namespace Gammou {
 			void resize(const unsigned int width, const unsigned int height);
 
 			// CPluginView override
-			Steinberg::tresult PLUGIN_API onWheel(float distance) SMTG_OVERRIDE;
-			Steinberg::tresult PLUGIN_API onKeyDown(Steinberg::char16 key, Steinberg::int16 keyMsg, Steinberg::int16 modifiers) SMTG_OVERRIDE;
-			Steinberg::tresult PLUGIN_API onKeyUp(Steinberg::char16 key, Steinberg::int16 keyMsg, Steinberg::int16 modifiers) SMTG_OVERRIDE;
+			Steinberg::tresult PLUGIN_API onWheel(float distance) override;
+			Steinberg::tresult PLUGIN_API onKeyDown(Steinberg::char16 key, Steinberg::int16 keyMsg, Steinberg::int16 modifiers) override;
+			Steinberg::tresult PLUGIN_API onKeyUp(Steinberg::char16 key, Steinberg::int16 keyMsg, Steinberg::int16 modifiers) override;
 
+			void attachedToParent() SMTG_OVERRIDE;
+			void removedFromParent() SMTG_OVERRIDE;
 		protected:
 			abstract_vst3_window *m_window;
 		};

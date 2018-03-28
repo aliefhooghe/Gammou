@@ -153,6 +153,17 @@ namespace Gammou {
 
 		}
 
+		void abstract_vst3_view::attachedToParent()
+		{
+			if (m_window != nullptr)
+				m_window->open(systemWindow);
+		}
+
+		void abstract_vst3_view::removedFromParent()
+		{
+			if (m_window != nullptr)
+				m_window->close();
+		}
 
 	} /* View */
 } /* Gammou */

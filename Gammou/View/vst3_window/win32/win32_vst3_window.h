@@ -50,9 +50,7 @@ namespace Gammou {
 			~win32_vst3_view();
 
 			//	CPluginView override
-			Steinberg::tresult PLUGIN_API isPlatformTypeSupported(Steinberg::FIDString type) SMTG_OVERRIDE;
-			void attachedToParent() SMTG_OVERRIDE;
-			void removedFromParent() SMTG_OVERRIDE;
+			Steinberg::tresult PLUGIN_API isPlatformTypeSupported(Steinberg::FIDString type) override;
 		};
 
 	} /* View */

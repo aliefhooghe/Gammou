@@ -47,6 +47,13 @@ set(GAMMOU_PLUGINS_DIR
 	CACHE PATH "Choose the gammou Plugins directory"
 )
 
+#
+
+set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
+    $<$<CONFIG:Debug>:_DEBUG>
+    $<$<CONFIG:Release>:NDEBUG>
+)
+
 
 #################################################
 
@@ -83,8 +90,6 @@ set(PERSISTENCE_SRC
 )
 
 
-
-
 ################################################
 #                                              #
 #       Gammou Standalone Application          #
@@ -111,7 +116,6 @@ if(GAMMOU_STANDALONE_BUILD)
 	)
 	
 	target_link_libraries(gammou_standalone PRIVATE 
-		${STANDALONE_APPLICATION_SOUND_SYSTEM_LIBS} 
 		view 
 		synthesizer
 	)
@@ -178,7 +182,7 @@ if(GAMMOU_VST3_BUILD)
 	)
 	
 	
-	add_subdirectory(${VST3_SDK_DIR} VST3_SDK EXCLUDE_FROM_ALL)	# only need base and sdk targets
+	add_subdirectory(${VST3_SDK_DIR} tmp/VST3_SDK EXCLUDE_FROM_ALL)	# only need base and sdk targets
 	
 	add_library(gammou MODULE 
 		${VST3_SDK_DIR}/public.sdk/source/vst/vstsinglecomponenteffect.cpp
@@ -205,7 +209,7 @@ if(GAMMOU_VST3_BUILD)
 	set_target_properties(gammou PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${VST3_OUTPUT_PATH}")
 	
 	# Copy the target in VST3 directory	
-	add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
+	#add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
 	
 	#####
 	
@@ -235,10 +239,10 @@ mark_as_advanced(FORCE
 )
 
 # Build Gammou View lib
-add_subdirectory(View View)
+add_subdirectory(View tmp/View)
 
 # Build Gammou Synthesizer lib
-add_subdirectory(Synthesizer Synthesizer)
+add_subdirectory(Synthesizer tmp/Synthesizer)
 
 ###################################################################################################################################################
 ###################################################################################################################################################
@@ -276,7 +280,7 @@ endmacro()
 
 
 add_gammou_plugin(Plugin1 Plugins/plugin1.cpp)
-#add_gammou_plugin(Plugin2 Plugins/plugin2.cpp)
+add_gammou_plugin(Plugin2 Plugins/plugin2.cpp)
 
 
 

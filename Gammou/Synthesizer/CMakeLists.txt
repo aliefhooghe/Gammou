@@ -62,7 +62,7 @@ add_library(synthesizer STATIC
 )
 
 target_link_libraries(synthesizer PUBLIC process)
-set_property(TARGET synthesizer PROPERTY POSITION_INDEPENDENT_CODE ON)  # Allow plugins to be built
+set_property(TARGET synthesizer PROPERTY POSITION_INDEPENDENT_CODE ON)  # Allow Modules objects to be built
            
 if(UNIX)  # LINUX and APPLE OSX
 	target_link_libraries(synthesizer PRIVATE m dl)	#	math.h and dlopen

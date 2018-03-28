@@ -269,7 +269,6 @@ namespace Gammou {
 
 
 		//	win_32_vst3_view implementation
-		//	todo peut etre plus de code dans abstract_vst3_view
 
 		win32_vst3_view::win32_vst3_view(win32_vst3_window * window)
 			: abstract_vst3_view(window)
@@ -289,19 +288,7 @@ namespace Gammou {
 				Steinberg::kResultTrue : Steinberg::kResultFalse);
 		}
 
-		// TODO Close et open a mettre ans abstract
 
-		void win32_vst3_view::attachedToParent()
-		{
-			if (m_window != nullptr)
-				m_window->open(systemWindow);
-		}
-
-		void win32_vst3_view::removedFromParent()
-		{
-			if (m_window != nullptr)
-				m_window->close();
-		}
 
 
 
