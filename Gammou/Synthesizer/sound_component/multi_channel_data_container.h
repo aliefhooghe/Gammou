@@ -2,10 +2,8 @@
 #define MULTI_CHANNEL_DATA_CONTAINER_H_
 
 #include <vector>
-
-
 #include "sound_component_manager.h"
-
+#include "polyphonic_sound_component.h"
 
 namespace Gammou {
 
@@ -16,8 +14,6 @@ namespace Gammou {
 		* 	Base implementation for all multi-channel container
 		*/
 
-		class polyphonic_sound_component;
-
 		class multi_channel_data {
 
 		public:
@@ -26,7 +22,10 @@ namespace Gammou {
 
 		protected:
 			inline unsigned int get_channels_count() const { return m_channels_count; }
-			unsigned int get_current_working_channel() const;
+			inline unsigned int get_current_working_channel() const
+			{
+				return m_owner->get_current_working_channel();
+			}
 
 		private:
 			unsigned int m_channels_count;
@@ -47,9 +46,9 @@ namespace Gammou {
 			multi_channel_variable(polyphonic_sound_component *owner);
 			virtual ~multi_channel_variable() {}
 
-			T operator =(const multi_channel_variable<T>& value);
-			T operator =(const T& value);
-			operator T&();
+			inline T operator =(const multi_channel_variable<T>& value);
+			inline T operator =(const T& value);
+			inline operator T&();
 
 		protected:
 			std::vector<T> m_data;
@@ -63,14 +62,14 @@ namespace Gammou {
 		}
 
 		template<class T>
-		T multi_channel_variable<T>::operator=(const multi_channel_variable<T>& value)
+		inline T multi_channel_variable<T>::operator=(const multi_channel_variable<T>& value)
 		{
 			const unsigned int channel = get_current_working_channel();
 			return (m_data[channel] = value.m_data[channel]);
 		}
 
 		template<class T>
-		T multi_channel_variable<T>::operator=(const T& value)
+		inline T multi_channel_variable<T>::operator=(const T& value)
 		{
 			return (m_data[get_current_working_channel()] = value);
 		}
@@ -92,8 +91,8 @@ namespace Gammou {
 			multi_channel_array(polyphonic_sound_component *owner, const unsigned int size);
 			virtual ~multi_channel_array() {}
 
-			T& operator [](const unsigned int index);
-			unsigned int size();
+			inline T& operator [](const unsigned int index);
+			inline unsigned int size() { return m_size;  }
 		private:
 			const unsigned int m_size;
 			std::vector<T> m_data;
@@ -108,18 +107,13 @@ namespace Gammou {
 		}
 
 		template<class T>
-		T& multi_channel_array<T>::operator [](const unsigned int index)
+		inline T& multi_channel_array<T>::operator [](const unsigned int index)
 		{
-			// TODO Verif ou perf ???
+			// Verif ou perf -> Perf !! 
 			const unsigned int base = m_size * multi_channel_data::get_current_working_channel();
 			return m_data[base + index];
 		}
 
-		template<class T>
-		inline unsigned int multi_channel_array<T>::size()
-		{
-			return m_size;
-		}
 
 	} /* Sound */
 
