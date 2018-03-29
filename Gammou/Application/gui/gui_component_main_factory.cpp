@@ -19,7 +19,7 @@ namespace Gammou {
 				return m_main_factory.get_factory_name(factory_id);
 			}
 			else {
-				complete_component_factory *factory = factory_by_id(factory_id);
+				abstract_gui_component_factory *factory = factory_by_id(factory_id);
 				return factory->get_name();
 			}
 		}
@@ -30,8 +30,8 @@ namespace Gammou {
 				return m_main_factory.get_factory_description(factory_id);
 			}
 			else {
-				complete_component_factory *factory = factory_by_id(factory_id);
-				return factory->get_description();
+				abstract_gui_component_factory *factory = factory_by_id(factory_id);
+				return factory->get_category();
 			}
 		}
 
@@ -41,7 +41,7 @@ namespace Gammou {
 				return m_main_factory.get_plugin_request_form(factory_id);
 			}
 			else {
-				complete_component_factory *factory = factory_by_id(factory_id);
+				abstract_gui_component_factory *factory = factory_by_id(factory_id);
 				return factory->get_request_form();
 			}
 		}
@@ -57,7 +57,7 @@ namespace Gammou {
 				return create_default_complete_component(x, y, sound_component);
 			}
 			else {
-				complete_component_factory *factory = factory_by_id(factory_id);
+				abstract_gui_component_factory *factory = factory_by_id(factory_id);
 				return factory->create_complete_component(x, y, data, channel_count);
 			}
 		}
@@ -72,7 +72,7 @@ namespace Gammou {
 				return create_default_complete_component(x, y, sound_component);
 			}
 			else {
-				complete_component_factory *factory = factory_by_id(factory_id);
+				abstract_gui_component_factory *factory = factory_by_id(factory_id);
 				return factory->create_complete_component(x, y, answer_form, channel_count);
 			}
 		}
@@ -87,7 +87,7 @@ namespace Gammou {
 			return m_main_factory.register_factory(factory);
 		}
 
-		void gui_component_main_factory::register_complete_factory(complete_component_factory * factory)
+		void gui_component_main_factory::register_complete_factory(abstract_gui_component_factory * factory)
 		{
 			m_complete_component_factories[factory->get_factory_id()] = factory;
 		}
@@ -105,7 +105,7 @@ namespace Gammou {
 			return std::make_pair(gui_component, sound_component);
 		}
 
-		complete_component_factory * gui_component_main_factory::factory_by_id(const unsigned int factory_id)
+		abstract_gui_component_factory * gui_component_main_factory::factory_by_id(const unsigned int factory_id)
 		{
 			auto it = m_complete_component_factories.find(factory_id);
 

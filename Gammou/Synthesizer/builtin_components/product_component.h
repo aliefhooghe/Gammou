@@ -19,15 +19,12 @@ namespace Gammou {
 				void process(const double input[]) override;
 			};
 
-			class product_factory : public plugin_factory {
+			class product_factory : public default_plugin_factory<product_component> {
 
 			public:
-				product_factory();
+				product_factory()
+					: default_plugin_factory<product_component>("Product", "Calculus", product_component_id) {}
 				~product_factory() {}
-
-			protected:
-				abstract_sound_component *create_sound_component(data_source& source, const unsigned int channel_count) override;
-				abstract_sound_component *create_sound_component(const abstract_form_answer& answer_form, const unsigned int channel_count) override;
 			};
 
 		} /* Builtin */

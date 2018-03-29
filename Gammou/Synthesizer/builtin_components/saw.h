@@ -123,7 +123,7 @@ namespace Gammou {
 
 			public:
 				saw_factory()
-					: plugin_factory("Saw", "Saw", saw_component_id) {}
+					: plugin_factory("Saw", "Oscillator", saw_component_id) {}
 				~saw_factory() {}
 
 			protected:

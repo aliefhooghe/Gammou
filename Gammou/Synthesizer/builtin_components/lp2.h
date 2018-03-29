@@ -38,7 +38,7 @@ namespace Gammou {
 
 			public:
 				lp2_factory()
-					: plugin_factory("lp2", "lp2", lp2_component_id) {}
+					: plugin_factory("lp2", "Filter", lp2_component_id) {}
 				~lp2_factory() {}
 
 			protected:

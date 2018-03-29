@@ -26,15 +26,12 @@ namespace Gammou {
 			};
 
 
-			class sin_factory : public plugin_factory {
+			class sin_factory : public default_plugin_factory<sin_component> {
 
 			public:
-				sin_factory();
+				sin_factory()
+					: default_plugin_factory<sin_component>("Sine", "Oscillator", sin_component_id) {}
 				~sin_factory() {}
-
-			protected:
-				abstract_sound_component *create_sound_component(data_source& source, const unsigned int channel_count) override;
-				abstract_sound_component *create_sound_component(const abstract_form_answer& answer_form, const unsigned int channel_count) override;
 			};
 
 		} /* Built in */

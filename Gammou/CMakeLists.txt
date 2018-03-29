@@ -65,8 +65,15 @@ set(GUI_SRC
 	Application/gui/gui_synthesizer_circuit.cpp
 	Application/gui/synthesizer_gui.h
 	Application/gui/synthesizer_gui.cpp
-	Application/gui/control_component/knob_component.h
-	Application/gui/control_component/knob_component.cpp
+	Application/gui/control_component/control_component_ids.h
+	Application/gui/control_component/control_sound_component.h
+	Application/gui/control_component/control_sound_component.cpp
+	Application/gui/control_component/gain_sound_component.h
+	Application/gui/control_component/gain_sound_component.cpp
+	Application/gui/control_component/knob_gui_component.h
+	Application/gui/control_component/knob_gui_component.cpp
+	Application/gui/control_component/value_sound_component.h
+	Application/gui/control_component/value_sound_component.cpp
 )
 
 set(PERSISTENCE_SRC

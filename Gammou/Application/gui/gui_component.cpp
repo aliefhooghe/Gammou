@@ -24,7 +24,6 @@ namespace Gammou {
 		//
 
 		abstract_gui_component::abstract_gui_component(
-		/*	std::mutex *circuit_mutex,*/
 			const int x, const int y, const unsigned int initial_input_count, const unsigned int initial_output_count)
 			: View::panel<View::widget>(
 				x, y, 
@@ -89,7 +88,7 @@ namespace Gammou {
 
 			if (component != nullptr
 				&& ((get_width() - self_x) < m_l1 / 2.0)) {
-				const int oc = component->get_output_count();	//	int because of (test ret >= oc)
+				const int oc = component->get_output_count();	//	int because of (test ret comapred with oc)
 				const float socket_rect_height = static_cast<float>(get_height() - m_name_height) / static_cast<float>(oc);
 
 				if (oc != 0) {
@@ -170,7 +169,6 @@ namespace Gammou {
 			View::cairo_helper::set_source_color(cr, GuiProperties::component_font_color);
 			View::cairo_helper::show_centered_text(cr, View::rectangle(0, 0, get_width(), m_name_height * 1.5)
 				, component->get_name());
-
 
 			cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 

@@ -15,6 +15,8 @@ set(CMAKE_CXX_STANDARD 11)
 add_subdirectory("../Process" Process)
  
 set(SYNTHESIZER_SRC
+	sound_processing_helper.h
+	sound_processing_helper.cpp
     synthesizer.h
 	synthesizer.cpp
 	synthesizer_circuits/master_circuit.h
@@ -26,8 +28,6 @@ set(SYNTHESIZER_SRC
 set(SYNTHESIZER_BUILTIN_COMPONENTS_SRC
 	builtin_components.h
 	builtin_components/builtin_components_ids.h
-	builtin_components/sound_processing_helper.h
-	builtin_components/sound_processing_helper.cpp
 	builtin_components/adsr_env.h
 	builtin_components/adsr_env.cpp
 	builtin_components/lp2.h
@@ -53,8 +53,12 @@ set(PLUGIN_MANAGEMENT_SRC
 )
  
 set(SOUND_COMPONENT_SRC
+	sound_component/abstract_sound_component.h
+	sound_component/abstract_sound_component.cpp
 	sound_component/multi_channel_data_container.h
 	sound_component/multi_channel_data_container.cpp
+	sound_component/polyphonic_sound_component.h
+	sound_component/polyphonic_sound_component.cpp
 	sound_component/sound_component.h
 	sound_component/sound_component.cpp
 	sound_component/sound_component_manager.h

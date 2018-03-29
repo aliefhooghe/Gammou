@@ -28,16 +28,16 @@ namespace Gammou {
 
 			unsigned int load_plugin_factory(const std::string& file_path);
 			void register_plugin_factory(Sound::abstract_plugin_factory *factory);
-			void register_complete_factory(complete_component_factory *factory);
+			void register_complete_factory(abstract_gui_component_factory *factory);
 			bool check_factory_presence(const unsigned int factory_id) const;
 
 		protected:
 			complete_component create_default_complete_component(const int x, const int y, Sound::abstract_sound_component* sound_component);
 
 		private:
-			complete_component_factory *factory_by_id(const unsigned int factory_id);
+			abstract_gui_component_factory *factory_by_id(const unsigned int factory_id);
 
-			std::map<unsigned int, complete_component_factory*> m_complete_component_factories;
+			std::map<unsigned int, abstract_gui_component_factory*> m_complete_component_factories;
 			Sound::main_factory m_main_factory;
 
 		};

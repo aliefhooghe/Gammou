@@ -24,26 +24,15 @@ namespace Gammou {
 
 			private:
 				multi_channel_variable<double> m_gate_fact;
-				multi_channel_variable<double> m_prev_output;
 				multi_channel_variable<unsigned int> m_tau_index;
 			};
 
-			class adsr_env_factory : public plugin_factory {
+			class adsr_env_factory : public default_plugin_factory<adsr_env> {
 
 			public:
 				adsr_env_factory()
-					: plugin_factory("AdsrEnv", "AdsrEnv", adsr_env_component_id) {}
+					: default_plugin_factory<adsr_env>("AdsrEnv", "Envelope", adsr_env_component_id) {}
 				~adsr_env_factory() {}
-
-			protected:
-				abstract_sound_component *create_sound_component(data_source& source, const unsigned int channel_count) override
-				{
-					return new adsr_env(channel_count);
-				}
-				abstract_sound_component *create_sound_component(const abstract_form_answer& answer_form, const unsigned int channel_count) override
-				{
-					return new adsr_env(channel_count);
-				}
 			};
 
 

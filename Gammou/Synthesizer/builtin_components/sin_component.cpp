@@ -31,21 +31,6 @@ namespace Gammou {
 				m_frequence_integral = 0.0;
 			}
 
-			sin_factory::sin_factory()
-				: plugin_factory("Sine", "Sinus oscilator", sin_component_id)
-			{
-			}
-
-			abstract_sound_component * sin_factory::create_sound_component(data_source & source, const unsigned int channel_count)
-			{
-				return new sin_component(channel_count);
-			}
-
-			abstract_sound_component * sin_factory::create_sound_component(const abstract_form_answer& answer_form, const unsigned int channel_count)
-			{
-				return new sin_component(channel_count);
-			}
-
 		}
 
 	} /* Sound */

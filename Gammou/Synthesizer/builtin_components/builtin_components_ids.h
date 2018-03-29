@@ -15,7 +15,7 @@ namespace Gammou {
 				lp2_component_id		= 1003u,
 				product_component_id	= 1004u,
 				saw_component_id		= 1005u,
-			//	noise_component_id = 1006u
+			
 			};
 
 		}

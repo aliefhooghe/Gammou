@@ -15,11 +15,14 @@ namespace Gammou {
 		class abstract_plugin_factory {
 
 		public:
-			abstract_plugin_factory(const std::string& name, const std::string& description, unsigned int factory_id);
+			abstract_plugin_factory(
+				const std::string& name, 
+				const std::string& category, 
+				unsigned int factory_id);
 			virtual ~abstract_plugin_factory() {}
 
 			const std::string& get_name() const;
-			const std::string& get_description() const;
+			const std::string& get_category() const;
 			unsigned int get_factory_id() const;
 
 			virtual const abstract_request_form& get_request_form();
@@ -36,14 +39,14 @@ namespace Gammou {
 			std::unique_ptr<abstract_request_form> m_plugin_request_form;
 	
 			const std::string m_name;
-			const std::string m_description;
+			const std::string m_category;
 			const unsigned int m_factory_id;
 		};
 
         class plugin_factory : public abstract_plugin_factory {
 
         public:
-			plugin_factory(const std::string& name, const std::string& description, unsigned int factory_id);
+			plugin_factory(const std::string& name, const std::string& category, unsigned int factory_id);
 			virtual ~plugin_factory() {}
 
 			abstract_sound_component *get_new_sound_component(data_source& source, const unsigned int channel_count) override;
@@ -64,8 +67,8 @@ namespace Gammou {
 		template<class sound_component_type>
 		class default_plugin_factory : public plugin_factory {
 		public:
-			default_plugin_factory(const std::string& name, const std::string &description, unsigned int factory_id)
-				: plugin_factory(name, description, factory_id) {}
+			default_plugin_factory(const std::string& name, const std::string &category, unsigned int factory_id)
+				: plugin_factory(name, category, factory_id) {}
 			~default_plugin_factory() {}
 
 		protected:

@@ -5,6 +5,7 @@
 #include "sound_component/sound_component.h"
 #include "synthesizer_circuits/master_circuit.h"
 #include "synthesizer_circuits/polyphonic_circuit.h"
+#include "sound_processing_helper.h"
 
 #include "builtin_components.h"
 

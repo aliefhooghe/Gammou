@@ -67,7 +67,7 @@ namespace Gammou {
 			////-------------------------
 
 			sum_component_factory::sum_component_factory()
-				: plugin_factory("Sum", "Sum", sum_component_id)
+				: plugin_factory("Sum", "Calculus", sum_component_id)
 			{
 			}
 

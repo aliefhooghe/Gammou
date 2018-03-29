@@ -5,8 +5,8 @@ namespace Gammou {
 
 	namespace Sound {
 
-		abstract_plugin_factory::abstract_plugin_factory(const std::string & name, const std::string & description, unsigned int factory_id)
-			: m_name(name), m_description(m_name), m_factory_id(factory_id)
+		abstract_plugin_factory::abstract_plugin_factory(const std::string & name, const std::string & category, unsigned int factory_id)
+			: m_name(name), m_category(m_name), m_factory_id(factory_id)
 		{
 		}
 
@@ -15,9 +15,9 @@ namespace Gammou {
 			return m_name;
 		}
 
-		const std::string & abstract_plugin_factory::get_description() const
+		const std::string & abstract_plugin_factory::get_category() const
 		{
-			return m_description;
+			return m_category;
 		}
 
 		unsigned int abstract_plugin_factory::get_factory_id() const
@@ -49,8 +49,8 @@ namespace Gammou {
 
 		///////////////
 
-		plugin_factory::plugin_factory(const std::string& name, const std::string& description, const unsigned int factory_id)
-			: abstract_plugin_factory(name, description, factory_id)
+		plugin_factory::plugin_factory(const std::string& name, const std::string& category, const unsigned int factory_id)
+			: abstract_plugin_factory(name, category, factory_id)
 		{
 			
 		}
