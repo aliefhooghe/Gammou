@@ -15,7 +15,7 @@
 #include "gui_component_main_factory.h"
 #include "../../Synthesizer/builtin_components.h"
 
-#include "control_component/knob_component.h"
+#include "control_component/knob_gui_component.h"
 
 
 #ifndef GAMMOU_PLUGINS_DIRECTORY_PATH
@@ -40,7 +40,7 @@ namespace Gammou {
 
 		private:
 			void add_plugin_factory(Sound::abstract_plugin_factory *factory);
-			void add_control_factory(complete_component_factory *factory);
+			void add_control_factory(abstract_gui_component_factory *factory);
 			void load_plugin_factory(const std::string& path);
 
 			void init_main_factory(); // Load all built-in and plug in component
@@ -53,7 +53,7 @@ namespace Gammou {
 
 			// Factory
 			std::vector<unsigned int> m_factory_ids;
-			gui_component_main_factory m_complete_component_factory;
+			gui_component_main_factory m_gui_component_factory;
 			
 			// -----
 			unsigned int page_id;

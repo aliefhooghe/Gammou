@@ -17,12 +17,12 @@ namespace Gammou {
 
 			m_gui_master_circuit = 
 				new gui_master_circuit(
-					&m_complete_component_factory, synthesizer, synthesizer_mutex, 
+					&m_gui_component_factory, synthesizer, synthesizer_mutex, 
 					0, 0, GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height);
 
 			m_gui_polyphonic_circuit = 
 				new gui_polyphonic_circuit(
-					&m_complete_component_factory, synthesizer, synthesizer_mutex, 
+					&m_gui_component_factory, synthesizer, synthesizer_mutex, 
 					0, 0, GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height);
 
 			View::page_container *pages = 
@@ -156,25 +156,25 @@ namespace Gammou {
 
 		void synthesizer_gui::add_plugin_factory(Sound::abstract_plugin_factory * factory)
 		{
-			m_complete_component_factory.register_plugin_factory(factory);
+			m_gui_component_factory.register_plugin_factory(factory);
 			m_plugin_list_box->add_item(factory->get_name());
 			m_factory_ids.push_back(factory->get_factory_id());
 		}
 
-		void synthesizer_gui::add_control_factory(complete_component_factory * factory)
+		void synthesizer_gui::add_control_factory(abstract_gui_component_factory * factory)
 		{
-			m_complete_component_factory.register_complete_factory(factory);
+			m_gui_component_factory.register_complete_factory(factory);
 			m_plugin_list_box->add_item(factory->get_name());
 			m_factory_ids.push_back(factory->get_factory_id());
 		}
 
 		void synthesizer_gui::load_plugin_factory(const std::string & path)
 		{
-			const unsigned int factory_id = m_complete_component_factory.load_plugin_factory(path);
+			const unsigned int factory_id = m_gui_component_factory.load_plugin_factory(path);
 
 			DEBUG_PRINT("Loaded Factory : id = %u\n", factory_id);
 
-			m_plugin_list_box->add_item(m_complete_component_factory.get_factory_name(factory_id));
+			m_plugin_list_box->add_item(m_gui_component_factory.get_factory_name(factory_id));
 			m_factory_ids.push_back(factory_id);
 		}
 
@@ -182,6 +182,9 @@ namespace Gammou {
 
 		void synthesizer_gui::init_main_factory()
 		{
+
+			// Built In Components
+
 			add_plugin_factory(new Sound::Builtin::sin_factory());
 			add_plugin_factory(new Sound::Builtin::sum_component_factory());
 			add_plugin_factory(new Sound::Builtin::product_factory());
@@ -193,7 +196,10 @@ namespace Gammou {
 			//add_plugin_factory(new Sound::Builtin::naive_saw_factory());
 			//add_plugin_factory(new Sound::Builtin::cracra_factory());
 
-			add_control_factory(new knob_complete_component_factory());		
+			// Control Components
+
+			add_control_factory(new value_knob_gui_component_factory());
+			add_control_factory(new gain_knob_gui_component_factory());
 
 			const std::string plugin_dir_path(GAMMOU_PLUGINS_DIRECTORY_PATH);
 	
