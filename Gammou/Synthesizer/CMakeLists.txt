@@ -53,8 +53,12 @@ set(PLUGIN_MANAGEMENT_SRC
 )
  
 set(SOUND_COMPONENT_SRC
+	sound_component/abstract_sound_component.h
+	sound_component/abstract_sound_component.cpp
 	sound_component/multi_channel_data_container.h
 	sound_component/multi_channel_data_container.cpp
+	sound_component/polyphonic_sound_component.h
+	sound_component/polyphonic_sound_component.cpp
 	sound_component/sound_component.h
 	sound_component/sound_component.cpp
 	sound_component/sound_component_manager.h
