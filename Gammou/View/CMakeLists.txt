@@ -53,10 +53,9 @@ find_package(Cairo REQUIRED)
 target_include_directories(view PUBLIC ${Cairo_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})	
 target_link_libraries(view PUBLIC ${Cairo_LIBS} )
 
-set_property(TARGET view PROPERTY POSITION_INDEPENDENT_CODE ON)  # Allow Modules objects to be built
-
-
-
+if(VIEW_VST3)
+    set_target_properties(gammou PROPERTIES PROPERTY POSITION_INDEPENDENT_CODE ON)  # Allow Modules objects to be built
+endif()
 #######################################################
 #	Specific Setup
 

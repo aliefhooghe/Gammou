@@ -6,8 +6,8 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/util.cmake")
 
 project (Gammou LANGUAGES CXX)
 
-option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" OFF)
-option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" ON)
+option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" ON)
+option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" OFF)
 
 # Hide View Option
 mark_as_advanced(FORCE 
@@ -187,7 +187,12 @@ if(GAMMOU_VST3_BUILD)
 	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_DIR}"
 	)
 	
-	set_target_properties(gammou PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${VST3_OUTPUT_PATH}")
+	set_target_properties(gammou PROPERTIES 
+	    LIBRARY_OUTPUT_DIRECTORY "${VST3_OUTPUT_PATH}"
+	    PROPERTY POSITION_INDEPENDENT_CODE ON    
+	)
+
+	
 	
 	# Copy the target in VST3 directory	
 	add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
