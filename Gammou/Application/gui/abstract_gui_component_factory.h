@@ -9,19 +9,19 @@ namespace Gammou {
 	
 	namespace Gui {
 										// protected allow use of stamp
-		class complete_component_factory : protected Sound::abstract_plugin_factory {
+		class abstract_gui_component_factory : protected Sound::abstract_plugin_factory {
 
 		public:
 			typedef std::pair<abstract_gui_component*, Sound::abstract_sound_component*> complete_component;
 
-			complete_component_factory(const std::string& name, const std::string& description, unsigned int factory_id);
-			virtual ~complete_component_factory() {}
+			abstract_gui_component_factory(const std::string& name, const std::string& description, unsigned int factory_id);
+			virtual ~abstract_gui_component_factory() {}
 
 			void delete_sound_component(Sound::abstract_sound_component *component) const override;
 			
 			using Sound::abstract_plugin_factory::get_factory_id;
 			using Sound::abstract_plugin_factory::get_name;
-			using Sound::abstract_plugin_factory::get_description;
+			using Sound::abstract_plugin_factory::get_category;
 			using Sound::abstract_plugin_factory::get_request_form;
 
 			virtual complete_component create_complete_component(const int x, const int y, Sound::data_source& source, const unsigned int channel_count) = 0;
