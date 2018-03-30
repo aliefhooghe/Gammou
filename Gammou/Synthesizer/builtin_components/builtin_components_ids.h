@@ -14,8 +14,7 @@ namespace Gammou {
 				sum_component_id		= 1002u,
 				lp2_component_id		= 1003u,
 				product_component_id	= 1004u,
-				saw_component_id		= 1005u,
-			
+				saw_component_id		= 1005u
 			};
 
 		}

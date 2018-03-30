@@ -42,7 +42,10 @@ message( STATUS "Gammou Plugins Will be Copied in ${GAMMOU_PLUGINS_DIR}")
 # Create a Gammou plugin ; usage : add_gammou_plugin(plugin_name src1.cpp src2.cpp ....)
 macro(add_gammou_plugin name)
 	set(plugin_sources ${ARGN})
-	add_library(${name} MODULE ${plugin_sources})
+	add_library(${name} MODULE 
+		${plugin_sources}
+		plugins_ids.h
+		plugin_helper.h)
 	target_link_libraries(${name} PRIVATE synthesizer)
 	set_target_properties(${name} PROPERTIES 
 	    FOLDER "GammouPlugins"
@@ -60,6 +63,8 @@ endmacro()
 ####################################################################################################################
 ####################################################################################################################
 
+add_gammou_plugin(Template Template.cpp)
 add_gammou_plugin(Plugin1 plugin1.cpp)
-add_gammou_plugin(Plugin2 plugin2.cpp)
+
+
 

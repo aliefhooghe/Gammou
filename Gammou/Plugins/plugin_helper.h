@@ -9,6 +9,7 @@
 
 #include <synthesizer.h>
 #include <plugin_management/abstract_plugin_factory.h>
+#include "plugins_ids.h"
 
 #define EXPORT_DEFAULT_FACTORY(sound_component_type, factory_name, category, factory_id) \
 	DYNAMIC_EXPORT( \
