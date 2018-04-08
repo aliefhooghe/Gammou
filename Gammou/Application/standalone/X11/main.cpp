@@ -17,15 +17,14 @@ struct snd_callback_data{
 int snd_callback(void *output_buffer, void *input_buffer, unsigned int sample_count, 
                     double streamTime, RtAudioStreamStatus status, void *void_data)
 {
-    double *input = (double*)input_buffer;
+    double input[2] = {-1.0, 1.0};
     double *output = (double*)output_buffer;
     snd_callback_data *data = (snd_callback_data*)void_data;
 
-   data->synthesizer_mutex->lock();
-
-
-    for(unsigned int i = 0; i < sample_count; ++i, output += 2, input += 2)
+    data->synthesizer_mutex->lock();
+    for(unsigned int i = 0; i < sample_count; ++i, output += 2){
        data->synthesizer->process(input, output);
+    }
 
     data->synthesizer_mutex->unlock();
 
@@ -80,6 +79,34 @@ int main()
         e.printMessage();
     }
     if ( dac.isStreamOpen() ) dac.closeStream();
-
+    
+    /*
+    
+    Gammou::Sound::synthesizer synthesizer(2, 2, 128, 16);
+    Gammou::Sound::Builtin::sin_component *osc0 = new Gammou::Sound::Builtin::sin_component(128);
+    Gammou::Sound::Builtin::sin_component *osc1 = new Gammou::Sound::Builtin::sin_component(128);
+    Gammou::Sound::Builtin::sin_component *osc2 = new Gammou::Sound::Builtin::sin_component(128);
+    Gammou::Sound::Builtin::sin_component *osc3 = new Gammou::Sound::Builtin::sin_component(128);
+    
+    synthesizer.add_sound_component_on_master_circuit(osc0);
+    synthesizer.add_sound_component_on_master_circuit(osc1);
+    synthesizer.add_sound_component_on_master_circuit(osc2);
+    synthesizer.add_sound_component_on_master_circuit(osc3);
+    
+    osc0->connect_to(0, osc1, 1);
+    osc1->connect_to(0, osc2, 1);
+    osc2->connect_to(0, osc3, 1);
+    osc3->connect_to(0, synthesizer.get_master_main_output(), 1);
+    
+    
+    double input[2] = {0.0, 0.0};
+    double output[2] = {0.0, 0.0};
+    
+    const unsigned int k = 44100 * 60 * 10;
+    
+    for(unsigned int i = 0; i < k; ++i)
+        synthesizer.process(input, output);
+    */
+    
     return 0;
 }

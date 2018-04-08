@@ -1,5 +1,6 @@
 
 
+#include <cmath>
 #include "control_sound_component.h"
 
 namespace Gammou {

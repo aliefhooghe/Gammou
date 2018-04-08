@@ -7,6 +7,8 @@
 #define DYNAMIC_EXPORT(decl) extern "C" { decl }
 #endif
 
+#include <cmath>
+
 #include <synthesizer.h>
 #include <plugin_management/abstract_plugin_factory.h>
 #include "plugins_ids.h"
