@@ -7,6 +7,7 @@ using namespace Gammou::Sound;
 class template_component : public sound_component {
 
 public:
+
 	template_component(const unsigned int channel_count);
 	~template_component() {}
 
@@ -22,7 +23,7 @@ private:
 
 template_component::template_component(const unsigned int channel_count)
 	: sound_component("Template", 2, 1, channel_count), // 2,1 = nb input, nb output
-	m_frequence_integral(this)
+	m_frequence_integral(this)	//	Initialisation d'une variable multicannal
 {
 	//	Par defaut, In-0, In1 ,...., Out-0, Out-1, ...
 	set_input_name("Freq", 0);

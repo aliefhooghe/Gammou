@@ -40,5 +40,5 @@ EXPORT_DEFAULT_FACTORY(
 	Test_component, 
 	"SuperSin", 
 	"Oscilateur", 
-	63636363
+	plugins_id::plugin1_id
 )

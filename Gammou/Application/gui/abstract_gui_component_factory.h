@@ -14,7 +14,7 @@ namespace Gammou {
 		public:
 			typedef std::pair<abstract_gui_component*, Sound::abstract_sound_component*> complete_component;
 
-			abstract_gui_component_factory(const std::string& name, const std::string& description, unsigned int factory_id);
+			abstract_gui_component_factory(const std::string& name, const std::string& category, unsigned int factory_id);
 			virtual ~abstract_gui_component_factory() {}
 
 			void delete_sound_component(Sound::abstract_sound_component *component) const override;

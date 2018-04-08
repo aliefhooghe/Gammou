@@ -39,6 +39,29 @@ namespace Gammou {
 
 		//--------------
 
+		class label : public widget {
+
+		public:
+			label(
+				const std::string& text, 
+				const int x, const int y, 
+				const unsigned int width, const unsigned int height,
+				const unsigned int font_size = 10);
+
+			label(const std::string& text, const rectangle& rect,
+				const unsigned int font_size = 10);
+			~label() {}
+
+			void set_text(const std::string& text);
+			void set_font_size(const unsigned int size);
+		protected:
+			virtual void draw(cairo_t *cr) override;
+			std::string m_text;
+			unsigned m_font_size;
+		};
+
+		//---------------
+
 		// Todo : Rien de control utilisé (Enabled)
 		class push_button : public control {
 
@@ -69,9 +92,6 @@ namespace Gammou {
 		};
 
 		//-----------
-
-
-		//	TODO :	Slider, knob, toolbar, tabpanel, .... 
 
 		class knob : public control {
 

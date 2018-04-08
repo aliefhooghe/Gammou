@@ -7,8 +7,10 @@ namespace Gammou {
 	namespace Gui {
 
 		enum control_ids : unsigned int {
-			knob_value_id	=	500u,
-			knob_gain_id	=	501u
+			knob_value_id		=	500u,
+			knob_gain_id		=	501u,
+			integer_value_id	=	502u,
+			integer_gain_id		=	503u
 		};
 
 	}

@@ -151,12 +151,15 @@ namespace Gammou {
 						switch (event.type) {
 
 						case Steinberg::Vst::Event::kNoteOnEvent:
-							//DEBUG_PRINT("Midi event sampleoffset = %d\n", event.sampleOffset);
-							m_synthesizer.send_note_on(event.noteOn.pitch, event.noteOn.velocity);
+							DEBUG_PRINT("Note On = %d, v = %f\n", event.noteOn.noteId, event.noteOn.velocity);
+							if(event.noteOn.velocity < 0.01)
+								m_synthesizer.send_note_off(event.noteOn.pitch, 0.5);
+							else
+								m_synthesizer.send_note_on(event.noteOn.pitch, event.noteOn.velocity);
 							break;
 
 						case Steinberg::Vst::Event::kNoteOffEvent:
-							//DEBUG_PRINT("Midi event sampleoffset = %d\n", event.sampleOffset);
+							DEBUG_PRINT("Note Off = %d, v = %f\n", event.noteOff.noteId, event.noteOff.velocity);
 							m_synthesizer.send_note_off(event.noteOff.pitch, event.noteOff.velocity);
 							break;
 

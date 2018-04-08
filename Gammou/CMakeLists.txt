@@ -6,8 +6,8 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/util.cmake")
 
 project (Gammou LANGUAGES CXX)
 
-option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" ON)
-option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" OFF)
+option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" OFF)
+option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" ON)
 
 # Hide View Option
 mark_as_advanced(FORCE 
@@ -30,7 +30,7 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")                   # gammou
 # Set Gammou Plugins Directory (The place where gammou will look to load them)
 # Default is where they are built
 set(GAMMOU_PLUGINS_DIR                       
-	${GAMMOU_PLUGINS_OUTPUT_PATH}    
+	"C:/Gammou"    
 	CACHE PATH "Choose the gammou Plugins directory"
 )
 
@@ -70,6 +70,10 @@ set(GUI_SRC
 	Application/gui/control_component/control_sound_component.cpp
 	Application/gui/control_component/gain_sound_component.h
 	Application/gui/control_component/gain_sound_component.cpp
+	Application/gui/control_component/integer_control_sound_component.h
+	Application/gui/control_component/integer_control_sound_component.cpp
+	Application/gui/control_component/integer_gui_component.h
+	Application/gui/control_component/integer_gui_component.cpp
 	Application/gui/control_component/knob_gui_component.h
 	Application/gui/control_component/knob_gui_component.cpp
 	Application/gui/control_component/value_sound_component.h

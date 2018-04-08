@@ -201,6 +201,10 @@ namespace Gammou {
 			add_control_factory(new value_knob_gui_component_factory());
 			add_control_factory(new gain_knob_gui_component_factory());
 
+			add_control_factory(new value_integer_gui_component_factory());
+			add_control_factory(new gain_integer_gui_component_factory());
+			// Plugins 
+
 			const std::string plugin_dir_path(GAMMOU_PLUGINS_DIRECTORY_PATH);
 	
 			for (auto & p : std::experimental::filesystem::directory_iterator(plugin_dir_path)) {

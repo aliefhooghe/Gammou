@@ -54,9 +54,55 @@ namespace Gammou {
 			m_enabled = state;
 		}
 
+		// Label Implementation
+
+		label::label(
+			const std::string & text, 
+			const int x, const int y, 
+			const unsigned int width, 
+			const unsigned int height, 
+			const unsigned int font_size)
+			: widget(x, y, width, height),
+				m_text(text),
+				m_font_size(font_size)
+		{
+		}
+
+		label::label(
+			const std::string & text, 
+			const rectangle & rect, 
+			const unsigned int font_size)
+			: widget(rect),
+				m_text(text),
+				m_font_size(font_size)
+		{
+		}
+
+		void label::set_text(const std::string & text)
+		{
+			m_text = text;
+		}
+
+		void label::set_font_size(const unsigned int size)
+		{
+			m_font_size = size;
+		}
+
+		void label::draw(cairo_t * cr)
+		{
+			cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+			cairo_set_font_size(cr, static_cast<double>(m_font_size));
+			cairo_helper::show_centered_text(cr, get_relative_rect(), m_text);
+		}
+
 		// push_button implementation
 
-		push_button::push_button(std::function<void(push_button*)> push_action, const std::string& text, const int x, const int y, const unsigned int width, const unsigned int height, const unsigned int font_size)
+		push_button::push_button(
+			std::function<void(push_button*)> push_action, 
+			const std::string& text, 
+			const int x, const int y, 
+			const unsigned int width, const unsigned int height, 
+			const unsigned int font_size)
 			: m_pushed(false),  m_push_action(push_action), 
 			m_text(text), m_font_size(font_size), control(x, y, width, height)
 		{
@@ -245,6 +291,10 @@ namespace Gammou {
 			m_change_action(this);
 			redraw();
 		}
+
+		
+
+		
 
 } /* View */
 

@@ -16,6 +16,7 @@
 #include "../../Synthesizer/builtin_components.h"
 
 #include "control_component/knob_gui_component.h"
+#include "control_component/integer_gui_component.h"
 
 
 #ifndef GAMMOU_PLUGINS_DIRECTORY_PATH

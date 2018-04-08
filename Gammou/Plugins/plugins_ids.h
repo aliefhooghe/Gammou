@@ -9,6 +9,7 @@ namespace Gammou {
 		enum plugins_id : unsigned int {
 			template_id = 10000,
 			plugin1_id	= 10001
+			// .....
 		};
 
 	}
