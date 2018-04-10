@@ -30,7 +30,7 @@ namespace Gammou{
 		{
 			m_param = (v >= 0) ?
 				static_cast<double>(v) :
-				1.0 / static_cast<double>(v);
+				1.0 / static_cast<double>(-v);
 			m_value = v;
 		}
 

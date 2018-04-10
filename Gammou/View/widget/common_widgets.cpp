@@ -81,11 +81,13 @@ namespace Gammou {
 		void label::set_text(const std::string & text)
 		{
 			m_text = text;
+			redraw();
 		}
 
 		void label::set_font_size(const unsigned int size)
 		{
 			m_font_size = size;
+			redraw();
 		}
 
 		void label::draw(cairo_t * cr)

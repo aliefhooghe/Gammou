@@ -29,7 +29,6 @@ namespace Gammou {
 				{ 
 					m_integer->shift_value(-1); 
 					label->set_text(std::to_string(m_integer->get_value()));
-					redraw();
 				},
 				"-",
 				1.5 * unit, 5 * unit, // x, y
@@ -41,7 +40,6 @@ namespace Gammou {
 				{ 
 					m_integer->shift_value(1); 
 					label->set_text(std::to_string(m_integer->get_value()));
-					redraw();
 				},
 				"+",
 				5.5 * unit, 5 * unit, // x, y
@@ -62,7 +60,7 @@ namespace Gammou {
 		/* Value Integer Factory */
 
 		value_integer_gui_component_factory::value_integer_gui_component_factory()
-			: abstract_gui_component_factory("V Integer", "", control_ids::integer_value_id)
+			: abstract_gui_component_factory("Value Integer", "", control_ids::integer_value_id)
 		{
 		}
 
@@ -74,7 +72,7 @@ namespace Gammou {
 			source.read(&value, sizeof(int));
 			
 			integer_sound_component *sound_component =
-				new value_integer_sound_component("V Integer", channel_count, value);
+				new value_integer_sound_component("Value Integer", channel_count, value);
 
 			stamp_sound_component(sound_component);
 
@@ -87,7 +85,7 @@ namespace Gammou {
 			const Sound::abstract_form_answer & answer_form, const unsigned int channel_count)
 		{
 			integer_sound_component *sound_component =
-				new value_integer_sound_component("V Integer", channel_count, 0);
+				new value_integer_sound_component("Value Integer", channel_count, 0);
 
 			stamp_sound_component(sound_component);
 
@@ -98,7 +96,7 @@ namespace Gammou {
 		// Gain Integer implementation
 
 		gain_integer_gui_component_factory::gain_integer_gui_component_factory()
-			: abstract_gui_component_factory("G Integer", "", control_ids::integer_gain_id)
+			: abstract_gui_component_factory("Gain Integer", "", control_ids::integer_gain_id)
 		{
 		}
 
@@ -110,7 +108,7 @@ namespace Gammou {
 			source.read(&value, sizeof(int));
 
 			integer_sound_component *sound_component =
-				new gain_integer_sound_component("G Integer", channel_count, value);
+				new gain_integer_sound_component("Gain Integer", channel_count, value);
 
 			stamp_sound_component(sound_component);
 
@@ -123,7 +121,7 @@ namespace Gammou {
 			const Sound::abstract_form_answer & answer_form, const unsigned int channel_count)
 		{
 			integer_sound_component *sound_component =
-				new gain_integer_sound_component("G Integer", channel_count, 0);
+				new gain_integer_sound_component("Gain Integer", channel_count, 0);
 
 			stamp_sound_component(sound_component);
 
