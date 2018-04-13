@@ -24,20 +24,15 @@ namespace Gammou {
 			// Not virtual, should not be modified
 
 			unsigned int get_channel_count() const override;
-			
-
-			void on_channel_change(const unsigned int new_chanel) override;
+			void set_current_working_channel(const unsigned int new_chanel) override;
 
 		protected:
-			inline unsigned int get_current_working_channel() const {return m_current_working_channel;}
+			inline unsigned int get_current_working_channel() const { return m_current_working_channel; }
 
 		private:
 			const unsigned int m_channels_count;
 			unsigned int m_current_working_channel;
 
-			double m_sample_rate;
-			double m_sample_duration;
-			unsigned int m_factory_id;
 		};
 
 		////-///

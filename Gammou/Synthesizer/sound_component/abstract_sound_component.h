@@ -30,14 +30,15 @@ namespace Gammou {
 			unsigned int get_factory_id() const;
 			virtual unsigned int save_state(data_sink& data) { return 0; };
 
-			virtual void on_sample_rate_change(const double new_sample_rate) {};
-			virtual void on_channel_change(const unsigned int new_chanel) {};
-
 			virtual unsigned int get_channel_count() const { return 1;  }
+			virtual void set_current_working_channel(const unsigned int new_chanel) {};
+			void set_sample_rate(const double sample_rate);
+
 		protected:
-			
 			inline double get_sample_duration() const { return m_sample_duration; }
 			inline double get_sample_rate() const { return m_sample_rate; }
+			virtual void on_sample_rate_change(const double new_sample_rate) {};
+
 		private:
 			void on_notify(const sound_component_notification_tag notification_tag) override;
 

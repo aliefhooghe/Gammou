@@ -27,8 +27,7 @@ namespace Gammou {
 			return m_channels_count;
 		}
 
-
-		void polyphonic_sound_component::on_channel_change(const unsigned int new_chanel)
+		void polyphonic_sound_component::set_current_working_channel(const unsigned int new_chanel)
 		{
 			m_current_working_channel = new_chanel;
 		}

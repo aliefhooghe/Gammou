@@ -22,6 +22,7 @@ namespace Gammou {
 
 			//	not virtual : if another behaviour is needed, inherit from polyphonic_sound_component
 			double fetch_output(const unsigned int output_id) override;
+
 		protected:
 			multi_channel_array<double> m_output;
 
