@@ -1,7 +1,7 @@
 #ifndef GAMMOU_INTEGER_CONTROLSOUND_COMPONENT_H_
 #define GAMMOU_INTEGER_CONTROLSOUND_COMPONENT_H_
 
-#include "sound_component\sound_component.h"
+#include "sound_component/sound_component.h"
 
 namespace Gammou {
 

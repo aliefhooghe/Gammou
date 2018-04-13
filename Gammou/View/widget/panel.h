@@ -163,7 +163,7 @@ namespace Gammou {
 		template<class widget_type>
 		bool panel<widget_type>::on_mouse_exit(void)
 		{
-			bool ret;
+			bool ret = false;
 
 			if (m_focused_widget != nullptr) {
 				ret = m_focused_widget->on_mouse_exit();
