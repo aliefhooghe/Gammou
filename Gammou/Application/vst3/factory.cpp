@@ -47,8 +47,10 @@ END_FACTORY
 
 
 // Vst 2
-/*
+#ifdef _WIN32
+
 #include "public.sdk/source/vst/vst2wrapper/vst2wrapper.h"
+
 Steinberg::Vst::Vst2Wrapper::AudioEffect *createEffectInstance(audioMasterCallback master)
 {
 	const TUID lcid = INLINE_UID_FROM_FUID(gammouUID);
@@ -57,4 +59,6 @@ Steinberg::Vst::Vst2Wrapper::AudioEffect *createEffectInstance(audioMasterCallba
 		lcid,
 		's0qz', 
 		master);
-}*/
+}
+
+#endif

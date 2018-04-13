@@ -123,7 +123,7 @@ if(GAMMOU_STANDALONE_BUILD)
 	
     #if(WIN32)                   # MICROSOFT WINDOWS
     
-    if(UNIX)                # LINUX and OSX
+    if(UNIX)                	 # LINUX and OSX
         target_sources(gammou_standalone PRIVATE Application/standalone/X11/main.cpp)
         
         # For Rtaudio
@@ -175,7 +175,6 @@ if(GAMMOU_VST3_BUILD)
 		SMTG_RUN_VST_VALIDATOR
 	)
 	
-	
 	add_subdirectory(${VST3_SDK_DIR} tmp/VST3_SDK EXCLUDE_FROM_ALL)	# only need base and sdk targets
 	
 	add_library(gammou MODULE 
@@ -215,7 +214,20 @@ if(GAMMOU_VST3_BUILD)
     if(WIN32)                   # MICROSOFT WINDOWS
         target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/dllmain.cpp")
 		set_target_properties(gammou PROPERTIES SUFFIX ".vst3")
-		set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory")
+		set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory /EXPORT:VSTPluginMain")
+		
+		# Vst2 compatibility
+		target_sources(gammou PRIVATE
+			${VST3_SDK_DIR}/public.sdk/source/common/memorystream.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/eventlist.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/hostclasses.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/parameterchanges.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/processdata.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.h
+			${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffect.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffectx.cpp
+		)
     elseif(UNIX AND NOT APPLE)  # LINUX
         target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/linuxmain.cpp")
     elseif(APPLE)               # Apple OSX
