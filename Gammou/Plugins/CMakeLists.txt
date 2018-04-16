@@ -67,4 +67,5 @@ add_gammou_plugin(Template template.cpp)
 add_gammou_plugin(Plugin1 plugin1.cpp)
 add_gammou_plugin(Arctan arctan.cpp)
 add_gammou_plugin(BitCrusher bit_crusher.cpp)
-
+add_gammou_plugin(TestFilter ladder_filter.cpp)
+add_gammou_plugin(Clock clock.cpp)
