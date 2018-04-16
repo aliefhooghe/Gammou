@@ -21,6 +21,13 @@ namespace Gammou {
 			return m_factory_id;
 		}
 
+		void abstract_sound_component::set_sample_rate(const double sample_rate)
+		{
+			m_sample_rate = sample_rate;
+			m_sample_duration = 1.0 / sample_rate;
+			on_sample_rate_change(m_sample_rate);
+		}
+
 
 		void abstract_sound_component::on_notify(const sound_component_notification_tag notification_tag)
 		{
@@ -31,13 +38,12 @@ namespace Gammou {
 				switch (notification_tag) {
 					
 				case sound_component_notification_tag::SAMPLE_RATE_NOTIFY:
-					m_sample_rate = manager->get_current_sample_rate();
-					m_sample_duration = 1.0 / m_sample_rate;
-					on_sample_rate_change(m_sample_rate);
+					set_sample_rate(manager->get_current_sample_rate());
+					DEBUG_PRINT("Component '%s' updating sample rate to %lf\n", get_name().c_str(), m_sample_rate);
 					break;
 
 				case sound_component_notification_tag::CHANNEL_CHANGE_NOTIFY:
-					on_channel_change(manager->get_current_working_channel());
+					set_current_working_channel(manager->get_current_working_channel());
 					break;
 
 				default:

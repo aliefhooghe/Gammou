@@ -31,12 +31,13 @@ namespace Gammou {
 			m_running_channels_end(m_channels.begin()),
 			m_channels_lifetime(channel_count),
 			m_channel_zero_lifetime(channel_zero_lifetime),
-			m_channel_zero_sample_count(static_cast<unsigned int>(sample_rate * channel_zero_lifetime)),
+		//	m_channel_zero_sample_count(static_cast<unsigned int>(sample_rate * channel_zero_lifetime)),
 			m_channels_midi_note(channel_count)
 		{
 			DEBUG_PRINT("Synthesizer CTOR\n");
-			m_master_circuit.set_sample_rate(sample_rate);
-			m_polyphonic_circuit.set_sample_rate(sample_rate);
+			//m_master_circuit.set_sample_rate(sample_rate);
+			//m_polyphonic_circuit.set_sample_rate(sample_rate);
+			set_sample_rate(sample_rate);
 			std::iota(m_channels.begin(), m_channels.end(), 0u);
 		}
 
@@ -136,7 +137,7 @@ namespace Gammou {
 			//  Initialize component for each running channel
 			for (auto it = m_channels.begin(); it != m_running_channels_end; ++it) {
 				const unsigned int current_channel = *it;
-				component->on_channel_change(current_channel);
+				component->set_current_working_channel(current_channel);
 				component->initialize_process();
 			}
 
@@ -145,6 +146,7 @@ namespace Gammou {
 
 		void synthesizer::set_sample_rate(const double sample_rate)
 		{
+			DEBUG_PRINT("Synthesizer Set Sample Rate %lf\n", sample_rate);
 			m_channel_zero_sample_count = (static_cast<unsigned int>(sample_rate * m_channel_zero_lifetime));
 			m_master_circuit.set_sample_rate(sample_rate);
 			m_polyphonic_circuit.set_sample_rate(sample_rate);
@@ -181,7 +183,7 @@ namespace Gammou {
 
 		Process::abstract_component<double> *synthesizer::get_master_main_output()
 		{
-			return  &(m_master_circuit.m_main_output);
+			return &(m_master_circuit.m_main_output);
 		}
 
 		Process::abstract_component<double> *synthesizer::get_master_circuit_polyphonic_output()

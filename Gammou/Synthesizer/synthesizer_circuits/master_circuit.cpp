@@ -61,7 +61,8 @@ namespace Gammou {
 		{
 			add_component(component);
 			m_sound_component_manager.register_observer(component);
-			component->on_channel_change(0);
+			component->set_sample_rate(m_sound_component_manager.get_current_sample_rate());
+			component->set_current_working_channel(0);
 			component->initialize_process();
 		}
 
