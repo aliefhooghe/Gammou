@@ -2,4 +2,5 @@
 
 Real Time Midi Contoled Polyphonic Modular Sound Synthesizer
 
-![Preview](Doc/images/preview.png =100x20)
+
+<img src="Doc/images/preview.png" width="962" height="720" />
