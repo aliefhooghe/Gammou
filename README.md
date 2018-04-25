@@ -1,4 +1,5 @@
 # Gammou
-Modular Sound Synthesizer
 
-![GitHub Logo](Doc/images/preview.png)
+Real Time Midi Contoled Polyphonic Modular Sound Synthesizer
+
+![Preview](Doc/images/preview.png)
