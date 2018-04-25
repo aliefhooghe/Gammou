@@ -32,9 +32,6 @@ namespace Gammou {
 			polyphonic_sound_component *m_owner;
 		};
 
-
-
-
 		/*
 		* 		multi channel variable
 		*/
@@ -114,8 +111,86 @@ namespace Gammou {
 			return m_data[base + index];
 		}
 
+		/*
+		*		Multi Channel Queue
+		*/
 
-	} /* Sound */
+
+		template<class T>
+		class multi_channel_queue : private multi_channel_data {
+
+		public:
+			multi_channel_queue(polyphonic_sound_component *owner, const unsigned int capacity);
+
+			inline void operator<<(const T& rvalue);	//	enqueue
+			inline void operator>>(T& lvalue);			//	dequeue
+			//inline T& operator[](const unsigned int offset);	//	value from back
+
+		private:
+			const unsigned int m_capacity; // todo : allow resize
+
+			std::vector<std::pair<unsigned int, unsigned int> > m_index; // r, w
+			std::vector<T> m_data;
+		};
+
+		template<class T>
+		multi_channel_queue<T>::multi_channel_queue(polyphonic_sound_component * owner, const unsigned int capacity)
+			: multi_channel_data(owner),
+				m_capacity(capacity),
+				m_index(owner->get_channel_count(), std::make_pair(0u, 1u)),
+				m_data(owner->get_channel_count() * m_capacity)
+				
+		{
+		}
+
+		template<class T>
+		inline void multi_channel_queue<T>::operator<<(const T & rvalue)
+		{
+			const unsigned int channel = multi_channel_data::get_current_working_channel();
+			const unsigned int base = m_capacity * channel;
+			auto index = m_index[channel];
+
+			m_data[base + index.second] = rvalue;
+			
+			const unsigned int new_write_pos = (index.second + 1) % m_capacity;
+
+			if (index.first == index.second) {
+				m_index[channel] = std::make_pair(new_write_pos, new_write_pos);
+			}
+			else {
+				m_index[channel].second = new_write_pos;
+			}
+		}
+
+		template<class T>
+		inline void multi_channel_queue<T>::operator>>(T & lvalue)
+		{
+			const unsigned int channel = multi_channel_data::get_current_working_channel();
+			const unsigned int base = m_capacity * channel;
+			auto index = m_index[channel];
+
+			const unsigned int new_read_pos = (index.first + 1) % m_capacity;
+
+			if (new_read_pos == index.second) {
+				lvalue = T();
+			}
+			else {
+				lvalue = m_data[base + new_read_pos];
+				m_index[channel].first = new_read_pos;
+			}
+		}
+		/*
+		template<class T>
+		inline T & multi_channel_queue<T>::operator[](const unsigned int offset)
+		{
+			const unsigned int channel = multi_channel_data::get_current_working_channel();
+			const unsigned int base = m_capacity * channel;
+			const int pos = static_cast<int>(m_index[channel.second]) - static_cast<int>(offset);
+
+
+		}*/
+
+} /* Sound */
 
 
 } /* Gammou */
