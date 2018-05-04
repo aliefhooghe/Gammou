@@ -37,7 +37,8 @@ ladder_component::ladder_component(const unsigned int channel_count)
 void ladder_component::initialize_process()
 {
 	for(unsigned int i = 0; i < 3; ++i){
-		m_s[i] = 0.0;	}
+		m_s[i] = 0.0;	
+	}
 }
 
 void ladder_component::process(const double input[])
@@ -45,21 +46,23 @@ void ladder_component::process(const double input[])
 	const double x = input[0];
 	const double k = input[2];
 	const double T = get_sample_duration();
-	const double g = 3.14 * T * input[1];
+
+	const double f = 3.14 * T * input[1];
+	const double v = 1.0 / (1.0 + f);
+	const double g = f * v;
 
 	const double G = g * g * g * g;
 	const double S = m_s[3] + g * (m_s[2] + g * (m_s[1] + g * m_s[0]));
 	const double u = (x - k * S) / (1.0 + k * G);
 
-	double v[4] = {0.0, 0.0, 0.0, 0.0};
-	double in = x;
+	double in = u;
 
 	for(unsigned int i = 0; i < 4; ++i){
-		v[i] = g * (in - m_s[i]) / (1.0 + g);
-		in = v[i] + m_s[i];
-		m_s[i] = in + v[i];
+		in = g * in + v * m_s[i];
+		m_s[i] = 2.0 * in - m_s[i];
 	}
 
+	//DEBUG_PRINT("k = %lf\n", k);
 	m_output[0] = in;
 }
 
