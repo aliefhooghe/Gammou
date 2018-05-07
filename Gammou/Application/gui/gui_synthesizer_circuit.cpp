@@ -75,7 +75,7 @@ namespace Gammou {
 							convert_y(y),
 							answer,
 							m_components_channel_count
-						);
+					);
 
 					lock_circuit();
 					add_sound_component_to_frame(component.second);
@@ -302,9 +302,11 @@ namespace Gammou {
 			std::deque<abstract_gui_component*> temp(m_widgets);
 
 			for (abstract_gui_component * component : temp) {
-				if (component->get_sound_component_factory_id() 
-					!= Persistence::INTERNAL_FACTORY_ID )
+				if (component->get_sound_component_factory_id()
+					!= Persistence::INTERNAL_FACTORY_ID) {
 					remove_widget(component);
+					delete component;
+				}
 			}
 		}
 
