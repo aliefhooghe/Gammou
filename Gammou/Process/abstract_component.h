@@ -118,6 +118,7 @@ namespace Gammou {
 
 			virtual void on_input_connection(const unsigned int input_id) {};
 			virtual void on_input_deconnection(const unsigned int input_id) {};
+
 		private:
 			bool update_process_cyle(const unsigned int cycle) noexcept;
 
@@ -244,7 +245,7 @@ namespace Gammou {
 
 			DEBUG_PRINT("Component DTOR : '%s'\n", name.c_str());
 
-			// TODO : Problem : Component not already destroyed here
+			// TODO : Problem : Component not already destroyed here ?
 			//if( frame != nullptr )
 			//	frame->notify_circuit_change();
 		}

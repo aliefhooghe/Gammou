@@ -14,7 +14,7 @@ public:
 };
 
 Arctan_component::Arctan_component(const unsigned int channel_count)
-	: sound_component("Arctan", 1, 1, channel_count)
+	: sound_component("Tanh", 1, 1, channel_count)
 {
 }
 

@@ -55,7 +55,7 @@ namespace Gammou {
 				const unsigned int current_channel = *it;
 
 				if( m_polyphonic_circuit.process(current_channel)){
-					// Output == Zero for this channel
+					// IF Output == Zero for this channel
 
 					if( (--(m_channels_lifetime[current_channel])) == 0u){
 						// no more lifetime
@@ -66,6 +66,7 @@ namespace Gammou {
 
 				}
 				else{
+					// tODO BETTER
 					m_channels_lifetime[current_channel] = m_channel_zero_sample_count;
 				}
 
