@@ -26,7 +26,8 @@ namespace Gammou {
 						const unsigned int parameter_input_count,
 						const unsigned int main_input_count,
 						const unsigned int main_output_count,
-						const unsigned int input_from_polyphonic_count
+						const unsigned int input_from_polyphonic_count,
+						Process::abstract_frame_processor<double>& processor
 						);
 
 			~master_circuit();

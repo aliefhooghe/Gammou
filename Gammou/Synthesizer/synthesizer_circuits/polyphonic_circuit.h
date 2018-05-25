@@ -67,7 +67,8 @@ namespace Gammou {
 		public:
 			polyphonic_circuit(
 				master_circuit *master,
-				const unsigned int channel_count);
+				const unsigned int channel_count,
+				Process::abstract_frame_processor<double>& processor);
 			~polyphonic_circuit();
 
 			void add_sound_component(abstract_sound_component *component);

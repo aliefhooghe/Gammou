@@ -26,14 +26,16 @@ namespace Gammou {
 		enum { INVALID_CHANNEL = 0xFFFFFF , INFINITE_LIFETIME = 0xFFFFFFFF, NO_NOTE = 0xFF};
 
 		public:
-			synthesizer(const unsigned int main_input_count,
-						const unsigned int main_output_count,
-						const unsigned int channel_count,
-						const unsigned int parameter_count,
-						const unsigned int master_to_polyphonic_count = 2,
-						const unsigned int polyphonic_to_master_count = 2,
-						const unsigned int sample_rate = 44100,
-						const float zero_lifetime = 0.1);
+			synthesizer(
+				Process::abstract_frame_processor<double>& processor,
+				const unsigned int main_input_count,
+				const unsigned int main_output_count,
+				const unsigned int channel_count,
+				const unsigned int parameter_count,
+				const unsigned int master_to_polyphonic_count = 2,
+				const unsigned int polyphonic_to_master_count = 2,
+				const unsigned int sample_rate = 44100,
+				const float zero_lifetime = 0.1);
 
 			~synthesizer();
 

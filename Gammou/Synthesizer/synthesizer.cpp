@@ -12,7 +12,9 @@ namespace Gammou {
 		*
 		*/
 
-		synthesizer::synthesizer(const unsigned int main_input_count,
+		synthesizer::synthesizer(
+			Process::abstract_frame_processor<double>& processor,
+			const unsigned int main_input_count,
 			const unsigned int main_output_count,
 			const unsigned int channel_count,
 			const unsigned int automation_count,
@@ -25,8 +27,12 @@ namespace Gammou {
 				master_to_polyphonic_count,
 				automation_count, main_input_count,
 				main_output_count,
-				polyphonic_to_master_count),
-			m_polyphonic_circuit(&m_master_circuit, channel_count),
+				polyphonic_to_master_count,
+				processor),
+			m_polyphonic_circuit(
+				&m_master_circuit, 
+				channel_count,
+				processor),
 			m_channels(channel_count),
 			m_running_channels_end(m_channels.begin()),
 			m_channels_lifetime(channel_count),
@@ -217,7 +223,6 @@ namespace Gammou {
 		{
 			return static_cast<unsigned int>(m_channels.size());
 		}
-
 
 		unsigned int synthesizer::get_new_channel()
 		{

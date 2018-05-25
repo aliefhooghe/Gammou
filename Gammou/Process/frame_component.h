@@ -42,7 +42,11 @@ namespace Gammou {
 
 
 		public:
-			frame_component(const std::string& name, const unsigned int input_count, const unsigned int output_count);
+			frame_component(
+				const std::string& name, 
+				const unsigned int input_count, 
+				const unsigned int output_count,
+				abstract_frame_processor<T>& processor);
 			virtual ~frame_component();
 
 			// From abstract component
@@ -66,12 +70,14 @@ namespace Gammou {
 
 		};
 
-
-
 		template<class T>
-		frame_component<T>::frame_component(const std::string& name, const unsigned int input_count, const unsigned int output_count)
+		frame_component<T>::frame_component(
+			const std::string& name, 
+			const unsigned int input_count, 
+			const unsigned int output_count,
+			abstract_frame_processor<T>& processor)
 			: abstract_component<T>(name, input_count, output_count),
-			abstract_frame<T>(),
+			abstract_frame<T>(processor),
 			m_input(input_count), m_output(output_count)
 		{
 			abstract_frame<T>::add_component(&m_input);
@@ -101,7 +107,7 @@ namespace Gammou {
 		void frame_component<T>::process(const T input[])
 		{
 			m_input.set_input_buffer_ptr(input);
-			abstract_frame<T>::execute_program();
+			abstract_frame<T>::m_processor.execute_process_program();
 		}
 
 		template<class T>
@@ -139,17 +145,7 @@ namespace Gammou {
 		template<class T>
 		void frame_component<T>::notify_circuit_change()
 		{
-			const unsigned int ic = m_output.get_input_count();
-
-			abstract_frame<T>::next_process_cycle();
-
-			for(unsigned int i = 0; i < ic; ++i){
-				abstract_component<T> *src;
-				src = m_output.get_input_src(i);
-
-				if( src != nullptr)
-					abstract_frame<T>::make_component_current_cycle_program(src);
-			}
+			abstract_frame<T>::processor.compile_component(&m_output);
 		}
 
 	} /* Process */

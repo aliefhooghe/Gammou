@@ -115,8 +115,12 @@ namespace Gammou {
 		*
 		*/
 
-		polyphonic_circuit::polyphonic_circuit(master_circuit * master, const unsigned int channel_count)
+		polyphonic_circuit::polyphonic_circuit(
+			master_circuit * master,
+			const unsigned int channel_count,
+			Process::abstract_frame_processor<double>& processor)
 			:
+			Process::abstract_frame<double>(processor),
 			m_midi_input(channel_count),
 			m_master_output("Master Out", master->m_master_to_polyphonic_buffer),
 			m_parameter_input("Parameters", master->m_parameter_buffer),
@@ -150,7 +154,7 @@ namespace Gammou {
 		{
 			m_sound_component_manager.set_current_working_channel(channel);
 			m_master_input.reset_zero_flag();
-			execute_program();
+			m_processor.execute_process_program();
 			return (m_master_input.last_out_was_zero());
 		}
 
@@ -182,8 +186,8 @@ namespace Gammou {
 
 		void polyphonic_circuit::notify_circuit_change()
 		{
-			next_process_cycle();
-			make_component_current_cycle_program(&m_master_input);
+			m_processor.next_process_cycle();
+			m_processor.compile_component(&m_master_input);
 		}
 
 } /* Sound */

@@ -17,7 +17,11 @@ namespace Gammou {
 
 
 		public:
-			circuit_frame(const unsigned int input_count, const unsigned int output_count);
+			circuit_frame(
+				const unsigned int input_count, 
+				const unsigned int output_count,
+				abstract_frame_processor<T>& processor
+			);
 			virtual ~circuit_frame();
 
 			// from abstract frame
@@ -31,6 +35,7 @@ namespace Gammou {
 
 			void set_input_name(const std::string& name, const unsigned int input_id);
 			void set_output_name(const std::string& name, const unsigned int output_id);
+
 		private:
 			vector_fetcher_component<T> m_input;
 			vector_filler_component<T> m_output;
@@ -39,9 +44,13 @@ namespace Gammou {
 
 
 		template<class T>
-		circuit_frame<T>::circuit_frame(const unsigned int input_count, const unsigned int output_count)
-			: abstract_frame<T>(),
-			m_input(input_count), m_output(output_count)
+		circuit_frame<T>::circuit_frame(
+			const unsigned int input_count, 
+			const unsigned int output_count,
+			abstract_frame_processor<T>& processor)
+			: abstract_frame<T>(processor),
+				m_input(input_count), 
+				m_output(output_count)
 		{
 			abstract_frame<T>::add_component(&m_input);
 			abstract_frame<T>::add_component(&m_output);
@@ -57,8 +66,8 @@ namespace Gammou {
 		template<class T>
 		void circuit_frame<T>::notify_circuit_change()
 		{
-			abstract_frame<T>::next_process_cycle();
-			abstract_frame<T>::make_component_current_cycle_program(&m_output);
+			abstract_frame<T>::m_processor.next_process_cycle();
+			abstract_frame<T>::m_processor.compile_component(&m_output);
 		}
 
 		template<class T>
@@ -78,7 +87,7 @@ namespace Gammou {
 		{
 			m_input.set_input_buffer_ptr(input);
 			m_output.set_output_pointer(output);
-			abstract_frame<T>::execute_program();
+			abstract_frame<T>::process();
 		}
 
 		template<class T>

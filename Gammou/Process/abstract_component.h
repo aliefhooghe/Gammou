@@ -57,11 +57,6 @@ namespace Gammou {
 			abstract_component<T> *m_owner;
 		};
 
-		/*
-		*
-		*/
-
-
 
 		/*! \class abstract_component
 		*  \brief Describe a connected component that process data
@@ -104,6 +99,7 @@ namespace Gammou {
 			static const std::string default_input_name(const unsigned int input_id);
 			static const std::string default_output_name(const unsigned int output_id);
 			
+			bool update_process_cyle(const unsigned int cycle) noexcept;
 		protected:
 			void set_input_name(const std::string& name, const unsigned int input_id);
 			void set_output_name(const std::string& name, const unsigned int output_id);
@@ -120,17 +116,14 @@ namespace Gammou {
 			virtual void on_input_deconnection(const unsigned int input_id) {};
 
 		private:
-			bool update_process_cyle(const unsigned int cycle) noexcept;
-
-			subject<abstract_component<T> > m_component_subject;
-			std::vector<component_link<T> > m_input;
+			subject<abstract_component<T> > m_component_subject;	//	for components that are plugged to this component's inputs
+			std::vector<component_link<T> > m_input;		
 
 			std::vector<std::string> m_input_name;
 			std::vector<std::string> m_output_name;
 			std::string m_name;
 
 			frame_observer<T> m_frame;
-
 			unsigned int m_process_cycle;
 		};
 
