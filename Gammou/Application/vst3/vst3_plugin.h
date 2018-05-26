@@ -54,7 +54,9 @@ namespace Gammou {
 			inline void lock_synthesizer();
 			inline void unlock_synthesizer();
 
+
 			std::mutex m_synthesizer_mutex;
+			Process::bytecode_frame_processor<double> m_processor;
 			Sound::synthesizer m_synthesizer;
 			Gui::synthesizer_gui m_window;
 		};

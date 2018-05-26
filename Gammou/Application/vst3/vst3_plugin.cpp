@@ -15,7 +15,8 @@ namespace Gammou {
 		Plugin::Plugin()
 			:
 			m_synthesizer_mutex(),
-			m_synthesizer(2, 2, GAMMOU_SYNTHESIZER_CHANNEL_COUNT, GAMMOU_VST_PARAMETER_INPUT_COUNT),
+			m_processor(),
+			m_synthesizer(m_processor, 2, 2, GAMMOU_SYNTHESIZER_CHANNEL_COUNT, GAMMOU_VST_PARAMETER_INPUT_COUNT),
 			m_window(&m_synthesizer, &m_synthesizer_mutex)
 		{
 			DEBUG_PRINT("Gammou Plugin CTOR\n");
@@ -229,7 +230,7 @@ namespace Gammou {
 		{
 			// Host ask to change
 			// TODO check coherence with synthesizer
-			// And peut etre permetre au synthé de changer la ocnfiguration ?
+			// And peut etre permetre au synthï¿½ de changer la ocnfiguration ?
 			if (numIns != 1 ||
 				numOuts != 1 ||
 				outputs[0] != Steinberg::Vst::SpeakerArr::kStereo ||
