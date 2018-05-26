@@ -2,7 +2,7 @@
 #define FRAME_COMPONENT_H_
 
 #include "abstract_component.h"
-#include "abstract_frame.h"
+#include "abstract_process_frame.h"
 #include "helper_components/buffer_fetcher.h"
 
 
@@ -12,7 +12,9 @@ namespace Gammou {
 	namespace Process{
 
 		template<class T>
-		class frame_component : public abstract_component<T>, public abstract_frame<T> {
+		class frame_component : 
+			public abstract_component<T>, 
+			private abstract_process_frame<T> {
 
 			/*
 			*
@@ -20,8 +22,6 @@ namespace Gammou {
 
 
 			class output_component : public abstract_component<T> {
-
-				friend class frame_component<T>;
 
 			public:
 				output_component(const unsigned int frame_output_count)
@@ -53,16 +53,16 @@ namespace Gammou {
 
 			T fetch_output(const unsigned int output_id);
 			void process(const T input[]);
-			void initialize_process();
 
 			void set_input_name(const std::string& name, const unsigned int input_id);
 			void set_output_name(const std::string& name, const unsigned int output_id);
 
-			abstract_component<T> *get_input();
-			abstract_component<T> *get_output();
+			abstract_component<T>& get_input();
+			abstract_component<T>& get_output();
 
-			// From abstract frame
-			void notify_circuit_change();
+			// From abstract process frame
+			using abstract_process_frame<T>::initialize_components;
+			using abstract_process_frame<T>::add_component;
 
 		private:
 			vector_fetcher_component<T> m_input;
@@ -77,11 +77,12 @@ namespace Gammou {
 			const unsigned int output_count,
 			abstract_frame_processor<T>& processor)
 			: abstract_component<T>(name, input_count, output_count),
-			abstract_frame<T>(processor),
+			abstract_process_frame<T>(processor),
 			m_input(input_count), m_output(output_count)
 		{
-			abstract_frame<T>::add_component(&m_input);
-			abstract_frame<T>::add_component(&m_output);
+			abstract_process_frame<T>::add_component(&m_input);
+			abstract_process_frame<T>::add_component(&m_output);
+			abstract_process_frame<T>::add_component_to_output_list(&m_output);
 		}
 
 		template<class T>
@@ -107,14 +108,9 @@ namespace Gammou {
 		void frame_component<T>::process(const T input[])
 		{
 			m_input.set_input_buffer_ptr(input);
-			abstract_frame<T>::m_processor.execute_process_program();
+			abstract_process_frame<T>::process();
 		}
 
-		template<class T>
-		void frame_component<T>::initialize_process()
-		{
-			abstract_frame<T>::initialize_components();
-		}
 
 		template<class T>
 		void frame_component<T>::set_input_name(const std::string& name, const unsigned int input_id)
@@ -131,21 +127,15 @@ namespace Gammou {
 		}
 
 		template<class T>
-		abstract_component<T> *frame_component<T>::get_input()
+		abstract_component<T>& frame_component<T>::get_input()
 		{
-			return &m_input;
+			return m_input;
 		}
 
 		template<class T>
-		abstract_component<T> *frame_component<T>::get_output()
+		abstract_component<T>& frame_component<T>::get_output()
 		{
-			return &m_output;
-		}
-
-		template<class T>
-		void frame_component<T>::notify_circuit_change()
-		{
-			abstract_frame<T>::processor.compile_component(&m_output);
+			return m_output;
 		}
 
 	} /* Process */

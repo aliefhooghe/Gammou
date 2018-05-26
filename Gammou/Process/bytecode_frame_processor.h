@@ -57,10 +57,11 @@ namespace Gammou {
                 void execute_process_program() override;
                 void execute_initialize_program() override;
 
-                void clear_program() override;
                 void compile_component(abstract_component<T>* component);
 
             private:
+                void clear_program() override;
+
                 std::vector<bytecode_instruction<T> > m_program;
                 std::vector<abstract_component<T>*> m_initialization_list;
                 std::vector<T> m_memory;

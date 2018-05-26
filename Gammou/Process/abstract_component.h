@@ -187,8 +187,9 @@ namespace Gammou {
 			if (frame != nullptr)
 				frame->notify_circuit_change();
 		}
+
 		/*
-		* 		Frame link implementation
+		* 		Frame observer implementation
 		*/
 
 		template<class T>

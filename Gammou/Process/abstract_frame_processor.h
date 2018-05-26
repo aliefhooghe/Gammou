@@ -18,13 +18,14 @@ namespace Gammou {
                 virtual void execute_process_program() =0;
                 virtual void execute_initialize_program() =0;
 
-                virtual void clear_program() =0;
                 virtual void compile_component(abstract_component<T>* component) =0;
                 
                 void next_process_cycle();
                 unsigned int get_process_cycle() const;
 
             protected:
+                virtual void clear_program() =0;
+                
                 unsigned int m_process_cycle;
         };
 

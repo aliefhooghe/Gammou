@@ -1,7 +1,7 @@
 #ifndef CIRCUIT_FRAME_H_
 #define CIRCUIT_FRAME_H_
 
-#include "abstract_frame.h"
+#include "abstract_process_frame.h"
 #include "helper_components/buffer_fetcher.h"
 #include "helper_components/buffer_filler.h"
 
@@ -13,7 +13,7 @@ namespace Gammou {
 
 
 		template<class T>
-		class circuit_frame : public abstract_frame<T> {
+		class circuit_frame : private abstract_process_frame<T> {
 
 
 		public:
@@ -24,14 +24,13 @@ namespace Gammou {
 			);
 			virtual ~circuit_frame();
 
-			// from abstract frame
+			using abstract_process_frame<T>::add_component;
 
-			void notify_circuit_change();
-
-			abstract_component<T> *get_input();
-			abstract_component<T> *get_output();
+			abstract_component<T>& get_input();
+			abstract_component<T>& get_output();
 
 			void process(const T input[], T output[]);
+			using abstract_process_frame<T>::initialize_components;
 
 			void set_input_name(const std::string& name, const unsigned int input_id);
 			void set_output_name(const std::string& name, const unsigned int output_id);
@@ -48,12 +47,13 @@ namespace Gammou {
 			const unsigned int input_count, 
 			const unsigned int output_count,
 			abstract_frame_processor<T>& processor)
-			: abstract_frame<T>(processor),
+			: abstract_process_frame<T>(processor),
 				m_input(input_count), 
 				m_output(output_count)
 		{
-			abstract_frame<T>::add_component(&m_input);
-			abstract_frame<T>::add_component(&m_output);
+			abstract_process_frame<T>::add_component(&m_input);
+			abstract_process_frame<T>::add_component(&m_output);
+			abstract_process_frame<T>::add_component_to_output_list(&m_output);
 		}
 
 		template<class T>
@@ -64,22 +64,15 @@ namespace Gammou {
 
 
 		template<class T>
-		void circuit_frame<T>::notify_circuit_change()
+		abstract_component<T>& circuit_frame<T>::get_input()
 		{
-			abstract_frame<T>::m_processor.next_process_cycle();
-			abstract_frame<T>::m_processor.compile_component(&m_output);
+			return m_input;
 		}
 
 		template<class T>
-		abstract_component<T> *circuit_frame<T>::get_input()
+		abstract_component<T>& circuit_frame<T>::get_output()
 		{
-			return &m_input;
-		}
-
-		template<class T>
-		abstract_component<T> *circuit_frame<T>::get_output()
-		{
-			return &m_output;
+			return m_output;
 		}
 
 		template<class T>
@@ -87,7 +80,7 @@ namespace Gammou {
 		{
 			m_input.set_input_buffer_ptr(input);
 			m_output.set_output_pointer(output);
-			abstract_frame<T>::process();
+			abstract_process_frame<T>::process();
 		}
 
 		template<class T>
