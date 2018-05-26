@@ -38,8 +38,6 @@ namespace Gammou {
         {
             const unsigned int current_process_cycle = get_process_cycle();
 
-            DEBUG_PRINT("JIT Compiling\n");
-
             // A ret Instruction is always at the end of the program, lets delete it
             m_program_size--;
 
@@ -48,6 +46,8 @@ namespace Gammou {
 
             // Reput ret instruction at the end of the new program
             add_ret();
+
+            DEBUG_PRINT("JIT Compililation : code size = %lu\n", m_program_size);
         }
 
         void jit_frame_processor::compile_component_aux(
