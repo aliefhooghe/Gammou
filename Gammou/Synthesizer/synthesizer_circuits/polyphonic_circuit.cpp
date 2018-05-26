@@ -120,7 +120,7 @@ namespace Gammou {
 			const unsigned int channel_count,
 			Process::abstract_frame_processor<double>& processor)
 			:
-			Process::abstract_frame<double>(processor),
+			Process::abstract_process_frame<double>(processor),
 			m_midi_input(channel_count),
 			m_master_output("Master Out", master->m_master_to_polyphonic_buffer),
 			m_parameter_input("Parameters", master->m_parameter_buffer),
@@ -131,6 +131,8 @@ namespace Gammou {
 			add_component(&m_master_output);
 			add_component(&m_parameter_input);
 			add_component(&m_master_input);
+
+			add_component_to_output_list(&m_master_input);
 		}
 
 		polyphonic_circuit::~polyphonic_circuit()
@@ -154,7 +156,7 @@ namespace Gammou {
 		{
 			m_sound_component_manager.set_current_working_channel(channel);
 			m_master_input.reset_zero_flag();
-			m_processor.execute_process_program();
+			abstract_process_frame<double>::process();
 			return (m_master_input.last_out_was_zero());
 		}
 
@@ -184,12 +186,7 @@ namespace Gammou {
 			m_midi_input.set_channel_release_velocity(channel, velocity);
 		}
 
-		void polyphonic_circuit::notify_circuit_change()
-		{
-			m_processor.next_process_cycle();
-			m_processor.compile_component(&m_master_input);
-		}
 
-} /* Sound */
+	} /* Sound */
 
 }	/* Gammou */

@@ -15,7 +15,7 @@ namespace Gammou {
 		
 		*/
 
-		class master_circuit : private Process::abstract_frame<double> {
+		class master_circuit : private Process::abstract_process_frame<double> {
 
 		friend class polyphonic_circuit;
 		friend class synthesizer;
@@ -37,10 +37,7 @@ namespace Gammou {
 			void process(const double input[], double output[]);
 			void set_volume(const double volume_order);
 
-			//void 
 		private:
-			void notify_circuit_change() override;
-			
 			double m_volume_order;
 			double m_volume;
 			double m_volume_smoothing_fact;

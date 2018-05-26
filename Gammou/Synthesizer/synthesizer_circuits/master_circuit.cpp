@@ -24,7 +24,7 @@ namespace Gammou {
 			const unsigned int input_from_polyphonic_count,
 			Process::abstract_frame_processor<double>& processor)
 			:
-			Process::abstract_frame<double>(processor),
+			Process::abstract_process_frame<double>(processor),
 			m_volume_order(1.0),
 			m_volume(1.0),
 			m_volume_smoothing_fact(0.0),
@@ -43,6 +43,9 @@ namespace Gammou {
 			add_component(&m_polyphonic_output);
 			add_component(&m_main_output);
 			add_component(&m_parameter_input);
+
+			add_component_to_output_list(&m_main_output);
+			add_component_to_output_list(&m_polyphonic_input);
 
 			// Naming
 
@@ -79,8 +82,8 @@ namespace Gammou {
 		{
 			m_main_input.set_input_buffer_ptr(input);
 			m_main_output.set_output_pointer(output);
-			
-			m_processor.execute_process_program();
+			 
+			abstract_process_frame<double>::process();
 
 			// Apply master volume
 			const unsigned int oc = m_main_output.get_input_count(); // master's output are main_output's input
@@ -95,14 +98,6 @@ namespace Gammou {
 		{
 			//DEBUG_PRINT("MASTER Volume = %lf\n", volume_order);
 			m_volume_order = volume_order;
-		}
-
-		void master_circuit::notify_circuit_change()
-		{
-			DEBUG_PRINT("Compiling Master Circuit\n");
-			m_processor.next_process_cycle();
-			m_processor.compile_component(&m_main_output);
-			m_processor.compile_component(&m_polyphonic_input);
 		}
 
 	} /* Sound */

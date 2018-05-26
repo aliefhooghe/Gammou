@@ -54,13 +54,11 @@ namespace Gammou {
 			bool m_last_out_was_zero;
 		};
 
-
-
 		/*
 		 *
 		 */
 
-		class polyphonic_circuit : private Process::abstract_frame<double> {
+		class polyphonic_circuit : private Process::abstract_process_frame<double> {
 
 			friend class synthesizer;
 
@@ -84,8 +82,6 @@ namespace Gammou {
 			void set_channel_release_velocity(const unsigned int channel, const double velocity);
 
 		private:
-			void notify_circuit_change() override;
-
 			polyphonic_circuit_midi_input m_midi_input;
 			Process::vector_fetcher_component<double> m_master_output;
 			Process::vector_fetcher_component<double> m_parameter_input;
