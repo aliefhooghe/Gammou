@@ -18,6 +18,8 @@ set(SYNTHESIZER_SRC
 	sound_processing_helper.cpp
     synthesizer.h
 	synthesizer.cpp
+	jit_frame_processor/jit_frame_processor.h
+	jit_frame_processor/jit_frame_processor.cpp
 	synthesizer_circuits/master_circuit.h
 	synthesizer_circuits/master_circuit.cpp
 	synthesizer_circuits/polyphonic_circuit.h
