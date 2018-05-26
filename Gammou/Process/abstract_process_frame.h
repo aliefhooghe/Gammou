@@ -65,7 +65,6 @@ namespace Gammou {
         template<class T>
         void abstract_process_frame<T>::process()
         {
-            DEBUG_PRINT("Abstract Process Frame :: Process\n");
             m_processor.execute_process_program();
         }
 
