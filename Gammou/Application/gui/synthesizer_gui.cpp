@@ -103,7 +103,16 @@ namespace Gammou {
 			add_widget(tool_box);
 
 			///////////
-
+			/*
+			add_widget(
+				new View::push_button(
+					[this](View::push_button *self) {
+						resize(get_width() + 50, get_height());
+					},
+					"Test", 280, 10
+				)
+			);
+			*/
 			init_main_factory();
 
 			// scale(0.8f); Ableton

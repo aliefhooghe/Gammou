@@ -10,13 +10,12 @@ namespace Gammou {
 
 		namespace GuiProperties {
 
-			
 			/*
 			 *		Colors
 			 */
 
 			// Component maps
-			const View::color background =  0x323232FF;
+			const View::color background = 0x323232FF;
 			const View::color linking_color = 0x2DA0FFFF;
 			const View::color link_color = 0x2BECC6FF;
 			const View::color highlight_socket_color = linking_color;
@@ -69,7 +68,7 @@ namespace Gammou {
 			// Main gui : width*height = 16*12 (unit)
 
 			const unsigned int main_gui_size_unit = 60;
-			const unsigned int main_gui_width = 16 * main_gui_size_unit;
+			const unsigned int main_gui_width = 24 * main_gui_size_unit; //16 * main_gui_size_unit;
 			const unsigned int main_gui_height = 12 * main_gui_size_unit;
 
 			const unsigned int main_gui_toolbox_height = 1 * main_gui_size_unit;

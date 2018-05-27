@@ -9,7 +9,9 @@ namespace Gammou {
 
 	namespace Gui {
 
-		void draw_link(cairo_t *cr, const float x_input, const float y_input, const float x_output, const float y_output, const View::color color)
+		void draw_link(
+			cairo_t *cr, const float x_input, const float y_input, 
+			const float x_output, const float y_output, const View::color color)
 		{
 			const float D = std::min<float>(std::fabs(x_output - x_input), 70.0);
 
