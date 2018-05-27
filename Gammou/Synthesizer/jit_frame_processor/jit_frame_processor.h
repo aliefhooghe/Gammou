@@ -43,7 +43,12 @@ namespace Gammou {
                 void add_mov_ptr_rdi(void *ptr);
                 void add_mov_ptr_rsi(void *ptr);
                 void add_mov_ptr_rdx(void *ptr);
-                void add_mov_int_esi(const uint32_t value);
+				void add_mov_ptr_rcx(void *ptr);
+				void add_mov_ptr_r8(void *ptr);
+
+				void add_mov_int_esi(const uint32_t value);
+				void add_mov_int_rdx(const uint32_t value);
+
                 void add_ret();
                 
                 void add_fetch_output(Process::abstract_component<double>* component, const unsigned int output_id, double *mem_pos);

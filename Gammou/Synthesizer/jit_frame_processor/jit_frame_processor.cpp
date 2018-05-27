@@ -3,7 +3,16 @@
 
 #include <cstring>
 #include <cstdint>
+
+
+#ifdef __linux__
 #include <sys/mman.h>
+#elif defined(_WIN32)
+#include <WinBase.h>
+#else
+#error "jit_compiler not implemented for this os"
+#endif
+
 
 #define PROGRAM_SIZE 8192
 
@@ -14,7 +23,8 @@ namespace Gammou {
         jit_frame_processor::jit_frame_processor() 
          : m_memory(42)
         {
-            m_program = (uint8_t*)alloc_executable(PROGRAM_SIZE);
+			m_program = (uint8_t*)alloc_executable(PROGRAM_SIZE);
+			DEBUG_PRINT("OK\n");
             clear_program();
         }
 
@@ -36,7 +46,7 @@ namespace Gammou {
 
         void jit_frame_processor::compile_component(Process::abstract_component<double>* component)
         {
-            const unsigned int current_process_cycle = get_process_cycle();
+			const unsigned int current_process_cycle = get_process_cycle();
 
             // A ret Instruction is always at the end of the program, lets delete it
             m_program_size--;
@@ -60,25 +70,26 @@ namespace Gammou {
                 // TODO Initialization list
 
                 if (ic != 0) {
-                    Process::abstract_component<double> *src_component[16];
+                   /*
+					Process::abstract_component<double> *src_component[16];
                     unsigned int src_output_id[16];
 
                     // Compile each component pluged on input
 
                     for (unsigned int i = 0; i < ic; ++i) {
-                        src_component[i] = component->get_input_src(i, src_output_id[i]);
+						src_component[i] = nullptr;// component->get_input_src(i, src_output_id[i]);
 
                         if (src_component[i] != nullptr)
                             compile_component_aux(src_component[i], process_cycle);
                     }
-
+					*/
                     // Fetch components output values
 
                     for (unsigned int i = 0; i < ic; ++i) {
-                        if (src_component[i] != nullptr)
-                            add_fetch_output(src_component[i], src_output_id[i], &(m_memory[i]));
-                        else
-                            add_fetch_default(&(m_memory[i]));
+                       // if (src_component[i] != nullptr)
+                      //      add_fetch_output(src_component[i], src_output_id[i], &(m_memory[i]));
+                       // else
+						add_fetch_default(&(m_memory[i])); DEBUG_PRINT("add fetch default\n");
                     }
 
                 }
@@ -101,20 +112,33 @@ namespace Gammou {
 
         void *jit_frame_processor::alloc_executable(const size_t size)
         {
-            void *ret = mmap(
-                0, size, 
-                PROT_READ | PROT_WRITE | PROT_EXEC,
-                MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+			void *ret = nullptr;
+#ifdef __linux__
+			ret = mmap(0, size, 
+						PROT_READ | PROT_WRITE | PROT_EXEC,
+						MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
-            if (ret == (void*)-1)
-                throw std::runtime_error("mmap failed");
+			if (ret == (void*)-1)
+				throw std::runtime_error("mmap failed");
+#elif defined(_WIN32)
+			ret = VirtualAlloc(
+				nullptr, size, 
+				MEM_COMMIT | MEM_RESERVE, 
+				PAGE_EXECUTE_READWRITE);
 
+			if (ret == nullptr)
+				throw std::runtime_error("Virtual Alloc Failed");
+#endif
             return ret;
         }
 
         void jit_frame_processor::free_executable(void *mem, const size_t size)
         {
-            munmap(mem, size);
+#ifdef __linux__
+			munmap(mem, size);
+#elif defined(_WIN32)
+			VirtualFree(mem, size, MEM_RELEASE);
+#endif
         }
 
         /*
@@ -148,12 +172,34 @@ namespace Gammou {
             add_program_chunk(&ptr, 8);
         }
 
+		void jit_frame_processor::add_mov_ptr_rcx(void * ptr)
+		{
+			const uint16_t code_chunk = 0xb948;
+			add_program_chunk(&code_chunk, 2);
+			add_program_chunk(&ptr, 8);
+		}
+
+		void jit_frame_processor::add_mov_ptr_r8(void * ptr)
+		{
+			const uint16_t code_chunk = 0xb849;
+			add_program_chunk(&code_chunk, 2);
+			add_program_chunk(&ptr, 8);
+		}
+
         void jit_frame_processor::add_mov_int_esi(const uint32_t value)
         {
             const uint8_t code_chunk = 0xbe;
             add_program_chunk(&code_chunk, 1);
             add_program_chunk(&value, 4);
         }
+
+		void jit_frame_processor::add_mov_int_rdx(const uint32_t value)
+		{
+			const uint64_t tmp = value;
+			const uint16_t code_chunk = 0xba48;
+			add_program_chunk(&code_chunk, 2);
+			add_program_chunk(&tmp, 8);
+		}
 
         void jit_frame_processor::add_ret()
         {
@@ -166,14 +212,9 @@ namespace Gammou {
             const unsigned int output_id, 
             double *mem_pos)
         {
-            const uint8_t code_chunk[] = 
+#ifdef __linux__
+			const uint8_t code_chunk[] = 
             {
-            /*
-                0x48, 0x8b, 0x07, 0x53,
-                0x48, 0x89, 0xd3, 0xff,
-                0x50, 0x10, 0xf2, 0x0f,
-                0x11, 0x03, 0x5b
-            */
                 0x48, 0x8b, 0x07, 0x52,
                 0xff, 0x50, 0x10, 0x5a,
                 0xf2, 0x0f, 0x11, 0x02
@@ -182,31 +223,67 @@ namespace Gammou {
             add_mov_ptr_rdi(component);
             add_mov_int_esi(output_id);
             add_mov_ptr_rdx(mem_pos);
+#elif defined(_WIN32)
+			const uint8_t code_chunk[] =
+			{
+				0x48, 0x8b, 0x01, 0x41,
+				0x50, 0xff, 0x50, 0x10,
+				0x41, 0x58, 0x49, 0x89,
+				0x00
+			};
+
+			add_mov_ptr_rcx(component);
+			add_mov_int_rdx(output_id);
+			add_mov_ptr_r8(mem_pos);
+#endif
             add_program_chunk(code_chunk, sizeof(code_chunk));
         }
 
         void jit_frame_processor::add_fetch_default(double *mem_pos)
         {
+#ifdef __linux__
             const uint8_t code_chunk[] = 
             {
-                0x48, 0xc7, 0x07, 0x00, 
+                0x48, 0xc7, 0x07, 0x00,		//	movq $0, (%rdi)
                 0x00, 0x00, 0x00
             };
 
             add_mov_ptr_rdi(mem_pos);
+#elif defined(_WIN32)
+			const uint8_t code_chunk[] = 
+			{
+				0x48, 0xc7, 0x01, 0x00,		//	movq $0, (%rcx)
+				0x00, 0x00, 0x00
+			};
+
+			add_mov_ptr_rcx(mem_pos);
+#endif
             add_program_chunk(code_chunk, sizeof(code_chunk));
         }
 
         void jit_frame_processor::add_process(Process::abstract_component<double>* component, double *input)
         {
-            const uint16_t code_chunk[] =
+#ifdef __linux__
+            const uint8_t code_chunk[] =
             {
-                0x8b48, 0xff07, 0x1850
+                0x48, 0x8b, 0x07,	// movq (%rdi), %rax
+				0xff, 0x50, 0x18	// callq *0x18(%rax)
             };
 
             add_mov_ptr_rdi(component);
             add_mov_ptr_rsi(input);
-            add_program_chunk(code_chunk, sizeof(code_chunk));
+#elif defined(_WIN32)
+			const uint16_t code_chunk[] = 
+			{
+				0x48, 0x8b, 0x01//,		//	movq (%rcx), %rax 
+				//0x48, 0xff, 0x60, 0x10
+				//0xff, 0x50, 0x10,		//	callq *0x18(%rax)
+			};
+
+			add_mov_ptr_rcx(new char[32]);
+			//add_mov_ptr_rdx(input);
+#endif
+			add_program_chunk(code_chunk, sizeof(code_chunk));
         }
 
 
