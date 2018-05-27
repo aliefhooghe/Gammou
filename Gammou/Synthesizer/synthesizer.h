@@ -27,7 +27,8 @@ namespace Gammou {
 
 		public:
 			synthesizer(
-				Process::abstract_frame_processor<double>& processor,
+				Process::abstract_frame_processor<double>& master_circuit_processor,
+				Process::abstract_frame_processor<double>& polyphonic_circuit_processor,
 				const unsigned int main_input_count,
 				const unsigned int main_output_count,
 				const unsigned int channel_count,
