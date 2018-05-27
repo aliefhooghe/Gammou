@@ -15,8 +15,13 @@ namespace Gammou {
 		Plugin::Plugin()
 			:
 			m_synthesizer_mutex(),
-			m_processor(),
-			m_synthesizer(m_processor, 2, 2, GAMMOU_SYNTHESIZER_CHANNEL_COUNT, GAMMOU_VST_PARAMETER_INPUT_COUNT),
+			m_master_circuit_processor(),
+			m_polyphonic_circuit_processor(),
+			m_synthesizer(
+				m_master_circuit_processor, 
+				m_polyphonic_circuit_processor, 
+				2, 2, GAMMOU_SYNTHESIZER_CHANNEL_COUNT,
+				GAMMOU_VST_PARAMETER_INPUT_COUNT),
 			m_window(&m_synthesizer, &m_synthesizer_mutex)
 		{
 			DEBUG_PRINT("Gammou Plugin CTOR\n");
