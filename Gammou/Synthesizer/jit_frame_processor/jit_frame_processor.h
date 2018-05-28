@@ -40,6 +40,7 @@ namespace Gammou {
 
                 void add_program_chunk(const void *chunk, const size_t size);
 
+                void add_mov_ptr_rax(void *ptr);
                 void add_mov_ptr_rdi(void *ptr);
                 void add_mov_ptr_rsi(void *ptr);
                 void add_mov_ptr_rdx(void *ptr);

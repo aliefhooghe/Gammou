@@ -58,7 +58,7 @@ namespace Gammou {
 			std::fill(m_master_circuit.m_polyphonic_to_master_buffer.begin(),
 				m_master_circuit.m_polyphonic_to_master_buffer.end(), 0.0);
 
-			for(auto it = m_channels.begin(); it != m_running_channels_end; ){
+			for (auto it = m_channels.begin(); it != m_running_channels_end; ){
 				const unsigned int current_channel = *it;
 
 				if( m_polyphonic_circuit.process(current_channel)){

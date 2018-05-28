@@ -70,26 +70,25 @@ namespace Gammou {
                 // TODO Initialization list
 
                 if (ic != 0) {
-                   /*
 					Process::abstract_component<double> *src_component[16];
                     unsigned int src_output_id[16];
 
                     // Compile each component pluged on input
 
                     for (unsigned int i = 0; i < ic; ++i) {
-						src_component[i] = nullptr;// component->get_input_src(i, src_output_id[i]);
+						src_component[i] = component->get_input_src(i, src_output_id[i]);
 
                         if (src_component[i] != nullptr)
                             compile_component_aux(src_component[i], process_cycle);
                     }
-					*/
+					
                     // Fetch components output values
 
                     for (unsigned int i = 0; i < ic; ++i) {
-                       // if (src_component[i] != nullptr)
-                      //      add_fetch_output(src_component[i], src_output_id[i], &(m_memory[i]));
-                       // else
-						add_fetch_default(&(m_memory[i])); DEBUG_PRINT("add fetch default\n");
+                        if (src_component[i] != nullptr)
+                            add_fetch_output(src_component[i], src_output_id[i], &(m_memory[i]));
+                        else
+						    add_fetch_default(&(m_memory[i]));
                     }
 
                 }
@@ -149,6 +148,13 @@ namespace Gammou {
        {
            std::memcpy(m_program + m_program_size, chunk, size);
            m_program_size += size;
+       }
+
+       void jit_frame_processor::add_mov_ptr_rax(void *ptr)
+       {
+           const uint16_t code_chunk = 0xb848;
+            add_program_chunk(&code_chunk, 2);
+            add_program_chunk(&ptr, 8);
        }
 
         void jit_frame_processor::add_mov_ptr_rdi(void *ptr)
@@ -215,14 +221,17 @@ namespace Gammou {
 #ifdef __linux__
 			const uint8_t code_chunk[] = 
             {
-                0x48, 0x8b, 0x07, 0x52,
-                0xff, 0x50, 0x10, 0x5a,
-                0xf2, 0x0f, 0x11, 0x02
+                0x48, 0x8b, 0x07,           //  movq (%rdi), %rax
+                0x52,                       //  pushq %rdx
+                0xff, 0x50, 0x10,           //  callq *0x10(%rax)
+                0x5a,                       //  popq %rdx
+                0xf2, 0x0f, 0x11, 0x02      //  movsd %xmm0, (%rdx)
             };
 
             add_mov_ptr_rdi(component);
             add_mov_int_esi(output_id);
             add_mov_ptr_rdx(mem_pos);
+
 #elif defined(_WIN32)
 			const uint8_t code_chunk[] =
 			{
