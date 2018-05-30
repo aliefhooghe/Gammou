@@ -49,7 +49,7 @@ namespace Gammou {
 		void sound_component_manager::register_sound_component(abstract_sound_component *component)
 		{
 			register_observer(component);
-			
+			component->set_working_channel_ref(&m_current_working_channel);
 		}
 
 
