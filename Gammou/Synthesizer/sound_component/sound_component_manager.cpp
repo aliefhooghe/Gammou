@@ -37,16 +37,19 @@ namespace Gammou {
 
 		void sound_component_manager::set_current_working_channel(const unsigned int channel)
 		{
-			if( channel != m_current_working_channel ){
-				m_current_working_channel = channel;
-				notify_observers(sound_component_notification_tag::CHANNEL_CHANGE_NOTIFY);
-			}
+			m_current_working_channel = channel;
 		}
 
 		void sound_component_manager::set_current_samplerate(const double sample_rate)
 		{
 			m_current_sample_rate = sample_rate;
 			notify_observers(sound_component_notification_tag::SAMPLE_RATE_NOTIFY);
+		}
+
+		void sound_component_manager::register_sound_component(abstract_sound_component *component)
+		{
+			register_observer(component);
+			
 		}
 
 

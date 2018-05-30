@@ -144,7 +144,7 @@ namespace Gammou {
 			// Component channel alredy checked and Initialized by synthesizer
 			component->set_sample_rate(m_sound_component_manager.get_current_sample_rate());
 			add_component(component);
-			m_sound_component_manager.register_observer(component);
+			m_sound_component_manager.register_sound_component(component);
 		}
 
 		void polyphonic_circuit::set_sample_rate(const double sample_rate)

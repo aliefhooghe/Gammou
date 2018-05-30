@@ -42,10 +42,6 @@ namespace Gammou {
 					DEBUG_PRINT("Component '%s' updating sample rate to %lf\n", get_name().c_str(), m_sample_rate);
 					break;
 
-				case sound_component_notification_tag::CHANNEL_CHANGE_NOTIFY:
-					set_current_working_channel(manager->get_current_working_channel());
-					break;
-
 				default:
 					break;
 

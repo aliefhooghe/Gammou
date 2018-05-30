@@ -56,7 +56,7 @@ namespace Gammou {
 
 			virtual ~subject();
 
-			void register_observer(observer<ResourceType, NotificationTagType> *link);
+			virtual void register_observer(observer<ResourceType, NotificationTagType> *link);
 			void notify_observers(const NotificationTagType notification_tag);
 
 		private:

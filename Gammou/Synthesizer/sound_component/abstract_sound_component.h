@@ -18,6 +18,7 @@ namespace Gammou {
 											public Process::observer<sound_component_manager, sound_component_notification_tag>  {
 
 			friend class abstract_plugin_factory;
+			friend class sound_component_manager;
 
 		public:
 			abstract_sound_component(
@@ -31,7 +32,7 @@ namespace Gammou {
 			virtual unsigned int save_state(data_sink& data) { return 0; };
 
 			virtual unsigned int get_channel_count() const { return 1;  }
-			virtual void set_current_working_channel(const unsigned int new_chanel) {};
+			virtual void set_working_channel_ref(const unsigned int *chanel_ref) {};
 			void set_sample_rate(const double sample_rate);
 
 		protected:

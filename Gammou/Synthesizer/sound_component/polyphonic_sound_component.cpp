@@ -16,20 +16,19 @@ namespace Gammou {
 				const unsigned int channel_count)
 				: abstract_sound_component(name, input_count, output_count),
 				m_channels_count(channel_count),
-				m_current_working_channel(0)
+				m_current_working_channel(nullptr)
 		{
 
 		}
-
 
 		unsigned int polyphonic_sound_component::get_channel_count() const
 		{
 			return m_channels_count;
 		}
 
-		void polyphonic_sound_component::set_current_working_channel(const unsigned int new_chanel)
+		void polyphonic_sound_component::set_working_channel_ref(const unsigned int *channel_ref)
 		{
-			m_current_working_channel = new_chanel;
+			m_current_working_channel = channel_ref;
 		}
 		
 	} /* Sound */

@@ -16,13 +16,11 @@ namespace Gammou {
 
 		class abstract_sound_component;
 
-		enum class sound_component_notification_tag {CHANNEL_CHANGE_NOTIFY, SAMPLE_RATE_NOTIFY};
+		enum class sound_component_notification_tag {SAMPLE_RATE_NOTIFY};
 
-		class sound_component_manager : public Process::subject<sound_component_manager, sound_component_notification_tag> {
+		class sound_component_manager : private Process::subject<sound_component_manager, sound_component_notification_tag> {
 
 		public:
-			//enum class notification_tag ;
-
 			sound_component_manager(const unsigned int channel_count);  // securité a prevoir >0
 			~sound_component_manager();
 
@@ -33,6 +31,7 @@ namespace Gammou {
 			void set_current_working_channel(const unsigned int channel);
 			void set_current_samplerate(const double sample_rate);
 
+			void register_sound_component(abstract_sound_component *component);
 		private:
 			const unsigned int m_channel_count;
 			unsigned int m_current_working_channel;

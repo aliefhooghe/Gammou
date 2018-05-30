@@ -138,7 +138,6 @@ namespace Gammou {
         {
 			for (abstract_component<T>* component : m_initialization_list) {
 				component->initialize_process();
-				DEBUG_PRINT("Initializing %s\n", component->get_name().c_str());
 			}
         }
 

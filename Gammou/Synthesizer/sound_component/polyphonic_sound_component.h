@@ -22,17 +22,20 @@ namespace Gammou {
 			virtual ~polyphonic_sound_component() {}
 
 			// Not virtual, should not be modified
-
 			unsigned int get_channel_count() const override;
-			void set_current_working_channel(const unsigned int new_chanel) override;
-
+			void set_working_channel_ref(const unsigned int *channel_ref) override;
 		protected:
-			inline unsigned int get_current_working_channel() const { return m_current_working_channel; }
+			inline unsigned int get_current_working_channel() const 
+			{
+				if (m_current_working_channel == nullptr)
+					return 0;
+				else
+					return *m_current_working_channel; 
+			}
 
 		private:
 			const unsigned int m_channels_count;
-			unsigned int m_current_working_channel;
-
+			const unsigned int *m_current_working_channel;
 		};
 
 		////-///

@@ -66,8 +66,8 @@ namespace Gammou {
 
 					if( (--(m_channels_lifetime[current_channel])) == 0u){
 						// no more lifetime
-						//DEBUG_PRINT("free:%d\n", current_channel);
 						free_channel(it);
+						DEBUG_PRINT("freed channel %d\n", current_channel);
 						continue;
 					}
 
@@ -95,7 +95,7 @@ namespace Gammou {
 
 			if( channel != INVALID_CHANNEL ){
 
-				//DEBUG_PRINT("on : %d (n = %d), fr = %f)\n", channel, midi_note, m_note_frequencies[midi_note]);
+				DEBUG_PRINT("on : channel = %d, note = %d, fr = %f)\n", channel, midi_note, m_note_frequencies[midi_note]);
 
 				m_channels_midi_note[channel] = midi_note;
 				m_polyphonic_circuit.initialize_channel(channel);
@@ -143,13 +143,15 @@ namespace Gammou {
 				throw std::domain_error("Component's channel count does not fit");
 
 			//  Initialize component for each running channel
+
 			for (auto it = m_channels.begin(); it != m_running_channels_end; ++it) {
 				const unsigned int current_channel = *it;
-				component->set_current_working_channel(current_channel);
+				component->set_working_channel_ref(&current_channel);
 				component->initialize_process();
 			}
 
-			m_polyphonic_circuit.add_sound_component(component);
+			//	--
+			m_polyphonic_circuit.add_sound_component(component);		
 		}
 
 		void synthesizer::set_sample_rate(const double sample_rate)

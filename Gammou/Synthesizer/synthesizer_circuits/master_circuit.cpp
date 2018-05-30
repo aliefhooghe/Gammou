@@ -65,9 +65,8 @@ namespace Gammou {
 		void master_circuit::add_sound_component(abstract_sound_component *component)
 		{
 			add_component(component);
-			m_sound_component_manager.register_observer(component);
+			m_sound_component_manager.register_sound_component(component);
 			component->set_sample_rate(m_sound_component_manager.get_current_sample_rate());
-			component->set_current_working_channel(0);
 			component->initialize_process();
 		}
 
