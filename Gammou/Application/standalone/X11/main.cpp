@@ -101,12 +101,11 @@ int main()
     
     window.open();
 
+    while(window.is_open()){
 
-    while(getchar() != 'q'){
-        printf("Nop\n");
     }
 
-    window.close();
+    
 
     try {
         // Stop the stream

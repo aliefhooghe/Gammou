@@ -24,7 +24,7 @@ namespace Gammou {
 
                 void open() override;
                 void close() override;
-
+                bool is_open() override;
             protected:
                 // Abstract windows
                 bool open_file(std::string& path, const std::string& title, const std::string& ext) override;
@@ -44,6 +44,7 @@ namespace Gammou {
                 Window m_root_window;
                 XdbeBackBuffer m_back_buffer; // doubl buffering
                 XVisualInfo *m_xvisual_info_found;
+                Atom m_wm_delete_message;
 
                 cairo_surface_t *m_cairo_surface;
 

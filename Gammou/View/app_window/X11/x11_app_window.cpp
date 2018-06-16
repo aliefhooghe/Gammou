@@ -52,12 +52,18 @@ namespace Gammou {
             
             if( m_xvisual_info_found == nullptr || found_count < 1 )
                 throw std::runtime_error("No Visual With Double Buffering\n");
+
+            // Enbale window close event
+            m_wm_delete_message = XInternAtom(m_display, "WM_DELETE_WINDOW", false);
         }
 
         x11_app_window::~x11_app_window()
         {
+            close();
             XCloseDisplay(m_display);
         }
+        
+        
 
         void x11_app_window::open()
         {
@@ -80,6 +86,9 @@ namespace Gammou {
                 m_xvisual_info_found->visual, 
                 CWBackPixel, &xattributs);
             
+            // enable window close event
+            XSetWMProtocols(m_display, m_window, &m_wm_delete_message, 1);
+
             // Prevent resizing (not handled on X11 now)
             XSizeHints constrain;
             std::memset(&constrain, 0, sizeof(constrain));
@@ -127,15 +136,13 @@ namespace Gammou {
 
         void x11_app_window::close()
         {
-            if (!m_running)
-                return;
-
             m_running = false;
-            DEBUG_PRINT("Running = false\n");
             m_event_loop_thread.join();
+        }
 
-            cairo_surface_destroy(m_cairo_surface);
-            XDestroyWindow(m_display, m_window); 
+        bool x11_app_window::is_open()
+        {
+            return m_running;
         }
 
         bool x11_app_window::open_file(std::string& path, const std::string& title, const std::string& ext)
@@ -174,7 +181,6 @@ namespace Gammou {
             throw std::runtime_error("Windos Resizing is not supported with the X Backend\n");
         }
 
-
         void x11_app_window::x_event_loop(x11_app_window *self)
         {
             cairo_t *cr = cairo_create(self->m_cairo_surface);
@@ -183,7 +189,6 @@ namespace Gammou {
 
             while(self->m_running){
                 XEvent event;
-
                 XNextEvent(self->m_display, &event);
 
                 switch( event.type ){
@@ -288,6 +293,14 @@ namespace Gammou {
                         self->on_mouse_exit();
                         break;
 
+                    case ClientMessage:
+                        if (event.xclient.data.l[0] == self->m_wm_delete_message) {
+                            DEBUG_PRINT("Received window delete xclient messge\n"); 
+                            self->m_running = false;
+                            
+                        }
+                        break;
+
                     default:
                         DEBUG_PRINT(" Unkxnow Event\n");
                         break;
@@ -296,7 +309,12 @@ namespace Gammou {
             }
 
             cairo_destroy(cr);
+            cairo_surface_destroy(self->m_cairo_surface);
+            XDestroyWindow(self->m_display, self->m_window);
+            DEBUG_PRINT("Quit thread Xloop funciton\n");
         }
-    }
 
-}
+
+    }   /* VieW */
+
+}   /* Gammou */
