@@ -6,7 +6,7 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/util.cmake")
 
 project (Gammou LANGUAGES CXX)
 
-option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" OFF)
+option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" ON)
 option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" ON)
 
 # Hide View Option
@@ -26,13 +26,6 @@ set(VST3_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")                         # gammou
 set(GAMMOU_PLUGINS_OUTPUT_PATH "${CMAKE_BINARY_DIR}/GammouPlugins")     # gammou Plugins
 set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")                      # View, synthesizer, vstsdk, ....
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")                   # gammou Standalone
-
-# Set Gammou Plugins Directory (The place where gammou will look to load them)
-# Default is where they are built
-set(GAMMOU_PLUGINS_DIR                       
-	"C:/Gammou"    
-	CACHE PATH "Choose the gammou Plugins directory"
-)
 
 #
 
@@ -201,13 +194,8 @@ if(GAMMOU_VST3_BUILD)
 	    LIBRARY_OUTPUT_DIRECTORY "${VST3_OUTPUT_PATH}"
 	    POSITION_INDEPENDENT_CODE ON    
 	)
-
 	
 	
-	# Copy the target in VST3 directory	
-	add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
-	
-	#####
 	
 	# Os specific addition
 	
@@ -216,6 +204,9 @@ if(GAMMOU_VST3_BUILD)
 		set_target_properties(gammou PROPERTIES SUFFIX ".vst3")
 		set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory /EXPORT:VSTPluginMain")
 		
+		# Copy the target in VST3 directory	
+		add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
+	
 		# Vst2 compatibility
 		target_sources(gammou PRIVATE
 			${VST3_SDK_DIR}/public.sdk/source/common/memorystream.cpp
@@ -228,7 +219,21 @@ if(GAMMOU_VST3_BUILD)
 			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffect.cpp
 			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffectx.cpp
 		)
+		
     elseif(UNIX AND NOT APPLE)  # LINUX
+    	# Vst2 compatibility
+		target_sources(gammou PRIVATE
+			${VST3_SDK_DIR}/public.sdk/source/common/memorystream.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/eventlist.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/hostclasses.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/parameterchanges.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/processdata.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.h
+			${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffect.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffectx.cpp
+		)
+		
         target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/linuxmain.cpp")
     elseif(APPLE)               # Apple OSX
         target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/macmain.cpp")

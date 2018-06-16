@@ -54,8 +54,12 @@ void test_syn(Gammou::Sound::synthesizer& syn, const unsigned int k)
 }
 
 
+//#define TEST_PERFORMANCE
+
 int main()
 {
+
+#ifndef TEST_PERFORMANCE
 
    RtAudio dac;
 
@@ -73,8 +77,10 @@ int main()
 
     std::mutex synthesizer_mutex;
 
-    Gammou::Sound::jit_frame_processor processor;
-    Gammou::Sound::synthesizer synthesizer(processor, 2, 2, 128, 16);
+    Gammou::Sound::jit_frame_processor jit_processor1;
+    Gammou::Sound::jit_frame_processor jit_processor2;
+    Gammou::Sound::synthesizer synthesizer(
+        jit_processor1, jit_processor2, 2, 2, 128, 16);
 	Gammou::Gui::synthesizer_gui window(&synthesizer, &synthesizer_mutex);
 
     struct snd_callback_data data = {&synthesizer, &synthesizer_mutex};
@@ -107,50 +113,65 @@ int main()
     if ( dac.isStreamOpen() ) dac.closeStream();
     
     
-/*
+#else
+    const unsigned int component_count = 1;
+    const unsigned int test_count = 64;
 
+    double bytecode_time_sum = 0.0;
+    double jit_time_sum = 0.0;
+    double ratio_sum = 0.0;
 
-
-    const unsigned int count = 32;
-
-    Gammou::Process::bytecode_frame_processor<double> bytecode_processor;
-    Gammou::Sound::synthesizer synthesizerb(bytecode_processor, 2, 2, 128, 16);
+    Gammou::Process::bytecode_frame_processor<double> bytecode_processor1;
+    Gammou::Process::bytecode_frame_processor<double> bytecode_processor2;
+    Gammou::Sound::synthesizer synthesizerb(
+        bytecode_processor1, bytecode_processor2, 2, 2, 128, 16);
 
     Gammou::Sound::Builtin::sin_component *prevb = new Gammou::Sound::Builtin::sin_component(128);
-    synthesizerb.add_sound_component_on_master_circuit(prevb);
 
-    for(unsigned int i = 0; i < count; ++i) {
+    synthesizerb.add_sound_component_on_polyphonic_circuit(prevb);
+    synthesizerb.get_polyphonic_circuit_midi_input()->connect_to(1, prevb, 0);
+
+    for(unsigned int i = 0; i < component_count; ++i) {
         Gammou::Sound::Builtin::sin_component *nextb = new Gammou::Sound::Builtin::sin_component(128);
-        synthesizerb.add_sound_component_on_master_circuit(nextb);
+        synthesizerb.add_sound_component_on_polyphonic_circuit(nextb);
         prevb->connect_to(0, nextb, 0);
+        prevb->connect_to(0, nextb, 1);
         prevb = nextb;
     }
 
-    prevb->connect_to(0, synthesizerb.get_master_main_output(), 0);
+    prevb->connect_to(0, synthesizerb.get_polyphonic_circuit_master_input(), 0);
+    synthesizerb.get_master_circuit_polyphonic_output()->connect_to(0, synthesizerb.get_master_main_output(), 0);
 
+    for(unsigned int i = 0; i < 16; ++i)
+        synthesizerb.send_note_on(20 + i, 0.5);
 
+/*
+    Gammou::Process::bytecode_frame_processor<double> bytecode_processor1;
+    Gammou::Process::bytecode_frame_processor<double> bytecode_processor2;
+    Gammou::Sound::synthesizer synthesizerb(
+        bytecode_processor1, bytecode_processor2, 2, 2, 128, 16);
 
+    Gammou::Sound::Builtin::sin_component *prevb = new Gammou::Sound::Builtin::sin_component(128);
 
-    Gammou::Sound::jit_frame_processor jit_processor;
-    Gammou::Sound::synthesizer synthesizerj(jit_processor, 2, 2, 128, 16);
+    synthesizerb.add_sound_component_on_polyphonic_circuit(prevb);
+    synthesizerb.get_polyphonic_circuit_midi_input().connect_to(1, prevb, 0);
 
-    Gammou::Sound::Builtin::sin_component *prevj = new Gammou::Sound::Builtin::sin_component(128);
-    synthesizerj.add_sound_component_on_master_circuit(prevj);
-
-    for(unsigned int i = 0; i < count; ++i) {
-        Gammou::Sound::Builtin::sin_component *nextj = new Gammou::Sound::Builtin::sin_component(128);
-        synthesizerj.add_sound_component_on_master_circuit(nextj);
-        prevj->connect_to(0, nextj, 0);
-        prevj = nextj;
+    for(unsigned int i = 0; i < component_count; ++i) {
+        Gammou::Sound::Builtin::sin_component *nextb = new Gammou::Sound::Builtin::sin_component(128);
+        synthesizerb.add_sound_component_on_polyphonic_circuit(nextb);
+        prevb->connect_to(0, nextb, 0);
+        prevb->connect_to(0, nextb, 1);
+        prevb = nextb;
     }
 
-    prevj->connect_to(0, synthesizerj.get_master_main_output(), 0);
-
+    prevb->connect_to(0, synthesizerb.get_polyphonic_circuit_master_input(), 0);
+    synthesizer.get_master_circuit_polyphonic_output().connect_to(synthesizerb.get_master_main_output());
+*/
 
     printf("############################################################################\n\n\nStarting test :\n\n");
 
-   for (unsigned int i = 1; i < 5; ++i) {
-       const unsigned int k = i * 44100 * 60;
+   for (unsigned int i = 0; i < test_count; ++i) {
+       const unsigned int k = 2 * 44100 * 60;
        double t1, t2;
        double bytecode_duration, jit_duration;
 
@@ -160,17 +181,31 @@ int main()
 
         bytecode_duration = t2 - t1;
 
+/*
         t1 = get_time();
         test_syn(synthesizerj, k);
         t2 = get_time();
 
         jit_duration = t2 - t1;
         
-        printf("%u minutes : bytecode_duration = %lf, jit_duration = %lf, ratio = %lf\n", 
-            i, bytecode_duration, jit_duration, bytecode_duration / jit_duration);
-   }
+        const double ratio = bytecode_duration / jit_duration;
 */
+ //       ratio_sum += ratio;
+        bytecode_time_sum += bytecode_duration;
+ //       jit_time_sum += jit_duration;
+        
+        printf("bytecode_duration = %lf\n"/*, jit_duration = %lf, ratio = %lf\n"*/, 
+            bytecode_duration/*, jit_duration, ratio*/);
+   }
     
+    const double ratio_mean = ratio_sum / (double) test_count;
+    //printf("\n\nratio moyen : %lf soit %lf %% de gain\n", ratio_mean, 100.0 * (ratio_mean - 1.0));
+    printf("\nDurées moyennes : \n\t\t\t\t- bytecode \t\t: %lf\n\n\n", bytecode_time_sum / (double) test_count);
+    //printf("############################################################################\n");
     
+
+
+#endif
+
     return 0;
 }

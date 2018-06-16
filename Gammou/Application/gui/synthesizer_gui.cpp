@@ -215,16 +215,21 @@ namespace Gammou {
 			// Plugins 
 
 			const std::string plugin_dir_path(GAMMOU_PLUGINS_DIRECTORY_PATH);
-	
-			for (auto & p : std::experimental::filesystem::directory_iterator(plugin_dir_path)) {
-				try {
-					const std::string plugin_path(p.path().string());
-					DEBUG_PRINT("Loading %s\n", plugin_path.c_str());
-					load_plugin_factory(plugin_path);
+			
+			try {
+				for (auto & p : std::experimental::filesystem::directory_iterator(plugin_dir_path)) {
+					try {
+						const std::string plugin_path(p.path().string());
+						DEBUG_PRINT("Loading %s\n", plugin_path.c_str());
+						load_plugin_factory(plugin_path);
+					}
+					catch(...){
+						DEBUG_PRINT("Failed\n");
+					}
 				}
-				catch(...){
-					DEBUG_PRINT("Failed\n");
-				}
+			}
+			catch(...){
+				DEBUG_PRINT("Error while loding plugins\n");
 			}
 		}
 
