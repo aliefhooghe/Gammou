@@ -96,16 +96,11 @@ int main()
         exit( 0 );
     }
     
-    DEBUG_PRINT("Opening Window\n");
-    
-    
     window.open();
 
-    while(window.is_open()){
+    while (window.is_open())
+        sleep(1);
 
-    }
-
-    
 
     try {
         // Stop the stream

@@ -17,6 +17,21 @@ namespace Gammou {
             : abstract_app_window(px_width, px_height),
                 m_running(false)
         {
+        }
+
+        x11_app_window::~x11_app_window()
+        {
+            close();
+        }
+
+        void x11_app_window::open()
+        {
+            if (m_running)
+                return;
+
+            const unsigned int px_width = get_width();
+            const unsigned int px_height = get_height();
+
             m_display = XOpenDisplay(nullptr);
 
             if( m_display == nullptr )
@@ -55,23 +70,6 @@ namespace Gammou {
 
             // Enbale window close event
             m_wm_delete_message = XInternAtom(m_display, "WM_DELETE_WINDOW", false);
-        }
-
-        x11_app_window::~x11_app_window()
-        {
-            close();
-            XCloseDisplay(m_display);
-        }
-        
-        
-
-        void x11_app_window::open()
-        {
-            if (m_running)
-                return;
-
-            const unsigned int px_width = get_width();
-            const unsigned int px_height = get_height();
 
             const int screen = DefaultScreen(m_display);
 
@@ -131,13 +129,21 @@ namespace Gammou {
             DEBUG_PRINT("Gui Thread Start\n");
 
             m_running = true;
+
+            if (m_event_loop_thread.joinable())
+                m_event_loop_thread.join();
+
             m_event_loop_thread = std::thread(x_event_loop, this);
         }
 
         void x11_app_window::close()
         {
             m_running = false;
-            m_event_loop_thread.join();
+            if (m_event_loop_thread.joinable()) {
+                DEBUG_PRINT("JOIN\n");
+                m_event_loop_thread.join();
+            }
+            DEBUG_PRINT("JOINed\n");
         }
 
         bool x11_app_window::is_open()
@@ -311,6 +317,7 @@ namespace Gammou {
             cairo_destroy(cr);
             cairo_surface_destroy(self->m_cairo_surface);
             XDestroyWindow(self->m_display, self->m_window);
+            XCloseDisplay(self->m_display);
             DEBUG_PRINT("Quit thread Xloop funciton\n");
         }
 
