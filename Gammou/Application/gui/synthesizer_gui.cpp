@@ -229,7 +229,7 @@ namespace Gammou {
 				}
 			}
 			catch(...){
-				DEBUG_PRINT("Error while loding plugins\n");
+				DEBUG_PRINT("Error while loding plugins in '%s'\n", GAMMOU_PLUGINS_DIRECTORY_PATH);
 			}
 		}
 

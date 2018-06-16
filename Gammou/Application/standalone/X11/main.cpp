@@ -101,7 +101,6 @@ int main()
     while (window.is_open())
         sleep(1);
 
-
     try {
         // Stop the stream
         dac.stopStream();

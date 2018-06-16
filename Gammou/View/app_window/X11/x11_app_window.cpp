@@ -139,11 +139,8 @@ namespace Gammou {
         void x11_app_window::close()
         {
             m_running = false;
-            if (m_event_loop_thread.joinable()) {
-                DEBUG_PRINT("JOIN\n");
+            if (m_event_loop_thread.joinable())
                 m_event_loop_thread.join();
-            }
-            DEBUG_PRINT("JOINed\n");
         }
 
         bool x11_app_window::is_open()
