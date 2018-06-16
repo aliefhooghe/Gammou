@@ -82,7 +82,7 @@ int main()
     Gammou::Sound::synthesizer synthesizer(
         jit_processor1, jit_processor2, 2, 2, 128, 16);
 	Gammou::Gui::synthesizer_gui window(&synthesizer, &synthesizer_mutex);
-
+   
     struct snd_callback_data data = {&synthesizer, &synthesizer_mutex};
 
     try {
@@ -96,13 +96,18 @@ int main()
         exit( 0 );
     }
     
-    DEBUG_PRINT("Entering Sleep\n");
+    DEBUG_PRINT("Opening Window\n");
     
-    while(1){
-        // Avoid burning cpu
-        sleep(100);
+    
+    window.open();
+
+
+    while(getchar() != 'q'){
+        printf("Nop\n");
     }
-    
+
+    window.close();
+
     try {
         // Stop the stream
         dac.stopStream();

@@ -14,9 +14,9 @@ namespace Gammou {
     namespace View {
 
         x11_app_window::x11_app_window(const unsigned int px_width, const unsigned int px_height)
-            : abstract_app_window(px_width, px_height)
+            : abstract_app_window(px_width, px_height),
+                m_running(false)
         {
-            int screen;
             m_display = XOpenDisplay(nullptr);
 
             if( m_display == nullptr )
@@ -29,10 +29,10 @@ namespace Gammou {
 
 
             int screen_count = 1;
-            Window root_window = DefaultRootWindow(m_display);
+            m_root_window = DefaultRootWindow(m_display);
 
             XdbeScreenVisualInfo *info = 
-                XdbeGetVisualInfo(m_display, &root_window, &screen_count);
+                XdbeGetVisualInfo(m_display, &m_root_window, &screen_count);
 
             if( info == nullptr || screen_count < 0 || info->count < 1)
                 throw std::runtime_error("Xbde unsuported\n");
@@ -44,26 +44,56 @@ namespace Gammou {
             xvisual_info_template.depth = info->visinfo[0].depth;
 
             int found_count;
-            XVisualInfo *xvisual_info_found
+                
+            m_xvisual_info_found
                 = XGetVisualInfo(m_display,
                 VisualIDMask | VisualScreenMask | VisualDepthMask, 
                 &xvisual_info_template, &found_count);
             
-            if( xvisual_info_found == nullptr || found_count < 1 )
+            if( m_xvisual_info_found == nullptr || found_count < 1 )
                 throw std::runtime_error("No Visual With Double Buffering\n");
+        }
 
+        x11_app_window::~x11_app_window()
+        {
+            XCloseDisplay(m_display);
+        }
 
-            screen = DefaultScreen(m_display);
+        void x11_app_window::open()
+        {
+            if (m_running)
+                return;
+
+            const unsigned int px_width = get_width();
+            const unsigned int px_height = get_height();
+
+            const int screen = DefaultScreen(m_display);
 
             XSetWindowAttributes xattributs;
-
+            bzero(&xattributs, sizeof(XSetWindowAttributes));
             xattributs.background_pixel = WhitePixel(m_display, screen);
 
             m_window = XCreateWindow(
-                m_display, root_window, 
+                m_display, m_root_window, 
                 0, 0, px_width, px_height, 0, 
-                CopyFromParent, CopyFromParent, xvisual_info_found->visual, CWBackPixel, &xattributs);
+                CopyFromParent, CopyFromParent, 
+                m_xvisual_info_found->visual, 
+                CWBackPixel, &xattributs);
             
+            // Prevent resizing (not handled on X11 now)
+            XSizeHints constrain;
+            std::memset(&constrain, 0, sizeof(constrain));
+
+            constrain.flags = PMinSize | PMaxSize;
+            constrain.max_width = px_width;
+            constrain.min_width = px_width;
+            constrain.max_height = px_height;
+            constrain.min_height = px_height;
+
+            XSetWMNormalHints(m_display, m_window, &constrain);
+
+            // 
+
             m_back_buffer = XdbeAllocateBackBufferName(m_display, m_window, XdbeBackground);
             
             //--
@@ -80,7 +110,7 @@ namespace Gammou {
             
             m_cairo_surface = cairo_xlib_surface_create(
                 m_display, m_back_buffer, 
-                xvisual_info_found->visual,
+                m_xvisual_info_found->visual,
                 px_width, px_height
             );
 
@@ -89,36 +119,23 @@ namespace Gammou {
                 px_width, px_height
             );
 
-            // Prevent resizing (not handled)
-            XSizeHints constrain;
-            std::memset(&constrain, 0, sizeof(constrain));
+            DEBUG_PRINT("Gui Thread Start\n");
 
-            constrain.flags = PMinSize | PMaxSize;
-            constrain.max_width = px_width;
-            constrain.min_width = px_width;
-            constrain.max_height = px_height;
-            constrain.min_height = px_height;
-
-            XSetWMNormalHints(m_display, m_window, &constrain);
-
+            m_running = true;
             m_event_loop_thread = std::thread(x_event_loop, this);
-        }
-
-        x11_app_window::~x11_app_window()
-        {
-            cairo_surface_destroy(m_cairo_surface);
-            XCloseDisplay(m_display);
-           // XDestroyWindow()
-        }
-
-        void x11_app_window::open()
-        {
-            // todo
         }
 
         void x11_app_window::close()
         {
-            // todo
+            if (!m_running)
+                return;
+
+            m_running = false;
+            DEBUG_PRINT("Running = false\n");
+            m_event_loop_thread.join();
+
+            cairo_surface_destroy(m_cairo_surface);
+            XDestroyWindow(m_display, m_window); 
         }
 
         bool x11_app_window::open_file(std::string& path, const std::string& title, const std::string& ext)
@@ -128,6 +145,9 @@ namespace Gammou {
         
         void x11_app_window::system_redraw_rect(const rectangle& rect)
         {
+            if (!m_running)
+                return;
+                
             XEvent ev;
             std::memset(&ev, 0, sizeof(ev));
 
@@ -161,7 +181,7 @@ namespace Gammou {
 
             Time last_time = 0;
 
-            for(;;){
+            while(self->m_running){
                 XEvent event;
 
                 XNextEvent(self->m_display, &event);

@@ -38,9 +38,12 @@ namespace Gammou {
                 static void x_event_loop(x11_app_window *self);
 
                 std::thread m_event_loop_thread;
+                bool m_running;
                 Display *m_display;
                 Window m_window;
+                Window m_root_window;
                 XdbeBackBuffer m_back_buffer; // doubl buffering
+                XVisualInfo *m_xvisual_info_found;
 
                 cairo_surface_t *m_cairo_surface;
 

@@ -114,7 +114,7 @@ namespace Gammou {
 			);
 			*/
 			init_main_factory();
-
+			DEBUG_PRINT("SYN GUI CTOR finnished\n");
 			// scale(0.8f); Ableton
 		}
 
