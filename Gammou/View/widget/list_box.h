@@ -23,7 +23,7 @@ namespace Gammou {
 				const unsigned int height, 
 				const unsigned int displayed_items_count, 
 				std::function<void(unsigned int)> on_select = [](unsigned int id) {},
-				const color selected_item_color = cl_azure, 
+				const color selected_item_color = cl_gray, 
 				const color background = cl_white, 
 				const color border_color = cl_black, 
 				const color font_color = cl_black, 
@@ -34,7 +34,7 @@ namespace Gammou {
 				const rectangle& rect, 
 				const unsigned int displayed_items_count,
 				std::function<void(unsigned int)> on_select = [](unsigned int id) {},
-				const color selected_item_color = cl_azure,
+				const color selected_item_color = cl_gray,
 				const color background = cl_white,
 				const color border_color = cl_black,
 				const color font_color = cl_black,
@@ -45,6 +45,7 @@ namespace Gammou {
 
 
 			// No remove function because it would cause issues with id
+			unsigned int get_item_count() const;
 			unsigned int add_item(const std::string& name); // Todo item description ?
 			int get_selected_item() const;					//	-1 if nothing selected
 			void select_item(const unsigned int id);

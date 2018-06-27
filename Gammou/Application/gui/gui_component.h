@@ -50,8 +50,9 @@ namespace Gammou {
 			virtual bool on_mouse_move(const int x, const int y) override;
 			virtual bool on_mouse_exit() override;
 
-		protected:
 			virtual void draw(cairo_t *cr) override;
+
+		protected:
 			void set_autosize(const bool state = true);
 
 			bool is_linking();
@@ -95,7 +96,7 @@ namespace Gammou {
 
 			virtual ~abstract_gui_component_map() {}
 
-			virtual void add_gui_component(abstract_gui_component *component);
+			virtual void add_gui_component(std::unique_ptr<abstract_gui_component> && component);
 
 			virtual bool on_mouse_drag(const View::mouse_button button, const int x, const int y,
 				const int dx, const int dy) override;
@@ -105,6 +106,7 @@ namespace Gammou {
 			virtual bool on_mouse_button_down(const View::mouse_button button, const int x, const int y) override;
 
 			virtual void remove_widget(abstract_gui_component *component) override;
+
 		protected:
 			void draw_content(cairo_t *cr) override;
 
@@ -115,8 +117,10 @@ namespace Gammou {
 			inline void lock_circuit() { m_circuit_mutex->lock();  }
 			inline void unlock_circuit() { m_circuit_mutex->unlock(); }
 
-			unsigned int get_input_count(abstract_gui_component *component);
-			abstract_gui_component *get_input_src(abstract_gui_component *component, const unsigned int input_id, 
+			unsigned int get_input_count(const std::unique_ptr<abstract_gui_component> &component);
+			abstract_gui_component *get_input_src(
+				const std::unique_ptr<abstract_gui_component> &component, 
+				const unsigned int input_id, 
 				unsigned int& src_output_id);
 
 		private:

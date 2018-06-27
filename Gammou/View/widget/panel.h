@@ -5,6 +5,8 @@
 #include <deque>
 #include <type_traits>
 #include <algorithm>
+#include <memory>
+
 #include "widget.h"
 
 
@@ -67,8 +69,9 @@ namespace Gammou {
 
 			virtual void draw(cairo_t *cr) override;
 		
-			virtual void add_widget(widget_type *w);		//	Panel get widget ownership and have to destroy it unless it is removed
+			virtual void add_widget(std::unique_ptr<widget_type> &&widget);
 			virtual void remove_widget(widget_type *w);
+
 		protected:
 			virtual void draw_widgets(cairo_t *cr);
 
@@ -76,7 +79,7 @@ namespace Gammou {
 			widget_type *get_draging_widget(void) const;	
 			widget_type *get_draging_widget(mouse_button& button) const;	
 			
-			std::deque<widget_type*> m_widgets;		
+			std::deque<std::unique_ptr<widget_type> > m_widgets;		
 
 		private:
 			widget_type *get_widget_at_position(const int x, const int y) const;
@@ -132,8 +135,7 @@ namespace Gammou {
 		template<class widget_type>
 		panel<widget_type>::~panel()
 		{
-			for (widget_type *w : m_widgets)
-				delete w;
+
 		}
 
 		template<class widget_type>
@@ -254,7 +256,7 @@ namespace Gammou {
 		template<class widget_type>
 		void panel<widget_type>::draw_widgets(cairo_t * cr)
 		{
-			for (widget *w : m_widgets) {
+			for (auto& w : m_widgets) {
 				cairo_save(cr);
 				cairo_translate(cr, w->get_x(), w->get_y());
 				w->draw(cr);
@@ -324,12 +326,10 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		void panel<widget_type>::add_widget(widget_type * w)
+		void panel<widget_type>::add_widget(std::unique_ptr<widget_type> && widget)
 		{
-			if (w == nullptr)
-				return;
-			m_widgets.push_back(w);
-			get_ownership(w);
+			get_ownership(&(*widget));
+			m_widgets.push_back(std::move(widget));
 			redraw();
 		}
 
@@ -337,13 +337,21 @@ namespace Gammou {
 		void panel<widget_type>::remove_widget(widget_type * w)
 		{
 			release_widget(w);
-			m_widgets.erase(std::remove(m_widgets.begin(), m_widgets.end(), w), m_widgets.end());
+			m_widgets.erase(std::remove_if(
+				m_widgets.begin(), m_widgets.end(), 
+				[w](const std::unique_ptr<widget_type> & widget)
+				{
+					return (&(*widget) == w);
+				}),
+				m_widgets.end());
+
+
 
 			if (m_focused_widget == w)
 				m_focused_widget = nullptr;
 			if (m_draging_widget == w)
 				m_draging_widget = nullptr;
-
+			
 			redraw();
 		}
 
@@ -351,9 +359,9 @@ namespace Gammou {
 		widget_type * panel<widget_type>::get_widget_at_position(const int x, const int y) const
 		{
 			for (auto it = m_widgets.rbegin(); it != m_widgets.rend(); ++it) {
-				widget_type *const w = (*it);
+				auto& w = (*it);
 				if (w->contains(x - w->get_x(), y - w->get_y()))
-					return w;
+					return &(*w);
 			}
 
 			return nullptr;

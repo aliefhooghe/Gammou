@@ -389,13 +389,13 @@ namespace Gammou {
 			set_sroll_method(View::scrollable_panel<abstract_gui_component>::scroll_method::DRAG_SCROLL);
 		}
 
-		void abstract_gui_component_map::add_gui_component(abstract_gui_component * component)
+		void abstract_gui_component_map::add_gui_component(std::unique_ptr<abstract_gui_component> && component)
 		{
 			Process::abstract_component<double> *cmpt = component->get_component();
 
 			if (cmpt != nullptr) {
-				add_widget(component);
-				m_component_association[cmpt] = component;
+				m_component_association[cmpt] = &(*component);
+				add_widget(std::move(component));
 			}
 		}
 
@@ -405,7 +405,7 @@ namespace Gammou {
 
 			// Draw links
 
-			for (abstract_gui_component *gui_component : m_widgets){
+			for (auto& gui_component : m_widgets){
 				const unsigned int ic = get_input_count(gui_component);
 
 				for (unsigned int i = 0; i < ic; ++i) {
@@ -597,7 +597,7 @@ namespace Gammou {
 			panel<abstract_gui_component>::remove_widget(component);
 		}
 
-		unsigned int abstract_gui_component_map::get_input_count(abstract_gui_component * component)
+		unsigned int abstract_gui_component_map::get_input_count(const std::unique_ptr<abstract_gui_component> &component)
 		{
 			Process::abstract_component<double> *cpmt = component->get_component();
 			
@@ -607,7 +607,10 @@ namespace Gammou {
 				return 0;
 		}
 
-		abstract_gui_component * abstract_gui_component_map::get_input_src(abstract_gui_component * component, const unsigned int input_id, unsigned int& src_output_id)
+		abstract_gui_component * abstract_gui_component_map::get_input_src(
+				const std::unique_ptr<abstract_gui_component> &component, 
+				const unsigned int input_id, 
+				unsigned int& src_output_id)
 		{
 			Process::abstract_component<double> *cmpt = component->get_component();
 

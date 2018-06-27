@@ -20,17 +20,18 @@ namespace Gammou {
 
 			const int pos = (get_width() - 50) / 2;
 
-			View::knob *knob_control = new View::knob(
-				[&](View::knob *self)
-			{
-				m_control->set_normalized_value(self->get_normalized_value());
-			},
-				pos, pos,
-				GuiProperties::knob_on_color,
-				GuiProperties::knob_off_color);
+			auto knob_control = 
+				std::make_unique<View::knob>(
+					[&](View::knob *self)
+					{
+						m_control->set_normalized_value(self->get_normalized_value());
+					},
+					pos, pos,
+					GuiProperties::knob_on_color,
+					GuiProperties::knob_off_color);
 
 			knob_control->set_normalized_value(control->get_normalized_value());
-			add_widget(knob_control);
+			add_widget(std::move(knob_control));
 		}
 		// value_knob_gui_component_factory implementation
 
@@ -50,8 +51,9 @@ namespace Gammou {
 				new value_sound_component("Knob", channel_count, normalized_value, KNOB_AMPLITUDE, KNOB_SHAPE, KNOB_TAU);
 			stamp_sound_component(sound_component);
 			
-			knob_gui_component *gui_component = new knob_gui_component(sound_component, x, y);
-			return std::make_pair(gui_component, sound_component);
+			return std::make_pair(
+					std::make_unique<knob_gui_component>(sound_component, x, y),
+					sound_component);
 		}
 
 		abstract_gui_component_factory::complete_component value_knob_gui_component_factory::create_complete_component(
@@ -65,8 +67,9 @@ namespace Gammou {
 					KNOB_AMPLITUDE, KNOB_SHAPE, KNOB_TAU);
 			stamp_sound_component(sound_component);
 
-			knob_gui_component *gui_component = new knob_gui_component(sound_component, x, y);
-			return std::make_pair(gui_component, sound_component);
+			return std::make_pair(
+					std::make_unique<knob_gui_component>(sound_component, x, y),
+					sound_component);
 		}
 
 		// gain_knob_gui_component_factory Implementation
@@ -87,8 +90,9 @@ namespace Gammou {
 				new gain_sound_component("Gain Knob", channel_count, normalized_value, KNOB_AMPLITUDE, KNOB_SHAPE, KNOB_TAU);
 			stamp_sound_component(sound_component);
 
-			knob_gui_component *gui_component = new knob_gui_component(sound_component, x, y);
-			return std::make_pair(gui_component, sound_component);
+			return std::make_pair(
+					std::make_unique<knob_gui_component>(sound_component, x, y),
+					sound_component);
 		}
 
 		abstract_gui_component_factory::complete_component gain_knob_gui_component_factory::create_complete_component(
@@ -101,9 +105,10 @@ namespace Gammou {
 					KNOB_INITIAL_NORMALIZED_VALUE,
 					KNOB_AMPLITUDE, KNOB_SHAPE, KNOB_TAU);
 			stamp_sound_component(sound_component);
-
-			knob_gui_component *gui_component = new knob_gui_component(sound_component, x, y);
-			return std::make_pair(gui_component, sound_component);
+			
+			return std::make_pair(
+					std::make_unique<knob_gui_component>(sound_component, x, y),
+					sound_component);
 		}
 	}
 

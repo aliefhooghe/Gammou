@@ -71,6 +71,7 @@ namespace Gammou {
 			//
 			unsigned int get_parameter_input_count() const;
 			void set_parameter_value(const double value, const unsigned int automation_id);
+			const double get_parameter_value(const unsigned int automation_id) const;
 
 			unsigned int get_channel_count() const;
 

@@ -70,4 +70,13 @@ add_gammou_plugin(BitCrusher bit_crusher.cpp)
 add_gammou_plugin(LadderFilter ladder_filter.cpp)
 
 
+############ 	Joystick Plugin
+
+find_package(SDL2 REQUIRED)
+add_gammou_plugin(Joystick joystick.cpp)
+target_include_directories(Joystick PRIVATE ${SDL2_INCLUDE_DIRS})
+target_link_libraries(Joystick PRIVATE SDL2)
+
+
+
 

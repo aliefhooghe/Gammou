@@ -60,6 +60,11 @@ namespace Gammou {
 		{
 		}
 
+		unsigned int list_box::get_item_count() const
+		{
+			return static_cast<unsigned int>(m_items.size());
+		}
+
 		unsigned int list_box::add_item(const std::string & name)
 		{
 			m_items.push_back(name);

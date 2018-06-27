@@ -10,7 +10,7 @@ namespace Gammou {
 
 		class abstract_vst3_view;
 
-		class abstract_vst3_window :  public abstract_window
+		class abstract_vst3_window : public abstract_window
 		{
 			friend class abstract_vst3_view;
 
@@ -23,7 +23,6 @@ namespace Gammou {
 
 			//	
 			virtual void open(void *parent_window) =0;
-			virtual void close(void) =0;
 
 			//	widget override   (visibilit� ?)
 			//	Abstract coordinate (not windows system)

@@ -11,7 +11,7 @@ endif()
 
 #######################################################
 project(View LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 option(VIEW_APP "Provide Application Window class" OFF)
 option(VIEW_VST3 "Provide VST3 Window class" OFF)

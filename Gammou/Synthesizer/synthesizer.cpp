@@ -222,6 +222,11 @@ namespace Gammou {
 			m_master_circuit.m_parameter_buffer[automation_id] = value;
 		}
 
+		const double synthesizer::get_parameter_value(const unsigned int automation_id) const
+		{
+			return m_master_circuit.m_parameter_buffer[automation_id];
+		}
+
 		unsigned int synthesizer::get_channel_count() const
 		{
 			return static_cast<unsigned int>(m_channels.size());

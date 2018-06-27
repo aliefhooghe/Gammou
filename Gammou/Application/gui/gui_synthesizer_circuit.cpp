@@ -49,10 +49,9 @@ namespace Gammou {
 
 				if (focused_component != nullptr
 					&& focused_component->get_sound_component_factory_id() != Persistence::INTERNAL_FACTORY_ID) {
-					remove_widget(focused_component);
 					DEBUG_PRINT("Delete component '%s'\n", focused_component->get_component()->get_name().c_str());
 					lock_circuit();
-					delete focused_component;
+					remove_widget(focused_component);
 					unlock_circuit();
 					DEBUG_PRINT("OK\n");
 				}
@@ -81,7 +80,7 @@ namespace Gammou {
 					add_sound_component_to_frame(component.second);
 					unlock_circuit();
 
-					add_gui_component(component.first);
+					add_gui_component(std::move(component.first));
 				}
 			}
 
@@ -116,22 +115,25 @@ namespace Gammou {
 			
 			// save components
 
-			for (abstract_gui_component *component : m_widgets) {
+			for (auto& component : m_widgets) {
 				// Save each component
-				component_record_id[component] = component_counter;
-				save_component(data, component);
+				abstract_gui_component *component_ptr = 
+					&(*component);
+
+				component_record_id[component_ptr] = component_counter;
+				save_component(data, component_ptr);
 				component_counter++;
 			}
 
 			// save links
 
-			for (abstract_gui_component *component : m_widgets) {
+			for (auto& component : m_widgets) {
 				// component is dst
 
 				const unsigned int ic = component->get_component()->get_input_count();
 
 				//	Getting component record_id
-				const uint32_t dst_record_id = component_record_id[component];
+				const uint32_t dst_record_id = component_record_id[&(*component)];
 
 				for (unsigned int input_id = 0; input_id < ic; ++input_id) {
 					// for each dst input
@@ -271,9 +273,9 @@ namespace Gammou {
 				add_sound_component_to_frame(component.second);
 				unlock_circuit();
 
-				add_gui_component(component.first);
-
-				return component.first;
+				abstract_gui_component *ret = &(*(component.first));
+				add_gui_component(std::move(component.first));
+				return ret;
 			}
 			else {
 				// Todo dummy component
@@ -298,7 +300,7 @@ namespace Gammou {
 		}
 
 		void abstract_gui_synthesizer_circuit::reset_content()
-		{
+		{/*
 			std::deque<abstract_gui_component*> temp(m_widgets);
 
 			for (abstract_gui_component * component : temp) {
@@ -308,6 +310,9 @@ namespace Gammou {
 					delete component;
 				}
 			}
+			*/
+
+		//TODOTODO
 		}
 
 

@@ -14,9 +14,8 @@ namespace Gammou {
                     : abstract_window(px_width, px_height) {}
                 virtual ~abstract_app_window() {}
 
+				virtual bool is_open() =0;
                 virtual void open() =0;
-                virtual void close() =0;
-                virtual bool is_open() =0;
         };
 
     }

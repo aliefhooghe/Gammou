@@ -15,32 +15,37 @@ namespace Gammou {
 
 			//  Synthesizer Circuits
 
-			m_gui_master_circuit = 
-				new gui_master_circuit(
+			auto master_circuit = 
+				std::make_unique<gui_master_circuit>(
 					&m_gui_component_factory, synthesizer, synthesizer_mutex, 
 					0, 0, GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height);
+			m_gui_master_circuit = &(*master_circuit);
 
-			m_gui_polyphonic_circuit = 
-				new gui_polyphonic_circuit(
+			auto polyphonic_circuit = 
+				std::make_unique<gui_polyphonic_circuit>(
 					&m_gui_component_factory, synthesizer, synthesizer_mutex, 
 					0, 0, GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height);
+			m_gui_polyphonic_circuit = &(*polyphonic_circuit);
 
-			View::page_container *pages = 
-				new View::page_container(
+			auto pages =
+				std::make_unique<View::page_container>(
 					GuiProperties::main_gui_component_choice_box_width, GuiProperties::main_gui_toolbox_height, 
 					GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height, View::cl_chartreuse);
+			View::page_container *pages_ptr = &(*pages);
 
-			pages->add_page(m_gui_master_circuit);
-			pages->add_page(m_gui_polyphonic_circuit);
+
+			pages->add_page(std::move(master_circuit));
+			pages->add_page(std::move(polyphonic_circuit));
+
 			page_id = 0;
 			pages->select_page(page_id);
 
-			add_widget(pages);
+			add_widget(std::move(pages));
 
 			// Component Choice ListBox
 
-			m_plugin_list_box = 
-				new View::list_box(
+			auto plugin_list_box = 
+				std::make_unique<View::list_box>(
 					0, GuiProperties::main_gui_toolbox_height - 2, 
 					GuiProperties::main_gui_component_choice_box_width, 
 					GuiProperties::main_gui_component_choice_box_height + 2, 
@@ -58,49 +63,53 @@ namespace Gammou {
 					GuiProperties::main_gui_list_box_font_color, 
 					GuiProperties::main_gui_component_choice_box_font_size);
 
-			add_widget(m_plugin_list_box);
+			m_plugin_list_box = &(*plugin_list_box);
+			add_widget(std::move(plugin_list_box));
 						
 			// ToolBox
 
-			View::panel<> *tool_box =
-				new View::border_panel<>(
+			auto tool_box =
+				std::make_unique<View::border_panel<> >(
 					0, 0,
 					GuiProperties::main_gui_toolbox_width, GuiProperties::main_gui_toolbox_height,
 					GuiProperties::main_gui_tool_box_background, GuiProperties::main_gui_tool_box_border_color);
 
-			tool_box->add_widget(new View::push_button(
-				[&, pages](View::push_button *self)
-			{
-				if (page_id == 0) {
-					page_id = 1;
-					self->set_text("Polyphonic Circuit");
+			tool_box->add_widget(std::make_unique<View::push_button>(
+				[&, pages_ptr](View::push_button *self)
+				{
+					if (page_id == 0) {
+						page_id = 1;
+						self->set_text("Polyphonic Circuit");
+					}
+					else {
+						page_id = 0;
+						self->set_text("Master Circuit");
+					}
+					pages_ptr->select_page(page_id);
 				}
-				else {
-					page_id = 0;
-					self->set_text("Master Circuit");
-				}
-				pages->select_page(page_id);
-			}
-			, "Master Circuit", 705, 16, 110));
+				, "Master Circuit", 705, 16, 110));
 
 			const unsigned int offset = (GuiProperties::main_gui_size_unit - 50) / 2;
 
-			m_master_volume = new View::knob(
-				[synthesizer](View::knob *kn) 
-				{ 
-					const double norm = kn->get_normalized_value();
-					const double volume = (expf(5.0f * norm) - 1.0) / (expf(5.0f) - 1.0);
-					synthesizer->set_master_volume(volume); 
-				},
-				offset + GuiProperties::main_gui_width - GuiProperties::main_gui_size_unit,
-				offset,
-				GuiProperties::knob_on_color,
-				GuiProperties::knob_off_color
-			);
+			auto master_volume = 
+				std::make_unique<View::knob>(
+					[synthesizer](View::knob *kn) 
+					{ 
+						const double norm = kn->get_normalized_value();
+						const double volume = (expf(5.0f * norm) - 1.0) / (expf(5.0f) - 1.0);
+						synthesizer->set_master_volume(volume); 
+					},
+					offset + GuiProperties::main_gui_width - GuiProperties::main_gui_size_unit,
+					offset,
+					GuiProperties::knob_on_color,
+					GuiProperties::knob_off_color
+				);
 
-			m_master_volume->set_normalized_value(1.0); // coherence with synthesizer initial value
-			tool_box->add_widget(m_master_volume);
-			add_widget(tool_box);
+			m_master_volume = &(*master_volume);
+			
+			master_volume->set_normalized_value(1.0); // coherence with synthesizer initial value
+			tool_box->add_widget(std::move(master_volume));
+			add_widget(std::move(tool_box));
 
 			///////////
 			/*

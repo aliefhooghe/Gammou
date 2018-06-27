@@ -52,7 +52,9 @@ namespace Gammou {
 			
 			if (m_main_factory.check_factory_presence(factory_id)) {
 				// Todo smart ptr
-				Sound::abstract_sound_component *sound_component = m_main_factory.get_new_sound_component(factory_id, data, channel_count);
+				Sound::abstract_sound_component *sound_component = 
+					m_main_factory.get_new_sound_component(factory_id, data, channel_count);
+				
 				// default gui
 				return create_default_complete_component(x, y, sound_component);
 			}
@@ -63,11 +65,16 @@ namespace Gammou {
 		}
 
 		gui_component_main_factory::complete_component 
-			gui_component_main_factory::get_new_complete_component(const unsigned int factory_id, const int x, const int y, const Sound::abstract_form_answer & answer_form, const unsigned int channel_count)
+			gui_component_main_factory::get_new_complete_component(
+				const unsigned int factory_id, 
+				const int x, const int y, 
+				const Sound::abstract_form_answer & answer_form, 
+				const unsigned int channel_count)
 		{
 			if (m_main_factory.check_factory_presence(factory_id)) {
 				// Todo smart ptr
-				Sound::abstract_sound_component *sound_component = m_main_factory.get_new_sound_component(factory_id, answer_form, channel_count);
+				Sound::abstract_sound_component *sound_component = 
+					m_main_factory.get_new_sound_component(factory_id, answer_form, channel_count);
 				// default gui
 				return create_default_complete_component(x, y, sound_component);
 			}
@@ -99,10 +106,13 @@ namespace Gammou {
 		}
 
 		gui_component_main_factory::complete_component 
-			gui_component_main_factory::create_default_complete_component(const int x, const int y, Sound::abstract_sound_component * sound_component)
+			gui_component_main_factory::create_default_complete_component(
+				const int x, const int y, 
+				Sound::abstract_sound_component * sound_component)
 		{
-			gui_sound_component *gui_component = new gui_sound_component(sound_component, x, y);
-			return std::make_pair(gui_component, sound_component);
+			return std::make_pair(
+				std::make_unique<gui_sound_component>(sound_component, x, y), 
+				sound_component);
 		}
 
 		abstract_gui_component_factory * gui_component_main_factory::factory_by_id(const unsigned int factory_id)

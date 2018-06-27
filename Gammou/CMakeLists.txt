@@ -6,7 +6,11 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/util.cmake")
 
 project (Gammou LANGUAGES CXX)
 
+# Use C++ 17
+set(CMAKE_CXX_STANDARD 17)
+
 option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" ON)
+option(GAMMOU_STANDALONE_LIBOSSIA "Enable ossia oscquery in standalone app" OFF)
 option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" ON)
 
 # Hide View Option
@@ -14,9 +18,6 @@ mark_as_advanced(FORCE
 	VIEW_APP
 	VIEW_VST
 )	
-
-# Use C++ 14
-set(CMAKE_CXX_STANDARD 14)
 
 # Enable cmake FOLDER propertie
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -113,6 +114,25 @@ if(GAMMOU_STANDALONE_BUILD)
 	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_DIR}"
 	)
 	
+	# OSSIA binding
+	
+	if (GAMMOU_STANDALONE_LIBOSSIA)
+    	set(LIBOSSIA_DIR
+    		"${CMAKE_SOURCE_DIR}/../libossia/" 
+			CACHE PATH "Choose libossia path"
+    	)
+    	
+    	add_subdirectory(${LIBOSSIA_DIR} tmp/OSSIA EXCLUDE_FROM_ALL)
+    	target_link_libraries(gammou_standalone PRIVATE ossia)
+    	target_compile_definitions(gammou_standalone PRIVATE OSSIA_BINDING)
+    	target_sources(gammou_standalone PRIVATE
+    		Application/standalone/ossia_binding/synthesizer_parameter.h
+    		Application/standalone/ossia_binding/synthesizer_parameter.cpp
+    		Application/standalone/ossia_binding/synthesizer_protocol.h
+    		Application/standalone/ossia_binding/synthesizer_protocol.cpp
+    	)
+    endif()
+	
 	# Os specific addition
 	
     #if(WIN32)                   # MICROSOFT WINDOWS
@@ -128,8 +148,8 @@ if(GAMMOU_STANDALONE_BUILD)
             target_compile_definitions(gammou_standalone PRIVATE __MACOSX_CORE__)
         else()                  # Only Linux
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-            target_link_libraries(gammou_standalone PRIVATE m stdc++fs jack) # pulse-simple pulse
-            target_compile_definitions(gammou_standalone PRIVATE __UNIX_JACK__)#__LINUX_PULSE__)
+            target_link_libraries(gammou_standalone PRIVATE m stdc++fs jack) # pulse-simple pulse 
+            target_compile_definitions(gammou_standalone PRIVATE __UNIX_JACK__)#)  __LINUX_PULSE__
         endif()
         
     else()
@@ -196,8 +216,6 @@ if(GAMMOU_VST3_BUILD)
 	    POSITION_INDEPENDENT_CODE ON    
 	)
 	
-	
-	
 	# Os specific addition
 	
     if(WIN32)                   # MICROSOFT WINDOWS
@@ -244,9 +262,37 @@ if(GAMMOU_VST3_BUILD)
 	
 endif()
 
+
+################################################
+#                                              #
+#       Tests			                       #
+#                                              #
+################################################
+
+
+## View Test
+
+set_option(VIEW_APP ON)
+add_executable(view_test
+	tests/View_test/main.cpp
+	tests/View_test/test_window.cpp
+	tests/View_test/test_window.h
+)
+target_link_libraries(view_test view)
+target_compile_definitions(view_test PRIVATE GAMMOU_VIEW_APP)
+
+## 
+
+
+
+#################################################
+#################################################
+#################################################
 #################################################
 
-# Include Gammou View nd Synthesizer libs
+
+
+# Include Gammou View and Synthesizer libs
 
 mark_as_advanced(FORCE 
 	VIEW_APP
@@ -261,6 +307,9 @@ add_subdirectory(Synthesizer tmp/Synthesizer)
 
 # Build Plugins
 add_subdirectory(Plugins tmp/Plugins)
+
+
+
 
 
 ###################################################################################################################################################

@@ -13,7 +13,9 @@ namespace Gammou {
 		class gui_component_main_factory {
 
 		public:
-			typedef std::pair<abstract_gui_component*, Sound::abstract_sound_component*> complete_component;
+			typedef std::pair<
+				std::unique_ptr<abstract_gui_component>, 
+				Sound::abstract_sound_component*> complete_component;
 
 			gui_component_main_factory();
 			~gui_component_main_factory();
@@ -23,8 +25,16 @@ namespace Gammou {
 
 			const Sound::abstract_request_form& get_plugin_request_form(const unsigned int factory_id);
 
-			complete_component get_new_complete_component(const unsigned int factory_id, const int x, const int y, Sound::data_source& data, const unsigned int channel_count);
-			complete_component get_new_complete_component(const unsigned int factory_id, const int x, const int y,  const Sound::abstract_form_answer& answer_form, const unsigned int channel_count);
+			complete_component get_new_complete_component(
+					const unsigned int factory_id, 
+					const int x, const int y, 
+					Sound::data_source& data, 
+					const unsigned int channel_count);
+			complete_component get_new_complete_component(
+				const unsigned int factory_id,
+				const int x, const int y,
+				const Sound::abstract_form_answer& answer_form,
+				const unsigned int channel_count);
 
 			unsigned int load_plugin_factory(const std::string& file_path);
 			void register_plugin_factory(Sound::abstract_plugin_factory *factory);

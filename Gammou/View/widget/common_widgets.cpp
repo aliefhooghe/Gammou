@@ -61,20 +61,24 @@ namespace Gammou {
 			const int x, const int y, 
 			const unsigned int width, 
 			const unsigned int height, 
+			const color color,
 			const unsigned int font_size)
 			: widget(x, y, width, height),
 				m_text(text),
-				m_font_size(font_size)
+				m_font_size(font_size),
+				m_color(color)
 		{
 		}
 
 		label::label(
 			const std::string & text, 
 			const rectangle & rect, 
-			const unsigned int font_size)
+			const unsigned int font_size,
+			const color color)
 			: widget(rect),
 				m_text(text),
-				m_font_size(font_size)
+				m_font_size(font_size),
+				m_color(color)
 		{
 		}
 
@@ -82,6 +86,11 @@ namespace Gammou {
 		{
 			m_text = text;
 			redraw();
+		}
+
+		void label::set_color(const color color)
+		{
+			m_color = color;
 		}
 
 		void label::set_font_size(const unsigned int size)
@@ -94,6 +103,7 @@ namespace Gammou {
 		{
 			cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 			cairo_set_font_size(cr, static_cast<double>(m_font_size));
+			cairo_helper::set_source_color(cr, m_color);
 			cairo_helper::show_centered_text(cr, get_relative_rect(), m_text);
 		}
 

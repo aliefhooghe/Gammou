@@ -10,7 +10,7 @@ endif()
 
 #######################################################
 project(Process LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
  
 set(PROCESS_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/abstract_component.h

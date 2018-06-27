@@ -75,37 +75,43 @@ namespace Gammou {
 		void gui_master_circuit::add_internal_components(std::mutex *synthesizer_mutex)
 		{
 			// Todo position
-
-			m_polyphonic_input = new internal_gui_component(
+			auto polyphonic_input = std::make_unique<internal_gui_component>(
 				m_synthesizer->get_master_circuit_polyphonic_input(),
 				internal_component_id::POLY_IN,
 				50, 10);
+			m_polyphonic_input = &(*polyphonic_input);
+			
 
-			m_polyphonic_output = new internal_gui_component(
+			auto polyphonic_output = std::make_unique<internal_gui_component>(
 				m_synthesizer->get_master_circuit_polyphonic_output(),
 				internal_component_id::POLY_OUT,
 				200, 10);
+			m_polyphonic_output = &(*polyphonic_output);
 
-			m_main_input = new internal_gui_component(
+
+			auto main_input = std::make_unique<internal_gui_component>(
 				m_synthesizer->get_master_main_input(),
 				internal_component_id::INPUT,
 				50, 200);
+			m_main_input = &(*main_input);
 
-			m_main_output = new internal_gui_component(
+			auto main_output = std::make_unique<internal_gui_component>(
 				m_synthesizer->get_master_main_output(),
 				internal_component_id::OUTPUT,
 				200, 200);
+			m_main_output = &(*main_output);
 
-			m_parameter_input = new internal_gui_component(
+			auto parameter_input = std::make_unique<internal_gui_component>(
 				m_synthesizer->get_master_circuit_parameter_input(),
 				internal_component_id::PARAMETERS,
 				50, 350);
+			m_parameter_input = &(*parameter_input);
 
-			add_gui_component(m_parameter_input);
-			add_gui_component(m_polyphonic_input);
-			add_gui_component(m_polyphonic_output);
-			add_gui_component(m_main_input);
-			add_gui_component(m_main_output);
+			add_gui_component(std::move(parameter_input));
+			add_gui_component(std::move(polyphonic_input));
+			add_gui_component(std::move(polyphonic_output));
+			add_gui_component(std::move(main_input));
+			add_gui_component(std::move(main_output));
 		}
 
 	} /* Gui */

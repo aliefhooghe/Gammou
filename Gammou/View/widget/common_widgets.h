@@ -45,31 +45,40 @@ namespace Gammou {
 			label(
 				const std::string& text, 
 				const int x, const int y, 
-				const unsigned int width, const unsigned int height,
+				const unsigned int width, 
+				const unsigned int height,
+				const color color,
 				const unsigned int font_size = 10);
 
-			label(const std::string& text, const rectangle& rect,
+			label(
+				const std::string& text, 
+				const rectangle& rect,
+				const color color,
 				const unsigned int font_size = 10);
 			~label() {}
 
 			void set_text(const std::string& text);
+			void set_color(const color color);
 			void set_font_size(const unsigned int size);
 		protected:
 			virtual void draw(cairo_t *cr) override;
+
+
 			std::string m_text;
+			color m_color;
 			unsigned m_font_size;
 		};
 
 		//---------------
 
-		// Todo : Rien de control utilisé (Enabled)
+		// Todo : Rien de control utilisï¿½ (Enabled)
 		class push_button : public control {
 
 		public: 
 			push_button(
 				std::function<void(push_button*)> push_action, const std::string& text, const int x, const int y, 
 				const unsigned int width = 95, const unsigned int height = 27, const unsigned int font_size = 10);
-			// todo rectangle ctor
+			// TODO rectangle ctor
 			virtual ~push_button() {};
 
 			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y) override;

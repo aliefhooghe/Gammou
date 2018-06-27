@@ -14,6 +14,9 @@ namespace Gammou {
 			abstract_window(const unsigned int px_width, const unsigned int px_height);
 			virtual ~abstract_window();
 
+			virtual void close(void) =0;
+			
+
 		protected:
 			//	'Low level' callback, called by system event processing, 
 			//	and translated into 'higher level' events.
@@ -32,8 +35,6 @@ namespace Gammou {
 
 			unsigned int get_system_window_width() const;
 			unsigned int get_system_window_height() const;
-
-			// Open and close here ?
 
 			//	Feature to be implemented
 			virtual bool open_file(std::string& path, const std::string& title, const std::string& ext) =0;

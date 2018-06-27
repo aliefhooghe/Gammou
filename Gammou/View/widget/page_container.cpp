@@ -21,9 +21,6 @@ namespace Gammou {
 
 		page_container::~page_container()
 		{
-			for (widget *w : m_pages) {
-				delete w;
-			}
 		}
 
 		bool page_container::on_key_up(const keycode key)
@@ -146,34 +143,30 @@ namespace Gammou {
 				return w->on_mouse_drag_end(button, x, y);
 		}
 
-		void page_container::add_page(widget * page)
+		void page_container::add_page(std::unique_ptr<widget> && page)
 		{
-			if (page != nullptr)
-				if ( !check_widget_size(page))
-					throw std::domain_error("Widget must have exactly the page size and be at (0,0) ");
+			if ( !check_widget_size(&(*page)))
+				throw std::domain_error("Widget must have exactly the page size and be at (0,0) ");
 
-			get_ownership(page);
-			m_pages.push_back(page);
+			get_ownership(&(*page));
+			m_pages.push_back(std::move(page));
 		}
 
-		void page_container::reset_page(const unsigned int page_id, widget * page)
+		void page_container::reset_page(const unsigned int page_id, std::unique_ptr<widget> && page)
 		{
 			if (page_id >= get_page_count())
 				throw std::domain_error("Invalid page id");
 
-			if (page == nullptr)
-				return;
-
-			if(!check_widget_size(page))
+			if(!check_widget_size(&(*page)))
 				throw std::domain_error("Widget must have exactly the page size and be at (0,0) ");
 
-			widget *old = m_pages[page_id];
+			widget *old = &(*(m_pages[page_id]));
 
-			if (old != page) {
+			if (old != &(*page)) {
 				release_widget(old);
-				get_ownership(page);
+				get_ownership(&(*page));
 
-				m_pages[page_id] = page;
+				m_pages[page_id] = std::move(page);
 
 				if (page_id == m_current_page_id)
 					redraw();
@@ -189,7 +182,7 @@ namespace Gammou {
 		{
 			if (page_id >= get_page_count())
 				throw std::domain_error("Invalid page id");
-			return m_pages[page_id];
+			return &(*(m_pages[page_id]));
 		}
 
 		void page_container::select_page(const unsigned int page_id)
@@ -218,7 +211,7 @@ namespace Gammou {
 			if (m_current_page_id == -1) // no page selected
 				return nullptr;
 			else
-				return m_pages[m_current_page_id];
+				return &(*(m_pages[m_current_page_id]));
 		}
 
 		bool page_container::check_widget_size(const widget * w) const
