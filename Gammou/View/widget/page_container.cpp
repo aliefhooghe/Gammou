@@ -145,10 +145,10 @@ namespace Gammou {
 
 		void page_container::add_page(std::unique_ptr<widget> && page)
 		{
-			if ( !check_widget_size(&(*page)))
+			if ( !check_widget_size(page.get()))
 				throw std::domain_error("Widget must have exactly the page size and be at (0,0) ");
 
-			get_ownership(&(*page));
+			get_ownership(*page);
 			m_pages.push_back(std::move(page));
 		}
 
@@ -157,20 +157,16 @@ namespace Gammou {
 			if (page_id >= get_page_count())
 				throw std::domain_error("Invalid page id");
 
-			if(!check_widget_size(&(*page)))
+			if(!check_widget_size(page.get()))
 				throw std::domain_error("Widget must have exactly the page size and be at (0,0) ");
 
-			widget *old = &(*(m_pages[page_id]));
+			release_widget(*(m_pages[page_id]));
+			get_ownership(*page);
 
-			if (old != &(*page)) {
-				release_widget(old);
-				get_ownership(&(*page));
+			m_pages[page_id] = std::move(page);
 
-				m_pages[page_id] = std::move(page);
-
-				if (page_id == m_current_page_id)
-					redraw();
-			}
+			if (page_id == m_current_page_id)
+				redraw();
 		}
 
 		unsigned int page_container::get_page_count() const
@@ -178,11 +174,11 @@ namespace Gammou {
 			return static_cast<unsigned int>(m_pages.size());
 		}
 
-		widget * page_container::get_page(const unsigned int page_id) const
+		widget& page_container::get_page(const unsigned int page_id) const
 		{
 			if (page_id >= get_page_count())
 				throw std::domain_error("Invalid page id");
-			return &(*(m_pages[page_id]));
+			return *(m_pages[page_id]);
 		}
 
 		void page_container::select_page(const unsigned int page_id)
@@ -206,12 +202,12 @@ namespace Gammou {
 				w->draw(cr);
 		}
 
-		widget * page_container::get_current_page() const
+		widget *page_container::get_current_page() const
 		{
 			if (m_current_page_id == -1) // no page selected
 				return nullptr;
 			else
-				return &(*(m_pages[m_current_page_id]));
+				return m_pages[m_current_page_id].get();
 		}
 
 		bool page_container::check_widget_size(const widget * w) const

@@ -53,16 +53,15 @@ namespace Gammou {
 			cairo_clip(cr); // to be sure that nothing will be drawn outside
 		}
 
-		void abstract_panel::get_ownership(widget * child)
+		void abstract_panel::get_ownership(widget& child)
 		{
-			if( child != nullptr)
-				child->m_parent = this;
+			child.m_parent = this;
 		}
 
-		void abstract_panel::release_widget(widget * w)
+		void abstract_panel::release_widget(widget& w)
 		{
-			if (w != nullptr && w->m_parent == this)
-				w->m_parent = nullptr;
+			if (w.m_parent == this)
+				w.m_parent = nullptr;
 		}
 
 

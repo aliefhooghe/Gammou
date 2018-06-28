@@ -38,7 +38,7 @@ namespace Gammou {
                 throw std::runtime_error("Unable to open X Display");
             
             // Check we can use Xbde
-            int minor_version, major_version;
+            int minor_version = 0, major_version = 0;
             if(!XdbeQueryExtension(m_display, &major_version, &minor_version))
                 throw std::runtime_error("Xbde unsuported\n");
 
@@ -58,7 +58,7 @@ namespace Gammou {
             xvisual_info_template.screen = 0;
             xvisual_info_template.depth = info->visinfo[0].depth;
 
-            int found_count;
+            int found_count = 0;
                 
             m_xvisual_info_found
                 = XGetVisualInfo(m_display,
@@ -107,8 +107,10 @@ namespace Gammou {
             XSelectInput(m_display, m_window, GAMMOU_X_EVENT_MASK);
             XMapWindow(m_display, m_window);
 
-            GC graphic_context = XCreateGC(m_display, m_back_buffer, 0, nullptr);
-            XSetForeground(m_display, graphic_context, BlackPixel(m_display, screen));
+            m_graphic_context = XCreateGC(m_display, m_back_buffer, 0, nullptr);
+            XSetForeground(m_display, m_graphic_context, BlackPixel(m_display, screen));
+
+            
 
             // to be sure that windows is mapped
             for(XEvent e; e.type != MapNotify; XNextEvent(m_display, &e)); 
@@ -313,6 +315,7 @@ namespace Gammou {
 
             cairo_destroy(cr);
             cairo_surface_destroy(self->m_cairo_surface);
+            XFreeGC(self->m_display, self->m_graphic_context);
             XDestroyWindow(self->m_display, self->m_window);
             XCloseDisplay(self->m_display);
             DEBUG_PRINT("Quit thread Xloop funciton\n");

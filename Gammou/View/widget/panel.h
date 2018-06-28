@@ -31,8 +31,8 @@ namespace Gammou {
 		protected:
 			virtual void draw_background(cairo_t *cr);
 
-			void get_ownership(widget *child);
-			void release_widget(widget *child);
+			void get_ownership(widget& child);
+			void release_widget(widget& child);
 
 		private:
 			color m_background_color;
@@ -328,7 +328,7 @@ namespace Gammou {
 		template<class widget_type>
 		void panel<widget_type>::add_widget(std::unique_ptr<widget_type> && widget)
 		{
-			get_ownership(&(*widget));
+			get_ownership(*widget);
 			m_widgets.push_back(std::move(widget));
 			redraw();
 		}
@@ -336,16 +336,14 @@ namespace Gammou {
 		template<class widget_type>
 		void panel<widget_type>::remove_widget(widget_type * w)
 		{
-			release_widget(w);
+			release_widget(*w);
 			m_widgets.erase(std::remove_if(
 				m_widgets.begin(), m_widgets.end(), 
 				[w](const std::unique_ptr<widget_type> & widget)
 				{
-					return (&(*widget) == w);
+					return (widget.get() == w);
 				}),
 				m_widgets.end());
-
-
 
 			if (m_focused_widget == w)
 				m_focused_widget = nullptr;

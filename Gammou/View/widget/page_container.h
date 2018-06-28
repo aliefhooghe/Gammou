@@ -35,9 +35,9 @@ namespace Gammou {
 			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y) override;
 
 			void add_page(std::unique_ptr<widget> && page);
-			void reset_page(const unsigned int page_id, std::unique_ptr<widget> && page);
+			void reset_page(const unsigned int page_id, std::unique_ptr<widget> && new_page);
 			unsigned int get_page_count() const;
-			widget *get_page(const unsigned int page_id) const;
+			widget& get_page(const unsigned int page_id) const;
 			void select_page(const unsigned int page_id);
 
 			virtual void draw(cairo_t *cr) override;
