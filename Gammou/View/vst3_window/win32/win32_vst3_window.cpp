@@ -47,12 +47,17 @@ namespace Gammou {
 
 		void win32_vst3_window::resize(const unsigned int width, const unsigned int height)
 		{
+			DEBUG_PRINT("WIN32 VST3 Resize");
+
 			abstract_vst3_window::resize(width, height);
 
 			if (m_plugin_window != nullptr) {
 				const unsigned int system_width = get_system_window_width();
 				const unsigned int system_height = get_system_window_height();
-				SetWindowPos(m_plugin_window, nullptr, 0, 0, system_width, system_height, SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
+
+				SetWindowPos(
+					m_plugin_window, nullptr, 0, 0, system_width, system_height, 
+					SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
 			}
 		}
 
@@ -291,10 +296,7 @@ namespace Gammou {
 		}
 
 
-
-
-
-} /* View */
+	} /* View */
 } /* Gammou */
 
 
