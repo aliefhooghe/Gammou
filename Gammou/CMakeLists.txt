@@ -23,11 +23,11 @@ mark_as_advanced(FORCE
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Set output build paths
-set(VST3_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")                         # gammou (VST3)
-set(GAMMOU_PLUGINS_OUTPUT_PATH "${CMAKE_BINARY_DIR}/GammouPlugins")     # gammou Plugins
-set(GAMMOU_PLUGINS_DIR ${GAMMOU_PLUGINS_OUTPUT_PATH})
-set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")                      # View, synthesizer, vstsdk, ....
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")                   # gammou Standalone
+set(VST3_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin" CACHE PATH "")                      	  # gammou (VST3)
+set(GAMMOU_PLUGINS_OUTPUT_PATH "${CMAKE_BINARY_DIR}/GammouPlugins" CACHE PATH "")     # gammou Plugins
+set(GAMMOU_PLUGINS_DIR ${GAMMOU_PLUGINS_OUTPUT_PATH} CACHE PATH "")
+set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE PATH "")                      # View, synthesizer, vstsdk, ....
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin" CACHE PATH "")                   # gammou Standalone
 
 #
 

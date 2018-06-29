@@ -300,19 +300,18 @@ namespace Gammou {
 		}
 
 		void abstract_gui_synthesizer_circuit::reset_content()
-		{/*
-			std::deque<abstract_gui_component*> temp(m_widgets);
+		{
+			std::deque<abstract_gui_component*> to_remove;
 
-			for (abstract_gui_component * component : temp) {
+			for (auto& component : m_widgets) {
 				if (component->get_sound_component_factory_id()
 					!= Persistence::INTERNAL_FACTORY_ID) {
-					remove_widget(component);
-					delete component;
+					to_remove.push_back(component.get());
 				}
 			}
-			*/
 
-		//TODOTODO
+			for (auto component : to_remove) 
+				remove_widget(component);
 		}
 
 
