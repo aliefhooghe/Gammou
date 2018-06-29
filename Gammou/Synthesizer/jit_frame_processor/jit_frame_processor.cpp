@@ -282,7 +282,7 @@ namespace Gammou {
             {
                 0x48, 0x8b, 0x07,	// movq (%rdi), %rax
 				0xff, 0x50, 0x18	// callq *0x18(%rax)
-            }
+            };
 
             add_mov_ptr_rdi(component);
             add_mov_ptr_rsi(input);
