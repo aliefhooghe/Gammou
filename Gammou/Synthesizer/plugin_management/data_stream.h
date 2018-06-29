@@ -27,7 +27,11 @@ namespace Gammou {
 		public:
 			virtual ~data_sink() {}
 			virtual unsigned int write(void *data, const unsigned int size) =0;
+
+
 		};
+
+
 
 		// todo : bidirectionel ? (Maybe useless in Sound)
 

@@ -86,9 +86,9 @@ namespace Gammou {
 
                     for (unsigned int i = 0; i < ic; ++i) {
                         if (src_component[i] != nullptr)
-                            add_fetch_output(src_component[i], src_output_id[i], &(m_memory[i]));
+							add_fetch_output(src_component[i], src_output_id[i], &(m_memory[i]));
                         else
-						    add_fetch_default(&(m_memory[i]));
+							add_fetch_default(&(m_memory[i]));
                     }
 
                 }
@@ -233,12 +233,17 @@ namespace Gammou {
             add_mov_ptr_rdx(mem_pos);
 
 #elif defined(_WIN32)
+			return;
 			const uint8_t code_chunk[] =
 			{
-				0x48, 0x8b, 0x01, 0x41,
-				0x50, 0xff, 0x50, 0x10,
-				0x41, 0x58, 0x49, 0x89,
-				0x00
+				0x40, 0x53,	
+				0x48, 0x83, 0xec, 0x20,
+				0x48, 0x8b, 0x01,
+				0x49, 0x8b, 0xd8,
+				0xff, 0x50, 0x08,
+				0xf2, 0x0f, 0x11, 0x03,
+				0x48, 0x83, 0xc4, 0x20,
+				0x5b
 			};
 
 			add_mov_ptr_rcx(component);
@@ -277,20 +282,21 @@ namespace Gammou {
             {
                 0x48, 0x8b, 0x07,	// movq (%rdi), %rax
 				0xff, 0x50, 0x18	// callq *0x18(%rax)
-            };
+            }
 
             add_mov_ptr_rdi(component);
             add_mov_ptr_rsi(input);
 #elif defined(_WIN32)
-			const uint16_t code_chunk[] = 
+			const uint8_t code_chunk[] = 
 			{
-				0x48, 0x8b, 0x01//,		//	movq (%rcx), %rax 
-				//0x48, 0xff, 0x60, 0x10
-				//0xff, 0x50, 0x10,		//	callq *0x18(%rax)
+				0x48, 0x8b, 0x01,		// movq (%rcx), %rax
+				0x48, 0x83, 0xec, 0x28,	// sub 0x28, %rsp
+				0xff, 0x50, 0x10,		// callq *0x10(%rax)
+				0x48, 0x83, 0xc4, 0x28	// add 0x28, %rsp
 			};
 
-			add_mov_ptr_rcx(new char[32]);
-			//add_mov_ptr_rdx(input);
+			add_mov_ptr_rcx(component);
+			add_mov_ptr_rdx(input);
 #endif
 			add_program_chunk(code_chunk, sizeof(code_chunk));
         }
@@ -300,3 +306,30 @@ namespace Gammou {
     } /* Sound */
 
 } /* Gammou */ 
+
+
+extern "C" {
+
+	void fetch_output_SAMPLE(
+		Gammou::Process::abstract_component<double> *component, 
+		const unsigned int output_id,
+		double *mem_pos)
+	{
+		*mem_pos = component->fetch_output(output_id);
+	}
+
+	void process_SAMPLE(
+		Gammou::Process::abstract_component<double> *component,
+		double *input)
+	{
+		component->process(input);
+	}
+
+	void *process_sample2()
+	{
+		process_SAMPLE((Gammou::Process::abstract_component<double> *)0xAABBCCDDAABBCCDD, (double*)0xAABBCCDDEEFF0011);
+		return (void*)0x4242424242424242;
+	}
+
+
+}

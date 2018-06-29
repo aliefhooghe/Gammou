@@ -56,6 +56,7 @@ namespace Gammou {
 			inline void unlock_synthesizer();
 
 			std::mutex m_synthesizer_mutex;
+			//Sound::jit_frame_processor m_master_circuit_processor;
 			Process::bytecode_frame_processor<double> m_master_circuit_processor;
 			Process::bytecode_frame_processor<double> m_polyphonic_circuit_processor;
 			Sound::synthesizer m_synthesizer;

@@ -9,7 +9,7 @@ project (Gammou LANGUAGES CXX)
 # Use C++ 17
 set(CMAKE_CXX_STANDARD 17)
 
-option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" ON)
+option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" OFF)
 option(GAMMOU_STANDALONE_LIBOSSIA "Enable ossia oscquery in standalone app" OFF)
 option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" ON)
 
@@ -272,14 +272,16 @@ endif()
 
 ## View Test
 
-set_option(VIEW_APP ON)
-add_executable(view_test
-	tests/View_test/main.cpp
-	tests/View_test/test_window.cpp
-	tests/View_test/test_window.h
-)
-target_link_libraries(view_test view)
-target_compile_definitions(view_test PRIVATE GAMMOU_VIEW_APP)
+if(UNIX) # no win32 app backend for now
+	set_option(VIEW_APP ON)
+	add_executable(view_test
+		tests/View_test/main.cpp
+		tests/View_test/test_window.cpp
+		tests/View_test/test_window.h
+	)
+	target_link_libraries(view_test view)
+	target_compile_definitions(view_test PRIVATE GAMMOU_VIEW_APP)
+endif()
 
 ## 
 
