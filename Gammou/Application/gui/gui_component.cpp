@@ -27,14 +27,14 @@ namespace Gammou {
 
 		abstract_gui_component::abstract_gui_component(
 			const int x, const int y, const unsigned int initial_input_count, const unsigned int initial_output_count)
-			: View::panel<View::widget>(
-				x, y, 
-				GuiProperties::component_width, 
-				component_height_by_socket_count(std::max(initial_input_count, initial_output_count))),
-				m_is_linking(false),
-				m_is_moving(false),
-				m_autosize(true),
-				m_focused_output_id(-1)
+			:	View::panel<View::widget>(
+					x, y, 
+					GuiProperties::component_width, 
+					component_height_by_socket_count(std::max(initial_input_count, initial_output_count))),
+					m_is_linking(false),
+					m_is_moving(false),
+					m_autosize(true),
+					m_focused_output_id(-1)
 		{
 			// Todo this goto properties
 			m_l1 = 40;

@@ -1,9 +1,6 @@
 
-#include "abstract_vst3_window.h"
+#include "abstract_vst3_display.h"
 #include "pluginterfaces/base/keycodes.h"
-
-#include "pluginterfaces/vst/ivstcontextmenu.h"
-
 
 #define TRANSLATE_KEY(vst3key, gammoukey) case Steinberg::vst3key: return gammoukey
 
@@ -13,7 +10,6 @@ namespace Gammou {
 
 		static keycode vst3_keycode_to_gammou_keycode(Steinberg::char16 key, Steinberg::int16 keyMsg)
 		{
-
 			if (keyMsg >= 'A' + 80 && keyMsg <= 'Z' + 80) {
 				return (keycode)((unsigned int)key_A + (keyMsg - 'A' - 80));
 			}
@@ -60,7 +56,7 @@ namespace Gammou {
 					TRANSLATE_KEY(KEY_NUMPAD9, key_numpad_9);
 					TRANSLATE_KEY(KEY_MULTIPLY, key_multiply);
 					TRANSLATE_KEY(KEY_ADD, key_add);
-				    //	TRANSLATE_KEY(KEY_SEPARATOR, key_decimal_point);
+					//	TRANSLATE_KEY(KEY_SEPARATOR, key_decimal_point);
 					TRANSLATE_KEY(KEY_SUBTRACT, key_subtract);
 					TRANSLATE_KEY(KEY_DECIMAL, key_decimal_point);
 					TRANSLATE_KEY(KEY_DIVIDE, key_divide);
@@ -89,43 +85,34 @@ namespace Gammou {
 			}
 		}
 
-		abstract_vst3_window::abstract_vst3_window(const unsigned int width, const unsigned int height)
-			: abstract_window(width, height), m_current_view(nullptr)
+		/*
+		*	Abstract vst3 display implementation
+		*/
+
+		abstract_vst3_display::abstract_vst3_display(View::widget& root_widget)
+		: abstract_display(root_widget)
 		{
 		}
 
-		abstract_vst3_window::~abstract_vst3_window()
+		abstract_vst3_display::~abstract_vst3_display()
 		{
 		}
 
-		void abstract_vst3_window::resize(const unsigned int width, const unsigned int height)
+		/*
+		*	Abstrat vst3 view implementation
+		*/
+
+		abstract_vst3_view::abstract_vst3_view(
+			abstract_vst3_display *display)
+			: m_display(display)
 		{
-			abstract_window::resize(width, height);
-
-			if (m_current_view != nullptr) {
-				const unsigned int system_width = get_system_window_width();
-				const unsigned int system_height = get_system_window_height();
-				m_current_view->resize(system_width, system_height);
-			}
-		}
-
-
-		//////////////////////////////////////////////////////////////////////
-
-		//	abstract_vst3_view implementation
-
-		abstract_vst3_view::abstract_vst3_view(abstract_vst3_window * window)
-			: m_window(window)
-		{
-			window->m_current_view = this;
 		}
 
 		abstract_vst3_view::~abstract_vst3_view()
 		{
-			m_window->m_current_view = nullptr;
 		}
 
-		void abstract_vst3_view::resize(const unsigned int width, const unsigned int height)
+		void abstract_vst3_view::set_size(const unsigned int width, const unsigned int height)
 		{
 			if (plugFrame != nullptr) {
 				Steinberg::ViewRect rect(0, 0, width, height);
@@ -133,37 +120,45 @@ namespace Gammou {
 			}
 		}
 
-
 		Steinberg::tresult PLUGIN_API abstract_vst3_view::onWheel(float distance)
 		{
-			return m_window->sys_mouse_wheel(distance);
+			return m_display->sys_mouse_wheel(distance);
 		}
 
 		Steinberg::tresult PLUGIN_API abstract_vst3_view::onKeyDown(Steinberg::char16 key, Steinberg::int16 keyMsg, Steinberg::int16 modifiers)
 		{
 			DEBUG_PRINT("KEY\n");
 			const keycode k = vst3_keycode_to_gammou_keycode(key, keyMsg);
-			return m_window->sys_key_down(k) ? Steinberg::kResultTrue : Steinberg::kResultFalse;
+			return m_display->sys_key_down(k) ? Steinberg::kResultTrue : Steinberg::kResultFalse;
 		}
 
 		Steinberg::tresult PLUGIN_API abstract_vst3_view::onKeyUp(Steinberg::char16 key, Steinberg::int16 keyMsg, Steinberg::int16 modifiers)
 		{
 			const keycode k = vst3_keycode_to_gammou_keycode(key, keyMsg);
-			return m_window->sys_key_up(k) ? Steinberg::kResultTrue : Steinberg::kResultFalse;
+			return m_display->sys_key_up(k) ? Steinberg::kResultTrue : Steinberg::kResultFalse;
 
 		}
 
 		void abstract_vst3_view::attachedToParent()
 		{
-			if (m_window != nullptr)
-				m_window->open(systemWindow);
+			DEBUG_PRINT("Attached to parent\n");
+			if (m_display != nullptr) {
+				m_display->open(systemWindow);
+				set_size(
+					m_display->get_display_width(),
+					m_display->get_display_height());
+			}
 		}
 
 		void abstract_vst3_view::removedFromParent()
 		{
-			if (m_window != nullptr)
-				m_window->close();
+			if (m_display != nullptr)
+				m_display->close();
 		}
 
-	} /* View */
+
+		
+
+} /* View */
+
 } /* Gammou */

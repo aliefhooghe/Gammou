@@ -5,9 +5,9 @@
 
 #include <mutex>
 #include <experimental/filesystem>
+#include <view.h>
 
 #include "../../debug.h"
-#include "view.h"
 #include "gui_sound_component.h"
 #include "gui_master_circuit.h"
 #include "gui_polyphonic_circuit.h"
@@ -29,7 +29,7 @@ namespace Gammou {
 
 	namespace Gui {
 
-		class synthesizer_gui : public View::generic_window {
+		class synthesizer_gui : public View::window_widget {
 
 		public:
 			synthesizer_gui(Sound::synthesizer *synthesizer, std::mutex *synthesizer_mutex);

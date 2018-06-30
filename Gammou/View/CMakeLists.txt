@@ -19,7 +19,6 @@ option(VIEW_VST3 "Provide VST3 Window class" OFF)
 #######################################################
 #	Generic Setup
 
-
 set(WIDGET_SRC
 	widget/cairo_helper.h
 	widget/cairo_helper.cpp
@@ -35,6 +34,8 @@ set(WIDGET_SRC
 	widget/panel.h
 	widget/panel.cpp
 	widget/scrollable_panel.h
+	widget/window_widget.h
+	widget/window_widget.cpp
 	widget/widget.h
 	widget/widget.cpp
 )
@@ -42,8 +43,8 @@ set(WIDGET_SRC
 add_library(view STATIC 
 	view.h
 	cairo_definition.h
-	abstract_window.h
-	abstract_window.cpp
+	display/abstract_display.h
+	display/abstract_display.cpp
 	${WIDGET_SRC}
 )
 
@@ -53,59 +54,79 @@ find_package(Cairo REQUIRED)
 target_include_directories(view PUBLIC ${Cairo_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})	
 target_link_libraries(view PUBLIC ${Cairo_LIBS} )
 
-if(VIEW_VST3)
-    set_target_properties(view PROPERTIES POSITION_INDEPENDENT_CODE ON)  # Allow Modules objects to be built
-endif()
 #######################################################
 #	Specific Setup
 
-if(WIN32)                  # MICROSOFT WINDOWS
-
-	if(VIEW_VST3)
-		#	Add Vst3 win32 window files
-		target_include_directories(view PRIVATE ${VST3_SDK_DIR})
-		target_sources(view PRIVATE 
-			vst3_window/abstract_vst3_window.h
-			vst3_window/abstract_vst3_window.cpp
-			vst3_window/win32/win32_vst3_window.h
-			vst3_window/win32/win32_vst3_window.cpp
-			${VST3_SDK_DIR}/public.sdk/source/common/pluginview.cpp
-		)
-    endif()
+if (WIN32)
+	target_sources(view PRIVATE
+		display/abstract_win32_display.h
+	    display/abstract_win32_display.cpp
+	)
 	
-	if(VIEW_APP)
-		message( FATAL_ERROR "Not implemented" )
-	endif()
-	
-    
 elseif(UNIX)  # LINUX and OSX
-    
-    if(VIEW_APP)
-        find_package(X11 REQUIRED)
-        find_package(Xext REQUIRED)
-		target_sources(view PRIVATE
-			app_window/abstract_app_window.h
-			app_window/X11/x11_app_window.h
-			app_window/X11/x11_app_window.cpp
-		)
-		target_include_directories(view PUBLIC ${X11_INCLUDE_DIR} ${Xext_INCLUDE_DIR})  
-		target_link_libraries(view PRIVATE ${X11_LIBRARIES} ${Xext_LIBRARY})
-    endif()
-
-    if(VIEW_VST3)
-		#	Add Vst3 X11 window files
-		target_include_directories(view PRIVATE ${VST3_SDK_DIR})
-		target_sources(view PRIVATE 
-			vst3_window/abstract_vst3_window.h
-			vst3_window/abstract_vst3_window.cpp
-			vst3_window/X11/x11_vst3_window.h
-			vst3_window/X11/x11_vst3_window.cpp
-			${VST3_SDK_DIR}/public.sdk/source/common/pluginview.cpp
-		)
-    endif()
-
-else()
+	find_package(X11 REQUIRED)
+    find_package(Xext REQUIRED)
+	
+	target_sources(view PRIVATE
+		display/abstract_x11_display.h
+	    display/abstract_x11_display.cpp
+	)
+	
+	target_include_directories(view PUBLIC 
+		${X11_INCLUDE_DIR} 
+		${Xext_INCLUDE_DIR})  
+		
+	arget_link_libraries(view PRIVATE 
+		${X11_LIBRARIES} 
+		${Xext_LIBRARY})
+elseif (NOT WIN32)
     message( FATAL_ERROR "unsupported OS" )
 endif()
+
+
+if(VIEW_VST3)
+	set_target_properties(view PROPERTIES POSITION_INDEPENDENT_CODE ON)  # Allow Modules objects to be built
+	target_include_directories(view PRIVATE ${VST3_SDK_DIR})
+	target_sources(view PRIVATE 
+		display/abstract_vst3_display.h
+		display/abstract_vst3_display.cpp
+		${VST3_SDK_DIR}/public.sdk/source/common/pluginview.cpp
+	)
+	
+	if(WIN32)
+		target_sources(view PRIVATE
+			display_implementation/win32_vst3_display.h
+			display_implementation/win32_vst3_display.cpp
+	)
+	elseif(UNIX)
+	target_sources(view PRIVATE
+			display_implementation/x11_vst3_display.h
+			display_implementation/x11_vst3_display.cpp
+	)
+	endif()
+	
+endif()
+	
+if(VIEW_APP)
+	target_sources(view PRIVATE
+		display/abstract_application_display.h
+	    display/abstract_application_display.cpp
+	)
+	
+	if(WIN32)
+		target_sources(view PRIVATE
+			display_implementation/win32_application_display.h
+			display_implementation/win32_application_display.cpp
+		)
+	elseif(UNIX)
+		target_sources(view PRIVATE
+			display_implementation/x11_application_display.h
+			display_implementation/x11_application_display.cpp
+		)
+	endif()
+endif()
+	
+
+
     
 

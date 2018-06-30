@@ -7,11 +7,15 @@ namespace Gammou {
 
 	namespace Gui {
 
-		synthesizer_gui::synthesizer_gui(Sound::synthesizer * synthesizer, std::mutex * synthesizer_mutex)
-			: View::generic_window(GuiProperties::main_gui_width, GuiProperties::main_gui_height)
+		synthesizer_gui::synthesizer_gui(
+			Sound::synthesizer * synthesizer, 
+			std::mutex * synthesizer_mutex)
+		:	View::window_widget(
+				GuiProperties::main_gui_width, 
+				GuiProperties::main_gui_height,
+				View::cl_chartreuse) // for gui debuging
 		{
 			DEBUG_PRINT("SYN GUI CTOR\n");
-			set_background_color(View::cl_chartreuse); // for gui debuging
 
 			//  Synthesizer Circuits
 
