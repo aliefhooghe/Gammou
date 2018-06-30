@@ -118,6 +118,7 @@ namespace Gammou {
             //--
             XSelectInput(m_display, m_window, GAMMOU_X_EVENT_MASK);
             XMapWindow(m_display, m_window);
+            XStoreName(m_display, m_window, title.c_str());
 
             m_graphic_context = XCreateGC(m_display, m_back_buffer, 0, nullptr);
             XSetForeground(m_display, m_graphic_context, BlackPixel(m_display, screen));

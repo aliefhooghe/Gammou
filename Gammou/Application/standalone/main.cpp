@@ -2,7 +2,7 @@
 #ifdef OSSIA_BINDING // first !!
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/local/local.hpp>
-#include "../ossia_binding/synthesizer_protocol.h"
+#include "ossia_binding/synthesizer_protocol.h"
 #endif
 
 #include <mutex>
@@ -86,6 +86,8 @@ int main()
 #ifdef OSSIA_BINDING
     auto protocol = std::make_unique<ossia::net::multiplex_protocol>();
     auto& multiplex = *protocol;
+
+    std::cout << "Starting OSC Query server" << std::endl;
 
     ossia::net::generic_device gammou_ossia{std::move(protocol), "Gammou"};
 	multiplex.expose_to(std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678));
