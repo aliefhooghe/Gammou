@@ -23,7 +23,7 @@ namespace Gammou {
 			abstract_x11_display(View::widget& root_widget);
 			virtual  ~abstract_x11_display();
 
-            //bool is_open() override;
+            bool is_open() override;
 			void close() override;
 
 		protected:

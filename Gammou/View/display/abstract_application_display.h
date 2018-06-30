@@ -17,7 +17,6 @@ namespace Gammou {
 			virtual ~abstract_application_display();
 
 			virtual void open(const std::string& title) =0;
-			//virtual bool is_open();
 		};
 
 

@@ -22,6 +22,11 @@ namespace Gammou {
             // TODO close ?
         }
 
+        bool abstract_x11_display::is_open()
+        {
+            return m_running;
+        }
+
         void abstract_x11_display::close()
         {
             m_running = false;

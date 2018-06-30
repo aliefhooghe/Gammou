@@ -15,5 +15,6 @@ namespace Gammou {
 		abstract_application_display::~abstract_application_display()
 		{
 		}
+		
 	} /* View */
 } /* Gammou */

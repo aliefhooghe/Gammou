@@ -20,6 +20,7 @@ namespace Gammou {
 			unsigned int get_display_width() const;
 			unsigned int get_display_height() const;
 
+			virtual bool is_open() = 0;
 			virtual void close() = 0;
 
 		protected:

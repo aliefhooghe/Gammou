@@ -20,6 +20,7 @@ namespace Gammou {
 			abstract_win32_display(View::widget& root_widget);
 			virtual  ~abstract_win32_display();
 
+			bool is_open() override;
 			void close() override;
 
 		protected:
@@ -35,6 +36,7 @@ namespace Gammou {
 
 			HWND m_window_handle;
 			bool m_has_focus;
+			bool m_is_open;
 		};
 
 	} /* View */
