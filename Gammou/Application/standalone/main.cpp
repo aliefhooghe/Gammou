@@ -11,12 +11,11 @@
 
 #include "jit_frame_processor/jit_frame_processor.h"
 
-
 #include "../debug.h"
 
 #include <RtAudio.h>
 
-
+#include "unistd.h"
 
 struct snd_callback_data{
     Gammou::Sound::synthesizer *synthesizer;
@@ -63,8 +62,10 @@ int main()
     Gammou::Sound::synthesizer synthesizer(
         jit_processor1, jit_processor2, 
         2, 2, 128, 16);
+
 	Gammou::Gui::synthesizer_gui window(&synthesizer, &synthesizer_mutex);
-   
+    Gammou::View::application_display display(window);
+
     //   Start Rt Audio 
 
     struct snd_callback_data data = {&synthesizer, &synthesizer_mutex};
@@ -92,11 +93,10 @@ int main()
 #endif
 
     //-----
-    window.open();
+    display.open("Gammou");
 
-    while (window.is_open())
+    while (display.is_open())
         sleep(1);
-
 
     //------
 
@@ -111,6 +111,5 @@ int main()
     if ( dac.isStreamOpen() ) 
         dac.closeStream();
     
-
     return 0;
 }

@@ -19,7 +19,7 @@ namespace Gammou {
 
         abstract_x11_display::~abstract_x11_display()
         {
-            // TODO close ?
+            close();
         }
 
         bool abstract_x11_display::is_open()

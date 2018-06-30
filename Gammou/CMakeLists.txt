@@ -93,7 +93,8 @@ if(GAMMOU_STANDALONE_BUILD)
     
 	set(RTAUDIO_DIR "${CMAKE_SOURCE_DIR}/../rtaudio")
 	
-    add_executable(gammou_standalone 
+    add_executable(gammou_standalone
+    	Application/standalone/main.cpp
 		${GUI_SRC} 
 		${PERSISTENCE_SRC}
 		"${RTAUDIO_DIR}/RtAudio.cpp"
@@ -138,7 +139,6 @@ if(GAMMOU_STANDALONE_BUILD)
     #if(WIN32)                   # MICROSOFT WINDOWS
     
     if(UNIX)                	 # LINUX and OSX
-        target_sources(gammou_standalone PRIVATE Application/standalone/X11/main.cpp)
         
         # For Rtaudio
         if(APPLE)               # Only OSX
