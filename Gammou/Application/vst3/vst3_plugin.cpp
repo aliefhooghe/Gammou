@@ -13,8 +13,7 @@ namespace Gammou {
 		//	Plugin class implementation
 
 		Plugin::Plugin()
-			:
-			m_synthesizer_mutex(),
+		:	m_synthesizer_mutex(),
 			m_master_circuit_processor(),
 			m_polyphonic_circuit_processor(),
 			m_synthesizer(
@@ -22,7 +21,8 @@ namespace Gammou {
 				m_polyphonic_circuit_processor, 
 				2, 2, GAMMOU_SYNTHESIZER_CHANNEL_COUNT,
 				GAMMOU_VST_PARAMETER_INPUT_COUNT),
-			m_window(&m_synthesizer, &m_synthesizer_mutex)
+			m_gui(&m_synthesizer, &m_synthesizer_mutex),
+			m_display(m_gui)
 		{
 			DEBUG_PRINT("Gammou Plugin CTOR\n");
 		}
@@ -285,7 +285,7 @@ namespace Gammou {
 
 				// Load synthesizer circuits
 				try {
-					if (m_window.load_state(data))
+					if (m_gui.load_state(data))
 						return Steinberg::kResultOk;
 				}
 				catch (const std::exception& e) {
@@ -323,7 +323,7 @@ namespace Gammou {
 
 				// Write synthesizer circuits
 				try {
-					if (m_window.save_state(data))
+					if (m_gui.save_state(data))
 						return Steinberg::kResultOk;
 				}
 				catch (const std::exception& e) {
@@ -338,7 +338,7 @@ namespace Gammou {
 
 		Steinberg::IPlugView *Plugin::createView(const char* name)
 		{
-			return m_window.create_vst3_view_instance();
+			return m_display.create_vst3_view_instance();
 		}
 
 		/*

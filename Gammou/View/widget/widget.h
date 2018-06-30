@@ -72,6 +72,7 @@ namespace Gammou {
 			rectangle m_absolute_rect;		//	Parent coordinate system
 		};
 
+
 	} /* View */
 
 }	/* Gammou */

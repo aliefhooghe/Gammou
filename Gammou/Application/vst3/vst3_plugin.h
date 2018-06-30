@@ -21,6 +21,8 @@
 #include "synthesizer.h"
 #include "jit_frame_processor/jit_frame_processor.h"
 
+#include <view.h>
+
 #define GAMMOU_VST_PARAMETER_INPUT_COUNT 16u
 
 namespace Gammou {
@@ -60,7 +62,9 @@ namespace Gammou {
 			Process::bytecode_frame_processor<double> m_master_circuit_processor;
 			Process::bytecode_frame_processor<double> m_polyphonic_circuit_processor;
 			Sound::synthesizer m_synthesizer;
-			Gui::synthesizer_gui m_window;
+			
+			Gui::synthesizer_gui m_gui;
+			View::vst3_display m_display;
 		};
 
 

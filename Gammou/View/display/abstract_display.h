@@ -1,27 +1,31 @@
-#ifndef GAMMOU_ABSTRACT_WINDOW_H_
-#define GAMMOU_ABSTRACT_WINDOW_H_
+#ifndef ABSTRACT_DISPLAY_H_
+#define ABSTRACT_DISPLAY_H_
 
+#include <memory>
 #include "widget/panel.h"
 
 namespace Gammou {
 
 	namespace View {
-
-		class abstract_window : public panel<widget> {
 		
-		public:
-			//	Width and Height in pixel : abstract size, real size depend on scale
-			abstract_window(const unsigned int px_width, const unsigned int px_height);
-			virtual ~abstract_window();
+		class abstract_display : private abstract_panel {
 
-			virtual void close(void) =0;
-			
+		public:
+			abstract_display(widget& root_widget);
+			virtual ~abstract_display();
+
+			double get_scale_factor() const;
+			virtual void set_scale_factor(const float scale_factor);
+
+			unsigned int get_display_width() const;
+			unsigned int get_display_height() const;
+
+			virtual void close() = 0;
 
 		protected:
 			//	'Low level' callback, called by system event processing, 
 			//	and translated into 'higher level' events.
-			//	/!\ system musn't call directly event handlers !!
-			//	In window system coordinate
+			//	In window system coordinate (display)
 			void sys_draw(cairo_t *cr);
 			bool sys_mouse_move(const unsigned int cx, const unsigned int cy);
 			bool sys_mouse_enter(void);
@@ -33,22 +37,19 @@ namespace Gammou {
 			bool sys_key_down(const keycode key);
 			bool sys_key_up(const keycode key);
 
-			unsigned int get_system_window_width() const;
-			unsigned int get_system_window_height() const;
-
-			//	Feature to be implemented
-			virtual bool open_file(std::string& path, const std::string& title, const std::string& ext) =0;
-			//virtual void show_cursor(const bool state = true) = 0;
-
-			//---
-			void scale(const float scaling_factor);
-			
-			void redraw_rect(const rectangle& rect) override;
-			virtual void system_redraw_rect(const rectangle& rect) =0;
+			virtual void sys_redraw_rect(const rectangle& rect) =0;
 
 		private:
+			void redraw_rect(const rectangle& rect) override;
+			void draw(cairo_t *cr) override;
+
+			widget& m_root_widget;
+
 			float m_scale_factor;
-			
+
+			unsigned int m_display_width;
+			unsigned int m_display_height;
+
 			unsigned int m_cursor_x;
 			unsigned int m_cursor_y;
 
@@ -59,6 +60,6 @@ namespace Gammou {
 
 	} /* View */
 
-} /* namespace Gammou */
+} /* Gammou */
 
 #endif

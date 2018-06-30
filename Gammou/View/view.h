@@ -10,10 +10,8 @@
 #include "widget/page_container.h"
 #include "widget/scrollable_panel.h"
 #include "widget/list_box.h"
-#include "abstract_window.h"
-
 #include "widget/common_widgets.h"
-
+#include "widget/window_widget.h"
 
 #if !defined(GAMMOU_VIEW_APP) && !defined(GAMMOU_VIEW_VST3)
 #error "Gammou : View : You must define at least one of he option : GAMMOU_VIEW_APP or GAMMOU_VIEW_VST3"
@@ -24,11 +22,11 @@
 #ifdef __linux__
 
 #ifdef GAMMOU_VIEW_VST3
-#include "vst3_window/X11/x11_vst3_window.h"
+#include "display_implementation/x11_application_display.h"
 #endif
 
 #ifdef GAMMOU_VIEW_APP
-#include "app_window/X11/x11_app_window.h"
+#include "display_implementation/x11_vst3_display.h"
 #endif
 
 
@@ -37,11 +35,11 @@
 #elif defined(_WIN32)
 
 #ifdef GAMMOU_VIEW_VST3
-#include "vst3_window\win32\win32_vst3_window.h"
+#include "display_implementation/win32_vst3_display.h"
 #endif
 
 #ifdef GAMMOU_VIEW_APP
-#error "Gammou : View : Not implemented"
+#include "display_implementation/win32_application_display.h"
 #endif
 
 
@@ -56,7 +54,7 @@
 #endif
 
 #ifdef GAMMOU_VIEW_APP
-#include "app_window/X11/x11_app_window.h"
+#include "display_implementation/x11_application_display.h"
 #endif
 
 //----------------------------------------------------------------------
@@ -71,24 +69,24 @@ namespace Gammou {
 
 //--------------------
 
-//  Special Window
+//  Special Displays
 
 #if defined(__linux__)
 
 #ifdef GAMMOU_VIEW_APP
-		typedef x11_app_window generic_app_window;
+		typedef x11_application_display application_display;
 #endif
 
-#if defined(GAMMOU_VIEW_VST3) && !defined(__APPLE__)    // not implemented for apple
-		typedef x11_vst3_window generic_vst3_window;
+#if defined(GAMMOU_VIEW_VST3)
+		typedef x11_vst3_display vst3_display;
 #endif
 
 #elif defined _WIN32
 
 #ifdef GAMMOU_VIEW_VST3
-		typedef win32_vst3_window generic_vst3_window;
+		typedef win32_vst3_display vst3_display;
 #elif GAMMOU_VIEW_APP
-		// typedef *** generic_app_window
+		// typedef win32_application_display application_display;
 #error "Not Implemented"
 #endif
 
@@ -98,9 +96,9 @@ namespace Gammou {
 // Generic window (Only if one target is specified)
 
 #if defined(GAMMOU_VIEW_VST3) && !defined(GAMMOU_VIEW_APP)
-		typedef generic_vst3_window generic_window;
+		typedef vst3_display generic_display;
 #elif  defined(GAMMOU_VIEW_APP) && !defined(GAMMOU_VIEW_VST3)
-		typedef generic_app_window generic_window;
+		typedef application_display generic_display;
 #endif
     
 	}

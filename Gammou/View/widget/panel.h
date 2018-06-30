@@ -19,8 +19,8 @@ namespace Gammou {
 
 		public:
 			abstract_panel(const int x, const int y, const unsigned int width, const unsigned int height, 
-				const color background);
-			abstract_panel(const rectangle& rect, const color background);
+				const color background = cl_white);
+			abstract_panel(const rectangle& rect, const color background = cl_white);
 
 			virtual ~abstract_panel() {}
 			virtual void redraw_rect(const rectangle& rect);
@@ -118,7 +118,7 @@ namespace Gammou {
 			const int x, const int y, 
 			const unsigned int width, const unsigned int height, 
 			const color background)
-			: abstract_panel(x, y, width, height, background),
+			:	abstract_panel(x, y, width, height, background),
 			m_focused_widget(nullptr),
 			m_draging_widget(nullptr),
 			m_draging_button(mouse_button::LeftButton)
@@ -128,7 +128,7 @@ namespace Gammou {
 
 		template<class widget_type>
 		panel<widget_type>::panel(const rectangle & rect, const color background)
-			: abstract_panel(rect, background)
+			:	abstract_panel(rect, background)
 		{
 		}
 

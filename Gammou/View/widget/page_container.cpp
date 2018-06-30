@@ -9,13 +9,13 @@ namespace Gammou {
 			const int x, const int y, 
 			const unsigned int width, const unsigned int height, 
 			const color background)
-			: abstract_panel(x, y, width, height, background) 
+			:	abstract_panel(x, y, width, height, background) 
 
 		{
 		}
 
 		page_container::page_container(const rectangle & rect, const color background)
-			: abstract_panel(rect, background)
+			:	abstract_panel(rect, background)
 		{
 		}
 
