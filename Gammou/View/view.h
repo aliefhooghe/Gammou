@@ -22,11 +22,11 @@
 #ifdef __linux__
 
 #ifdef GAMMOU_VIEW_VST3
-#include "display_implementation/x11_application_display.h"
+#include "display_implementation/x11_vst3_display.h"
 #endif
 
 #ifdef GAMMOU_VIEW_APP
-#include "display_implementation/x11_vst3_display.h"
+#include "display_implementation/x11_application_display.h"
 #endif
 
 

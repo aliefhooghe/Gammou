@@ -76,7 +76,7 @@ elseif(UNIX)  # LINUX and OSX
 		${X11_INCLUDE_DIR} 
 		${Xext_INCLUDE_DIR})  
 		
-	arget_link_libraries(view PRIVATE 
+	target_link_libraries(view PRIVATE 
 		${X11_LIBRARIES} 
 		${Xext_LIBRARY})
 elseif (NOT WIN32)
@@ -99,10 +99,10 @@ if(VIEW_VST3)
 			display_implementation/win32_vst3_display.cpp
 	)
 	elseif(UNIX)
-	target_sources(view PRIVATE
-			display_implementation/x11_vst3_display.h
-			display_implementation/x11_vst3_display.cpp
-	)
+		target_sources(view PRIVATE
+				display_implementation/x11_vst3_display.h
+				display_implementation/x11_vst3_display.cpp
+		)
 	endif()
 	
 endif()

@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" OFF)
 option(GAMMOU_STANDALONE_LIBOSSIA "Enable ossia oscquery in standalone app" OFF)
-option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" ON)
+option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" OFF)
 
 # Hide View Option
 mark_as_advanced(FORCE 

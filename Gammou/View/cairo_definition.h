@@ -8,6 +8,7 @@
 #include <cairo-win32.h>
 #elif defined(__linux__) || defined(__APPLE__)
 #include <cairo.h>
+#include <cairo-xlib.h>
 #endif
 
 
