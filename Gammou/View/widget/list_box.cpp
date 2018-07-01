@@ -68,6 +68,7 @@ namespace Gammou {
 		unsigned int list_box::add_item(const std::string & name)
 		{
 			m_items.push_back(name);
+			redraw();
 			return static_cast<unsigned int>(m_items.size() - 1);
 		}
 
@@ -76,6 +77,7 @@ namespace Gammou {
 			if (get_item_count() > 0) {
 				m_items.clear();
 				m_selected_id = -1;
+				m_first_displayed = 0;
 				redraw();
 			};
 		}
