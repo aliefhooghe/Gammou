@@ -17,7 +17,7 @@ namespace Gammou {
 			WNDCLASS window_class;
 
 			window_class.style = CS_DBLCLKS;
-			window_class.lpfnWndProc = &windowProc;
+			window_class.lpfnWndProc = windowProc;
 			window_class.cbClsExtra = 0;
 			window_class.cbWndExtra = 0;
 			window_class.hInstance = nullptr;
@@ -34,7 +34,7 @@ namespace Gammou {
 		{
 		}
 
-		void abstract_win32_display::is_open()
+		bool abstract_win32_display::is_open()
 		{
 			return m_is_open;
 		}
@@ -61,7 +61,7 @@ namespace Gammou {
 			m_window_handle =
 				CreateWindowA(
 					WNDCLASS_NAME, title.c_str(),
-					WS_CHILD | WS_VISIBLE,
+					/*WS_CHILD |*/ WS_VISIBLE,
 					0, 0, system_width, system_height,
 					parent_window, nullptr, nullptr, this);
 
@@ -96,6 +96,11 @@ namespace Gammou {
 
 				InvalidateRect(m_window_handle, &win32_rect, true);
 			}
+		}
+
+		HWND abstract_win32_display::get_window_handle() const
+		{
+			return m_window_handle;
 		}
 
 		LRESULT abstract_win32_display::windowProc(HWND window, UINT msg, WPARAM w_param, LPARAM l_param)

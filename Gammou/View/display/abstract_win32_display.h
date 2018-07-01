@@ -21,12 +21,13 @@ namespace Gammou {
 			virtual  ~abstract_win32_display();
 
 			bool is_open() override;
-			void close() override;
+			virtual void close() override;
 
 		protected:
 			void create_window(HWND parent_window, const std::string& title);
 			void sys_redraw_rect(const rectangle& rect);
 
+			HWND get_window_handle() const;
 		private:
 			static LRESULT CALLBACK windowProc(
 				HWND window,
