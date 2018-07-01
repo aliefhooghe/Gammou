@@ -21,7 +21,9 @@ namespace Gammou {
 			virtual  ~abstract_win32_display();
 
 			bool is_open() override;
+
 			virtual void close() override;
+			void non_blocking_close() override;
 
 		protected:
 			void create_window(HWND parent_window, const std::string& title);

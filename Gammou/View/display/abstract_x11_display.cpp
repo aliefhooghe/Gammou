@@ -29,9 +29,14 @@ namespace Gammou {
 
         void abstract_x11_display::close()
         {
-            m_running = false;
+            non_blocking_close();
             if (m_event_loop_thread.joinable())
                 m_event_loop_thread.join();
+        }
+
+        void abstract_x11_display::non_blocking_close()
+        {
+            m_running = false;
         }
 
         void abstract_x11_display::create_window(

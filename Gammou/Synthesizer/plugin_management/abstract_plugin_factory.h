@@ -64,23 +64,31 @@ namespace Gammou {
 
 		// Default implementation
 
-		template<class sound_component_type>
+		template<class sound_component_type, class... args>
 		class default_plugin_factory : public plugin_factory {
 		public:
-			default_plugin_factory(const std::string& name, const std::string &category, unsigned int factory_id)
+			default_plugin_factory(
+				const std::string& name, 
+				const std::string &category, 
+				unsigned int factory_id)
 				: plugin_factory(name, category, factory_id) {}
 			~default_plugin_factory() {}
 
 		protected:
-			virtual abstract_sound_component *create_sound_component(data_source& source, const unsigned int channel_count) override
+			virtual abstract_sound_component *create_sound_component(
+				data_source& source, 
+				const unsigned int channel_count) override
 			{
 				return new sound_component_type(channel_count);
 			}
 
-			virtual abstract_sound_component *create_sound_component(const abstract_form_answer& answer_form, const unsigned int channel_count) override
+			virtual abstract_sound_component *create_sound_component(
+				const abstract_form_answer& answer_form, 
+				const unsigned int channel_count) override
 			{
 				return new sound_component_type(channel_count);
 			}
+
 		};
 		
     } /* Sound */

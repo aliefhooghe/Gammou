@@ -47,6 +47,11 @@ namespace Gammou {
 			m_is_open = false;
 		}
 
+		void abstract_win32_display::non_blocking_close()
+		{
+			close();
+		}
+
 		void abstract_win32_display::create_window(
 			HWND parent_window, 
 			const std::string & title)

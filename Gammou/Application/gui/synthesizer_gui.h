@@ -4,7 +4,7 @@
 
 
 #include <mutex>
-#include <experimental/filesystem>
+#include <filesystem>
 #include <view.h>
 
 #include "../../debug.h"
@@ -13,7 +13,6 @@
 #include "gui_polyphonic_circuit.h"
 
 #include "gui_component_main_factory.h"
-#include "../../Synthesizer/builtin_components.h"
 
 #include "control_component/knob_gui_component.h"
 #include "control_component/integer_gui_component.h"
