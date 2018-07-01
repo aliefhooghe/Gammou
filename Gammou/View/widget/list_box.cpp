@@ -71,6 +71,15 @@ namespace Gammou {
 			return static_cast<unsigned int>(m_items.size() - 1);
 		}
 
+		void list_box::clear()
+		{
+			if (get_item_count() > 0) {
+				m_items.clear();
+				m_selected_id = -1;
+				redraw();
+			};
+		}
+
 		int list_box::get_selected_item() const
 		{
 			return m_selected_id;

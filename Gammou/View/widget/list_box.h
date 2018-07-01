@@ -47,6 +47,7 @@ namespace Gammou {
 			// No remove function because it would cause issues with id
 			unsigned int get_item_count() const;
 			unsigned int add_item(const std::string& name); // Todo item description ?
+			void clear();
 			int get_selected_item() const;					//	-1 if nothing selected
 			void select_item(const unsigned int id);
 
