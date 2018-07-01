@@ -230,7 +230,7 @@ namespace Gammou {
 			const std::string plugin_dir_path(GAMMOU_PLUGINS_DIRECTORY_PATH);
 			
 			try {
-				for (auto & p : std::experimental::filesystem::directory_iterator(plugin_dir_path)) {
+				for (auto & p : std::filesystem::directory_iterator(plugin_dir_path)) {
 					try {
 						const std::string plugin_path(p.path().string());
 						DEBUG_PRINT("Loading %s\n", plugin_path.c_str());
