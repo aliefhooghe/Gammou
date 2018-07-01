@@ -86,8 +86,7 @@ namespace Gammou {
 #ifdef GAMMOU_VIEW_VST3
 		typedef win32_vst3_display vst3_display;
 #elif GAMMOU_VIEW_APP
-		// typedef win32_application_display application_display;
-#error "Not Implemented"
+		typedef win32_application_display application_display;
 #endif
 
 #endif

@@ -100,8 +100,8 @@ if(VIEW_VST3)
 	)
 	elseif(UNIX)
 		target_sources(view PRIVATE
-				display_implementation/x11_vst3_display.h
-				display_implementation/x11_vst3_display.cpp
+			display_implementation/x11_vst3_display.h
+			display_implementation/x11_vst3_display.cpp
 		)
 	endif()
 	

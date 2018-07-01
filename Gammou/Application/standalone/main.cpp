@@ -98,7 +98,7 @@ int main()
     display.open("Gammou");
 
     while (display.is_open())
-        sleep(1);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
     //------
 
