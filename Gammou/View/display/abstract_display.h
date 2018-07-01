@@ -22,6 +22,7 @@ namespace Gammou {
 
 			virtual bool is_open() = 0;
 			virtual void close() = 0;
+			virtual void non_blocking_close() = 0;
 
 		protected:
 			//	'Low level' callback, called by system event processing, 

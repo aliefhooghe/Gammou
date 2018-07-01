@@ -1,4 +1,5 @@
 
+#include "../../Synthesizer/builtin_components.h"
 #include "../persistence/synthesizer_persistence.h"
 #include "synthesizer_gui.h"
 #include "gui_properties.h"
@@ -91,7 +92,7 @@ namespace Gammou {
 					}
 					pages_ptr->select_page(page_id);
 				}
-				, "Master Circuit", 705, 16, 110));
+				, "Master Circuit", 705, 16, 110, 27, 9));
 
 			const unsigned int offset = (GuiProperties::main_gui_size_unit - 50) / 2;
 
@@ -213,6 +214,16 @@ namespace Gammou {
 			add_plugin_factory(new Sound::Builtin::lp2_factory());
 			add_plugin_factory(new Sound::Builtin::adsr_env_factory());
 			add_plugin_factory(new Sound::Builtin::saw_factory());
+
+
+			add_plugin_factory(new Sound::Builtin::function_factory<cos>("cos", 100));
+			add_plugin_factory(new Sound::Builtin::function_factory<exp>("exp", 101));
+			add_plugin_factory(new Sound::Builtin::function_factory<log>("log", 102));
+			add_plugin_factory(new Sound::Builtin::function_factory<cosh>("cosh", 103));
+			add_plugin_factory(new Sound::Builtin::function_factory<sinh>("sinh", 104));
+			add_plugin_factory(new Sound::Builtin::function_factory<sqrt>("sqrt", 105));
+			add_plugin_factory(new Sound::Builtin::function_factory<fabs>("abs", 106));
+			add_plugin_factory(new Sound::Builtin::function_factory<atan>("atan", 107));
 
 			//add_plugin_factory(new Sound::Builtin::perfect_saw_factory());
 			//add_plugin_factory(new Sound::Builtin::naive_saw_factory());

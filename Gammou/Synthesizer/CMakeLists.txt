@@ -28,6 +28,7 @@ set(SYNTHESIZER_SRC
 
 set(SYNTHESIZER_BUILTIN_COMPONENTS_SRC
 	builtin_components.h
+	builtin_components/function_component.h
 	builtin_components/builtin_components_ids.h
 	builtin_components/adsr_env.h
 	builtin_components/adsr_env.cpp

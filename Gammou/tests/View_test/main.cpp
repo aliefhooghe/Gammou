@@ -9,6 +9,7 @@ int main(int argc, char **argv)
 {
     Gammou::test_window window{1024, 780};
     Gammou::View::application_display display(window);
+    
 
     display.open("Title");
 

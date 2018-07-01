@@ -55,7 +55,12 @@ namespace Gammou {
 			// Components
 			const float component_width = 90;
 
+#ifdef _WIN32
 			const float component_font_size = 11.0;
+#else
+			const float component_font_size = 10.0;
+#endif
+
 			const float component_rectangle_corner_radius = 5.0;
 			const float component_border_width = 1.5;
 			const float moving_component_border_width = 2.5;
@@ -76,7 +81,12 @@ namespace Gammou {
 
 			const unsigned int main_gui_component_choice_box_width = 2 * main_gui_size_unit;
 			const unsigned int main_gui_component_choice_box_height = main_gui_height - main_gui_toolbox_height;
+#ifdef _WIN32
 			const unsigned int main_gui_component_choice_box_font_size = 12;
+#else
+			const unsigned int main_gui_component_choice_box_font_size = 11;
+#endif
+
 			const unsigned int main_gui_component_choice_box_item_count = 40;
 
 			const unsigned int main_gui_circuit_width = main_gui_width - main_gui_component_choice_box_width;

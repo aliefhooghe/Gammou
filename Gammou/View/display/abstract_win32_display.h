@@ -22,6 +22,7 @@ namespace Gammou {
 
 			bool is_open() override;
 			void close() override;
+			void non_blocking_close() override;
 
 		protected:
 			void create_window(HWND parent_window, const std::string& title);

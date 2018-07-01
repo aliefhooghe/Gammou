@@ -279,7 +279,7 @@ if(UNIX) # no win32 app backend for now
 		tests/View_test/test_window.cpp
 		tests/View_test/test_window.h
 	)
-	target_link_libraries(view_test view)
+	target_link_libraries(view_test stdc++fs view)
 	target_compile_definitions(view_test PRIVATE GAMMOU_VIEW_APP)
 endif()
 
