@@ -9,7 +9,9 @@ namespace Gammou {
 			const unsigned int x, 
 			const unsigned int y)
 			: 
-			gui_sound_component(integer, x, y),
+			gui_sound_component(
+				std::unique_ptr<Sound::abstract_sound_component>
+				(integer), x, y),
 			m_integer(integer)
 		{
 			const unsigned int size = get_width();
@@ -71,7 +73,7 @@ namespace Gammou {
 		{
 		}
 
-		abstract_gui_component_factory::complete_component value_integer_gui_component_factory::create_complete_component(
+		std::unique_ptr<gui_sound_component> value_integer_gui_component_factory::create_complete_component(
 			const int x, const int y, 
 			Sound::data_source & source, const unsigned int channel_count)
 		{
@@ -83,12 +85,10 @@ namespace Gammou {
 
 			stamp_sound_component(sound_component);
 
-			return std::make_pair(
-					std::make_unique<integer_gui_component>(sound_component, x, y),
-					sound_component);
+			return	std::make_unique<integer_gui_component>(sound_component, x, y);
 		}
 
-		abstract_gui_component_factory::complete_component value_integer_gui_component_factory::create_complete_component(
+		std::unique_ptr<gui_sound_component> value_integer_gui_component_factory::create_complete_component(
 			const int x, const int y, 
 			const Sound::abstract_form_answer & answer_form, const unsigned int channel_count)
 		{
@@ -97,9 +97,7 @@ namespace Gammou {
 
 			stamp_sound_component(sound_component);
 
-			return std::make_pair(
-					std::make_unique<integer_gui_component>(sound_component, x, y),
-					sound_component);
+			return	std::make_unique<integer_gui_component>(sound_component, x, y);
 		}
 
 		// Gain Integer implementation
@@ -109,9 +107,10 @@ namespace Gammou {
 		{
 		}
 
-		abstract_gui_component_factory::complete_component gain_integer_gui_component_factory::create_complete_component(
+		std::unique_ptr<gui_sound_component> gain_integer_gui_component_factory::create_complete_component(
 			const int x, const int y,
-			Sound::data_source & source, const unsigned int channel_count)
+			Sound::data_source & source, 
+			const unsigned int channel_count)
 		{
 			int value;
 			source.read(&value, sizeof(int));
@@ -121,12 +120,10 @@ namespace Gammou {
 
 			stamp_sound_component(sound_component);
 
-			return std::make_pair(
-					std::make_unique<integer_gui_component>(sound_component, x, y),
-					sound_component);
+			return	std::make_unique<integer_gui_component>(sound_component, x, y);
 		}
 
-		abstract_gui_component_factory::complete_component gain_integer_gui_component_factory::create_complete_component(
+		std::unique_ptr<gui_sound_component> gain_integer_gui_component_factory::create_complete_component(
 			const int x, const int y,
 			const Sound::abstract_form_answer & answer_form, const unsigned int channel_count)
 		{
@@ -135,9 +132,7 @@ namespace Gammou {
 
 			stamp_sound_component(sound_component);
 
-			return std::make_pair(
-					std::make_unique<integer_gui_component>(sound_component, x, y),
-					sound_component);
+			return	std::make_unique<integer_gui_component>(sound_component, x, y);
 		}
 
 	} /* Gui */

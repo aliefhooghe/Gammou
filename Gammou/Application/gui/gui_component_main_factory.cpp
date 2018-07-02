@@ -46,7 +46,7 @@ namespace Gammou {
 			}
 		}
 
-		gui_component_main_factory::complete_component
+		std::unique_ptr<gui_sound_component>
 			gui_component_main_factory::get_new_complete_component(const unsigned int factory_id, const int x, const int y, Sound::data_source & data, const unsigned int channel_count)
 		{
 			
@@ -64,7 +64,7 @@ namespace Gammou {
 			}
 		}
 
-		gui_component_main_factory::complete_component 
+		std::unique_ptr<gui_sound_component>
 			gui_component_main_factory::get_new_complete_component(
 				const unsigned int factory_id, 
 				const int x, const int y, 
@@ -105,14 +105,13 @@ namespace Gammou {
 				(m_complete_component_factories.find(factory_id) != m_complete_component_factories.end());
 		}
 
-		gui_component_main_factory::complete_component 
+		std::unique_ptr<gui_sound_component>
 			gui_component_main_factory::create_default_complete_component(
 				const int x, const int y, 
 				Sound::abstract_sound_component * sound_component)
 		{
-			return std::make_pair(
-				std::make_unique<gui_sound_component>(sound_component, x, y), 
-				sound_component);
+			return std::make_unique<gui_sound_component>
+					(std::unique_ptr<Sound::abstract_sound_component>(sound_component), x, y);
 		}
 
 		abstract_gui_component_factory * gui_component_main_factory::factory_by_id(const unsigned int factory_id)

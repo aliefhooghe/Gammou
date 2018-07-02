@@ -67,20 +67,20 @@ namespace Gammou {
 
 					DEBUG_PRINT("Creating a %u-channel component\n", m_components_channel_count);
 
-					gui_component_main_factory::complete_component
-						component = m_complete_component_factory->get_new_complete_component(
-							m_creation_factory_id,
-							convert_x(x),
-							convert_y(y),
-							answer,
-							m_components_channel_count
-					);
+					std::unique_ptr<gui_sound_component>
+						component = 
+							m_complete_component_factory->get_new_complete_component(
+								m_creation_factory_id,
+								convert_x(x),
+								convert_y(y),
+								answer,
+								m_components_channel_count);
 
 					lock_circuit();
-					add_sound_component_to_frame(component.second);
+					add_sound_component_to_frame(&(component->get_sound_component()));
 					unlock_circuit();
 
-					add_gui_component(std::move(component.first));
+					add_gui_component(std::move(component));
 				}
 			}
 
@@ -260,7 +260,7 @@ namespace Gammou {
 				Persistence::constrained_data_source cdata(data, record_header.data_size);
 
 				// Build component from data
-				gui_component_main_factory::complete_component
+				std::unique_ptr<gui_sound_component>
 					component = m_complete_component_factory->get_new_complete_component(
 						record_header.factory_id,
 						record_header.gui_x_pos,
@@ -270,11 +270,11 @@ namespace Gammou {
 
 				//	Add process component on frame
 				lock_circuit();
-				add_sound_component_to_frame(component.second);
+				add_sound_component_to_frame(&(component->get_sound_component()));
 				unlock_circuit();
 
-				abstract_gui_component *ret = &(*(component.first));
-				add_gui_component(std::move(component.first));
+				abstract_gui_component *ret = component.get();
+				add_gui_component(std::move(component));
 				return ret;
 			}
 			else {

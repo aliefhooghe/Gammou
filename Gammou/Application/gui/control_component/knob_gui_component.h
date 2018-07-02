@@ -32,9 +32,9 @@ namespace Gammou {
 		public:
 			value_knob_gui_component_factory();
 
-			complete_component create_complete_component(
+			std::unique_ptr<gui_sound_component> create_complete_component(
 				const int x, const int y, Sound::data_source& source, const unsigned int channel_count) override;
-			complete_component create_complete_component(
+			std::unique_ptr<gui_sound_component> create_complete_component(
 				const int x, const int y, const Sound::abstract_form_answer& answer_form, const unsigned int channel_count) override;
 		};
 
@@ -46,9 +46,9 @@ namespace Gammou {
 		public:
 			gain_knob_gui_component_factory();
 
-			complete_component create_complete_component(
+			std::unique_ptr<gui_sound_component> create_complete_component(
 				const int x, const int y, Sound::data_source& source, const unsigned int channel_count) override;
-			complete_component create_complete_component(
+			std::unique_ptr<gui_sound_component> create_complete_component(
 				const int x, const int y, const Sound::abstract_form_answer& answer_form, const unsigned int channel_count) override;
 		};
 

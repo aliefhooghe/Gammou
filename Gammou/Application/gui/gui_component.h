@@ -78,7 +78,8 @@ namespace Gammou {
 		
 		*/
 
-		class abstract_gui_component_map : public View::scrollable_panel<abstract_gui_component> {
+		class abstract_gui_component_map : 
+			public View::scrollable_panel<abstract_gui_component> {
 
 		public:
 			abstract_gui_component_map(
