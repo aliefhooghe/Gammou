@@ -304,6 +304,11 @@ namespace Gammou {
 			return abstract_request_field::type::FILE_PATH;
 		}
 
+		const std::string& file_path_answer::get_path() const
+		{
+			return m_path;
+		}
+
 
 
 

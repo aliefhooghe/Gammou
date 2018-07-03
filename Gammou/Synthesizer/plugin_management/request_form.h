@@ -304,6 +304,7 @@ namespace Gammou {
 			file_path_answer(const std::string& path);
 			abstract_request_field::type get_field_type() const;
 
+			const std::string& get_path() const;
 		private:
 			const std::string m_path;
 		};
