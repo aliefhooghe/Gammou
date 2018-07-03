@@ -91,7 +91,7 @@ set(PERSISTENCE_SRC
 if(GAMMOU_STANDALONE_BUILD)
     set_option(VIEW_APP ON) # Enable Application Window in View
     
-	set(RTAUDIO_DIR "${CMAKE_SOURCE_DIR}/../rtaudio")
+	set(RTAUDIO_DIR "${CMAKE_SOURCE_DIR}/../3rdparty/rtaudio")
 	
     add_executable(gammou_standalone
     	Application/standalone/main.cpp
@@ -119,7 +119,7 @@ if(GAMMOU_STANDALONE_BUILD)
 	
 	if (GAMMOU_STANDALONE_LIBOSSIA)
     	set(LIBOSSIA_DIR
-    		"${CMAKE_SOURCE_DIR}/../libossia/" 
+    		"${CMAKE_SOURCE_DIR}/../3rdparty/libossia/" 
 			CACHE PATH "Choose libossia path"
     	)
     	
@@ -170,7 +170,7 @@ if(GAMMOU_VST3_BUILD)
     set_option(VIEW_VST3 ON)   # Enable VST3 Window in View
 	
 	set(VST3_SDK_DIR 
-		"${CMAKE_SOURCE_DIR}/../VST_SDK/VST3_SDK" 
+		"${CMAKE_SOURCE_DIR}/../3rdparty/vst3sdk" 
 		CACHE PATH "Choose VST3 SDK path"
 	)	
 
