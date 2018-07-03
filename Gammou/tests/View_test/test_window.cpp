@@ -86,45 +86,10 @@ namespace Gammou {
         add_widget(std::move(list_box_ptr));
     }
 
-
     ///
-
-    dialog_widget::dialog_widget(
-                const unsigned int width, 
-                const unsigned int height,
-                const View::color background)
-    :   View::panel<>(0, 0, width, height, background)
-    {
-    }
-
-    void dialog_widget::set_display(dialog_display *display)
-    {
-        m_display = display;
-    }
-
-    void dialog_widget::close_display()
-    {
-        if (m_display != nullptr)
-            m_display->non_blocking_close();
-    }
-
-    ///
-
-    std::filesystem::path file_explorer_widget::get_path_by_id(const unsigned int id)
-    {
-        unsigned int i = 0;
-        for (auto & p : std::filesystem::directory_iterator(m_current_path)) {
-            if (i == id) {
-                return std::move(p);
-            }
-            i++;
-        }
-
-        throw std::runtime_error("id invalide get_path_by_id");
-    }
 
     file_explorer_widget::file_explorer_widget(const std::string& initial_path)
-        :   dialog_widget(300, 400, Gammou::Gui::GuiProperties::background),
+        :   View::panel<>(0, 0, 300, 400, Gammou::Gui::GuiProperties::background),
             m_filename_was_set(false),
             m_current_path(initial_path)
     {
@@ -178,7 +143,7 @@ namespace Gammou {
                     auto p = get_path_by_id(selected_item);
                     m_filename = p;
                     m_filename_was_set = true;
-                    close_display();
+                    get_display()->non_blocking_close();
                 },
                 "Open",
                 1 + get_width() / 2,
@@ -215,6 +180,19 @@ namespace Gammou {
         }
 
         return false;
+    }
+
+    std::filesystem::path file_explorer_widget::get_path_by_id(const unsigned int id)
+    {
+        unsigned int i = 0;
+        for (auto & p : std::filesystem::directory_iterator(m_current_path)) {
+            if (i == id) {
+                return std::move(p);
+            }
+            i++;
+        }
+
+        throw std::runtime_error("id invalide get_path_by_id");
     }
 
     void file_explorer_widget::update_list_box()

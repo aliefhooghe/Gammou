@@ -3,7 +3,7 @@
 
 #include <stdexcept>
 
-#include "../cairo_definition.h"
+#include "cairo_definition.h"
 #include "event.h"
 #include "cairo_helper.h"
 
@@ -14,6 +14,7 @@ namespace Gammou {
 	namespace View {
 	
 		class abstract_panel;
+		class abstract_display;
 
 		class widget {
 			
@@ -62,6 +63,8 @@ namespace Gammou {
 			virtual void resize(const unsigned int width, const unsigned int height);
 			virtual void set_rect(const rectangle& rect);
 
+			virtual abstract_display *get_display();
+			
 		protected:
 			void redraw_parent();
 			abstract_panel *get_parent();

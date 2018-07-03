@@ -132,12 +132,19 @@ namespace Gammou {
 
 		void widget::set_rect(const rectangle & rect)
 		{
-			//	TODO lever des exceptions
 			if (rect.width > 0 && rect.height > 0)
 				m_absolute_rect = rect;
 			else
 				throw std::domain_error("Invalid widget rect");
 			redraw();
+		}
+
+		abstract_display *widget::get_display()
+		{
+			if (m_parent != nullptr)
+				return m_parent->get_display();
+			else
+				return nullptr;
 		}
 
 		void widget::redraw_parent()

@@ -12,7 +12,6 @@ namespace Gammou {
     {
         auto dialog = std::make_unique<DialogType>(params...);
         dialog_display display(*dialog);
-        dialog->set_display(&display);
         display.open(title);
         while(display.is_open())
             std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -27,24 +26,7 @@ namespace Gammou {
                 const unsigned int py_height);
     };
 
-    class dialog_widget : public View::panel<> {
-
-        public:
-            dialog_widget(
-                const unsigned int width, 
-                const unsigned int height,
-                const View::color background);
-            virtual ~dialog_widget() {}
-            void set_display(dialog_display *display);
-
-        protected:
-            void close_display();
-        
-        private:
-            dialog_display *m_display{};
-    };
-
-    class file_explorer_widget : public dialog_widget {
+    class file_explorer_widget : public View::panel<> {
 
         public:
             file_explorer_widget(const std::string& initial_path);

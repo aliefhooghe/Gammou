@@ -42,6 +42,7 @@ namespace Gammou {
 			virtual void sys_redraw_rect(const rectangle& rect) =0;
 
 		private:
+			abstract_display *get_display() override;
 			void redraw_rect(const rectangle& rect) override;
 			void draw(cairo_t *cr) override;
 

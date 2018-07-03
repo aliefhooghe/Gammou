@@ -51,6 +51,11 @@ namespace Gammou {
 					m_root_widget.get_height() * m_scale_factor));
 		}
 
+		abstract_display *abstract_display::get_display() 
+		{
+			return this;
+		}
+
 		void abstract_display::redraw_rect(const rectangle & rect)
 		{
 			const rectangle system_rect(
