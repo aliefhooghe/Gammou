@@ -25,18 +25,18 @@ namespace Gammou {
 			const std::string& get_category() const;
 			unsigned int get_factory_id() const;
 
-			virtual const abstract_request_form& get_request_form();
+			const request_form& get_request_form();
 			virtual abstract_sound_component *get_new_sound_component(data_source& source, const unsigned int channel_count) = 0;
-			virtual abstract_sound_component *get_new_sound_component(const abstract_form_answer& answer, const unsigned int channel_count) = 0;
+			virtual abstract_sound_component *get_new_sound_component(const answer_form& answers, const unsigned int channel_count) = 0;
 
 			virtual void delete_sound_component(abstract_sound_component*component) const = 0;
 
 		protected:
 			void stamp_sound_component(abstract_sound_component *component) const;
-			virtual std::unique_ptr<abstract_request_form> create_plugin_request_form();
+			virtual std::unique_ptr<request_form> create_plugin_request_form();
 
 		private:
-			std::unique_ptr<abstract_request_form> m_plugin_request_form;
+			std::unique_ptr<request_form> m_plugin_request_form;
 	
 			const std::string m_name;
 			const std::string m_category;
@@ -50,21 +50,19 @@ namespace Gammou {
 			virtual ~plugin_factory() {}
 
 			abstract_sound_component *get_new_sound_component(data_source& source, const unsigned int channel_count) override;
-			abstract_sound_component *get_new_sound_component(const abstract_form_answer& answer, const unsigned int channel_count) override;
+			abstract_sound_component *get_new_sound_component(const answer_form& answer, const unsigned int channel_count) override;
 
 			void delete_sound_component(abstract_sound_component*component) const override;
 
 		protected:
 			virtual abstract_sound_component *create_sound_component(data_source& source, const unsigned int channel_count) = 0;
-			virtual abstract_sound_component *create_sound_component(const abstract_form_answer& answer_form, const unsigned int channel_count) = 0;
-		
-		private:
-			std::unique_ptr<abstract_request_form> m_plugin_request_form;
+			virtual abstract_sound_component *create_sound_component(const answer_form& answer_form, const unsigned int channel_count) = 0;
+
         };
 
 		// Default implementation
 
-		template<class sound_component_type, class... args>
+		template<class sound_component_type>
 		class default_plugin_factory : public plugin_factory {
 		public:
 			default_plugin_factory(
@@ -83,7 +81,7 @@ namespace Gammou {
 			}
 
 			virtual abstract_sound_component *create_sound_component(
-				const abstract_form_answer& answer_form, 
+				const answer_form& answer_form, 
 				const unsigned int channel_count) override
 			{
 				return new sound_component_type(channel_count);

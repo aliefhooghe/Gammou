@@ -35,7 +35,7 @@ namespace Gammou {
 			std::unique_ptr<gui_sound_component> create_complete_component(
 				const int x, const int y, Sound::data_source& source, const unsigned int channel_count) override;
 			std::unique_ptr<gui_sound_component> create_complete_component(
-				const int x, const int y, const Sound::abstract_form_answer& answer_form, const unsigned int channel_count) override;
+				const int x, const int y, const Sound::answer_form& answer_form, const unsigned int channel_count) override;
 		};
 
 
@@ -49,7 +49,7 @@ namespace Gammou {
 			std::unique_ptr<gui_sound_component> create_complete_component(
 				const int x, const int y, Sound::data_source& source, const unsigned int channel_count) override;
 			std::unique_ptr<gui_sound_component> create_complete_component(
-				const int x, const int y, const Sound::abstract_form_answer& answer_form, const unsigned int channel_count) override;
+				const int x, const int y, const Sound::answer_form& answer_form, const unsigned int channel_count) override;
 		};
 
 	}

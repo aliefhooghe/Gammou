@@ -57,13 +57,15 @@ namespace Gammou {
 				}
 				else if (m_creation_factory_id != Sound::NO_FACTORY) {
 
-					const Sound::abstract_request_form& requests = m_complete_component_factory->get_plugin_request_form(m_creation_factory_id);
-					const Sound::abstract_request_form::type type = requests.get_type();
+					const auto& request_form = 
+						m_complete_component_factory->get_plugin_request_form(m_creation_factory_id);
 
-					if (type != Sound::abstract_request_form::type::EMPTY) // TODO Handle requests
+					
+					//	If request_form is NOT empty
+					if (! std::holds_alternative<Sound::empty_request_form>(request_form))
 						throw std::runtime_error("Factory Request not handled!");
 
-					const Sound::empty_answer_form answer;
+					const Sound::answer_form answer{Sound::empty_answer_form{}};
 
 					DEBUG_PRINT("Creating a %u-channel component\n", m_components_channel_count);
 

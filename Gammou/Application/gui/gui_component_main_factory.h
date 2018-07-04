@@ -19,7 +19,7 @@ namespace Gammou {
 			const std::string& get_factory_name(const unsigned int factory_id);
 			const std::string& get_factory_description(const unsigned int factory_id);
 
-			const Sound::abstract_request_form& get_plugin_request_form(const unsigned int factory_id);
+			const Sound::request_form& get_plugin_request_form(const unsigned int factory_id);
 
 			std::unique_ptr<gui_sound_component> get_new_complete_component(
 					const unsigned int factory_id, 
@@ -29,7 +29,7 @@ namespace Gammou {
 			std::unique_ptr<gui_sound_component> get_new_complete_component(
 				const unsigned int factory_id,
 				const int x, const int y,
-				const Sound::abstract_form_answer& answer_form,
+				const Sound::answer_form& answer_form,
 				const unsigned int channel_count);
 
 			unsigned int load_plugin_factory(const std::string& file_path);
@@ -38,7 +38,10 @@ namespace Gammou {
 			bool check_factory_presence(const unsigned int factory_id) const;
 
 		protected:
-			std::unique_ptr<gui_sound_component> create_default_complete_component(const int x, const int y, Sound::abstract_sound_component* sound_component);
+			std::unique_ptr<gui_sound_component> 
+				create_default_complete_component(
+					const int x, const int y, 
+					Sound::abstract_sound_component* sound_component);
 
 		private:
 			abstract_gui_component_factory *factory_by_id(const unsigned int factory_id);

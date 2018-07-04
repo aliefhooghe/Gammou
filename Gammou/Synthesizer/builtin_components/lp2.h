@@ -34,22 +34,12 @@ namespace Gammou {
 				multi_channel_variable<double> m_previous_output_deriv;
 			};
 
-			class lp2_factory : public plugin_factory {
+			class lp2_factory : public default_plugin_factory<lp2> {
 
 			public:
 				lp2_factory()
-					: plugin_factory("lp2", "Filter", lp2_component_id) {}
+					: default_plugin_factory<lp2>("lp2", "Filter", lp2_component_id) {}
 				~lp2_factory() {}
-
-			protected:
-				abstract_sound_component *create_sound_component(data_source& source, const unsigned int channel_count) override
-				{
-					return new lp2(channel_count);
-				}
-				abstract_sound_component *create_sound_component(const abstract_form_answer& answer_form, const unsigned int channel_count) override
-				{
-					return new lp2(channel_count);
-				}
 			};
 
 

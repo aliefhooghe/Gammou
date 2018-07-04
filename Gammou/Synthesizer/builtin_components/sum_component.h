@@ -27,15 +27,13 @@ namespace Gammou {
 
 			};
 
-			class sum_component_factory : public plugin_factory {
+			class sum_component_factory : public default_plugin_factory<sum_component> {
 
 			public:
-				sum_component_factory();
+				sum_component_factory()
+					: default_plugin_factory<sum_component>
+						("Sum", "Calculus", sum_component_id) {}
 				~sum_component_factory() {}
-
-			protected:	//	TODO Load and Save Input Count
-				abstract_sound_component *create_sound_component(data_source& source, const unsigned int channel_count) override;
-				abstract_sound_component *create_sound_component(const abstract_form_answer& answer_form, const unsigned int channel_count) override;
 			};
 
 		} /* Builtin */

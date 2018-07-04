@@ -2,6 +2,7 @@
 #include <memory>
 #include <view.h>
 #include <filesystem>
+#include <variant>
 
 namespace Gammou {
 
@@ -51,7 +52,6 @@ namespace Gammou {
             View::list_box *m_list_box;
     };
 
-    
 
 } /* Gammou */
 

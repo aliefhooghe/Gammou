@@ -55,7 +55,7 @@ namespace Gammou {
 		}
 
 		std::unique_ptr<gui_sound_component> value_knob_gui_component_factory::create_complete_component(
-			const int x, const int y, const Sound::abstract_form_answer & answer_form, const unsigned int channel_count)
+			const int x, const int y, const Sound::answer_form & answer_form, const unsigned int channel_count)
 		{
 			// No answer needed, default knob
 
@@ -90,7 +90,7 @@ namespace Gammou {
 		}
 
 		std::unique_ptr<gui_sound_component> gain_knob_gui_component_factory::create_complete_component(
-			const int x, const int y, const Sound::abstract_form_answer & answer_form, const unsigned int channel_count)
+			const int x, const int y, const Sound::answer_form & answer_form, const unsigned int channel_count)
 		{
 			// No answer needed, default knob
 

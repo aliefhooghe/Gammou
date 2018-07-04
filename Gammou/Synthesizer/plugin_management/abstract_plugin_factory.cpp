@@ -25,7 +25,7 @@ namespace Gammou {
 			return m_factory_id;
 		}
 
-		const abstract_request_form & abstract_plugin_factory::get_request_form()
+		const request_form & abstract_plugin_factory::get_request_form()
 		{
 			if (!m_plugin_request_form)
 				m_plugin_request_form = create_plugin_request_form();
@@ -42,9 +42,9 @@ namespace Gammou {
 				component->m_factory_id = m_factory_id;
 		}
 
-		std::unique_ptr<abstract_request_form> abstract_plugin_factory::create_plugin_request_form()
+		std::unique_ptr<request_form> abstract_plugin_factory::create_plugin_request_form()
 		{
-			return create_empty_request_form(); // Default implementation
+			return std::make_unique<request_form>(empty_request_form{});
 		}
 
 		///////////////
@@ -62,7 +62,7 @@ namespace Gammou {
 			return component;
 		}
 
-		abstract_sound_component * plugin_factory::get_new_sound_component(const abstract_form_answer& answer, const unsigned int channel_count)
+		abstract_sound_component * plugin_factory::get_new_sound_component(const answer_form& answer, const unsigned int channel_count)
 		{
 			abstract_sound_component *component = create_sound_component(answer, channel_count);
 			stamp_sound_component(component);

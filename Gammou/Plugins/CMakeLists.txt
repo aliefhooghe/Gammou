@@ -20,7 +20,7 @@ add_subdirectory(../Synthesizer tmp/Synthesizer)
 
 #######################################################
 project(GammouPlugins LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 if(NOT DEFINED GAMMOU_PLUGINS_OUTPUT_PATH)
 set(GAMMOU_PLUGINS_OUTPUT_PATH 

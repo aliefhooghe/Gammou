@@ -35,7 +35,7 @@ namespace Gammou {
 			}
 		}
 
-		const Sound::abstract_request_form & gui_component_main_factory::get_plugin_request_form(const unsigned int factory_id)
+		const Sound::request_form & gui_component_main_factory::get_plugin_request_form(const unsigned int factory_id)
 		{
 			if (m_main_factory.check_factory_presence(factory_id)) {
 				return m_main_factory.get_plugin_request_form(factory_id);
@@ -68,7 +68,7 @@ namespace Gammou {
 			gui_component_main_factory::get_new_complete_component(
 				const unsigned int factory_id, 
 				const int x, const int y, 
-				const Sound::abstract_form_answer & answer_form, 
+				const Sound::answer_form & answer_form, 
 				const unsigned int channel_count)
 		{
 			if (m_main_factory.check_factory_presence(factory_id)) {

@@ -90,7 +90,7 @@ namespace Gammou {
 
 		std::unique_ptr<gui_sound_component> value_integer_gui_component_factory::create_complete_component(
 			const int x, const int y, 
-			const Sound::abstract_form_answer & answer_form, const unsigned int channel_count)
+			const Sound::answer_form & answer_form, const unsigned int channel_count)
 		{
 			integer_sound_component *sound_component =
 				new value_integer_sound_component("Value Integer", channel_count, 0);
@@ -125,7 +125,7 @@ namespace Gammou {
 
 		std::unique_ptr<gui_sound_component> gain_integer_gui_component_factory::create_complete_component(
 			const int x, const int y,
-			const Sound::abstract_form_answer & answer_form, const unsigned int channel_count)
+			const Sound::answer_form & answer_form, const unsigned int channel_count)
 		{
 			integer_sound_component *sound_component =
 				new gain_integer_sound_component("Gain Integer", channel_count, 0);

@@ -64,23 +64,6 @@ namespace Gammou {
 				return ret;
 			}
 
-			////-------------------------
-
-			sum_component_factory::sum_component_factory()
-				: plugin_factory("Sum", "Calculus", sum_component_id)
-			{
-			}
-
-			abstract_sound_component * sum_component_factory::create_sound_component(data_source & source, const unsigned int channel_count)
-			{
-				return new sum_component(channel_count);
-			}
-
-			abstract_sound_component * sum_component_factory::create_sound_component(const abstract_form_answer& answer_form, const unsigned int channel_count)
-			{
-				return new sum_component(channel_count);
-			}
-
 
 		} /* Builtin */
 

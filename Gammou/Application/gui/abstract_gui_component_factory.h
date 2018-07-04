@@ -8,7 +8,7 @@
 namespace Gammou {
 	
 	namespace Gui {
-										// protected allow use of stamp
+										// protected allow use of stamp of child class
 		class abstract_gui_component_factory : protected Sound::abstract_plugin_factory {
 
 		public:
@@ -31,14 +31,14 @@ namespace Gammou {
 					 const unsigned int channel_count) = 0;
 			virtual std::unique_ptr<gui_sound_component> create_complete_component(
 					const int x, const int y, 
-					const Sound::abstract_form_answer& answer_form, 
+					const Sound::answer_form& answers, 
 					const unsigned int channel_count) = 0;
 		private:
 			Sound::abstract_sound_component *get_new_sound_component(
 				Sound::data_source& source, 
 				const unsigned int channel_count) { return nullptr;  } // stubs
 			Sound::abstract_sound_component *get_new_sound_component(
-				const Sound::abstract_form_answer& answer, 
+				const Sound::answer_form& answer, 
 				const unsigned int channel_count) { return nullptr; }
 		};
 		

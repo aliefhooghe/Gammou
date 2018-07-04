@@ -119,22 +119,12 @@ namespace Gammou {
 			//	multi_channel_variable<double> m_prev_output;
 			};
 
-			class saw_factory : public plugin_factory {
+			class saw_factory : public default_plugin_factory<saw> {
 
 			public:
 				saw_factory()
-					: plugin_factory("Saw", "Oscillator", saw_component_id) {}
+					: default_plugin_factory<saw>("Saw", "Oscillator", saw_component_id) {}
 				~saw_factory() {}
-
-			protected:
-				abstract_sound_component *create_sound_component(data_source& source, const unsigned int channel_count) override
-				{
-					return new saw(channel_count);
-				}
-				abstract_sound_component *create_sound_component(const abstract_form_answer& answer_form, const unsigned int channel_count) override
-				{
-					return new saw(channel_count);
-				}
 			};
 
 
