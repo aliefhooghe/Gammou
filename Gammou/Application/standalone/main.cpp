@@ -15,7 +15,6 @@
 
 #include <RtAudio.h>
 
-#include "unistd.h"
 
 struct snd_callback_data{
     Gammou::Sound::synthesizer *synthesizer;
@@ -52,15 +51,19 @@ int main()
     parameters.deviceId = dac.getDefaultOutputDevice();
     parameters.nChannels = 2;
     parameters.firstChannel = 0;
-    unsigned int sampleRate = 44100;
+    unsigned int sampleRate = 48000;
     unsigned int bufferFrames = 256; // 256 sample frames
 
     std::mutex synthesizer_mutex;
 
-    Gammou::Sound::jit_frame_processor jit_processor1;
-    Gammou::Sound::jit_frame_processor jit_processor2;
+    Gammou::Sound::jit_frame_processor processor1;
+    Gammou::Sound::jit_frame_processor processor2;
+
+    //Gammou::Process::bytecode_frame_processor<double> processor1;
+    //Gammou::Process::bytecode_frame_processor<double> processor2;
+
     Gammou::Sound::synthesizer synthesizer(
-        jit_processor1, jit_processor2, 
+        processor1, processor2, 
         2, 2, 128, 16);
 
 	Gammou::Gui::synthesizer_gui window(&synthesizer, &synthesizer_mutex);

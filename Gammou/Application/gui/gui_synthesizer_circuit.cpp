@@ -59,7 +59,6 @@ namespace Gammou {
 
 					const auto& request_form = 
 						m_complete_component_factory->get_plugin_request_form(m_creation_factory_id);
-
 					
 					//	If request_form is NOT empty
 					if (! std::holds_alternative<Sound::empty_request_form>(request_form))
