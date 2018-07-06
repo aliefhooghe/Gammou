@@ -60,7 +60,7 @@ int main()
     Gammou::Sound::jit_frame_processor processor2;
 
     //Gammou::Process::bytecode_frame_processor<double> processor1;
-    //Gammou::Process::bytecode_frame_processor<double> processor2;
+   // Gammou::Process::bytecode_frame_processor<double> processor2;
 
     Gammou::Sound::synthesizer synthesizer(
         processor1, processor2, 

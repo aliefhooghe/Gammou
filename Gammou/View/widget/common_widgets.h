@@ -47,13 +47,13 @@ namespace Gammou {
 				const int x, const int y, 
 				const unsigned int width, 
 				const unsigned int height,
-				const color color,
+				const color color = cl_black,
 				const unsigned int font_size = 10);
 
 			label(
 				const std::string& text, 
 				const rectangle& rect,
-				const color color,
+				const color color = cl_black,
 				const unsigned int font_size = 10);
 			~label() {}
 
@@ -76,8 +76,12 @@ namespace Gammou {
 
 		public: 
 			push_button(
-				std::function<void(push_button*)> push_action, const std::string& text, const int x, const int y, 
-				const unsigned int width = 95, const unsigned int height = 27, const unsigned int font_size = 10);
+				std::function<void(push_button*)> push_action, 
+				const std::string& text, 
+				const int x, const int y, 
+				const unsigned int width = 95, 
+				const unsigned int height = 27, 
+				const unsigned int font_size = 10);
 			// TODO rectangle ctor
 			virtual ~push_button() {};
 

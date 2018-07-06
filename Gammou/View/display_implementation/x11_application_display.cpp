@@ -13,6 +13,16 @@ namespace Gammou {
         {
         }
 
+        x11_application_display::x11_application_display(
+            x11_application_display *parent, 
+            View::widget& root_widget)
+        :   abstract_display(root_widget),
+            abstract_x11_display(root_widget),
+            abstract_application_display(root_widget)
+        {
+            // TODO
+        }
+
         x11_application_display::~x11_application_display()
         {
         }

@@ -13,11 +13,16 @@
 #include <plugin_management/abstract_plugin_factory.h>
 #include "plugins_ids.h"
 
-#define EXPORT_DEFAULT_FACTORY(sound_component_type, factory_name, category, factory_id) \
+
+#define EXPORT_FACTORY(factory_type, ...) \
 	DYNAMIC_EXPORT( \
 		abstract_plugin_factory *make_factory() \
-			{ return new default_plugin_factory<sound_component_type>(factory_name, category, factory_id);}) \
+			{return new factory_type(__VA_ARGS__);}) \
 	DYNAMIC_EXPORT( \
 		void delete_factory(abstract_plugin_factory *factory) {delete factory;})
-		
+
+#define EXPORT_DEFAULT_FACTORY(sound_component_type, factory_name, category, factory_id) \
+	EXPORT_FACTORY(default_plugin_factory<sound_component_type>, factory_name, category, factory_id)
+
+
 #endif

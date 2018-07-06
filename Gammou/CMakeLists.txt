@@ -60,6 +60,8 @@ set(GUI_SRC
 	Application/gui/gui_synthesizer_circuit.cpp
 	Application/gui/synthesizer_gui.h
 	Application/gui/synthesizer_gui.cpp
+	Application/gui/plugin_request_dialog.h
+	Application/gui/plugin_request_dialog.cpp
 	Application/gui/control_component/control_component_ids.h
 	Application/gui/control_component/control_sound_component.h
 	Application/gui/control_component/control_sound_component.cpp
@@ -91,9 +93,12 @@ set(PERSISTENCE_SRC
 if(GAMMOU_STANDALONE_BUILD)
     set_option(VIEW_APP ON) # Enable Application Window in View
     
-	set(RTAUDIO_DIR "${CMAKE_SOURCE_DIR}/../3rdparty/rtaudio")
+	set(
+    RTAUDIO_DIR "${CMAKE_SOURCE_DIR}/../3rdparty/rtaudio"
+    CACHE PATH ""  
+  )
 	
-    add_executable(gammou_standalone
+  add_executable(gammou_standalone
     	Application/standalone/main.cpp
 		${GUI_SRC} 
 		${PERSISTENCE_SRC}

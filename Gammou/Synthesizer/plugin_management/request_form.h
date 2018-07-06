@@ -3,7 +3,7 @@
 
 #include <string>
 #include <variant>
-#include <list>
+#include <deque>
 #include <memory>
 
 namespace Gammou {
@@ -32,32 +32,29 @@ namespace Gammou {
 		//	Requests
 
 		struct range_request {
-			const std::string name;
-			const std::string description;
 			const int min;
 			const int max;
 		};
 
 		struct path_request {
-			const std::string name;
-			const std::string description;
 			const std::string extension;
 		};
 
 		struct choice_request {
-			const std::string name;
-			const std::string description;
-			const std::list<std::string> choices;
+			const std::deque<std::string> choices;
 		};
 
-
-		typedef std::variant<
-			range_request,
-			path_request,
-			choice_request> request;
+		struct request {
+			const std::string name;
+			const std::string description;
+			const std::variant <
+					range_request,
+					path_request,
+					choice_request > req;
+		};
 
 		struct empty_request_form {};
-		typedef std::list<request> request_list;
+		typedef std::deque<request> request_list;
 
 		typedef std::variant<
 			empty_request_form,
@@ -94,7 +91,7 @@ namespace Gammou {
 					choice_answer> answer;
 
 		struct empty_answer_form {};
-		typedef std::list<answer> answer_list;
+		typedef std::deque<answer> answer_list;
 
 		typedef std::variant<
 					empty_answer_form,
@@ -110,7 +107,6 @@ namespace Gammou {
 			container_append(list, std::forward<Answers&&>(answers)...);
 			return std::move(ret);
 		}
-
 
 	} /* Sound */
 

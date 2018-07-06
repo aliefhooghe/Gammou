@@ -2,6 +2,7 @@
 #include <map>
 
 #include "gui_synthesizer_circuit.h"
+#include "plugin_request_dialog.h"
 
 namespace Gammou {
 
@@ -60,11 +61,22 @@ namespace Gammou {
 					const auto& request_form = 
 						m_complete_component_factory->get_plugin_request_form(m_creation_factory_id);
 					
-					//	If request_form is NOT empty
-					if (! std::holds_alternative<Sound::empty_request_form>(request_form))
-						throw std::runtime_error("Factory Request not handled!");
+					std::unique_ptr<Sound::answer_form> answer_form;
 
-					const Sound::answer_form answer{Sound::empty_answer_form{}};
+					//	If request_form is empty
+					if (std::holds_alternative<Sound::empty_request_form>(request_form)) {
+						answer_form = std::make_unique<Sound::answer_form>
+							(Sound::empty_answer_form{});
+					}
+					else{
+						auto& request_list = 
+							std::get<Sound::request_list>(request_form);
+
+						plugin_request_dialog dialog(request_list);
+						dialog.show("Plugin Properties");
+						// TODO handle error !!!!
+						answer_form = dialog.get_answer_form();
+					}
 
 					DEBUG_PRINT("Creating a %u-channel component\n", m_components_channel_count);
 
@@ -74,7 +86,7 @@ namespace Gammou {
 								m_creation_factory_id,
 								convert_x(x),
 								convert_y(y),
-								answer,
+								*answer_form,
 								m_components_channel_count);
 
 					lock_circuit();

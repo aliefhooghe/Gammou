@@ -4,7 +4,6 @@
 #include "cairo_definition.h"
 #include "abstract_display.h"
 
-
 #include <thread>
 
 #include <X11/Xlib.h>
@@ -21,6 +20,7 @@ namespace Gammou {
 
 		public:
 			abstract_x11_display(View::widget& root_widget);
+			abstract_x11_display(abstract_x11_display& parent, View::widget& node_widget);
 			virtual  ~abstract_x11_display();
 
             bool is_open() override;

@@ -10,11 +10,19 @@ namespace Gammou {
 
 	namespace View {
 
-        abstract_x11_display::abstract_x11_display(
-            View::widget& root_widget)
+        abstract_x11_display::abstract_x11_display(View::widget& root_widget)
         :   abstract_display(root_widget),
             m_running(false)
         {
+        }
+
+        abstract_x11_display::abstract_x11_display(
+            abstract_x11_display& parent, 
+            View::widget& node_widget)
+        :   abstract_display(node_widget),
+            m_running(false)
+        {
+            //  TODO : m_parent_hwnd = ...
         }
 
         abstract_x11_display::~abstract_x11_display()

@@ -7,6 +7,9 @@
 #include "synthesizer_gui.h"
 #include "gui_properties.h"
 
+// for test
+#include "plugin_request_dialog.h"
+
 namespace Gammou {
 
 	namespace Gui {
@@ -120,19 +123,31 @@ namespace Gammou {
 			add_widget(std::move(tool_box));
 
 			///////////
-			/*
-			add_widget(
-				new View::push_button(
-					[this](View::push_button *self) {
-						resize(get_width() + 50, get_height());
-					},
-					"Test", 280, 10
-				)
-			);
-			*/
+			
+			
+			
+
+			////////////////////////////////////////////////////////////
+			//////////////			REQUEST DIALOG TEST		////////////
+			////////////////////////////////////////////////////////////
+/*
+			auto form = 
+				Sound::create_request_form(
+					Sound::request{"Path", "", Sound::path_request{".wav"}},
+					Sound::request{"Choice", "", Sound::choice_request{{"Faible", "Moyen" , "Fort"}}},
+					Sound::request{"Range", "", Sound::range_request{0, 10}}
+				);
+
+
+			auto dialog = 
+				std::make_unique<plugin_request_dialog>(
+					std::get<Sound::request_list>(*form));
+
+			dialog->show("Plugin Properties");
+*/
+
 			init_main_factory();
 			DEBUG_PRINT("SYN GUI CTOR finnished\n");
-			// scale(0.8f); Ableton
 		}
 
 		synthesizer_gui::~synthesizer_gui()

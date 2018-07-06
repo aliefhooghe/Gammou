@@ -18,6 +18,7 @@ namespace Gammou {
 
 		public:
 			abstract_win32_display(View::widget& root_widget);
+			abstract_win32_display(abstract_win32_display& parent,View::widget& node);
 			virtual  ~abstract_win32_display();
 
 			bool is_open() override;
@@ -31,6 +32,7 @@ namespace Gammou {
 
 			HWND get_window_handle() const;
 		private:
+			void register_window_class();
 			static LRESULT CALLBACK windowProc(
 				HWND window,
 				UINT msg,

@@ -14,6 +14,7 @@ namespace Gammou {
 
         public:
             x11_application_display(View::widget& root_widget);
+            x11_application_display(x11_application_display *parent, View::widget& root_widget);
             ~x11_application_display();
 
             void open(const std::string& title) override;

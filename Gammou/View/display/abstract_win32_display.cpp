@@ -14,20 +14,18 @@ namespace Gammou {
 			m_has_focus(false),
 			m_is_open(false)
 		{
-			WNDCLASS window_class;
+			register_window_class();
+		}
 
-			window_class.style = CS_DBLCLKS;
-			window_class.lpfnWndProc = windowProc;
-			window_class.cbClsExtra = 0;
-			window_class.cbWndExtra = 0;
-			window_class.hInstance = nullptr;
-			window_class.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
-			window_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
-			window_class.hbrBackground = nullptr;
-			window_class.lpszMenuName = nullptr;
-			window_class.lpszClassName = TEXT(WNDCLASS_NAME);
-
-			RegisterClass(&window_class);
+		abstract_win32_display::abstract_win32_display(
+			abstract_win32_display& parent, 
+			View::widget& node_widget)
+		:	abstract_display(node_widget),
+			m_window_handle(nullptr),
+			m_has_focus(false),
+			m_is_open(false)
+		{
+			register_window_class();
 		}
 
 		abstract_win32_display::~abstract_win32_display()
@@ -106,6 +104,24 @@ namespace Gammou {
 		HWND abstract_win32_display::get_window_handle() const
 		{
 			return m_window_handle;
+		}
+
+		void abstract_win32_display::register_window_class()
+		{
+			WNDCLASS window_class;
+
+			window_class.style = CS_DBLCLKS;
+			window_class.lpfnWndProc = windowProc;
+			window_class.cbClsExtra = 0;
+			window_class.cbWndExtra = 0;
+			window_class.hInstance = nullptr;
+			window_class.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+			window_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
+			window_class.hbrBackground = nullptr;
+			window_class.lpszMenuName = nullptr;
+			window_class.lpszClassName = TEXT(WNDCLASS_NAME);
+
+			RegisterClass(&window_class);
 		}
 
 		LRESULT abstract_win32_display::windowProc(HWND window, UINT msg, WPARAM w_param, LPARAM l_param)

@@ -26,6 +26,8 @@ set(WIDGET_SRC
 	widget/color.cpp
 	widget/common_widgets.h
 	widget/common_widgets.cpp
+	widget/dialog.h
+	widget/dialog.cpp
 	widget/event.h
 	widget/list_box.h
 	widget/list_box.cpp
@@ -45,6 +47,8 @@ add_library(view STATIC
 	cairo_definition.h
 	display/abstract_display.h
 	display/abstract_display.cpp
+	utility/utility.h
+	utility/utility.cpp
 	${WIDGET_SRC}
 )
 
@@ -74,11 +78,14 @@ elseif(UNIX)  # LINUX and OSX
 	
 	target_include_directories(view PUBLIC 
 		${X11_INCLUDE_DIR} 
-		${Xext_INCLUDE_DIR})  
+		${Xext_INCLUDE_DIR}
+	)  
 		
 	target_link_libraries(view PRIVATE 
 		${X11_LIBRARIES} 
-		${Xext_LIBRARY})
+		${Xext_LIBRARY}
+		stdc++fs			# filesystem
+	)
 elseif (NOT WIN32)
     message( FATAL_ERROR "unsupported OS" )
 endif()
