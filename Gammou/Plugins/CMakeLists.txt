@@ -19,7 +19,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 add_subdirectory(../Synthesizer tmp/Synthesizer)
 
 #######################################################
-project(GammouPlugins LANGUAGES CXX)
+project(GammouPlugins LANGUAGES C CXX)	# c is for wav
 set(CMAKE_CXX_STANDARD 17)
 
 if(NOT DEFINED GAMMOU_PLUGINS_OUTPUT_PATH)
@@ -33,7 +33,6 @@ set(GAMMOU_PLUGINS_DIR
 	${GAMMOU_PLUGINS_OUTPUT_PATH}    
 	CACHE PATH "Choose the gammou Plugins directory"
 )
-
 endif()
 
 message( STATUS "Gammou Plugins Will be Built in ${GAMMOU_PLUGINS_OUTPUT_PATH}")
@@ -59,9 +58,19 @@ macro(add_gammou_plugin name)
     endif()
 endmacro()
 
+
 ####################################################################################################################
 ####################################################################################################################
 ####################################################################################################################
+
+##	Lib wav
+
+add_library(wav STATIC wav.h wav.c)
+set_target_properties(wav PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+###############################################
+###############################################
+###############################################
 
 add_gammou_plugin(Template template.cpp)
 add_gammou_plugin(Plugin1 plugin1.cpp)
@@ -73,7 +82,7 @@ add_gammou_plugin(Test test.cpp)
 ############ 	Sampler
 
 add_gammou_plugin(Sampler sampler.cpp)
-
+target_link_libraries(Sampler PRIVATE 	wav)
 
 ############ 	Joystick Plugin
 
