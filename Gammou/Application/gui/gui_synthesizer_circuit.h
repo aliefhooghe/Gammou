@@ -39,11 +39,10 @@ namespace Gammou {
 
 			bool save_state(Sound::data_sink& data);
 			bool load_state(Sound::data_source& data);
+
 		protected:
-			// Warning : Synthesizer Mutex is alredy lock when add_sound_component_to_frame is called
 			virtual void add_sound_component_to_frame(Sound::abstract_sound_component *sound_component) = 0;
 
-			// 
 			virtual abstract_gui_component *gui_component_by_internal_id(const uint32_t id) = 0;
 
 			void lock_circuit() { m_synthesizer_mutex->lock(); }

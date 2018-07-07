@@ -48,7 +48,7 @@ namespace Gammou {
 				const answer_form& answer_form, 
 				const unsigned int channel_count);
 			
-			void delete_sound_component(abstract_sound_component *component);
+		//	void delete_sound_component(abstract_sound_component *component);
 
 		private:
 			abstract_plugin_factory *factory_by_id(const unsigned int factory_id) const;

@@ -89,10 +89,7 @@ namespace Gammou {
 								*answer_form,
 								m_components_channel_count);
 
-					lock_circuit();
 					add_sound_component_to_frame(&(component->get_sound_component()));
-					unlock_circuit();
-
 					add_gui_component(std::move(component));
 				}
 			}

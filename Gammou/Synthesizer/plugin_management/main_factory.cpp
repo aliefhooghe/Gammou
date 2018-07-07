@@ -117,13 +117,13 @@ namespace Gammou {
 			abstract_plugin_factory *factory = factory_by_id(factory_id);
 			return factory->get_new_sound_component(answer_form, channel_count);
 		}
-
+/*
 		void main_factory::delete_sound_component(abstract_sound_component * component)
 		{
 			abstract_plugin_factory *factory = factory_by_id(component->get_factory_id());
 			factory->delete_sound_component(component);
 		}
-
+*/
 		abstract_plugin_factory * main_factory::factory_by_id(const unsigned int factory_id) const
 		{
 			auto it = m_plugin_factory.find(factory_id);

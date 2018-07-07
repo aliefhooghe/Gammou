@@ -25,7 +25,7 @@ namespace Gammou {
 				std::to_string(integer->get_value()),
 				2 * unit, 2 * unit,
 				6 * unit, 2 * unit,
-				View::cl_black
+				GuiProperties::component_font_color
 			);
 			View::label *label_ptr = &(*label);
 

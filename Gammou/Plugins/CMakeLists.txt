@@ -70,6 +70,11 @@ add_gammou_plugin(BitCrusher bit_crusher.cpp)
 add_gammou_plugin(LadderFilter ladder_filter.cpp)
 add_gammou_plugin(Test test.cpp)
 
+############ 	Sampler
+
+add_gammou_plugin(Sampler sampler.cpp)
+
+
 ############ 	Joystick Plugin
 
 #find_package(SDL2 REQUIRED)
