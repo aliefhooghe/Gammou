@@ -102,5 +102,4 @@ class sampler_factory : public plugin_factory {
 		}
 };
 
-
 EXPORT_FACTORY(sampler_factory)
