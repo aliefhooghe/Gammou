@@ -15,6 +15,8 @@ namespace Gammou {
 
 		win32_application_display::~win32_application_display()
 		{
+			DEBUG_PRINT("Win32 App Display DTOR\n");
+			close();
 		}
 
 		void win32_application_display::open(
@@ -30,7 +32,7 @@ namespace Gammou {
 			non_blocking_close();
 			if (m_window_manager.joinable())
 				m_window_manager.join();
-			destroy_window();
+			//	windows is destroyed by the manager thread
 		}
 
 		void win32_application_display::window_manager(
@@ -63,9 +65,9 @@ namespace Gammou {
 				}
 			}
 			
+			DEBUG_PRINT("Destroying Window\n");
+			self->destroy_window();
 			DEBUG_PRINT("Quiting Window Manager\n");
-
-			// TODO destroy win
 		}
 
 	}	/* View */
