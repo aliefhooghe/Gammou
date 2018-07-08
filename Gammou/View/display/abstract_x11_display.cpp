@@ -125,7 +125,6 @@ namespace Gammou {
             XSetWMNormalHints(m_display, m_window, &constrain);
 
             // 
-
             m_back_buffer = XdbeAllocateBackBufferName(m_display, m_window, XdbeBackground);
             
             //--

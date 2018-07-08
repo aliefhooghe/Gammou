@@ -22,7 +22,14 @@ namespace Gammou {
 		void win32_vst3_display::open(void * host_parent_window)
 		{
 			DEBUG_PRINT("WIN32 VST3 DISPLAY Open Windows\n");
+			m_is_open = true;
 			create_window((HWND)host_parent_window, "");
+		}
+
+		void win32_vst3_display::close()
+		{
+			non_blocking_close();
+			destroy_window();
 		}
 
 		abstract_vst3_view * win32_vst3_display::create_vst3_view_instance()

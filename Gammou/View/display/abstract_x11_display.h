@@ -27,6 +27,7 @@ namespace Gammou {
 
 			virtual void close() override;
 			void non_blocking_close() override;
+
 		protected:
 			void create_window(Display *parent_display, const std::string& title);
 			void sys_redraw_rect(const rectangle& rect);
@@ -35,7 +36,8 @@ namespace Gammou {
             static void x_event_loop(abstract_x11_display *self);
 
             std::thread m_event_loop_thread;
-            bool m_running;
+
+			bool m_running;
 
             Display *m_display;
             Window m_window;

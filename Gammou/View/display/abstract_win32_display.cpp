@@ -10,9 +10,9 @@ namespace Gammou {
 
 		abstract_win32_display::abstract_win32_display(View::widget& root_widget)
 			: abstract_display(root_widget),
+			m_is_open(false),
 			m_window_handle(nullptr),
-			m_has_focus(false),
-			m_is_open(false)
+			m_has_focus(false)
 		{
 			register_window_class();
 		}
@@ -21,9 +21,9 @@ namespace Gammou {
 			abstract_win32_display& parent,
 			View::widget& node_widget)
 			: abstract_display(node_widget),
+			m_is_open(false),
 			m_window_handle(nullptr),
-			m_has_focus(false),
-			m_is_open(false)
+			m_has_focus(false)
 		{
 			register_window_class();
 		}
@@ -37,17 +37,9 @@ namespace Gammou {
 			return m_is_open;
 		}
 
-		void abstract_win32_display::close()
-		{
-			if (m_window_handle)
-				DestroyWindow(m_window_handle);
-			m_window_handle = nullptr;
-			m_is_open = false;
-		}
-
 		void abstract_win32_display::non_blocking_close()
 		{
-			close();
+			m_is_open = false;
 		}
 
 		void abstract_win32_display::create_window(
@@ -78,8 +70,13 @@ namespace Gammou {
 			SetWindowPos(
 				m_window_handle, nullptr, 0, 0, width, height,
 				SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
+		}
 
-			m_is_open = true;
+		void abstract_win32_display::destroy_window()
+		{
+			if (m_window_handle)
+				DestroyWindow(m_window_handle);
+			m_window_handle = nullptr;
 		}
 
 		void abstract_win32_display::sys_redraw_rect(

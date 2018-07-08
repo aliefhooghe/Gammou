@@ -22,14 +22,14 @@ namespace Gammou {
 			virtual  ~abstract_win32_display();
 
 			bool is_open() override;
-
-			virtual void close() override;
 			void non_blocking_close() override;
 
 		protected:
 			void create_window(
 				HWND parent_window, 
 				const std::string& title);
+
+			void destroy_window();
 
 			void sys_redraw_rect(const rectangle& rect);
 
@@ -41,10 +41,10 @@ namespace Gammou {
 				WPARAM w_param,
 				LPARAM l_param);
 
+			bool m_is_open;
 		private:
 			HWND m_window_handle;
 			bool m_has_focus;
-			bool m_is_open;
 		};
 
 	} /* View */

@@ -123,7 +123,7 @@ int wav_save(
 	FILE *fd = fopen(path,"w+");
 
 	// double -> data
-	const unsigned int block_max = 
+	const int block_max = 
 		(1u << (hdr.bit_depth - 1)) - 1;
 	const unsigned int nb_octet = hdr.bit_depth / 8;
 	

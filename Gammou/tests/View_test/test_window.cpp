@@ -83,6 +83,15 @@ namespace Gammou {
                 "Open Explorer",
                 400, 400));
 
+		add_widget(
+			std::make_unique<View::push_button>(
+				[this](View::push_button *p)
+				{
+			get_display()->non_blocking_close();
+				},
+				"Close",
+				600, 400));
+
         add_widget(std::move(list_box_ptr));
     }
 

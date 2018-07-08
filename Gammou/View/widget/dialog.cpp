@@ -23,9 +23,12 @@ namespace Gammou {
             const std::string& window_title)
         {
             dialog_display display(*this);
+			DEBUG_PRINT("Opening Dialog\n");
             display.open(window_title);
+			DEBUG_PRINT("Wainting Dialog\n");
             while (display.is_open())
                 std::this_thread::sleep_for(std::chrono::seconds(1));   //  TODO mieu
+			DEBUG_PRINT("Dialog was closed\n");
         }
 
         //--------

@@ -23,8 +23,7 @@ namespace Gammou {
 
 		private:
 			static void window_manager(win32_application_display *self);
-			bool m_running;
-			//std::thread m_window_manager;
+			std::thread m_window_manager;
 		};
 		
 	} /* View */

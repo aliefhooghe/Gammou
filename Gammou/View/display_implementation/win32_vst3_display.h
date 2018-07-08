@@ -17,6 +17,7 @@ namespace Gammou {
 			~win32_vst3_display();
 
 			void open(void *host_parent_window) override;
+			void close() override;
 			abstract_vst3_view *create_vst3_view_instance() override;
 		};
 

@@ -9,8 +9,7 @@ namespace Gammou {
 			View::widget & root_widget)
 		:	abstract_display(root_widget),
 			abstract_win32_display(root_widget),
-			abstract_application_display(root_widget),
-			m_running(false)
+			abstract_application_display(root_widget)
 		{
 		}
 
@@ -21,24 +20,23 @@ namespace Gammou {
 		void win32_application_display::open(
 			const std::string & title)
 		{
-			m_running = true;
-			//m_window_manager = 
-			//	std::thread(window_manager, this);
-
-			window_manager(this);
+			m_is_open = true;
+			m_window_manager = 
+				std::thread(window_manager, this);
 		}
 
 		void win32_application_display::close()
 		{
-			abstract_win32_display::close();
-			//if (m_window_manager.joinable())
-			//	m_window_manager.join();
+			non_blocking_close();
+			if (m_window_manager.joinable())
+				m_window_manager.join();
+			destroy_window();
 		}
 
 		void win32_application_display::window_manager(
 			win32_application_display *self)
 		{
-			DEBUG_PRINT("Entering Window  MAnager Thread\n");
+			DEBUG_PRINT("Entering Window  Manager Thread\n");
 			//	Create Window
 			// TODO handle parent and title
 			DEBUG_PRINT("Create Window ..\n");
@@ -52,7 +50,7 @@ namespace Gammou {
 
 			DEBUG_PRINT("Entering Win Event Loop\n");
 			
-			while (true) {
+			while (self->is_open()) {
 				DEBUG_PRINT("Getting message.....\n");
 
 				if (GetMessage(&msg, self->get_window_handle(), 0, 0) > 0) {
@@ -65,6 +63,8 @@ namespace Gammou {
 				}
 			}
 			
+			DEBUG_PRINT("Quiting Window Manager\n");
+
 			// TODO destroy win
 		}
 
