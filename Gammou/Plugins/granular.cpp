@@ -1,8 +1,8 @@
 
+#include <cstdlib>
 
 #include "plugin_helper.h"
 #include "wav.h"
-
 
 using namespace Gammou::Sound;
 
@@ -32,6 +32,14 @@ public:
 	void initialize_process() override;
 
 private:
+	inline const double random_grain_pos(
+		const double seed,
+		const double width)
+	{
+		const double r = ((double)(rand() % 65536)) / 65535.0;
+		return seed + width * (2.0 * r - 1.0);
+	}
+
 	wav_t * m_sample;
 	const unsigned int m_grain_count;
 	multi_channel_array<grain> m_grain;
@@ -44,7 +52,7 @@ granular_component::granular_component(
 	wav_t *sample,
 	const unsigned int grain_count,
 	const unsigned int channel_count)
-	: sound_component("Granular", 4, 1, channel_count),
+	: sound_component("Granular", 5, 1, channel_count),
 		m_sample(sample),
 		m_grain_count(grain_count),
 		m_grain(this, grain_count),
@@ -52,9 +60,10 @@ granular_component::granular_component(
 		m_first_grain_time(this)
 {
 	set_input_name("Seed", 0);
-	set_input_name("Radius", 1);
-	set_input_name("Dev", 2);
-	set_input_name("Speed", 3);
+	set_input_name("Width", 1);
+	set_input_name("Radius", 2);
+	set_input_name("Dev", 3);
+	set_input_name("Speed", 4);
 }
 
 granular_component::~granular_component()
@@ -66,7 +75,7 @@ void granular_component::initialize_process()
 {
 	for (unsigned int i = 0; i < m_grain_count; i++) {
 		auto& grain = m_grain[i];
-		grain.output_time = -1.0;
+		grain.output_time = -10.0;
 		grain.signal_time = 0.0;
 	}
 
@@ -79,9 +88,9 @@ void granular_component::process(const double input[])
 	const double dt = get_sample_duration();
 
 	const double seed = input[0];
-	const double radius = 0.01 * input[1];
-	const double dev = 0.01 * input[2];
-
+	const double width = input[1];
+	const double radius = 0.01 * input[2];
+	const double dev = 0.01 * input[3];
 
 	double out = 0.0;
 
@@ -97,11 +106,11 @@ void granular_component::process(const double input[])
 			//	Respawn the grain
 			m_first_grain_time += radius;
 			gr.output_time = m_first_grain_time;
-			gr.signal_time = seed;
+			gr.signal_time = random_grain_pos(seed, width);
 		}
 	}
 
-	m_time += dt * input[3];
+	m_time += dt * input[4];
 	m_output[0] = out;
 }
 
