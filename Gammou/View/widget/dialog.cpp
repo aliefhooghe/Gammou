@@ -14,7 +14,7 @@ namespace Gammou {
             const unsigned int width,
             const unsigned int height,
             const color background)
-        :   panel<>(0, 0, width, height)
+        :   panel<>(0, 0, width, height, background)
         {
 
         }
