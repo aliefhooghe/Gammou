@@ -79,10 +79,11 @@ add_gammou_plugin(BitCrusher bit_crusher.cpp)
 add_gammou_plugin(LadderFilter ladder_filter.cpp)
 add_gammou_plugin(Test test.cpp)
 
-############ 	Sampler
-
 add_gammou_plugin(Sampler sampler.cpp)
 target_link_libraries(Sampler PRIVATE 	wav)
+
+add_gammou_plugin(Granular granular.cpp)
+target_link_libraries(Granular PRIVATE 	wav)
 
 ############ 	Joystick Plugin
 

@@ -16,16 +16,13 @@ int wav_free(wav_t *wav);
 unsigned int wav_get_sample_count(const wav_t *wav);
 unsigned int wav_get_channel_count(const wav_t *wav);
 unsigned int wav_get_samplerate(const wav_t *wav);
-double wav_get_sample(
-  wav_t *wav,
-  const unsigned int pos, 
+double *wav_get_channel(wav_t *wav, const unsigned int channel);
+
+double wav_get_value(
+  const wav_t *wav,
+  const double t, 
   const unsigned int channel);
 
-void wav_set_sample(
-  wav_t *wav,
-  const double sample, 
-  const unsigned int pos, 
-  const unsigned int channel);
 
 #ifdef __cplusplus
 }

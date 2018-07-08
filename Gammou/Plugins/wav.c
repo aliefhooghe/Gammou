@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
+
 #include "wav.h"
 
 struct wav_t {
@@ -229,27 +231,51 @@ unsigned int wav_get_samplerate(const wav_t *wav)
 	return wav->sample_rate;
 }
 
-double wav_get_sample(
-	wav_t *wav,
-	const unsigned int pos, 
+double *wav_get_channel(
+	wav_t *wav, 
 	const unsigned int channel)
 {
-	if (channel < wav->channel_count &&
-		pos < wav->sample_count)
-		return wav->data[channel][pos];
+	if (channel < wav->channel_count)
+		return wav->data[channel];
+	else
+		return NULL;
+}
+
+static double wav_get_sample(
+	const wav_t *wav,
+	const unsigned int index,
+	const unsigned int channel)
+{
+	//	No channel check because used inside the libe
+
+	if (index < wav->sample_count)
+		return wav->data[channel][index];
 	else
 		return 0.0;
 }
 
-void wav_set_sample(
-	wav_t *wav,
-	const double sample, 
-	const unsigned int pos, 
+double wav_get_value(
+	const wav_t *wav,
+	const double t, 
 	const unsigned int channel)
 {
-	if (channel < wav->channel_count &&
-		pos < wav->sample_count)
-		wav->data[channel][pos] = sample;
+	if (channel < wav->channel_count) {
+		double int_index;
+		double dec_index =
+			modf(t *(double)wav->sample_rate, &int_index);
+
+		//	linear interpolation
+
+		const double a = wav_get_sample(wav, (unsigned int)int_index, 	0);
+		const double b = wav_get_sample(wav, (unsigned int)int_index + 1, 0);
+
+		return (a * (1.0 - dec_index) + b * dec_index);
+	}	
+	else {
+		return 0.0;
+	}
 }
+
+
 
 /////

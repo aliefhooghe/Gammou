@@ -50,14 +50,7 @@ void sampler_component::process(const double input[])
 	const double pos = 
 		m_current_pos + input[1];
 
-	double int_index;
-	double dec_index = 
-		 modf(pos *(double)wav_get_samplerate(m_sample), &int_index);
-
-	const double a = wav_get_sample(m_sample, (unsigned int)int_index, 	0);
-	const double b = wav_get_sample(m_sample, (unsigned int)int_index + 1, 0);
-
-	m_output[0] = (a * (1.0 - dec_index) + b * dec_index);
+	m_output[0] = wav_get_value(m_sample, pos, 0);
 	m_current_pos += input[0] * get_sample_duration();
 }
 

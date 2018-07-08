@@ -85,7 +85,9 @@ namespace Gammou {
 		class multi_channel_array : private multi_channel_data{
 
 		public:
-			multi_channel_array(polyphonic_sound_component *owner, const unsigned int size);
+			multi_channel_array(
+				polyphonic_sound_component *owner, 
+				const unsigned int size);
 			virtual ~multi_channel_array() {}
 
 			inline T& operator [](const unsigned int index);
