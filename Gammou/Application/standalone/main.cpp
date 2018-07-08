@@ -66,6 +66,8 @@ int main()
         processor1, processor2, 
         2, 2, 128, 16);
 
+    synthesizer.set_sample_rate(48000);
+
 	Gammou::Gui::synthesizer_gui window(&synthesizer, &synthesizer_mutex);
     Gammou::View::application_display display(window);
 

@@ -80,17 +80,23 @@ namespace Gammou {
 
 					DEBUG_PRINT("Creating a %u-channel component\n", m_components_channel_count);
 
-					std::unique_ptr<gui_sound_component>
-						component = 
-							m_complete_component_factory->get_new_complete_component(
-								m_creation_factory_id,
-								convert_x(x),
-								convert_y(y),
-								*answer_form,
-								m_components_channel_count);
+					try {
+						std::unique_ptr<gui_sound_component>
+							component = 
+								m_complete_component_factory->get_new_complete_component(
+									m_creation_factory_id,
+									convert_x(x),
+									convert_y(y),
+									*answer_form,
+									m_components_channel_count);
 
-					add_sound_component_to_frame(&(component->get_sound_component()));
-					add_gui_component(std::move(component));
+						add_sound_component_to_frame(&(component->get_sound_component()));
+						add_gui_component(std::move(component));
+					}
+					catch(...) {
+						DEBUG_PRINT("Failed to create Component\n");
+					}
+
 				}
 			}
 

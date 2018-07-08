@@ -122,29 +122,6 @@ namespace Gammou {
 			tool_box->add_widget(std::move(master_volume));
 			add_widget(std::move(tool_box));
 
-			///////////
-			
-			
-			
-
-			////////////////////////////////////////////////////////////
-			//////////////			REQUEST DIALOG TEST		////////////
-			////////////////////////////////////////////////////////////
-/*
-			auto form = 
-				Sound::create_request_form(
-					Sound::request{"Path", "", Sound::path_request{".wav"}},
-					Sound::request{"Choice", "", Sound::choice_request{{"Faible", "Moyen" , "Fort"}}},
-					Sound::request{"Range", "", Sound::range_request{0, 10}}
-				);
-
-
-			auto dialog = 
-				std::make_unique<plugin_request_dialog>(
-					std::get<Sound::request_list>(*form));
-
-			dialog->show("Plugin Properties");
-*/
 
 			init_main_factory();
 			DEBUG_PRINT("SYN GUI CTOR finnished\n");
