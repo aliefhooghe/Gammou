@@ -226,38 +226,26 @@ if(GAMMOU_VST3_BUILD)
     if(WIN32)                   # MICROSOFT WINDOWS
         target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/dllmain.cpp")
 		set_target_properties(gammou PROPERTIES SUFFIX ".vst3")
-		set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory /EXPORT:VSTPluginMain")
+		set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory")
 		
 		# Copy the target in VST3 directory	
 		add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
 	
-		# Vst2 compatibility
-		target_sources(gammou PRIVATE
-			${VST3_SDK_DIR}/public.sdk/source/common/memorystream.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/eventlist.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/hostclasses.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/parameterchanges.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/processdata.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.h
-			${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffect.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffectx.cpp
-		)
 		
-    elseif(UNIX AND NOT APPLE)  # LINUX
-    	# Vst2 compatibility
-		target_sources(gammou PRIVATE
-			${VST3_SDK_DIR}/public.sdk/source/common/memorystream.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/eventlist.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/hostclasses.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/parameterchanges.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/processdata.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.h
-			${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffect.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffectx.cpp
-		)
+		# Vst2 compatibility + export /EXPORT:VSTPluginMain
+		#target_sources(gammou PRIVATE
+		#	${VST3_SDK_DIR}/public.sdk/source/common/memorystream.cpp
+		#	${VST3_SDK_DIR}/public.sdk/source/vst/hosting/eventlist.cpp
+		#	${VST3_SDK_DIR}/public.sdk/source/vst/hosting/hostclasses.cpp
+		#	${VST3_SDK_DIR}/public.sdk/source/vst/hosting/parameterchanges.cpp
+		#	${VST3_SDK_DIR}/public.sdk/source/vst/hosting/processdata.cpp
+		#	${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.h
+		#	${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.cpp
+		#	${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffect.cpp
+		#	${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffectx.cpp
+		#)
 		
+    elseif(UNIX AND NOT APPLE)  # LINUX		
         target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/linuxmain.cpp")
     elseif(APPLE)               # Apple OSX
         target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/macmain.cpp")
@@ -277,16 +265,16 @@ endif()
 
 ## View Test
 
-if(UNIX) # no win32 app backend for now
-	set_option(VIEW_APP ON)
-	add_executable(view_test
-		tests/View_test/main.cpp
-		tests/View_test/test_window.cpp
-		tests/View_test/test_window.h
-	)
-	target_link_libraries(view_test stdc++fs view)
-	target_compile_definitions(view_test PRIVATE GAMMOU_VIEW_APP)
-endif()
+
+set_option(VIEW_APP ON)
+add_executable(view_test
+	tests/View_test/main.cpp
+	tests/View_test/test_window.cpp
+	tests/View_test/test_window.h
+)
+target_link_libraries(view_test view)
+target_compile_definitions(view_test PRIVATE GAMMOU_VIEW_APP)
+
 
 ## 
 

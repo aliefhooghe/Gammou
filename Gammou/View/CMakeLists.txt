@@ -13,7 +13,6 @@ endif()
 project(View LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 
-option(VIEW_APP "Provide Application Window class" OFF)
 option(VIEW_VST3 "Provide VST3 Window class" OFF)
 
 #######################################################
@@ -47,10 +46,11 @@ add_library(view STATIC
 	cairo_definition.h
 	display/abstract_display.h
 	display/abstract_display.cpp
-	utility/utility.h
-	utility/utility.cpp
 	${WIDGET_SRC}
 )
+
+#	utility/utility.h
+#	utility/utility.cpp
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules")
 find_package(Cairo REQUIRED)
@@ -90,6 +90,7 @@ elseif (NOT WIN32)
     message( FATAL_ERROR "unsupported OS" )
 endif()
 
+#	VST3 Display
 
 if(VIEW_VST3)
 	set_target_properties(view PROPERTIES POSITION_INDEPENDENT_CODE ON)  # Allow Modules objects to be built
@@ -114,24 +115,25 @@ if(VIEW_VST3)
 	
 endif()
 	
-if(VIEW_APP)
-	target_sources(view PRIVATE
-		display/abstract_application_display.h
-	    display/abstract_application_display.cpp
-	)
+#	Classic display
 	
-	if(WIN32)
-		target_sources(view PRIVATE
-			display_implementation/win32_application_display.h
-			display_implementation/win32_application_display.cpp
-		)
-	elseif(UNIX)
-		target_sources(view PRIVATE
-			display_implementation/x11_application_display.h
-			display_implementation/x11_application_display.cpp
-		)
-	endif()
+target_sources(view PRIVATE
+	display/abstract_application_display.h
+    display/abstract_application_display.cpp
+)
+	
+if(WIN32)
+	target_sources(view PRIVATE
+		display_implementation/win32_application_display.h
+		display_implementation/win32_application_display.cpp
+	)
+elseif(UNIX)
+	target_sources(view PRIVATE
+		display_implementation/x11_application_display.h
+		display_implementation/x11_application_display.cpp
+	)
 endif()
+
 	
 
 

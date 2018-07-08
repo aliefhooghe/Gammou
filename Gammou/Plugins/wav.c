@@ -13,6 +13,14 @@ struct wav_t {
   double** data;
 };
 
+// Trick from gist.github.com/PhilCK/1534763
+#ifdef __GNUC__
+#define PACKED(struct_decl) struct_decl __attribute__((__packed__))
+#else
+#define PACKED(struct_decl) __pragma( pack(push, 1) ) struct_decl __pragma( pack(pop) )
+#endif
+
+PACKED(
 struct wav_file_header {                // En tete wav
   char RIFF[4];
   unsigned int taille_m8;
@@ -26,7 +34,7 @@ struct wav_file_header {                // En tete wav
   unsigned short int bit_depth;
   char data_magic[4];
   unsigned int data_size;
-} __attribute__ ((packed));
+});
 
 static void wav_alloc(wav_t *wav)
 {

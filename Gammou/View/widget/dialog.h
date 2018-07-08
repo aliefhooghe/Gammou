@@ -2,7 +2,10 @@
 #define VIEW_DIALOG_H_
 
 #include <view.h>
+
+#ifndef _WIN32
 #include <filesystem>
+#endif
 
 namespace Gammou {
 
@@ -20,7 +23,11 @@ namespace Gammou {
                 virtual void show(const std::string& window_title = "");
         };
 
-        class file_explorer_dialog : public dialog {
+        class file_explorer_dialog 
+#ifndef _WIN32			
+			: public dialog 
+#endif
+		{
 
         public:
             file_explorer_dialog(
@@ -29,23 +36,25 @@ namespace Gammou {
             virtual ~file_explorer_dialog() {}            
 
             bool get_filename(std::string& name);
-
+#ifdef _WIN32	
+			void show(const std::string& window_title = "");
+#endif
             static bool path_dialog(
                 std::string & path, 
                 const std::string & title, 
                 const std::string & ext);
 
-        protected:
+        private:
+			bool m_filename_was_set;
+			std::string m_filename;
+#ifndef _WIN32
             std::filesystem::path get_path_by_id(const unsigned int id);
-
             void update_list_box();
-            
-            bool m_filename_was_set;
-            std::string m_filename;
-
+                      
             std::filesystem::path m_current_path;
             View::list_box *m_list_box;
-    };
+#endif
+		};
 
     } /* View */
 

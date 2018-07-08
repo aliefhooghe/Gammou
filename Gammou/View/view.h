@@ -14,8 +14,6 @@
 #include "widget/window_widget.h"
 #include "widget/dialog.h"
 
-#include "utility/utility.h"
-
 //----------------------------------------------------------------------
 #ifdef __linux__
 

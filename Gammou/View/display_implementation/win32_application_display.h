@@ -22,9 +22,9 @@ namespace Gammou {
 			void close() override;
 
 		private:
-			static void win_event_loop(win32_application_display *self);
+			static void window_manager(win32_application_display *self);
 			bool m_running;
-			std::thread m_event_loop;
+			//std::thread m_window_manager;
 		};
 		
 	} /* View */

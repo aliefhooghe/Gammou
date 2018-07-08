@@ -1,4 +1,9 @@
 
+
+#ifdef _WIN32	
+#include <Windows.h>
+#endif
+
 #include "dialog.h"
 
 namespace Gammou {
@@ -28,7 +33,9 @@ namespace Gammou {
         file_explorer_dialog::file_explorer_dialog(
             const std::string& initial_path,
             const color background)
-        :   dialog(300, 400, background),
+			:
+#ifndef _WIN32
+			dialog(300, 400, background),
             m_filename_was_set(false),
             m_current_path(initial_path)
         {
@@ -84,6 +91,10 @@ namespace Gammou {
 
 
             update_list_box();
+#else
+			m_filename_was_set(false)
+		{
+#endif
         }
 
         bool file_explorer_dialog::get_filename(std::string& name)
@@ -94,6 +105,48 @@ namespace Gammou {
             }
             return false;
         }
+
+#ifdef _WIN32	
+		void file_explorer_dialog::show(const std::string& window_title)
+		{
+			const std::string ext = "";	// will be used as parameter
+			OPENFILENAMEA dialog;
+
+			const char *cext = ext.c_str();
+			const unsigned int ext_len = static_cast<unsigned int>(ext.size());
+			char cpath[256] = ""; // ..[0] = '\0'
+			char filter[256];
+
+			// 
+			for (unsigned int i = 0; i < ext_len; ++i) {
+				filter[i] = cext[i];
+				filter[i + ext_len + 3] = cext[i];
+			}
+
+			filter[ext_len] = '\0';
+			filter[ext_len + 1] = '*';
+			filter[ext_len + 2] = '.';
+			filter[(2 * ext_len) + 3] = '\0';
+			filter[(2 * ext_len) + 4] = '\0';
+
+			std::memset(&dialog, 0, sizeof(dialog));
+
+			dialog.lStructSize = sizeof(dialog);
+			dialog.hwndOwner = nullptr;
+			dialog.hInstance = nullptr; //
+			dialog.lpstrFilter = filter;
+			dialog.lpstrFile = cpath;
+			dialog.nMaxFile = 256;
+			dialog.lpstrTitle = window_title.c_str();
+			dialog.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+			if (GetOpenFileNameA(&dialog)) {
+				m_filename = std::string(cpath);
+				m_filename_was_set = true;
+			}
+
+		}
+#endif
 
         bool file_explorer_dialog::path_dialog(
                     std::string & path, 
@@ -110,7 +163,7 @@ namespace Gammou {
 
             return false;
         }
-
+#ifndef _WIN32
         std::filesystem::path file_explorer_dialog::get_path_by_id(const unsigned int id)
         {
             unsigned int i = 0;
@@ -138,7 +191,7 @@ namespace Gammou {
 
             }
         }
-
+#endif
     }   /* View */
 
 }   /* Gammou */

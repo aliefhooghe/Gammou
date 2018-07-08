@@ -47,6 +47,7 @@ END_FACTORY
 
 
 // Vst 2
+/*
 #ifdef _WIN32
 
 #include "public.sdk/source/vst/vst2wrapper/vst2wrapper.h"
@@ -62,3 +63,4 @@ Steinberg::Vst::Vst2Wrapper::AudioEffect *createEffectInstance(audioMasterCallba
 }
 
 #endif
+*/

@@ -13,7 +13,7 @@ if(WIN32)
     # Todo a refaire
     # Ultra degeu
 	
-	set(Cairo_DIR "D:/Gammou/Cairo")
+	set(Cairo_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../3rdparty/Cairo")
     set(Cairo_INCLUDE_DIRS "${Cairo_DIR}/include")
 	set(Cairo_LIB_DIR "${Cairo_DIR}/lib")
 	
@@ -32,7 +32,7 @@ if(WIN32)
     find_package_handle_standard_args(Cairo DEFAULT_MSG Cairo_INCLUDE_DIRS Cairo_LIBS)
 else()
     # On MacOS, should be installed via Macports
-    # On Ubuntu, install with: apt-get install libcairo2-dev
+    # On debian based linux, install with: apt-get install libcairo2-dev
     find_path(Cairo_INCLUDE_DIRS cairo.h PATH_SUFFIXES cairo)
     find_library(_Cairo_LIB cairo)
     set(Cairo_LIBS ${_Cairo_LIB})

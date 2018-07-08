@@ -77,7 +77,6 @@ add_gammou_plugin(Plugin1 plugin1.cpp)
 add_gammou_plugin(Tanh tanh.cpp)
 add_gammou_plugin(BitCrusher bit_crusher.cpp)
 add_gammou_plugin(LadderFilter ladder_filter.cpp)
-add_gammou_plugin(Test test.cpp)
 
 add_gammou_plugin(Sampler sampler.cpp)
 target_link_libraries(Sampler PRIVATE 	wav)

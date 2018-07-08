@@ -9,7 +9,7 @@ namespace Gammou {
 	namespace View {
 
 		abstract_win32_display::abstract_win32_display(View::widget& root_widget)
-		:	abstract_display(root_widget),
+			: abstract_display(root_widget),
 			m_window_handle(nullptr),
 			m_has_focus(false),
 			m_is_open(false)
@@ -18,9 +18,9 @@ namespace Gammou {
 		}
 
 		abstract_win32_display::abstract_win32_display(
-			abstract_win32_display& parent, 
+			abstract_win32_display& parent,
 			View::widget& node_widget)
-		:	abstract_display(node_widget),
+			: abstract_display(node_widget),
 			m_window_handle(nullptr),
 			m_has_focus(false),
 			m_is_open(false)
@@ -51,26 +51,32 @@ namespace Gammou {
 		}
 
 		void abstract_win32_display::create_window(
-			HWND parent_window, 
+			HWND parent_window,
 			const std::string & title)
 		{
-			// System coordinate
-			const unsigned int system_width = get_display_width();
-			const unsigned int system_height = get_display_height();
+			const unsigned int width = get_display_width();
+			const unsigned int height = get_display_height();
 
 			if (m_window_handle != nullptr)
 				DestroyWindow(m_window_handle);
 
+			DWORD style = WS_VISIBLE;
+
+			if (parent_window != nullptr)
+				style |= WS_CHILD;
+			
+
 			m_window_handle =
 				CreateWindowA(
-					WNDCLASS_NAME, title.c_str(),
-					/*WS_CHILD |*/ WS_VISIBLE,
-					0, 0, system_width, system_height,
-					parent_window, nullptr, nullptr, this);
+					WNDCLASS_NAME,
+					title.c_str(), style,
+					0, 0, width, height,
+					parent_window, nullptr, nullptr,
+					this);
 
 			// resize
 			SetWindowPos(
-				m_window_handle, nullptr, 0, 0, system_width, system_height,
+				m_window_handle, nullptr, 0, 0, width, height,
 				SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
 
 			m_is_open = true;
@@ -110,7 +116,9 @@ namespace Gammou {
 		{
 			WNDCLASS window_class;
 
-			window_class.style = CS_DBLCLKS;
+			memset(&window_class, 0, sizeof(WNDCLASS));
+
+			window_class.style = CS_DBLCLKS; // CS_HREDRAW |CS_VREDRAW; redraw if size change
 			window_class.lpfnWndProc = windowProc;
 			window_class.cbClsExtra = 0;
 			window_class.cbWndExtra = 0;
@@ -126,111 +134,115 @@ namespace Gammou {
 
 		LRESULT abstract_win32_display::windowProc(HWND window, UINT msg, WPARAM w_param, LPARAM l_param)
 		{
-			if (msg == WM_CREATE) {
+
+			abstract_win32_display *display =
+				(abstract_win32_display*)GetWindowLongPtr(window, GWLP_USERDATA);
+
+			switch (msg) {
+
+			case WM_CREATE:
+			{
+				DEBUG_PRINT("WM Create Received !!\n");
 				LPCREATESTRUCT lpcs = (LPCREATESTRUCT)l_param;
 				SetWindowLongPtr(window, GWLP_USERDATA, (LPARAM)(lpcs->lpCreateParams));
 				return 0;
 			}
-			else {
-				abstract_win32_display *display =
-					(abstract_win32_display*)GetWindowLongPtr(window, GWLP_USERDATA);
+			break;
 
-				switch (msg) {
+			case WM_PAINT:
+			{
+				// System coordinate
+				const unsigned int system_width =
+					display->get_display_width();
+				const unsigned int system_height =
+					display->get_display_height();
 
-				case WM_PAINT:
-				{
-					// System coordinate
-					const unsigned int system_width =
-						display->get_display_width();
-					const unsigned int system_height =
-						display->get_display_height();
+				PAINTSTRUCT ps;
 
-					PAINTSTRUCT ps;
+				HDC screen_dc = BeginPaint(window, &ps);
+				HDC mem_dc = CreateCompatibleDC(screen_dc);
+				HBITMAP mem_bitmap = CreateCompatibleBitmap(screen_dc, system_width, system_height);
 
-					HDC screen_dc = BeginPaint(window, &ps);
-					HDC mem_dc = CreateCompatibleDC(screen_dc);
-					HBITMAP mem_bitmap = CreateCompatibleBitmap(screen_dc, system_width, system_height);
+				SelectObject(mem_dc, mem_bitmap);
 
-					SelectObject(mem_dc, mem_bitmap);
+				cairo_surface_t *cairo_surface =
+					cairo_win32_surface_create(mem_dc);
+				cairo_t *cr = cairo_create(cairo_surface);
 
-					cairo_surface_t *cairo_surface =
-						cairo_win32_surface_create(mem_dc);
-					cairo_t *cr = cairo_create(cairo_surface);
+				display->sys_draw(cr);
 
-					display->sys_draw(cr);
+				cairo_surface_finish(cairo_surface);
+				cairo_destroy(cr);
+				cairo_surface_destroy(cairo_surface);
 
-					cairo_surface_finish(cairo_surface);
-					cairo_destroy(cr);
-					cairo_surface_destroy(cairo_surface);
+				BitBlt(
+					screen_dc, 0, 0,
+					system_width, system_height,
+					mem_dc, 0, 0, SRCCOPY);
 
-					BitBlt(
-						screen_dc, 0, 0,
-						system_width, system_height,
-						mem_dc, 0, 0, SRCCOPY);
+				DeleteObject(mem_bitmap);
+				DeleteDC(mem_dc);
+				DeleteDC(screen_dc);
+				EndPaint(window, &ps);
+				return 0;
+			}
+			break;
 
-					DeleteObject(mem_bitmap);
-					DeleteDC(mem_dc);
-					DeleteDC(screen_dc);
-					EndPaint(window, &ps);
-					return 0;
+			case WM_MOUSEMOVE:
+				if (!display->m_has_focus) { // Mouse Enter
+					tagTRACKMOUSEEVENT track_mouse_event_param;
+					track_mouse_event_param.cbSize =
+						sizeof(tagTRACKMOUSEEVENT);  // (magnifique)
+					track_mouse_event_param.dwFlags = TME_LEAVE; // demande for leave notification 
+					track_mouse_event_param.hwndTrack = window;
+					TrackMouseEvent(&track_mouse_event_param);
+					display->sys_mouse_enter();
+					display->m_has_focus = true;
 				}
+
+				display->sys_mouse_move(
+					GET_X_LPARAM(l_param),
+					GET_Y_LPARAM(l_param));
+
+				return 0;
 				break;
 
-				case WM_MOUSEMOVE:
-					if (!display->m_has_focus) { // Mouse Enter
-						tagTRACKMOUSEEVENT track_mouse_event_param;
-						track_mouse_event_param.cbSize =
-							sizeof(tagTRACKMOUSEEVENT);  // (magnifique)
-						track_mouse_event_param.dwFlags = TME_LEAVE; // demande for leave notification 
-						track_mouse_event_param.hwndTrack = window;
-						TrackMouseEvent(&track_mouse_event_param);
-						display->sys_mouse_enter();
-						display->m_has_focus = true;
-					}
+			case WM_MOUSELEAVE:
+				display->sys_mouse_exit();
+				display->m_has_focus = false;
+				return 0;
+				break;
 
-					display->sys_mouse_move(
-						GET_X_LPARAM(l_param),
-						GET_Y_LPARAM(l_param));
+			case WM_LBUTTONDOWN:
+				display->sys_mouse_button_down(mouse_button::LeftButton);
+				return 0;
+				break;
 
-					return 0;
-					break;
+			case WM_RBUTTONDOWN:
+				display->sys_mouse_button_down(mouse_button::RightButton);
+				return 0;
+				break;
 
-				case WM_MOUSELEAVE:
-					display->sys_mouse_exit();
-					display->m_has_focus = false;
-					return 0;
-					break;
+			case WM_LBUTTONUP:
+				display->sys_mouse_button_up(mouse_button::LeftButton);
+				return 0;
+				break;
 
-				case WM_LBUTTONDOWN:
-					display->sys_mouse_button_down(mouse_button::LeftButton);
-					return 0;
-					break;
+			case WM_RBUTTONUP:
+				display->sys_mouse_button_up(mouse_button::RightButton);
+				return 0;
+				break;
 
-				case WM_RBUTTONDOWN:
-					display->sys_mouse_button_down(mouse_button::RightButton);
-					return 0;
-					break;
+			case WM_LBUTTONDBLCLK:
+				display->sys_mouse_dbl_click();
+				return 0;
+				break;
 
-				case WM_LBUTTONUP:
-					display->sys_mouse_button_up(mouse_button::LeftButton);
-					return 0;
-					break;
-
-				case WM_RBUTTONUP:
-					display->sys_mouse_button_up(mouse_button::RightButton);
-					return 0;
-					break;
-
-				case WM_LBUTTONDBLCLK:
-					display->sys_mouse_dbl_click();
-					return 0;
-					break;
-
-				default:
-					return DefWindowProc(window, msg, w_param, l_param);
-					break;
-				}
+			default:
+				return DefWindowProc(window, msg, w_param, l_param);
+				break;
 			}
+
 		}
 
 
