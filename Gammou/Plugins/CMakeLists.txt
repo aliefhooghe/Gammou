@@ -85,6 +85,8 @@ target_link_libraries(Sampler PRIVATE 	wav)
 add_gammou_plugin(Granular granular.cpp)
 target_link_libraries(Granular PRIVATE 	wav)
 
+add_gammou_plugin(Noise noise.cpp)
+
 ############ 	Joystick Plugin
 
 #find_package(SDL2 REQUIRED)
