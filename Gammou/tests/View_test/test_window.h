@@ -14,6 +14,14 @@ namespace Gammou {
                 const unsigned int py_height);
     };
 
+	class test_dialog : public View::dialog {
+
+		public:
+			test_dialog();
+
+
+	};
+
 
 } /* Gammou */
 

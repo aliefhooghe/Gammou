@@ -93,7 +93,30 @@ namespace Gammou {
 				"Close",
 				600, 400));
 
+		add_widget(
+			std::make_unique<View::push_button>(
+				[this](View::push_button *p)
+				{
+					test_dialog dialog;
+					dialog.show("Dialog Title");
+				},
+				"Dialog",
+				750, 400));
+
         add_widget(std::move(list_box_ptr));
     }
+
+	test_dialog::test_dialog()
+		: View::dialog(100, 100, View::cl_chartreuse)
+	{
+		add_widget(
+			std::make_unique<View::push_button>(
+				[this](View::push_button *self)
+				{
+					get_display()->non_blocking_close();
+				},
+				"Ok",
+				20, 20, 60, 60));
+	}
 
 } /* Gammou */
