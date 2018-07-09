@@ -2,8 +2,8 @@
 #include "slider_gui_component.h"
 
 #define SLIDER_TAU 0.1
-#define SLIDER_AMPLITUDE 5000.0
-#define SLIDER_SHAPE 22000.0
+#define SLIDER_AMPLITUDE 1.0
+#define SLIDER_SHAPE 1.0
 #define SLIDER_INITIAL_NORMALIZED_VALUE 0.2
 
 namespace Gammou {
