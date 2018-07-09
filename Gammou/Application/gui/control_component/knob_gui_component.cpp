@@ -12,7 +12,9 @@ namespace Gammou {
 	namespace Gui {
 
 		knob_gui_component::knob_gui_component(control_sound_component * control, const unsigned int x, const unsigned int y)
-			: gui_sound_component(std::unique_ptr<Sound::abstract_sound_component>(control), x, y),
+			: 
+			gui_sound_component(
+				std::unique_ptr<Sound::abstract_sound_component>(control), x, y),
 			m_control(control)
 		{
 			set_autosize(false);
@@ -24,7 +26,8 @@ namespace Gammou {
 				std::make_unique<View::knob>(
 					[&](View::knob *self)
 					{
-						m_control->set_normalized_value(self->get_normalized_value());
+						m_control->set_normalized_value(
+							self->get_normalized_value());
 					},
 					pos, pos,
 					GuiProperties::knob_on_color,
@@ -33,6 +36,7 @@ namespace Gammou {
 			knob_control->set_normalized_value(control->get_normalized_value());
 			add_widget(std::move(knob_control));
 		}
+		
 		// value_knob_gui_component_factory implementation
 
 		value_knob_gui_component_factory::value_knob_gui_component_factory()

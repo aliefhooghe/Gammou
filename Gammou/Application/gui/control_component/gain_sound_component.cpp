@@ -26,7 +26,7 @@ namespace Gammou {
 		}
 
 
-			void gain_sound_component::initialize_process()
+		void gain_sound_component::initialize_process()
 		{
 			m_gain.force_current_value(m_param_value);
 		}

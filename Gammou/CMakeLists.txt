@@ -73,6 +73,8 @@ set(GUI_SRC
 	Application/gui/control_component/integer_gui_component.cpp
 	Application/gui/control_component/knob_gui_component.h
 	Application/gui/control_component/knob_gui_component.cpp
+	Application/gui/control_component/slider_gui_component.h
+	Application/gui/control_component/slider_gui_component.cpp
 	Application/gui/control_component/value_sound_component.h
 	Application/gui/control_component/value_sound_component.cpp
 )

@@ -229,6 +229,9 @@ namespace Gammou {
 			add_control_factory(new value_knob_gui_component_factory());
 			add_control_factory(new gain_knob_gui_component_factory());
 
+			add_control_factory(new value_slider_gui_component_factory());
+			add_control_factory(new gain_slider_gui_component_factory());
+
 			add_control_factory(new value_integer_gui_component_factory());
 			add_control_factory(new gain_integer_gui_component_factory());
 			// Plugins 

@@ -14,6 +14,7 @@
 #include "gui_component_main_factory.h"
 
 #include "control_component/knob_gui_component.h"
+#include "control_component/slider_gui_component.h"
 #include "control_component/integer_gui_component.h"
 
 
