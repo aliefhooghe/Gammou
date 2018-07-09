@@ -103,6 +103,14 @@ namespace Gammou {
 				"Dialog",
 				750, 400));
 
+        add_widget(
+            std::make_unique<View::slider>(
+                [](View::slider& slider)
+                {
+                    std::cout << "Slider Value = " << slider.get_normalized_value() << std::endl;
+                },
+                550, 100, 250));
+
         add_widget(std::move(list_box_ptr));
     }
 

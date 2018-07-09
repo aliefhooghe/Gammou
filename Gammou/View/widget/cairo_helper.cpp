@@ -45,6 +45,11 @@ namespace Gammou {
 
 		namespace cairo_helper {
 
+			void simple_rectangle(cairo_t *cr, const rectangle& rect)
+			{
+				cairo_rectangle(cr, rect.x, rect.y, rect.width, rect.height);
+			}
+
 			void rounded_rectangle(cairo_t * cr, const rectangle & rect, const float radius)
 			{
 				rounded_rectangle(cr, static_cast<float>(rect.x), static_cast<float>(rect.y), 

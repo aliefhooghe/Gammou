@@ -109,20 +109,24 @@ namespace Gammou {
 		class knob : public control {
 
 		public:
-			knob(std::function<void(knob *kn)> change_action, 
+			knob(std::function<void(knob *)> change_action, 
 				const int x, const int y, 
-				const color on_color = cl_blueviolet, const color off_color = cl_lightgrey, 
+				const color on_color = cl_blueviolet, 
+				const color off_color = cl_lightgrey, 
 				const unsigned int size = 50);
 
 			virtual ~knob() {}
 
 			virtual void draw(cairo_t *cr) override;
-			virtual bool on_mouse_drag(const mouse_button button, const int x, const int y,
+			virtual bool on_mouse_drag(
+				const mouse_button button, 
+				const int x, const int y,
 				const int dx, const int dy) override;
 			virtual bool on_mouse_wheel(const float distance) override;
 
 			void set_normalized_value(const float normalized_value);
-			double get_normalized_value();
+			float get_normalized_value() const;
+
 		private:
 			void on_change(const float angle_change);
 
@@ -135,6 +139,54 @@ namespace Gammou {
 
 			static const float theta;
 			static const float angle_max;
+		};
+
+		class slider : public control {
+
+			public:
+				slider(
+					std::function<void(slider&)> change_action,
+					const int x, const int y,
+					const unsigned int width,
+					const color on_color = cl_blueviolet, 
+					const color off_color = cl_lightgrey);
+
+				slider(slider&) = delete;
+
+				virtual ~slider() {}
+
+				virtual void draw(cairo_t *cr) override;
+				virtual bool on_mouse_drag(
+					const mouse_button button, 
+					const int x, const int y,
+					const int dx, const int dy) override;
+
+				virtual bool on_mouse_drag_start(
+					const mouse_button button, 
+					const int x, const int y) override;
+				virtual bool on_mouse_drag_end(
+					const mouse_button button, 
+					const int x, const int y) override;
+				virtual bool on_mouse_button_down(
+					const mouse_button button, 
+					const int x, const int y);
+				virtual bool on_mouse_button_up(
+					const mouse_button button, 
+					const int x, const int y);
+
+				virtual bool on_mouse_wheel(const float distance) override;
+
+				void set_normalized_value(const float normalized_value);
+				float get_normalized_value() const;
+
+			private:
+				std::function<void(slider&)> m_change_action;
+				unsigned int m_cursor;
+				const color m_on_color;
+				const color m_off_color;
+				bool m_cursor_is_moving;
+
+				static const unsigned int cursor_radius;
 		};
 
 

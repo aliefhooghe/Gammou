@@ -236,7 +236,8 @@ namespace Gammou {
 				m_change_action(change_action),
 				m_angle(0.0f),
 				m_normalized_value(0.0f),
-				m_on_color(on_color), m_off_color(off_color)
+				m_on_color(on_color), 
+				m_off_color(off_color)
 		{
 		}
 
@@ -264,17 +265,29 @@ namespace Gammou {
 			cairo_stroke(cr);
 		}
 
-		bool knob::on_mouse_drag(const mouse_button button, const int x, const int y, const int dx, const int dy)
+		bool knob::on_mouse_drag(
+			const mouse_button button, 
+			const int x, const int y, 
+			const int dx, const int dy)
 		{
-			on_change(dy * 0.1f);
-			//DEBUG_PRINT("value = %f dB\n",20 * log10f(value));
-			return true;
+			if (is_enabled()) {
+				on_change(dy * 0.1f);
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 
 		bool knob::on_mouse_wheel(const float distance)
 		{
-			on_change(-distance * 0.25f);
-			return true;
+			if (is_enabled()) {
+				on_change(-distance * 0.25f);
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 
 		void knob::set_normalized_value(const float normalized_value)
@@ -285,7 +298,7 @@ namespace Gammou {
 			redraw();
 		}
 
-		double knob::get_normalized_value()
+		float knob::get_normalized_value() const
 		{
 			return m_normalized_value;
 		}
@@ -305,7 +318,140 @@ namespace Gammou {
 		}
 
 		
+		/*
+		*	Slider
+		*/
 
+		const unsigned int slider::cursor_radius = 8;
+
+		slider::slider(
+			std::function<void(slider&)> change_action,
+			const int x, const int y,
+			const unsigned int width,
+			const color on_color, 
+			const color off_color)
+		:	control(x, y, width, cursor_radius * 2),
+			m_change_action(change_action),
+			m_cursor(0u),
+			m_on_color(on_color), 
+			m_off_color(off_color),
+			m_cursor_is_moving(false)
+		{
+
+		}
+
+		void slider::draw(cairo_t *cr)
+		{
+			const unsigned int middle = get_height() / 2;
+
+			cairo_set_line_width(cr, 3);
+
+			//	On part
+			cairo_helper::set_source_color(cr, m_on_color);
+			cairo_move_to(cr, 0, middle);
+			cairo_line_to(cr, m_cursor, middle);
+			cairo_stroke(cr);
+
+			//	Off part
+			cairo_helper::set_source_color(cr, m_off_color);
+			cairo_move_to(cr, m_cursor, middle);
+			cairo_line_to(cr, get_width(), middle);
+			cairo_stroke(cr);
+
+			//	Cursor
+			cairo_helper::set_source_color(cr, m_on_color);
+			cairo_helper::circle(
+				cr, m_cursor, middle, 
+				m_cursor_is_moving ? cursor_radius - 2 : cursor_radius);
+			cairo_fill(cr);
+		}
+
+		bool slider::on_mouse_drag(
+			const mouse_button button, 
+			const int x, const int y,
+			const int dx, const int dy)
+		{
+			unsigned int new_value;
+
+			if (x < 0)
+				new_value = 0;
+			else if (x > get_width())
+				new_value = get_width();
+			else
+				new_value = x;
+
+			if (new_value != m_cursor) {
+				m_cursor = new_value;
+				m_change_action(*this);
+				redraw();
+			}
+
+			return true;
+		}
+
+		bool slider::on_mouse_drag_start(
+			const mouse_button button, 
+			const int x, const int y)
+		{
+			m_cursor_is_moving = true;
+			redraw(); 
+			return true;
+		}
+
+		bool slider::on_mouse_drag_end(
+			const mouse_button button, 
+			const int x, const int y)
+		{
+			m_cursor_is_moving = false;
+			redraw();
+			return true;
+		}
+
+		bool slider::on_mouse_button_down(
+			const mouse_button button, 
+			const int x, const int y)
+		{ 
+			m_cursor_is_moving = true; 
+			redraw();
+			return true;
+		} 
+
+		bool slider::on_mouse_button_up(
+			const mouse_button button, 
+			const int x, const int y)
+		{ 
+			m_cursor_is_moving = false;
+			redraw();
+			return true;
+		}
+		
+		bool slider::on_mouse_wheel(const float distance)
+		{
+			// TODO
+			return false;
+		}
+
+		void slider::set_normalized_value(const float normalized_value)
+		{
+			if (normalized_value < 0.0)
+				m_cursor = 0u;
+			else if (normalized_value > 1.0)
+				m_cursor = get_width();
+			else
+				m_cursor = 
+					static_cast<unsigned int>(normalized_value * 
+						static_cast<float>(get_width()));
+
+			m_change_action(*this);
+			redraw();
+		}
+		
+		float slider::get_normalized_value() const
+		{
+			return 
+				static_cast<float>(m_cursor) /
+				static_cast<float>(get_width());
+		}
 		
 
 } /* View */
