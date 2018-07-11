@@ -83,6 +83,7 @@ namespace Gammou {
 				const unsigned int height = 27, 
 				const unsigned int font_size = 10);
 			// TODO rectangle ctor
+			// TODO visual settings (color, ...)
 			virtual ~push_button() {};
 
 			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y) override;

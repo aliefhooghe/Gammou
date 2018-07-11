@@ -33,11 +33,15 @@ namespace Gammou {
                             self.get_normalized_value());
                     },
                     x_offset, y_offset,
-                    get_width() - 2 * x_offset);
+                    get_width() - 2 * x_offset,
+					GuiProperties::slider_on_color,
+					GuiProperties::slider_off_color);
             
             slider_control->set_normalized_value(control->get_normalized_value());
             add_widget(std::move(slider_control));
-        }
+		}
+
+
 
         // value_slider_gui_component_factory implementation
 
