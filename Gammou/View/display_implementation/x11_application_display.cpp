@@ -32,6 +32,11 @@ namespace Gammou {
             create_window(nullptr, title);
         }
 
+        void x11_application_display::wait()
+        {
+            wait_window_thread();
+        }
+
     }   /* Gammou */
 
 }   /* Gammou */

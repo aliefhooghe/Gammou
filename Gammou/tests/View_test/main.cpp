@@ -12,10 +12,8 @@ int main(int argc, char **argv)
 	std::cout << "Opening Display\n";
     display.open("View Test Title");
 	std::cout << "Wainting Display\n";
-	while (display.is_open()) {
-		std::cout << "Zzzzz...\n";
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-	}
+	
+	display.wait();
 
     std::cout << "FIN\n";
 

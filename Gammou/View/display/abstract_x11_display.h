@@ -31,6 +31,7 @@ namespace Gammou {
 		protected:
 			void create_window(Display *parent_display, const std::string& title);
 			void sys_redraw_rect(const rectangle& rect);
+			void wait_window_thread();
 
 		private:
             static void x_event_loop(abstract_x11_display *self);

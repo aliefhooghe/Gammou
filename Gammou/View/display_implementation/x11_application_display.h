@@ -18,6 +18,7 @@ namespace Gammou {
             ~x11_application_display();
 
             void open(const std::string& title) override;
+            void wait();
         };
 
     }   /* Gammou */

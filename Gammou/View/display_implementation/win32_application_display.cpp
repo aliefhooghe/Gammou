@@ -27,11 +27,16 @@ namespace Gammou {
 				std::thread(window_manager, this);
 		}
 
+		void win32_application_display::wait()
+		{
+			if (m_window_manager.joinable())
+				m_window_manager.join();
+		}
+
 		void win32_application_display::close()
 		{
 			non_blocking_close();
-			if (m_window_manager.joinable())
-				m_window_manager.join();
+			wait();
 			//	windows is destroyed by the manager thread
 		}
 

@@ -19,6 +19,7 @@ namespace Gammou {
 			~win32_application_display();
 
 			void open(const std::string& title) override;
+			void wait() override;
 			void close() override;
 
 		private:

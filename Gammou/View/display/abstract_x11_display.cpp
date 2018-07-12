@@ -38,8 +38,7 @@ namespace Gammou {
         void abstract_x11_display::close()
         {
             non_blocking_close();
-            if (m_event_loop_thread.joinable())
-                m_event_loop_thread.join();
+            wait_window_thread();
         }
 
         void abstract_x11_display::non_blocking_close()
@@ -156,10 +155,6 @@ namespace Gammou {
             DEBUG_PRINT("Gui Thread Start\n");
 
             m_running = true;
-
-            if (m_event_loop_thread.joinable())
-                m_event_loop_thread.join();
-
             m_event_loop_thread = std::thread(x_event_loop, this);
         }
 
@@ -181,6 +176,12 @@ namespace Gammou {
             ev.xexpose.window = m_back_buffer;
 
             XSendEvent(m_display, m_window, true, ExposureMask, &ev);
+        }
+
+        void abstract_x11_display::wait_window_thread()
+        {
+            if (m_event_loop_thread.joinable())
+                m_event_loop_thread.join();
         }
 
         void abstract_x11_display::x_event_loop(
