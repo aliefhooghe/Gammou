@@ -105,6 +105,8 @@ int main()
 
     //------
 
+    DEBUG_PRINT("Closing Sound Stream\n");
+
     try {
         // Stop the stream
         dac.stopStream();

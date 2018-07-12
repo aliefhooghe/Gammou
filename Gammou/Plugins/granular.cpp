@@ -68,6 +68,7 @@ granular_component::granular_component(
 
 granular_component::~granular_component()
 {
+	DEBUG_PRINT("Granular DTOR\n");
 	wav_free(m_sample);
 }
 
