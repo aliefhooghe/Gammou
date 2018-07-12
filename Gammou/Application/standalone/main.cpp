@@ -101,9 +101,7 @@ int main()
 
     //-----
     display.open("Gammou");
-
-    while (display.is_open())
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+    display.wait();
 
     //------
 

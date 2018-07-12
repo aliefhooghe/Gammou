@@ -27,6 +27,7 @@ namespace Gammou {
 
         abstract_x11_display::~abstract_x11_display()
         {
+            DEBUG_PRINT("abstract_x11_display DTOR\n");
             close();
         }
 
@@ -37,9 +38,7 @@ namespace Gammou {
 
         void abstract_x11_display::close()
         {
-            if (!m_running)
-                return;
-
+            DEBUG_PRINT("abstract_x11_display Close\n");
             m_running = false;
             
             if (std::this_thread::get_id() != 
@@ -181,6 +180,8 @@ namespace Gammou {
 
         void abstract_x11_display::wait_window_thread()
         {
+             DEBUG_PRINT("abstract_x11_display Wait Window THread\n");
+
             if (m_event_loop_thread.joinable())
                 m_event_loop_thread.join();
         }

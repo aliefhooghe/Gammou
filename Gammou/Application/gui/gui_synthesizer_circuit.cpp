@@ -74,7 +74,8 @@ namespace Gammou {
 
 						plugin_request_dialog dialog(request_list);
 						dialog.show("Plugin Properties");
-						// TODO handle error !!!!
+						
+						DEBUG_PRINT("Getting answer form\n");
 						answer_form = dialog.get_answer_form();
 					}
 
