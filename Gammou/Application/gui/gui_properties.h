@@ -15,38 +15,40 @@ namespace Gammou {
 			 */
 
 			// Component maps
-			const View::color background = 0x323232FF;
-			const View::color linking_color = 0x2DA0FFFF;
-			const View::color link_color = 0x2BECC6FF;
+			const View::color background = 0x002339ff;
+			const View::color linking_color = 0x1896d1ff;
+			const View::color link_color = 0x439d9eff;
 			const View::color highlight_socket_color = linking_color;
 
 			// Components
-			const View::color component_border = 0xF7BF00FF;
-			const View::color component_background = 0x464646FF;
-			const View::color moving_component_background = 0x5A5A5AFF;
+			const View::color component_border = 0x205065ff;
+			const View::color component_background = 0x003147ff;
+			const View::color moving_component_background = 0x003147ff;
 
 			const View::color component_input_socket_color = View::cl_firebrick;
 			const View::color component_linked_input_socket_color = View::cl_red;
 			const View::color component_output_socket_color = component_linked_input_socket_color;
 			const View::color focused_component_output_socket_color = linking_color;
 
-			const View::color component_font_color = View::cl_lightgrey;
+			const View::color component_font_color = 0xbec7e6ff;
 
-			const View::color knob_off_color = View::cl_lightgrey;
-			const View::color knob_on_color = 0x932ED6FF;
+			const View::color knob_off_color = component_font_color;
+			const View::color knob_on_color = 0xc53a3dff;
+
+			const View::color slider_on_color = knob_on_color;
+			const View::color slider_off_color = knob_off_color;
 
 			/* Main Gui */
 
 			// Listboxs
 			const View::color main_gui_list_box_background = component_background;
-			const View::color main_gui_list_box_selected_item_color = background;
-			const View::color main_gui_list_box_border_color = component_border;
+			const View::color main_gui_list_box_selected_item_color = moving_component_background;
+			const View::color main_gui_list_box_border_color = component_border;	//	TODO
 			const View::color main_gui_list_box_font_color = component_font_color;
 
 			// ToolBox
-			const View::color main_gui_tool_box_background = component_background;
-			const View::color main_gui_tool_box_border_color = component_border;
-
+			const View::color main_gui_tool_box_background = main_gui_list_box_background;
+			const View::color main_gui_tool_box_border_color = main_gui_list_box_border_color;
 
 			/*
 			 *		Dimension
@@ -62,15 +64,17 @@ namespace Gammou {
 #endif
 
 			const float component_rectangle_corner_radius = 5.0;
-			const float component_border_width = 1.5;
-			const float moving_component_border_width = 2.5;
+
+			const float component_border_width = 2.2;
+			const float moving_component_border_width = 4.0;
+
 			const float component_socket_radius = 3.0;
 			const float focused_component_socket_radius = 4.0;
 			
-			const float link_width = 3.0;
+			const float link_width = 3;
 
 			/* Main Gui */
-			// Main gui : width*height = 16*12 (unit)
+			// Main gui : width*height = 24*12 (unit)
 
 			const unsigned int main_gui_size_unit = 60;
 			const unsigned int main_gui_width = 24 * main_gui_size_unit; //16 * main_gui_size_unit;
@@ -81,6 +85,7 @@ namespace Gammou {
 
 			const unsigned int main_gui_component_choice_box_width = 2 * main_gui_size_unit;
 			const unsigned int main_gui_component_choice_box_height = main_gui_height - main_gui_toolbox_height;
+			
 #ifdef _WIN32
 			const unsigned int main_gui_component_choice_box_font_size = 12;
 #else
@@ -91,10 +96,9 @@ namespace Gammou {
 
 			const unsigned int main_gui_circuit_width = main_gui_width - main_gui_component_choice_box_width;
 			const unsigned int main_gui_circuit_height = main_gui_height - main_gui_toolbox_height;
+			
 		}
-
 	}
-
 } /* Gammou */
 
 #endif
