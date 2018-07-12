@@ -42,7 +42,7 @@ namespace Gammou {
 
 			// Listboxs
 			const View::color main_gui_list_box_background = component_background;
-			const View::color main_gui_list_box_selected_item_color = moving_component_background;
+			const View::color main_gui_list_box_selected_item_color = component_border;
 			const View::color main_gui_list_box_border_color = component_border;	//	TODO
 			const View::color main_gui_list_box_font_color = component_font_color;
 
