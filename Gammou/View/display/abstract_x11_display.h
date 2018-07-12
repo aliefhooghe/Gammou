@@ -26,7 +26,6 @@ namespace Gammou {
             bool is_open() override;
 
 			virtual void close() override;
-			void non_blocking_close() override;
 
 		protected:
 			void create_window(Display *parent_display, const std::string& title);

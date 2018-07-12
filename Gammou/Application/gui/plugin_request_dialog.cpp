@@ -151,7 +151,7 @@ namespace Gammou {
                 std::make_unique<View::push_button>(
                     [this](View::push_button *self)
                     {
-                        get_display()->non_blocking_close();
+                        get_display()->close();
                     },
                     "OK",
                     0, y + 2,

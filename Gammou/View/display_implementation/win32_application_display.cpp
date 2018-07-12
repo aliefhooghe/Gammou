@@ -35,8 +35,11 @@ namespace Gammou {
 
 		void win32_application_display::close()
 		{
-			non_blocking_close();
-			wait();
+			m_is_open = false;
+
+			if (std::this_thread::get_id() != 
+                	m_window_manager.get_id())
+                wait();
 			//	windows is destroyed by the manager thread
 		}
 

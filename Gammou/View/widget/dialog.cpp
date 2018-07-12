@@ -26,8 +26,7 @@ namespace Gammou {
 			DEBUG_PRINT("Opening Dialog\n");
             display.open(window_title);
 			DEBUG_PRINT("Wainting Dialog\n");
-			while (display.is_open());
-              //  std::this_thread::sleep_for(std::chrono::seconds(1));   //  TODO mieu
+			display.wait();
 			DEBUG_PRINT("Dialog was closed\n");
         }
 
@@ -84,7 +83,7 @@ namespace Gammou {
                         auto p = get_path_by_id(selected_item);
                         m_filename = p;
                         m_filename_was_set = true;
-                        get_display()->non_blocking_close();
+                        get_display()->close();
                     },
                     "Open",
                     1 + get_width() / 2,

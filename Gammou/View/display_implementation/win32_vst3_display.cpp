@@ -28,7 +28,7 @@ namespace Gammou {
 
 		void win32_vst3_display::close()
 		{
-			non_blocking_close();
+			m_is_open = false;
 			destroy_window();
 		}
 

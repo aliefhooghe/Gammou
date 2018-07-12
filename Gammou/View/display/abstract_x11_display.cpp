@@ -37,13 +37,14 @@ namespace Gammou {
 
         void abstract_x11_display::close()
         {
-            non_blocking_close();
-            wait_window_thread();
-        }
+            if (!m_running)
+                return;
 
-        void abstract_x11_display::non_blocking_close()
-        {
             m_running = false;
+            
+            if (std::this_thread::get_id() != 
+                    m_event_loop_thread.get_id())
+                wait_window_thread();
         }
 
         void abstract_x11_display::create_window(
