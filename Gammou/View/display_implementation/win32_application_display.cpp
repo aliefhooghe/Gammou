@@ -70,15 +70,14 @@ namespace Gammou {
 			DEBUG_PRINT("Entering Win Event Loop\n");
 			
 			while (self->is_open()) {
-				DEBUG_PRINT("Getting message.....\n");
 
 				if (GetMessage(&msg, (HWND)self->get_sys_window_handle(), 0, 0) > 0) {
-					DEBUG_PRINT("Got  message\n");
 					TranslateMessage(&msg);
 					DispatchMessage(&msg);
 				}
 				else {
-					DEBUG_PRINT("GEt message error\n");
+					DEBUG_PRINT("WM_QUIT received\n");
+					break;
 				}
 			}
 			

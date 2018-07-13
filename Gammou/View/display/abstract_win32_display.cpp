@@ -52,9 +52,10 @@ namespace Gammou {
 
 			DWORD style = WS_VISIBLE;
 
-			if (parent_window != nullptr)
+			if (parent_window == nullptr)
+				style |= (WS_SYSMENU | WS_MINIMIZEBOX);
+			else
 				style |= WS_CHILD;
-			
 
 			m_window_handle =
 				CreateWindowA(
