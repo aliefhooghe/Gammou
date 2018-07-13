@@ -53,9 +53,9 @@ namespace Gammou {
 			DWORD style = WS_VISIBLE;
 
 			if (parent_window == nullptr)
-				style |= (WS_SYSMENU | WS_MINIMIZEBOX);
+				style |= (WS_SYSMENU | WS_MINIMIZEBOX);		//	app
 			else
-				style |= WS_CHILD;
+				style |= WS_CHILD;							//	vst3
 
 			m_window_handle =
 				CreateWindowA(
@@ -66,9 +66,30 @@ namespace Gammou {
 					this);
 
 			// resize
+
+			int x, y;
+
+			if (parent_window == nullptr) {		//	app
+				POINT p;
+				GetCursorPos(&p);		
+				
+				x = p.x - width / 2;
+				y = p.y - height / 2;
+
+				if (x < 0)
+					x = 0;
+				if (y < 0)
+					y = 0;
+			}
+			else {			//	vst3
+				x = 0;
+				y = 0;
+			}
+
+			DEBUG_PRINT("Window at x = %d, y = %d\n", x, y);
+
 			SetWindowPos(
-				m_window_handle, nullptr, 0, 0, width, height,
-				SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
+				m_window_handle, nullptr, x, y, width, height, 0);
 		}
 
 		void abstract_win32_display::destroy_window()

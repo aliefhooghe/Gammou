@@ -63,13 +63,12 @@ namespace Gammou {
 			DEBUG_PRINT("Ok\n");	
 
 			SetFocus((HWND)self->get_sys_window_handle());
-			//	Event loop
-		
-			MSG msg;
 
+			//	Event loop
 			DEBUG_PRINT("Entering Win Event Loop\n");
 			
 			while (self->is_open()) {
+				MSG msg;
 
 				if (GetMessage(&msg, (HWND)self->get_sys_window_handle(), 0, 0) > 0) {
 					TranslateMessage(&msg);
