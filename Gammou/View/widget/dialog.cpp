@@ -22,7 +22,7 @@ namespace Gammou {
         void dialog::show(
             const std::string& window_title)
         {
-            dialog_display display(*this);
+            dialog_display display(*get_display(), *this);
 			DEBUG_PRINT("Opening Dialog\n");
             display.open(window_title);
 			DEBUG_PRINT("Wainting Dialog\n");

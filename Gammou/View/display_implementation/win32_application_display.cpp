@@ -13,6 +13,15 @@ namespace Gammou {
 		{
 		}
 
+		win32_application_display::win32_application_display(
+			abstract_display& parent, View::widget & root_widget)
+		:
+			abstract_display(root_widget),
+			abstract_win32_display(parent, root_widget),
+			abstract_application_display(root_widget)
+		{
+		}
+
 		win32_application_display::~win32_application_display()
 		{
 			DEBUG_PRINT("Win32 App Display DTOR\n");
@@ -53,7 +62,7 @@ namespace Gammou {
 			self->create_window(nullptr, "");
 			DEBUG_PRINT("Ok\n");	
 
-			SetFocus(self->get_window_handle());
+			SetFocus((HWND)self->get_sys_window_handle());
 			//	Event loop
 		
 			MSG msg;
@@ -63,7 +72,7 @@ namespace Gammou {
 			while (self->is_open()) {
 				DEBUG_PRINT("Getting message.....\n");
 
-				if (GetMessage(&msg, self->get_window_handle(), 0, 0) > 0) {
+				if (GetMessage(&msg, (HWND)self->get_sys_window_handle(), 0, 0) > 0) {
 					DEBUG_PRINT("Got  message\n");
 					TranslateMessage(&msg);
 					DispatchMessage(&msg);

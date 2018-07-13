@@ -20,7 +20,6 @@ namespace Gammou {
 
 		public:
 			abstract_x11_display(View::widget& root_widget);
-			abstract_x11_display(abstract_x11_display& parent, View::widget& node_widget);
 			virtual  ~abstract_x11_display();
 
             bool is_open() override;
@@ -32,6 +31,7 @@ namespace Gammou {
 			void sys_redraw_rect(const rectangle& rect);
 			void wait_window_thread();
 
+			void *get_sys_window_handle() override;
 		private:
             static void x_event_loop(abstract_x11_display *self);
 

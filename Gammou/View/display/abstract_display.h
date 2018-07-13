@@ -39,7 +39,7 @@ namespace Gammou {
 			bool sys_key_up(const keycode key);
 
 			virtual void sys_redraw_rect(const rectangle& rect) =0;
-
+			virtual void *get_sys_window_handle() = 0;
 		private:
 			abstract_display *get_display() override;
 			void redraw_rect(const rectangle& rect) override;

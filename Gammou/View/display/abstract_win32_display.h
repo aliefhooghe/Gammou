@@ -18,7 +18,7 @@ namespace Gammou {
 
 		public:
 			abstract_win32_display(View::widget& root_widget);
-			abstract_win32_display(abstract_win32_display& parent,View::widget& node);
+			abstract_win32_display(abstract_display& parent, View::widget& node);
 			virtual  ~abstract_win32_display();
 
 			bool is_open() override;
@@ -32,7 +32,7 @@ namespace Gammou {
 
 			void sys_redraw_rect(const rectangle& rect);
 
-			HWND get_window_handle() const;
+			void *get_sys_window_handle() override;
 			void register_window_class();
 			static LRESULT CALLBACK windowProc(
 				HWND window,
@@ -42,6 +42,7 @@ namespace Gammou {
 
 			bool m_is_open;
 		private:
+			HWND m_parent_window_handle;
 			HWND m_window_handle;
 			bool m_has_focus;
 		};

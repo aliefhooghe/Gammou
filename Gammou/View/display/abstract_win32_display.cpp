@@ -18,14 +18,17 @@ namespace Gammou {
 		}
 
 		abstract_win32_display::abstract_win32_display(
-			abstract_win32_display& parent,
+			abstract_display& parent,
 			View::widget& node_widget)
 			: abstract_display(node_widget),
 			m_is_open(false),
 			m_window_handle(nullptr),
 			m_has_focus(false)
 		{
+			m_parent_window_handle =
+				(HWND)get_sys_window_handle();
 			register_window_class();
+			//
 		}
 
 		abstract_win32_display::~abstract_win32_display()
@@ -99,7 +102,7 @@ namespace Gammou {
 			}
 		}
 
-		HWND abstract_win32_display::get_window_handle() const
+		void* abstract_win32_display::get_sys_window_handle()
 		{
 			return m_window_handle;
 		}

@@ -16,15 +16,6 @@ namespace Gammou {
         {
         }
 
-        abstract_x11_display::abstract_x11_display(
-            abstract_x11_display& parent, 
-            View::widget& node_widget)
-        :   abstract_display(node_widget),
-            m_running(false)
-        {
-            //  TODO : m_parent_hwnd = ...
-        }
-
         abstract_x11_display::~abstract_x11_display()
         {
             DEBUG_PRINT("abstract_x11_display DTOR\n");
@@ -185,6 +176,11 @@ namespace Gammou {
             if (m_event_loop_thread.joinable())
                 m_event_loop_thread.join();
         }
+
+		void *abstract_x11_display::get_sys_window_handle() override
+		{
+			return m_display;
+		}
 
         void abstract_x11_display::x_event_loop(
             abstract_x11_display *self)

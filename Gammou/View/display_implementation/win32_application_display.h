@@ -16,6 +16,7 @@ namespace Gammou {
 
 		public:
 			win32_application_display(View::widget& root_widget);
+			win32_application_display(abstract_display &parent, View::widget& root_widget);
 			~win32_application_display();
 
 			void open(const std::string& title) override;
