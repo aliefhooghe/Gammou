@@ -1,4 +1,5 @@
 
+#include <cstring>
 #include "x11_vst3_display.h"
 
 namespace Gammou {
@@ -34,7 +35,8 @@ namespace Gammou {
 
         //  x11_vst3_view implementation
 
-        x11_vst3_view::x11_vst3_view(x11_vst3_display *diaplay)
+        x11_vst3_view::x11_vst3_view(x11_vst3_display *display)
+        :   abstract_vst3_view(display)
         {
             DEBUG_PRINT("X11 VST3 View ctor\n");
         }
