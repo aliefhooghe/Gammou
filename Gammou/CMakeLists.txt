@@ -10,7 +10,6 @@ project (Gammou LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" OFF)
-option(GAMMOU_STANDALONE_LIBOSSIA "Enable ossia oscquery in standalone app" OFF)
 option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" OFF)
 
 # Hide View Option
@@ -93,7 +92,9 @@ set(PERSISTENCE_SRC
 
 
 if(GAMMOU_STANDALONE_BUILD)
-    set_option(VIEW_APP ON) # Enable Application Window in View
+  set_option(VIEW_APP ON) # Enable Application Window in View
+
+  option(GAMMOU_STANDALONE_LIBOSSIA "Enable ossia oscquery in standalone app" OFF)
     
 	set(
     RTAUDIO_DIR "${CMAKE_SOURCE_DIR}/../3rdparty/rtaudio"
@@ -174,7 +175,9 @@ endif()
 ################################################
 
 if(GAMMOU_VST3_BUILD)
-    set_option(VIEW_VST3 ON)   # Enable VST3 Window in View
+  set_option(VIEW_VST3 ON)   # Enable VST3 Window in View
+
+  option(GAMMOU_VST2_COMPATIBILITY "bUILD A VST2 compatbile plugin (require Steinberg VST2 sdk)" OFF)
 	
 	set(VST3_SDK_DIR 
 		"${CMAKE_SOURCE_DIR}/../3rdparty/vst3sdk" 
@@ -223,33 +226,7 @@ if(GAMMOU_VST3_BUILD)
 	    POSITION_INDEPENDENT_CODE ON    
 	)
 	
-	# Os specific addition
-	
-    if(WIN32)                   # MICROSOFT WINDOWS
-        target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/dllmain.cpp")
-		set_target_properties(gammou PROPERTIES SUFFIX ".vst3")
-		set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory")
-		
-		# Copy the target in VST3 directory	
-		add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
-	
-		
-		# Vst2 compatibility + export /EXPORT:VSTPluginMain
-		#target_sources(gammou PRIVATE
-		#	${VST3_SDK_DIR}/public.sdk/source/common/memorystream.cpp
-		#	${VST3_SDK_DIR}/public.sdk/source/vst/hosting/eventlist.cpp
-		#	${VST3_SDK_DIR}/public.sdk/source/vst/hosting/hostclasses.cpp
-		#	${VST3_SDK_DIR}/public.sdk/source/vst/hosting/parameterchanges.cpp
-		#	${VST3_SDK_DIR}/public.sdk/source/vst/hosting/processdata.cpp
-		#	${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.h
-		#	${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.cpp
-		#	${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffect.cpp
-		#	${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffectx.cpp
-		#)
-		
-    elseif(UNIX AND NOT APPLE)  # LINUX		
-    
-    	# Vst2 compatibility + export /EXPORT:VSTPluginMain
+	if (GAMMOU_VST2_COMPATIBILITY)
 		target_sources(gammou PRIVATE
 			${VST3_SDK_DIR}/public.sdk/source/common/memorystream.cpp
 			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/eventlist.cpp
@@ -261,13 +238,34 @@ if(GAMMOU_VST3_BUILD)
 			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffect.cpp
 			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffectx.cpp
 		)
-    
-        target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/linuxmain.cpp")
-    elseif(APPLE)               # Apple OSX
-        target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/macmain.cpp")
-    else()
-        message( FATAL_ERROR "Cant Build a VST3 Plugin on this OS")
-    endif()
+
+		target_compile_definitions(gammou PRIVATE
+			GAMMOU_VST2_COMPATIBILITY
+		)
+
+	endif()
+
+	# Os specific addition
+
+  	if(WIN32)                   # MICROSOFT WINDOWS
+        target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/dllmain.cpp")
+		set_target_properties(gammou PROPERTIES SUFFIX ".vst3")
+
+		if (GAMMOU_VST2_COMPATIBILITY)
+			set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory /EXPORT:VSTPluginMain")
+		else() 
+			set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory")
+		endif()
+		
+		# Add Post Build Copy To VST3 directory	
+		add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
+    elseif(UNIX AND NOT APPLE)  # LINUX		
+    	target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/linuxmain.cpp")
+  	elseif(APPLE)               # Apple OSX
+    	target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/macmain.cpp")
+  	else()
+    	message( FATAL_ERROR "Cant Build a VST3 Plugin on this OS")
+  	endif()
 	
 endif()
 
@@ -290,7 +288,6 @@ add_executable(view_test
 )
 target_link_libraries(view_test view)
 target_compile_definitions(view_test PRIVATE GAMMOU_VIEW_APP)
-
 
 ## 
 
