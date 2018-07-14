@@ -23,7 +23,7 @@ namespace Gammou {
 			// Components
 			const View::color component_border = 0x205065ff;
 			const View::color component_background = 0x003147ff;
-			const View::color moving_component_background = 0x003147ff;
+			const View::color moving_component_background = component_background;
 
 			const View::color component_input_socket_color = View::cl_firebrick;
 			const View::color component_linked_input_socket_color = View::cl_red;

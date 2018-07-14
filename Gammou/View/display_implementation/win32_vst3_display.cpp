@@ -50,7 +50,8 @@ namespace Gammou {
 			DEBUG_PRINT("Win32 Vst3 View View DTOR\n");
 		}
 
-		Steinberg::tresult PLUGIN_API win32_vst3_view::isPlatformTypeSupported(Steinberg::FIDString type)
+		Steinberg::tresult PLUGIN_API win32_vst3_view::isPlatformTypeSupported(
+			Steinberg::FIDString type)
 		{
 			// win32 Windows == HWND
 			return (0 == std::strcmp(Steinberg::kPlatformTypeHWND, type) ?

@@ -5,16 +5,15 @@
 #include "pluginterfaces/vst/ivstcomponent.h"
 #include "pluginterfaces/vst/ivstaudioprocessor.h"
 
-
 #include "vst3_plugin.h"
 
 static const Steinberg::FUID gammouUID(42, 43, 44, 45);
 
 #define plugin_name_string "Gammou"
 
-
 Steinberg::FUnknown *createGammouInstance(void *context)
 {
+	DEBUG_PRINT("Create Gammou Instance\n");
 	return (Steinberg::Vst::IAudioProcessor*)(new Gammou::Vst::Plugin());
 }
 
@@ -46,9 +45,8 @@ BEGIN_FACTORY_DEF("Arthur Liefhooghe",
 END_FACTORY
 
 
-// Vst 2
-/*
-#ifdef _WIN32
+
+#ifdef GAMMOU_VST2_COMPATIBILITY
 
 #include "public.sdk/source/vst/vst2wrapper/vst2wrapper.h"
 
@@ -56,11 +54,13 @@ Steinberg::Vst::Vst2Wrapper::AudioEffect *createEffectInstance(audioMasterCallba
 {
 	const TUID lcid = INLINE_UID_FROM_FUID(gammouUID);
 
-	return Steinberg::Vst::Vst2Wrapper::create(GetPluginFactory(),
+	DEBUG_PRINT("Vst2Wrapper::create\n");
+
+	return Steinberg::Vst::Vst2Wrapper::create(
+		GetPluginFactory(),
 		lcid,
-		's0qz', 
+		424243, 
 		master);
 }
 
 #endif
-*/
