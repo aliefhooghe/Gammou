@@ -8,7 +8,7 @@
 
 namespace Gammou {
 
-	namespace Vst {
+	namespace VST3 {
 
 		//	Plugin class implementation
 
@@ -24,7 +24,7 @@ namespace Gammou {
 			m_gui(&m_synthesizer, &m_synthesizer_mutex),
 			m_display(m_gui)
 		{
-			DEBUG_PRINT("Gammou Plugin CTOR\n");
+			DEBUG_PRINT("Gammou Vst3 Plugin CTOR\n");
 		}
 
 		Plugin::~Plugin()

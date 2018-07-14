@@ -14,7 +14,7 @@ static const Steinberg::FUID gammouUID(42, 43, 44, 45);
 Steinberg::FUnknown *createGammouInstance(void *context)
 {
 	DEBUG_PRINT("Create Gammou Instance\n");
-	return (Steinberg::Vst::IAudioProcessor*)(new Gammou::Vst::Plugin());
+	return (Steinberg::Vst::IAudioProcessor*)(new Gammou::VST3::Plugin());
 }
 
 bool InitModule()

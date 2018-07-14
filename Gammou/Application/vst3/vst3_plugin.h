@@ -27,7 +27,7 @@
 
 namespace Gammou {
 
-	namespace Vst {
+	namespace VST3 {
 
 		class Plugin : public Steinberg::Vst::SingleComponentEffect {
 

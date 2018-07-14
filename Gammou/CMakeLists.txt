@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 option(GAMMOU_STANDALONE_BUILD "Build a Standalone Application" OFF)
 option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" OFF)
+option(GAMMOU_VST2_BUILD "Build a VST2 Plugin" OFF)
 
 # Hide View Option
 mark_as_advanced(FORCE 
@@ -202,6 +203,7 @@ if(GAMMOU_VST3_BUILD)
 	add_library(gammou MODULE 
 		${VST3_SDK_DIR}/public.sdk/source/vst/vstsinglecomponenteffect.cpp
 		Application/vst3/factory.cpp
+    Application/vst3/vst3_plugin.h
 		Application/vst3/vst3_plugin.cpp
 		${VST3_PLUGIN_SRC} 
 		${GUI_SRC} 
@@ -213,7 +215,7 @@ if(GAMMOU_VST3_BUILD)
 		${GUI_INCLUDE_DIR}
 	)
 	
-    target_link_libraries(gammou PRIVATE view synthesizer base sdk)	# base and sdk from VST3_SDK
+  target_link_libraries(gammou PRIVATE view synthesizer base sdk)	# base and sdk from VST3_SDK
 	target_compile_definitions(gammou PRIVATE 
 	    GAMMOU_VIEW_VST3
 	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_DIR}"
@@ -228,29 +230,73 @@ if(GAMMOU_VST3_BUILD)
 
 	# Os specific addition
 
-  	if(WIN32)                   # MICROSOFT WINDOWS
-      target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/dllmain.cpp")
-	    set_target_properties(gammou PROPERTIES SUFFIX ".vst3")
+  if(WIN32)                   # MICROSOFT WINDOWS
+    target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/dllmain.cpp")
+	  set_target_properties(gammou PROPERTIES SUFFIX ".vst3")
 
-		  set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory")
+		set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory")
 		
-		  # Add Post Build Copy To VST3 directory	
-		  add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
+		# Add Post Build Copy To VST3 directory	
+		add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
 
-    elseif(UNIX AND NOT APPLE)  # LINUX		
-    	target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/linuxmain.cpp")
-  	elseif(APPLE)               # Apple OSX
-    	target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/macmain.cpp")
-  	else()
-    	message( FATAL_ERROR "Cant Build a VST3 Plugin on this OS")
-  	endif()
+  elseif(UNIX AND NOT APPLE)  # LINUX		
+   target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/linuxmain.cpp")
+  elseif(APPLE)               # Apple OSX
+   target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/macmain.cpp")
+  else()
+    message( FATAL_ERROR "Cant Build a VST3 Plugin on this OS")
+  endif()
 	
 endif()
 
+################################################
+#                                              #
+#       Gammou VST2 Plugin                     #
+#                                              #
+################################################
+
+if(GAMMOU_VST2_BUILD)
+  set_option(VIEW_VST2 ON)   # Enable VST2 display in View
+
+  add_library(gammou-vst2 MODULE
+    Application/vst2/vst_compat.hpp
+		Application/vst2/vst2_plugin.h
+		Application/vst2/vst2_plugin.cpp
+		${VST3_PLUGIN_SRC} 
+		${GUI_SRC} 
+		${PERSISTENCE_SRC}
+	)
+
+  target_include_directories(gammou-vst2 PRIVATE 
+		  ${GUI_INCLUDE_DIR}
+	)
+
+  target_link_libraries(gammou-vst2 PRIVATE view synthesizer)
+
+  target_compile_definitions(gammou-vst2 PRIVATE 
+	    GAMMOU_VIEW_VST2
+	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_DIR}"
+	)
+
+  set_target_properties(gammou-vst2 PROPERTIES 
+	    LIBRARY_OUTPUT_DIRECTORY "${VST3_OUTPUT_PATH}"
+	    POSITION_INDEPENDENT_CODE ON    
+	)
+
+  # Os specific addition
+
+  if(WIN32)                   # MICROSOFT WINDOWS
+    set_target_properties(gammou-vst2 PROPERTIES LINK_FLAGS "/EXPORT:VSTPluginMain")
+    
+    # Add Post Build Copy To VST3 directory	
+		add_post_build_copy(gammou-vst2 "C:/Program Files/Common Files/VST2")
+  endif()
+
+endif()
 
 ################################################
 #                                              #
-#       Tests			                       #
+#       Tests			                             #
 #                                              #
 ################################################
 
