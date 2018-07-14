@@ -176,8 +176,6 @@ endif()
 
 if(GAMMOU_VST3_BUILD)
   set_option(VIEW_VST3 ON)   # Enable VST3 Window in View
-
-  option(GAMMOU_VST2_COMPATIBILITY "bUILD A VST2 compatbile plugin (require Steinberg VST2 sdk)" OFF)
 	
 	set(VST3_SDK_DIR 
 		"${CMAKE_SOURCE_DIR}/../3rdparty/vst3sdk" 
@@ -226,39 +224,19 @@ if(GAMMOU_VST3_BUILD)
 	    POSITION_INDEPENDENT_CODE ON    
 	)
 	
-	if (GAMMOU_VST2_COMPATIBILITY)
-		target_sources(gammou PRIVATE
-			${VST3_SDK_DIR}/public.sdk/source/common/memorystream.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/eventlist.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/hostclasses.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/parameterchanges.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/processdata.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.h
-			${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffect.cpp
-			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffectx.cpp
-		)
 
-		target_compile_definitions(gammou PRIVATE
-			GAMMOU_VST2_COMPATIBILITY
-		)
-
-	endif()
 
 	# Os specific addition
 
   	if(WIN32)                   # MICROSOFT WINDOWS
-        target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/dllmain.cpp")
-		set_target_properties(gammou PROPERTIES SUFFIX ".vst3")
+      target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/dllmain.cpp")
+	    set_target_properties(gammou PROPERTIES SUFFIX ".vst3")
 
-		if (GAMMOU_VST2_COMPATIBILITY)
-			set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory /EXPORT:VSTPluginMain")
-		else() 
-			set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory")
-		endif()
+		  set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory")
 		
-		# Add Post Build Copy To VST3 directory	
-		add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
+		  # Add Post Build Copy To VST3 directory	
+		  add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
+
     elseif(UNIX AND NOT APPLE)  # LINUX		
     	target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/linuxmain.cpp")
   	elseif(APPLE)               # Apple OSX
