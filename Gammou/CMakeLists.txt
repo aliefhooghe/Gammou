@@ -248,6 +248,20 @@ if(GAMMOU_VST3_BUILD)
 		#)
 		
     elseif(UNIX AND NOT APPLE)  # LINUX		
+    
+    	# Vst2 compatibility + export /EXPORT:VSTPluginMain
+		target_sources(gammou PRIVATE
+			${VST3_SDK_DIR}/public.sdk/source/common/memorystream.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/eventlist.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/hostclasses.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/parameterchanges.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst/hosting/processdata.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.h
+			${VST3_SDK_DIR}/public.sdk/source/vst/vst2wrapper/vst2wrapper.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffect.cpp
+			${VST3_SDK_DIR}/public.sdk/source/vst2.x/audioeffectx.cpp
+		)
+    
         target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/linuxmain.cpp")
     elseif(APPLE)               # Apple OSX
         target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/macmain.cpp")
