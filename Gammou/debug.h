@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdio>
+
 #define TESTING
 
 #if !defined(NDEBUG) || defined(TESTING)

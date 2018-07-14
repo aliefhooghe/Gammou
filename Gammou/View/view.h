@@ -21,6 +21,10 @@
 #include "display_implementation/x11_vst3_display.h"
 #endif
 
+#ifdef GAMMOU_VIEW_VST2
+#include "display_implementation/x11_vst2_display.h"
+#endif
+
 #include "display_implementation/x11_application_display.h"
 
 //----------------------------------------------------------------------
@@ -30,12 +34,21 @@
 #include "display_implementation/win32_vst3_display.h"
 #endif
 
+#ifdef GAMMOU_VIEW_VST2
+//#include "display_implementation/win32_vst2_display.h"
+#error "Gammou : View : Not implemented"
+#endif
+
 #include "display_implementation/win32_application_display.h"
 
 //----------------------------------------------------------------------
 #elif defined(__APPLE__)
 
 #ifdef GAMMOU_VIEW_VST3
+#error "Gammou : View : Not implemented"
+#endif
+
+#ifdef GAMMOU_VIEW_VST2
 #error "Gammou : View : Not implemented"
 #endif
 
@@ -57,7 +70,7 @@ namespace Gammou {
 //  Special Displays
 
 #if defined(__linux__)
-
+//----------------------------------------------------------
 	typedef x11_application_display application_display;
 	typedef application_display dialog_display;
 
@@ -65,16 +78,24 @@ namespace Gammou {
 		typedef x11_vst3_display vst3_display;
 #endif
 
-
+#ifdef GAMMOU_VIEW_VST2
+		typedef x11_vst2_display vst2_display;
+#endif
+//----------------------------------------------------------
 #elif defined _WIN32
+//----------------------------------------------------------
 	typedef win32_application_display application_display;
 	typedef application_display dialog_display;
 
 #ifdef GAMMOU_VIEW_VST3
 		typedef win32_vst3_display vst3_display;
 #endif
-		
 
+#ifdef GAMMOU_VIEW_VST2
+		typedef win32_vst2_display vst2_display;
+#endif
+		
+//----------------------------------------------------------
 #endif
 //--------------------
 

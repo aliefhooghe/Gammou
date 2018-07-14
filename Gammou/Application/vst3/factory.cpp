@@ -14,7 +14,7 @@ static const Steinberg::FUID gammouUID(42, 43, 44, 45);
 Steinberg::FUnknown *createGammouInstance(void *context)
 {
 	DEBUG_PRINT("Create Gammou Instance\n");
-	return (Steinberg::Vst::IAudioProcessor*)(new Gammou::Vst::Plugin());
+	return (Steinberg::Vst::IAudioProcessor*)(new Gammou::VST3::Plugin());
 }
 
 bool InitModule()
@@ -45,22 +45,3 @@ BEGIN_FACTORY_DEF("Arthur Liefhooghe",
 END_FACTORY
 
 
-
-#ifdef GAMMOU_VST2_COMPATIBILITY
-
-#include "public.sdk/source/vst/vst2wrapper/vst2wrapper.h"
-
-Steinberg::Vst::Vst2Wrapper::AudioEffect *createEffectInstance(audioMasterCallback master)
-{
-	const TUID lcid = INLINE_UID_FROM_FUID(gammouUID);
-
-	DEBUG_PRINT("Vst2Wrapper::create\n");
-
-	return Steinberg::Vst::Vst2Wrapper::create(
-		GetPluginFactory(),
-		lcid,
-		424243, 
-		master);
-}
-
-#endif

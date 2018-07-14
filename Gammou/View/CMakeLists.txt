@@ -90,6 +90,7 @@ elseif (NOT WIN32)
     message( FATAL_ERROR "unsupported OS" )
 endif()
 
+
 #	VST3 Display
 
 if(VIEW_VST3)
@@ -114,7 +115,30 @@ if(VIEW_VST3)
 	endif()
 	
 endif()
+
+#	VST2 Display
+
+if(VIEW_VST2)
+	set_target_properties(view PROPERTIES POSITION_INDEPENDENT_CODE ON)  # Allow Modules objects to be built
+	target_sources(view PRIVATE 
+		display/abstract_vst2_display.h
+		display/abstract_vst2_display.cpp
+	)
 	
+	if(WIN32)
+		target_sources(view PRIVATE
+			display_implementation/win32_vst2_display.h
+			display_implementation/win32_vst2_display.cpp
+	)
+	elseif(UNIX)
+		target_sources(view PRIVATE
+			display_implementation/x11_vst2_display.h
+			display_implementation/x11_vst2_display.cpp
+		)
+	endif()
+	
+endif()
+
 #	Classic display
 	
 target_sources(view PRIVATE
