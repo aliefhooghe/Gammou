@@ -19,7 +19,6 @@ namespace Gammou {
 		public:
 			test_dialog();
 
-
 	};
 
 

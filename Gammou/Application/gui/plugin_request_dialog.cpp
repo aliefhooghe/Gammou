@@ -158,7 +158,7 @@ namespace Gammou {
                     get_width(),
                     30));
             
-            resize(get_width(), y + 30 + 3 + 42);
+            resize(get_width(), y + 30 + 3);
         }
 
         std::unique_ptr<Sound::answer_form> plugin_request_dialog::get_answer_form()

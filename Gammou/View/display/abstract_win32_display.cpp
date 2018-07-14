@@ -57,11 +57,27 @@ namespace Gammou {
 			else
 				style |= WS_CHILD;							//	vst3
 
+
+			//
+
+			unsigned int real_width = width;
+			unsigned int real_height = height;
+
+			if (parent_window == nullptr) {
+				RECT real_size;
+				AdjustWindowRectEx(&real_size, style, true, 0);
+
+				real_width += (real_size.right - real_size.left);
+				real_height += (real_size.bottom - real_size.top);
+			}
+
+			//
+
 			m_window_handle =
 				CreateWindowA(
 					WNDCLASS_NAME,
 					title.c_str(), style,
-					0, 0, width, height,
+					0, 0, real_width, real_height,
 					parent_window, nullptr, nullptr,
 					this);
 
@@ -89,7 +105,7 @@ namespace Gammou {
 			DEBUG_PRINT("Window at x = %d, y = %d\n", x, y);
 
 			SetWindowPos(
-				m_window_handle, nullptr, x, y, width, height, 0);
+				m_window_handle, nullptr, x, y, real_width, real_height, 0);
 		}
 
 		void abstract_win32_display::destroy_window()
