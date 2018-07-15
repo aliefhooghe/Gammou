@@ -33,6 +33,7 @@ namespace Gammou  {
                 plugin();
 
                 AEffect *get_AEffect_instance();
+				void handle_event(VstEvent& ev);
 
                 static intptr_t dispatcher_proc(
                     AEffect *fx, 
@@ -41,12 +42,6 @@ namespace Gammou  {
                     intptr_t value, 
                     void *ptr, 
                     float opt);
-
-                static void process_proc(
-                    AEffect *fx,
-                    float **inputs,
-                    float **outputs,
-                    int32_t sample_count);
 
                 static void set_parameter_proc(
                     AEffect *fx, 
@@ -68,6 +63,7 @@ namespace Gammou  {
                     double **inputs,
                     double **outputs,
                     int32_t sample_count);
+
 
 				//-------
 

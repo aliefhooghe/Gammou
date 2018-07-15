@@ -1,6 +1,8 @@
 
 #include "vst2_plugin.h"
 
+#define MIDI_NOTE_OFF	0x80u
+#define MIDI_NOTE_ON	0x90u
 
 namespace Gammou  {
     
@@ -75,6 +77,30 @@ namespace Gammou  {
             return m_aeffect;
         }
 
+		void plugin::handle_event(VstEvent & ev)
+		{
+			if (ev.type != kVstMidiType)
+				return;
+
+			VstMidiEvent* midi_ev = (VstMidiEvent*)(&ev);
+
+			// ignore channel
+			const uint8_t cmd =
+				(midi_ev->midiData[0] & 0xf0);
+
+			const uint8_t note =
+				(midi_ev->midiData[1] & 0x7f);
+
+			const uint8_t velocity =
+				(midi_ev->midiData[2] & 0x7f);
+
+			if (cmd == MIDI_NOTE_OFF ||
+				(cmd == MIDI_NOTE_ON && velocity == 0u))
+				m_synthesizer.send_note_off(note, static_cast<float>(velocity) / 127.0f);
+			else if (cmd == MIDI_NOTE_ON)
+				m_synthesizer.send_note_on(note, static_cast<float>(velocity) / 127.0f);
+		}
+
         AEffect *plugin::create_AEffect_instance()
         {
             plugin *p = new plugin;
@@ -100,7 +126,8 @@ namespace Gammou  {
 
                 case effClose:
                     //  TODO : no arg
-                    DEBUG_PRINT("GEffect CLose\n");
+                    DEBUG_PRINT("Effect CLose\n");
+					delete self;
                     break;
 
                 case effGetParamLabel:
@@ -171,8 +198,19 @@ namespace Gammou  {
                     break;
 
                 case effProcessEvents:
-                    //  TODO : args = 0, 0, VstEvents *event
-                    DEBUG_PRINT("Received events\n");
+				{
+					VstEvents *list = (VstEvents*)ptr;
+
+					const unsigned int event_count =
+						list->numEvents;
+					VstEvent **events =
+						list->events;
+
+					for (unsigned int i = 0; i < event_count; ++i) 
+						self->handle_event(*(events[i]));
+	
+					DEBUG_PRINT("Received events\n");
+				}
                     break;
 
                 case effStartProcess:
@@ -222,12 +260,12 @@ namespace Gammou  {
             plugin *self = (plugin*)(fx->user);
             auto& synthesizer = self->m_synthesizer;
 
-            for (unsigned int i = 0; i < sample_count; ++i) {
+            for (int i = 0; i < sample_count; ++i) {
                 double input[2] = {inputs[0][i], inputs[1][i]};
                 double output[2];
                 synthesizer.process(input, output);
-                outputs[0][i] = output[0];
-                outputs[1][i] = output[1];
+                outputs[0][i] = static_cast<float>(output[0]);
+                outputs[1][i] = static_cast<float>(output[1]);
             }
         }
 
@@ -240,7 +278,7 @@ namespace Gammou  {
             plugin *self = (plugin*)(fx->user);
             auto& synthesizer = self->m_synthesizer;
 
-            for (unsigned int i = 0; i < sample_count; ++i) {
+            for (int i = 0; i < sample_count; ++i) {
                 double input[2] = {inputs[0][i], inputs[1][i]};
                 double output[2];
                 synthesizer.process(input, output);
@@ -252,9 +290,6 @@ namespace Gammou  {
     }   /*  vst2 */
 
 }   /* Gammou */
-
-
-/// symbole à exporter
 
 
 extern "C" {
