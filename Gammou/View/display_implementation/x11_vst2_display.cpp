@@ -19,7 +19,7 @@ namespace Gammou {
 
         void x11_vst2_display::open(void *host_parent_window)
         {
-            create_window(nullptr, "");
+            create_window((Window)host_parent_window, "");
         }
 
         void x11_vst2_display::close()

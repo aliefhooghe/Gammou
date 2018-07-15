@@ -38,7 +38,7 @@ namespace Gammou {
         }
 
         void abstract_x11_display::create_window(
-            Display *parent_display, 
+            Window parent, 
             const std::string& title)
         {
             if (m_running)
@@ -93,11 +93,14 @@ namespace Gammou {
             xattributs.background_pixel = WhitePixel(m_display, screen);
 
             m_window = XCreateWindow(
-                m_display, m_root_window, 
+                m_display, parent == 0u ? m_root_window : parent,   //  <-
                 0, 0, px_width, px_height, 0, 
                 CopyFromParent, CopyFromParent, 
                 m_xvisual_info_found->visual, 
                 CWBackPixel, &xattributs);
+
+            if (parent != 0)
+                XReparentWindow(m_display, m_window, parent, 0, 0);
             
             // enable window close event
             XSetWMProtocols(m_display, m_window, &m_wm_delete_message, 1);
@@ -135,13 +138,13 @@ namespace Gammou {
             m_cairo_surface = cairo_xlib_surface_create(
                 m_display, m_back_buffer, 
                 m_xvisual_info_found->visual,
-                px_width, px_height
-            );
+                px_width, px_height);
 
             cairo_xlib_surface_set_size(
                 m_cairo_surface,
-                px_width, px_height
-            );
+                px_width, px_height);
+
+            m_cr = cairo_create(m_cairo_surface);
 
             DEBUG_PRINT("Gui Thread Start\n");
 
@@ -182,18 +185,14 @@ namespace Gammou {
 			return m_display;
 		}
 
-        void abstract_x11_display::x_event_loop(
-            abstract_x11_display *self)
+        void abstract_x11_display::handle_event(
+            abstract_x11_display* self,
+            XEvent& event)
         {
-            cairo_t *cr = cairo_create(self->m_cairo_surface);
+            static Time last_time = 0;
+            static unsigned int last_button = 0u;
 
-            Time last_time = 0;
-
-            while(self->m_running){
-                XEvent event;
-                XNextEvent(self->m_display, &event);
-
-                switch( event.type ){
+            switch( event.type ){
 
                     case ButtonPress:
             
@@ -229,16 +228,21 @@ namespace Gammou {
 
                             // Double Click Detection
 
-                            if( button == 1 || button == 2 ){
-                                Time now = event.xbutton.time;
-                                const Time delta = now - last_time;
-                                
-                                //  
-                                if( delta > 50 && delta < 250 )
-                                    self->sys_mouse_dbl_click();
+                            if( button == 1 || button == 3 ){
+                                const Time now = event.xbutton.time;
+
+                                if (event.xbutton.button == last_button) {
+                                    const Time delta = now - last_time;
+                                    
+                                    //  
+                                    if( delta > 50 && delta < 250 )
+                                        self->sys_mouse_dbl_click();
+                                }
                                 
                                 last_time = now;
+                                last_button = event.xbutton.button;
                             }
+
                             switch(button){
                                 case 1: // left
                                 self->sys_mouse_button_up(mouse_button::LeftButton);
@@ -273,7 +277,7 @@ namespace Gammou {
                         break;
 
                     case Expose:
-                        self->sys_draw(cr);
+                        self->sys_draw(self->m_cr);
                         cairo_surface_flush(self->m_cairo_surface);
                         
                         // Swap Buffer
@@ -305,9 +309,18 @@ namespace Gammou {
                         break;
 
                 }
+        }
+
+        void abstract_x11_display::x_event_loop(
+            abstract_x11_display *self)
+        {
+            while(self->m_running){
+                XEvent event;
+                XNextEvent(self->m_display, &event);
+                handle_event(self, event);
             }
 
-            cairo_destroy(cr);
+            cairo_destroy(self->m_cr);
             cairo_surface_destroy(self->m_cairo_surface);
             XFreeGC(self->m_display, self->m_graphic_context);
             XDestroyWindow(self->m_display, self->m_window);

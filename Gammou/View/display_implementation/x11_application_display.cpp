@@ -29,7 +29,7 @@ namespace Gammou {
 
         void x11_application_display::open(const std::string& title)
         {
-            create_window(nullptr, title);
+            create_window(0u, title);
         }
 
         void x11_application_display::wait()
