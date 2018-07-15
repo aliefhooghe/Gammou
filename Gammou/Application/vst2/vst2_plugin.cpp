@@ -126,12 +126,10 @@ namespace Gammou  {
             switch (opcode) {
 
                 case effOpen:
-                    //  TODO : no arg
                     DEBUG_PRINT("Effect Open\n");
                     break;
 
                 case effClose:
-                    //  TODO : no arg
                     DEBUG_PRINT("Effect CLose\n");
 					delete self;
                     break;
@@ -175,7 +173,6 @@ namespace Gammou  {
                     break;
 
                 case effEditOpen:
-                    //  TODO : arg = 0, 0, winid, 0
                     DEBUG_PRINT("Edit Open\n");
                     self->m_display.open(ptr);
                     break;
@@ -186,7 +183,7 @@ namespace Gammou  {
                     break;
 
                 case effEditIdle:
-                    DEBUG_PRINT("effEditIdle\n");
+                    //DEBUG_PRINT("effEditIdle\n");
                     break;
 
                 case effEditTop:

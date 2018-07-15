@@ -29,6 +29,7 @@ namespace Gammou {
 		protected:
 			void create_window(Window parent, const std::string& title);
 			void sys_redraw_rect(const rectangle& rect);
+			void draw_display();
 			void wait_window_thread();
 
 			void *get_sys_window_handle() override;
@@ -41,16 +42,16 @@ namespace Gammou {
 
 			bool m_running;
 
-            Display *m_display;
-            Window m_window;
-            Window m_root_window;
+            Display *m_display{};
+            Window m_window{};
+            Window m_root_window{};
             XdbeBackBuffer m_back_buffer; // double buffering
-            XVisualInfo *m_xvisual_info_found;
+            XVisualInfo *m_xvisual_info_found{};
             GC m_graphic_context;
             Atom m_wm_delete_message;
 
-            cairo_surface_t *m_cairo_surface;
-			cairo_t *m_cr;
+            cairo_surface_t *m_cairo_surface{};
+			cairo_t *m_cr{};
 		};
 
 	} /* View */

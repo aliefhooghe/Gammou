@@ -22,10 +22,6 @@ namespace Gammou {
             create_window((Window)host_parent_window, "");
         }
 
-        void x11_vst2_display::close()
-        {
-            abstract_x11_display::close();
-        }
 
     } /* View */
 
