@@ -33,8 +33,12 @@ namespace Gammou  {
                 plugin();
 
                 AEffect *get_AEffect_instance();
+
 				void handle_event(VstEvent& ev);
 				void get_param_name(char *str, const unsigned int index);
+
+				unsigned int save_state(void **data);
+				unsigned load_state(void *data, const unsigned int size);
 
                 static intptr_t dispatcher_proc(
                     AEffect *fx, 
@@ -78,7 +82,29 @@ namespace Gammou  {
 
                 Gui::synthesizer_gui m_gui;
 			    View::vst2_display m_display;
+
+				Persistence::buffer_data_sink m_chunk_buffer;
         };
+
+		class raw_data_source : public Sound::data_source {
+
+		public:
+			raw_data_source(
+				const void *raw_data, 
+				const unsigned int size_limit);
+
+			raw_data_source(raw_data_source&) = delete;
+			~raw_data_source();
+
+			bool seek(const int offset, Sound::data_stream::seek_mode mode) override;
+			unsigned int tell() override;
+			unsigned int read(void *data, const unsigned int size) override;
+
+		private:
+			uint8_t * const m_begin;
+			const unsigned int m_size_limit;
+			unsigned int m_cursor;
+		};
 
     }   /*  vst2 */
 

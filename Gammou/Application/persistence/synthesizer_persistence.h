@@ -60,7 +60,6 @@ namespace Gammou {
 
 		//--------
 
-
 		class buffer_data_sink : public Sound::data_sink{
 
 		public:
@@ -72,11 +71,15 @@ namespace Gammou {
 			unsigned int tell() override;
 			unsigned int write(void *data, const unsigned int size) override;
 
+			void flush_data();
 			void flush_data(Sound::data_sink& target);
+
+			//	C Style Interface
+			unsigned int get_data_size();
+			const uint8_t *get_data() const;
 
 		private:
 			unsigned int m_cursor;
-			unsigned int m_data_size;
 			std::vector<uint8_t> m_buffer;
 		};
 
