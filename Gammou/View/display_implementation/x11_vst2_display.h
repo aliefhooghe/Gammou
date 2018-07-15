@@ -17,7 +17,6 @@ namespace Gammou {
             ~x11_vst2_display();
 
             void open(void *host_parent_window) override;
-            void close() override;
         };  
 
     } /* View */

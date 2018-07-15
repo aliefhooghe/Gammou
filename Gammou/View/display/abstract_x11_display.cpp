@@ -1,5 +1,7 @@
 
 #include <cstring>
+#include <sys/select.h>
+
 #include "abstract_x11_display.h"
 
 #define GAMMOU_X_EVENT_MASK KeyPressMask | KeyReleaseMask | ExposureMask | StructureNotifyMask | \
@@ -14,6 +16,12 @@ namespace Gammou {
         :   abstract_display(root_widget),
             m_running(false)
         {
+            static bool x_thread_init = false;
+
+            if (!x_thread_init) {
+                XInitThreads();
+                x_thread_init = true;
+            }
         }
 
         abstract_x11_display::~abstract_x11_display()
@@ -30,15 +38,16 @@ namespace Gammou {
         void abstract_x11_display::close()
         {
             DEBUG_PRINT("abstract_x11_display Close\n");
+
             m_running = false;
-            
+
             if (std::this_thread::get_id() != 
                     m_event_loop_thread.get_id())
                 wait_window_thread();
         }
 
         void abstract_x11_display::create_window(
-            Display *parent_display, 
+            Window parent, 
             const std::string& title)
         {
             if (m_running)
@@ -93,11 +102,14 @@ namespace Gammou {
             xattributs.background_pixel = WhitePixel(m_display, screen);
 
             m_window = XCreateWindow(
-                m_display, m_root_window, 
+                m_display, parent == 0u ? m_root_window : parent,   //  <-
                 0, 0, px_width, px_height, 0, 
                 CopyFromParent, CopyFromParent, 
                 m_xvisual_info_found->visual, 
                 CWBackPixel, &xattributs);
+
+            if (parent != 0)
+                XReparentWindow(m_display, m_window, parent, 0, 0);
             
             // enable window close event
             XSetWMProtocols(m_display, m_window, &m_wm_delete_message, 1);
@@ -135,13 +147,13 @@ namespace Gammou {
             m_cairo_surface = cairo_xlib_surface_create(
                 m_display, m_back_buffer, 
                 m_xvisual_info_found->visual,
-                px_width, px_height
-            );
+                px_width, px_height);
 
             cairo_xlib_surface_set_size(
                 m_cairo_surface,
-                px_width, px_height
-            );
+                px_width, px_height);
+
+            m_cr = cairo_create(m_cairo_surface);
 
             DEBUG_PRINT("Gui Thread Start\n");
 
@@ -152,7 +164,7 @@ namespace Gammou {
         void abstract_x11_display::sys_redraw_rect(
             const rectangle& rect)
         {
-            if (!m_running)
+            if (m_display == nullptr)
                 return;
                 
             XEvent ev;
@@ -169,6 +181,19 @@ namespace Gammou {
             XSendEvent(m_display, m_window, true, ExposureMask, &ev);
         }
 
+        void abstract_x11_display::draw_display()
+        {
+            sys_draw(m_cr);
+            cairo_surface_flush(m_cairo_surface);
+            
+            // Swap Buffer
+            XdbeSwapInfo info;
+            info.swap_window = m_window;
+            info.swap_action = XdbeBackground;
+            XdbeSwapBuffers(m_display, &info, 1);
+            XFlush(m_display);
+        }
+
         void abstract_x11_display::wait_window_thread()
         {
              DEBUG_PRINT("abstract_x11_display Wait Window THread\n");
@@ -182,18 +207,14 @@ namespace Gammou {
 			return m_display;
 		}
 
-        void abstract_x11_display::x_event_loop(
-            abstract_x11_display *self)
+        void abstract_x11_display::handle_event(
+            abstract_x11_display* self,
+            XEvent& event)
         {
-            cairo_t *cr = cairo_create(self->m_cairo_surface);
+            static Time last_time = 0;
+            static unsigned int last_button = 0u;
 
-            Time last_time = 0;
-
-            while(self->m_running){
-                XEvent event;
-                XNextEvent(self->m_display, &event);
-
-                switch( event.type ){
+            switch( event.type ){
 
                     case ButtonPress:
             
@@ -229,16 +250,21 @@ namespace Gammou {
 
                             // Double Click Detection
 
-                            if( button == 1 || button == 2 ){
-                                Time now = event.xbutton.time;
-                                const Time delta = now - last_time;
-                                
-                                //  
-                                if( delta > 50 && delta < 250 )
-                                    self->sys_mouse_dbl_click();
+                            if( button == 1 || button == 3 ){
+                                const Time now = event.xbutton.time;
+
+                                if (event.xbutton.button == last_button) {
+                                    const Time delta = now - last_time;
+                                    
+                                    //  
+                                    if( delta > 50 && delta < 250 )
+                                        self->sys_mouse_dbl_click();
+                                }
                                 
                                 last_time = now;
+                                last_button = event.xbutton.button;
                             }
+
                             switch(button){
                                 case 1: // left
                                 self->sys_mouse_button_up(mouse_button::LeftButton);
@@ -273,15 +299,7 @@ namespace Gammou {
                         break;
 
                     case Expose:
-                        self->sys_draw(cr);
-                        cairo_surface_flush(self->m_cairo_surface);
-                        
-                        // Swap Buffer
-                        XdbeSwapInfo info;
-                        info.swap_window = self->m_window;
-                        info.swap_action = XdbeBackground;
-                        XdbeSwapBuffers(self->m_display, &info, 1);
-                        XFlush(self->m_display);
+                        self->draw_display();
                         break;
 
                     case EnterNotify:
@@ -305,13 +323,55 @@ namespace Gammou {
                         break;
 
                 }
+        }
+
+#define X_EVENT_LOOP_TIMEOUT_USEC 100000
+
+        void abstract_x11_display::x_event_loop(
+            abstract_x11_display *self)
+        {
+            int xevent_queue_fd = ConnectionNumber(self->m_display);
+            struct timeval timeout = {
+                .tv_sec = 0,
+                .tv_usec = X_EVENT_LOOP_TIMEOUT_USEC
+            };
+
+            //  MAke sure that the inwods will be drawn at startup
+            self->draw_display();
+
+            while(self->m_running){
+                fd_set xevent_queue_set;
+                FD_ZERO(&xevent_queue_set);
+                FD_SET(xevent_queue_fd, &xevent_queue_set);
+
+                const int ret =
+                    select(xevent_queue_fd + 1, &xevent_queue_set, 0, 0, &timeout);
+
+                if (ret < 0) {
+                    DEBUG_PRINT("Fatal select error\n");
+                    exit(0);
+                }
+                else if (ret == 0) {
+                    //  Timeout was reached (Allow m_running to be checked)
+                    timeout.tv_usec = X_EVENT_LOOP_TIMEOUT_USEC;                        
+                }
+                else {  //  there are event(s) to be read
+
+                    //  While the Event Queue is not empty
+                    while (XPending(self->m_display) > 0) {
+                        XEvent event;
+                        XNextEvent(self->m_display, &event);
+                        handle_event(self, event);
+                    }
+                }
             }
 
-            cairo_destroy(cr);
+            cairo_destroy(self->m_cr);
             cairo_surface_destroy(self->m_cairo_surface);
             XFreeGC(self->m_display, self->m_graphic_context);
             XDestroyWindow(self->m_display, self->m_window);
             XCloseDisplay(self->m_display);
+            self->m_display = nullptr;
             DEBUG_PRINT("Quit thread Xloop function\n");
         }
 

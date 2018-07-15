@@ -27,27 +27,31 @@ namespace Gammou {
 			virtual void close() override;
 
 		protected:
-			void create_window(Display *parent_display, const std::string& title);
+			void create_window(Window parent, const std::string& title);
 			void sys_redraw_rect(const rectangle& rect);
+			void draw_display();
 			void wait_window_thread();
 
 			void *get_sys_window_handle() override;
+			
 		private:
             static void x_event_loop(abstract_x11_display *self);
+			static void handle_event(abstract_x11_display* self, XEvent& event);
 
             std::thread m_event_loop_thread;
 
 			bool m_running;
 
-            Display *m_display;
-            Window m_window;
-            Window m_root_window;
-            XdbeBackBuffer m_back_buffer; // doubl buffering
-            XVisualInfo *m_xvisual_info_found;
+            Display *m_display{};
+            Window m_window{};
+            Window m_root_window{};
+            XdbeBackBuffer m_back_buffer; // double buffering
+            XVisualInfo *m_xvisual_info_found{};
             GC m_graphic_context;
             Atom m_wm_delete_message;
 
-            cairo_surface_t *m_cairo_surface;
+            cairo_surface_t *m_cairo_surface{};
+			cairo_t *m_cr{};
 		};
 
 	} /* View */

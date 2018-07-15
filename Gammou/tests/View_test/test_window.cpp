@@ -114,6 +114,12 @@ namespace Gammou {
         add_widget(std::move(list_box_ptr));
     }
 
+    bool test_window::on_mouse_dbl_click(const int x, const int y)
+    {
+        DEBUG_PRINT("Mouse DoublClick !\n");
+        return true;
+    }
+
 	test_dialog::test_dialog()
 		: View::dialog(100, 100, View::cl_chartreuse)
 	{

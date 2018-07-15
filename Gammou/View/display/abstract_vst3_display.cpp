@@ -56,7 +56,7 @@ namespace Gammou {
 					TRANSLATE_KEY(KEY_NUMPAD9, key_numpad_9);
 					TRANSLATE_KEY(KEY_MULTIPLY, key_multiply);
 					TRANSLATE_KEY(KEY_ADD, key_add);
-					//	TRANSLATE_KEY(KEY_SEPARATOR, key_decimal_point);
+					//TRANSLATE_KEY(KEY_SEPARATOR, key_decimal_point);
 					TRANSLATE_KEY(KEY_SUBTRACT, key_subtract);
 					TRANSLATE_KEY(KEY_DECIMAL, key_decimal_point);
 					TRANSLATE_KEY(KEY_DIVIDE, key_divide);
