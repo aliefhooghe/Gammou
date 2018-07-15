@@ -34,6 +34,7 @@ namespace Gammou  {
 
                 AEffect *get_AEffect_instance();
 				void handle_event(VstEvent& ev);
+				void get_param_name(char *str, const unsigned int index);
 
                 static intptr_t dispatcher_proc(
                     AEffect *fx, 

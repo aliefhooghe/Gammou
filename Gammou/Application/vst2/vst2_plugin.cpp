@@ -101,6 +101,12 @@ namespace Gammou  {
 				m_synthesizer.send_note_on(note, static_cast<float>(velocity) / 127.0f);
 		}
 
+		void plugin::get_param_name(char * str, const unsigned int index)
+		{
+			std::string param_name = ("Parameter " + std::to_string(index));
+			std::strcpy(str, param_name.c_str());
+		}
+
         AEffect *plugin::create_AEffect_instance()
         {
             plugin *p = new plugin;
@@ -143,7 +149,7 @@ namespace Gammou  {
                 case effGetParamName:
                     //  TODO : param, 0, str
                     DEBUG_PRINT("GetParamName\n");
-					strcpy((char*)ptr, "Param-name");
+					self->get_param_name((char*)ptr, index);
                     break;
 
                 case effSetSampleRate:
