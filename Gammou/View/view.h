@@ -35,8 +35,7 @@
 #endif
 
 #ifdef GAMMOU_VIEW_VST2
-//#include "display_implementation/win32_vst2_display.h"
-#error "Gammou : View : Not implemented"
+#include "display_implementation/win32_vst2_display.h"
 #endif
 
 #include "display_implementation/win32_application_display.h"

@@ -22,13 +22,17 @@ namespace Gammou  {
         {
             DEBUG_PRINT("Gammou Vst2 Plugin CTOR\n");
 
+			//	Initialize effect instance
+
             m_aeffect = new AEffect;
 
             m_aeffect->magic = kEffectMagic;
             m_aeffect->dispatcher = dispatcher_proc;
-            m_aeffect->process = process_replacing_proc;
+            m_aeffect->process = nullptr;
+
             m_aeffect->setParameter = set_parameter_proc;
             m_aeffect->getParameter = get_parameter_proc;
+
             m_aeffect->numPrograms = 0u;
             m_aeffect->numParams = GAMMOU_VST2_PARAMETER_COUNT;
             m_aeffect->numInputs = GAMMOU_VST2_INPUT_COUNT;
@@ -53,7 +57,13 @@ namespace Gammou  {
             m_aeffect->version = kVstVersion;
             m_aeffect->processReplacing = process_replacing_proc;
             m_aeffect->processDoubleReplacing = process_double_replacing_proc;
-        }
+        
+			//	Initialize window rect
+			m_window_rect.left = 0;
+			m_window_rect.right = m_display.get_display_width();
+			m_window_rect.top = 0;
+			m_window_rect.bottom = m_display.get_display_height();
+		}
 
         plugin::~plugin()
         {
@@ -106,6 +116,7 @@ namespace Gammou  {
                 case effGetParamName:
                     //  TODO : param, 0, str
                     DEBUG_PRINT("GetParamName\n");
+					strcpy((char*)ptr, "Param-name");
                     break;
 
                 case effSetSampleRate:
@@ -124,16 +135,16 @@ namespace Gammou  {
 
                 case effEditGetRect:
                 {
-                    //  TODO : arg = 0, 0, &rect (ERect*)
+					ERect **rect_ref = (ERect**)ptr;
+					*rect_ref = &(self->m_window_rect);
                     DEBUG_PRINT("Edit Get Rect\n");
-                   // std::memset(ptr, 0, sizeof(ERect));
                 }
                     break;
 
                 case effEditOpen:
                     //  TODO : arg = 0, 0, winid, 0
                     DEBUG_PRINT("Edit Open\n");
-                    self->m_display.open(nullptr);
+                    self->m_display.open(ptr);
                     break;
 
                 case effEditClose:

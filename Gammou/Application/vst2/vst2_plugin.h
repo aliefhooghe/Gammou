@@ -69,7 +69,10 @@ namespace Gammou  {
                     double **outputs,
                     int32_t sample_count);
 
+				//-------
+
                 AEffect *m_aeffect;
+				ERect m_window_rect;
 
                 std::mutex m_synthesizer_mutex;
 			    Process::bytecode_frame_processor<double> m_master_circuit_processor;
