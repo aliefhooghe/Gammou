@@ -240,6 +240,14 @@ namespace Gammou {
 				return 0;
 				break;
 
+			case WM_MOUSEHWHEEL:
+			{
+				const auto delta = GET_WHEEL_DELTA_WPARAM(w_param);
+				DEBUG_PRINT("Win32 mouse wheel %u\n", delta);
+				return 0;
+			}
+				break;
+
 			case WM_MOUSELEAVE:
 				display->sys_mouse_exit();
 				display->m_has_focus = false;
