@@ -41,10 +41,10 @@ namespace Gammou  {
             m_aeffect->numOutputs = GAMMOU_VST2_OUTPUT_COUNT;
 
             m_aeffect->flags = 
-                effFlagsHasEditor       |
-                effFlagsCanReplacing    |
-                effFlagsProgramChunks   |
-                effFlagsIsSynth         |
+                effFlagsHasEditor         |
+                effFlagsCanReplacing      |
+                effFlagsProgramChunks     |
+                effFlagsIsSynth           |
                 effFlagsCanDoubleReplacing;
 
             m_aeffect->resvd1 = 0u;
@@ -84,7 +84,7 @@ namespace Gammou  {
 
 			VstMidiEvent* midi_ev = (VstMidiEvent*)(&ev);
 
-			// ignore channel
+			// ignore midi Channels
 			const uint8_t cmd =
 				(midi_ev->midiData[0] & 0xf0);
 
@@ -109,6 +109,7 @@ namespace Gammou  {
 
 		unsigned int plugin::save_state(void **data)
 		{
+            /*
 			//	reset buffer
 			m_chunk_buffer.flush_data();
 			
@@ -121,15 +122,18 @@ namespace Gammou  {
 			else {
 				return 0;
 			}
-			
+			*/
+            return 0u;
 		}
 
 		unsigned int plugin::load_state(void *data, const unsigned int size)
 		{
+            /*
 			raw_data_source source(data, size);
 			if (m_gui.load_state(source))
 				return size;
-			else return 0;
+			else return 0;*/
+            return 0u;
 		}
 
         AEffect *plugin::create_AEffect_instance()
@@ -195,14 +199,12 @@ namespace Gammou  {
 
                 case effGetChunk:
                     DEBUG_PRINT("Get chunk (index = %u)\n", index);
-					//	Store Preset
 					if (index == 0)
 						return self->save_state((void**)ptr);
                     break;
 
                 case effSetChunk:
 					DEBUG_PRINT("Set chunk (index = %u, size = %u)\n", index, value);
-					//	Store Preset
 					if (index == 0)
 						self->load_state(ptr, value);
                     break;
@@ -218,15 +220,24 @@ namespace Gammou  {
 
 					for (unsigned int i = 0; i < event_count; ++i) 
 						self->handle_event(*(events[i]));
-	
-					//DEBUG_PRINT("Received events\n");
 				}
                     break;
 
-                    
-                case effSetProcessPrecision:
-                    DEBUG_PRINT("Precision was set to %u bit\n", 
-                        value == kVstProcessPrecision64 ? 64 : 32);
+                case effCanBeAutomated:
+                    return 1;   //  Every Parameters Can be automated
+                    break;
+
+                case effGetVendorString:
+                    strcpy((char*)ptr, "Arthur Liefhooghe");
+                    break;
+
+                case effCanDo:
+                    DEBUG_PRINT("Got Cando '%s' ?\n", (char*)ptr);
+                    break;
+                
+                case effGetNumMidiInputChannels:
+                    DEBUG_PRINT("effGetNumMidiInputChannels received\n");
+                    return 1;
                     break;
 
                 default:
@@ -263,6 +274,8 @@ namespace Gammou  {
             plugin *self = (plugin*)(fx->user);
             auto& synthesizer = self->m_synthesizer;
 
+            self->m_synthesizer_mutex.lock();
+
             for (int i = 0; i < sample_count; ++i) {
                 double input[2] = {inputs[0][i], inputs[1][i]};
                 double output[2];
@@ -270,6 +283,8 @@ namespace Gammou  {
                 outputs[0][i] = static_cast<float>(output[0]);
                 outputs[1][i] = static_cast<float>(output[1]);
             }
+
+            self->m_synthesizer_mutex.unlock();
         }
 
         void plugin::process_double_replacing_proc(
@@ -281,6 +296,8 @@ namespace Gammou  {
             plugin *self = (plugin*)(fx->user);
             auto& synthesizer = self->m_synthesizer;
 
+            self->m_synthesizer_mutex.lock();
+
             for (int i = 0; i < sample_count; ++i) {
                 double input[2] = {inputs[0][i], inputs[1][i]};
                 double output[2];
@@ -288,6 +305,8 @@ namespace Gammou  {
                 outputs[0][i] = output[0];
                 outputs[1][i] = output[1];
             }
+
+            self->m_synthesizer_mutex.unlock();
         }
 
 		//	Raw data source implementation
