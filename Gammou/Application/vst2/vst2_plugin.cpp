@@ -41,10 +41,10 @@ namespace Gammou  {
             m_aeffect->numOutputs = GAMMOU_VST2_OUTPUT_COUNT;
 
             m_aeffect->flags = 
-                effFlagsHasEditor       |
-                effFlagsCanReplacing    |
-                effFlagsProgramChunks   |
-                effFlagsIsSynth         |
+                effFlagsHasEditor         |
+                effFlagsCanReplacing      |
+                effFlagsProgramChunks     |
+                effFlagsIsSynth           |
                 effFlagsCanDoubleReplacing;
 
             m_aeffect->resvd1 = 0u;
@@ -56,7 +56,7 @@ namespace Gammou  {
             m_aeffect->object = nullptr;
             m_aeffect->user = this;
             m_aeffect->uniqueID = 1342151;  //  TODO
-            m_aeffect->version = kVstVersion;
+			m_aeffect->version = kVstVersion;
             m_aeffect->processReplacing = process_replacing_proc;
             m_aeffect->processDoubleReplacing = process_double_replacing_proc;
         
@@ -84,7 +84,7 @@ namespace Gammou  {
 
 			VstMidiEvent* midi_ev = (VstMidiEvent*)(&ev);
 
-			// ignore channel
+			// ignore midi Channels
 			const uint8_t cmd =
 				(midi_ev->midiData[0] & 0xf0);
 
@@ -105,6 +105,35 @@ namespace Gammou  {
 		{
 			std::string param_name = ("Parameter " + std::to_string(index));
 			std::strcpy(str, param_name.c_str());
+		}
+
+		unsigned int plugin::save_state(void **data)
+		{
+            /*
+			//	reset buffer
+			m_chunk_buffer.flush_data();
+			
+			const bool ret = m_gui.save_state(m_chunk_buffer);
+
+			if (ret) {
+				*data = (void*)m_chunk_buffer.get_data();
+				return m_chunk_buffer.get_data_size();
+			}
+			else {
+				return 0;
+			}
+			*/
+            return 0u;
+		}
+
+		unsigned int plugin::load_state(void *data, const unsigned int size)
+		{
+            /*
+			raw_data_source source(data, size);
+			if (m_gui.load_state(source))
+				return size;
+			else return 0;*/
+            return 0u;
 		}
 
         AEffect *plugin::create_AEffect_instance()
@@ -135,33 +164,19 @@ namespace Gammou  {
                     break;
 
                 case effGetParamLabel:
-                    //  TODo : param, 0, str
                     DEBUG_PRINT("GetParamLabel\n");
                     break;
 
                 case effGetParamDisplay:
-                    //  TODO : param, 0, str
                     DEBUG_PRINT("GetParamDisplay\n");
                     break;
 
                 case effGetParamName:
-                    //  TODO : param, 0, str
-                    DEBUG_PRINT("GetParamName\n");
 					self->get_param_name((char*)ptr, index);
                     break;
 
                 case effSetSampleRate:
-                    DEBUG_PRINT("SampleRate set to %u\n", (unsigned int)opt);
                     self->m_synthesizer.set_sample_rate(opt);
-                    break;
-
-                case effSetBlockSize:
-                    //  TODO opt = blocksize
-                    DEBUG_PRINT("Block Size set to %u\n", (unsigned int)opt);
-                    break;
-
-                case effMainsChanged:
-                    DEBUG_PRINT("Edit Main Changed\n");
                     break;
 
                 case effEditGetRect:
@@ -182,22 +197,16 @@ namespace Gammou  {
                     self->m_display.close();
                     break;
 
-                case effEditIdle:
-                    //DEBUG_PRINT("effEditIdle\n");
-                    break;
-
-                case effEditTop:
-                    DEBUG_PRINT("effEditTop\n");
-                    break;
-
                 case effGetChunk:
-                    //  TODO : arg 0 0 &ptr
-                    DEBUG_PRINT("Get chunk\n");
+                    DEBUG_PRINT("Get chunk (index = %u)\n", index);
+					if (index == 0)
+						return self->save_state((void**)ptr);
                     break;
 
                 case effSetChunk:
-                    //  TODO : args = 0, size, data
-                    DEBUG_PRINT("Set chunks\n");
+					DEBUG_PRINT("Set chunk (index = %u, size = %u)\n", index, value);
+					if (index == 0)
+						self->load_state(ptr, value);
                     break;
 
                 case effProcessEvents:
@@ -211,26 +220,28 @@ namespace Gammou  {
 
 					for (unsigned int i = 0; i < event_count; ++i) 
 						self->handle_event(*(events[i]));
-	
-					DEBUG_PRINT("Received events\n");
 				}
                     break;
 
-                case effStartProcess:
-                    DEBUG_PRINT("Start Process\n");
+                case effCanBeAutomated:
+                    return 1;   //  Every Parameters Can be automated
                     break;
 
-                case effStopProcess:
-                    DEBUG_PRINT("Stop Process\n");
+                case effGetVendorString:
+                    strcpy((char*)ptr, "Arthur Liefhooghe");
                     break;
-                    
-                case effSetProcessPrecision:
-                    DEBUG_PRINT("Precision was set to %u bit\n", 
-                        value == kVstProcessPrecision64 ? 64 : 32);
+
+                case effCanDo:
+                    DEBUG_PRINT("Got Cando '%s' ?\n", (char*)ptr);
+                    break;
+                
+                case effGetNumMidiInputChannels:
+                    DEBUG_PRINT("effGetNumMidiInputChannels received\n");
+                    return 1;
                     break;
 
                 default:
-                    DEBUG_PRINT("Unknown VST opcode : %u\n", opcode);
+                   // DEBUG_PRINT("Unknown VST opcode : %u\n", opcode);
                     break;
             }
 
@@ -263,6 +274,8 @@ namespace Gammou  {
             plugin *self = (plugin*)(fx->user);
             auto& synthesizer = self->m_synthesizer;
 
+            self->m_synthesizer_mutex.lock();
+
             for (int i = 0; i < sample_count; ++i) {
                 double input[2] = {inputs[0][i], inputs[1][i]};
                 double output[2];
@@ -270,6 +283,8 @@ namespace Gammou  {
                 outputs[0][i] = static_cast<float>(output[0]);
                 outputs[1][i] = static_cast<float>(output[1]);
             }
+
+            self->m_synthesizer_mutex.unlock();
         }
 
         void plugin::process_double_replacing_proc(
@@ -281,6 +296,8 @@ namespace Gammou  {
             plugin *self = (plugin*)(fx->user);
             auto& synthesizer = self->m_synthesizer;
 
+            self->m_synthesizer_mutex.lock();
+
             for (int i = 0; i < sample_count; ++i) {
                 double input[2] = {inputs[0][i], inputs[1][i]};
                 double output[2];
@@ -288,7 +305,86 @@ namespace Gammou  {
                 outputs[0][i] = output[0];
                 outputs[1][i] = output[1];
             }
+
+            self->m_synthesizer_mutex.unlock();
         }
+
+		//	Raw data source implementation
+
+		raw_data_source::raw_data_source(
+			const void *raw_data, 
+			const unsigned int size_limit)
+			:	m_begin((uint8_t*)raw_data),
+				m_size_limit(size_limit),
+				m_cursor(0)
+		{
+		}
+		
+		raw_data_source::~raw_data_source()
+		{
+		}
+
+		bool raw_data_source::seek(
+			const int offset, 
+			Sound::data_stream::seek_mode mode)
+		{
+			using seek_mode = Sound::data_source::seek_mode;
+
+			int new_cursor;
+			
+			switch (mode) {
+
+				case seek_mode::CURRENT:
+					new_cursor =
+						static_cast<int>(m_cursor) +
+						offset;
+					break;
+
+				case seek_mode::SET:
+					new_cursor = offset;
+					break;
+
+				case seek_mode::END:
+					new_cursor = 
+						static_cast<int>(m_size_limit) + 
+						offset;
+					break;
+
+			}
+
+			if (new_cursor > 0 &&
+				new_cursor < static_cast<int>(m_size_limit)) {
+				m_cursor = static_cast<unsigned int>(new_cursor);
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		
+		unsigned int raw_data_source::tell()
+		{
+			return m_cursor;
+		}
+
+		unsigned int raw_data_source::read(
+			void *data, 
+			const unsigned int size)
+		{
+			const int new_cursor =
+				static_cast<int>(m_cursor) +
+				size;
+
+			if (new_cursor < static_cast<int>(m_size_limit)) {
+				std::memcpy(data, m_begin + m_cursor, size);
+				m_cursor = static_cast<unsigned int>(new_cursor);
+				return size;
+			}
+			else {
+				return 0;
+			}
+		}
+
 
     }   /*  vst2 */
 

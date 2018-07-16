@@ -70,6 +70,12 @@ namespace Gammou {
 			return size;
 		}
 
+		void buffer_data_sink::flush_data()
+		{
+			m_buffer.resize(0);
+			m_cursor = 0;
+		}
+
 		void buffer_data_sink::flush_data(Sound::data_sink & target)
 		{
 			// TODO more verif
@@ -80,6 +86,16 @@ namespace Gammou {
 
 			m_buffer.resize(0);
 			m_cursor = 0;
+		}
+
+		unsigned int buffer_data_sink::get_data_size()
+		{
+			return static_cast<unsigned int>(m_buffer.size() - 1);
+		}
+
+		const uint8_t *buffer_data_sink::get_data() const
+		{
+			return m_buffer.data();
 		}
 
 		//----------------
