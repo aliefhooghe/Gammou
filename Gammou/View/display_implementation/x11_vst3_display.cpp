@@ -20,14 +20,7 @@ namespace Gammou {
 
         void x11_vst3_display::open(void *host_parent_window)
         {
-            DEBUG_PRINT("X11 Vst3 diaplay Open\n");
-            //  TODO
-        }
-
-        void x11_vst3_display::close()
-        {
-            DEBUG_PRINT("X11 Vst3 diaplay Close\n");
-            //  TODO
+            create_window((Window)host_parent_window, "");
         }
 
         abstract_vst3_view *x11_vst3_display::create_vst3_view_instance()
