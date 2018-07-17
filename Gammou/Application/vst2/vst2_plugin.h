@@ -76,12 +76,12 @@ namespace Gammou  {
 				ERect m_window_rect;
 
                 std::mutex m_synthesizer_mutex;
-                /*
+
 			    Process::bytecode_frame_processor<double> m_master_circuit_processor;
 			    Process::bytecode_frame_processor<double> m_polyphonic_circuit_processor;
-                */
-                Sound::jit_frame_processor m_master_circuit_processor;
-			    Sound::jit_frame_processor m_polyphonic_circuit_processor;
+
+                //Sound::jit_frame_processor m_master_circuit_processor;
+                //Sound::jit_frame_processor m_polyphonic_circuit_processor;
 			    Sound::synthesizer m_synthesizer;
 
                 Gui::synthesizer_gui m_gui;

@@ -50,6 +50,8 @@ namespace Gammou {
             Window parent, 
             const std::string& title)
         {
+            DEBUG_PRINT("Abstract X11 Display Opening...\n");
+
             if (m_running)
                 return;
 
@@ -65,7 +67,6 @@ namespace Gammou {
             int minor_version = 0, major_version = 0;
             if(!XdbeQueryExtension(m_display, &major_version, &minor_version))
                 throw std::runtime_error("Xbde unsuported\n");
-
 
             int screen_count = 1;
             m_root_window = DefaultRootWindow(m_display);
@@ -102,7 +103,7 @@ namespace Gammou {
             xattributs.background_pixel = WhitePixel(m_display, screen);
 
             m_window = XCreateWindow(
-                m_display, parent == 0u ? m_root_window : parent,   //  <-
+                m_display, m_root_window,   //  <-
                 0, 0, px_width, px_height, 0, 
                 CopyFromParent, CopyFromParent, 
                 m_xvisual_info_found->visual, 
@@ -131,19 +132,23 @@ namespace Gammou {
             
             //--
             XSelectInput(m_display, m_window, GAMMOU_X_EVENT_MASK);
+
+            //  Map The Window
             XMapWindow(m_display, m_window);
+
+            // to be sure that windows is mapped
+            DEBUG_PRINT("Waiting map notify event...\n");
+            for(XEvent e; e.type != MapNotify; XNextEvent(m_display, &e));
+            DEBUG_PRINT("Map Notify event received\n");
+
+            //  Set Window Name
             XStoreName(m_display, m_window, title.c_str());
 
+            //  Create Graphic Context
             m_graphic_context = XCreateGC(m_display, m_back_buffer, 0, nullptr);
             XSetForeground(m_display, m_graphic_context, BlackPixel(m_display, screen));
 
-            
-
-            // to be sure that windows is mapped
-            for(XEvent e; e.type != MapNotify; XNextEvent(m_display, &e)); 
-
             // Cairo
-            
             m_cairo_surface = cairo_xlib_surface_create(
                 m_display, m_back_buffer, 
                 m_xvisual_info_found->visual,

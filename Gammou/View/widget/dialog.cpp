@@ -183,14 +183,20 @@ namespace Gammou {
         {
             m_list_box->clear();
 
-            for (auto & p : std::filesystem::directory_iterator(m_current_path)) {
-                const std::string entry{p.path().filename()};
+            try {
+                for (auto & p : std::filesystem::directory_iterator(m_current_path)) {
+                    const std::string entry{p.path().filename()};
 
-                if (std::filesystem::is_directory(p))
-                    m_list_box->add_item(entry + "/");
-                else
-                    m_list_box->add_item(entry);
+                    if (std::filesystem::is_directory(p))
+                        m_list_box->add_item(entry + "/");
+                    else
+                        m_list_box->add_item(entry);
 
+                }
+            }
+            catch(std::filesystem::filesystem_error& error)  //  Not a fatal error
+            {
+                DEBUG_PRINT("File Explorer Dialog Warning : An error occured while enumerating folder items\n");
             }
         }
 #endif
