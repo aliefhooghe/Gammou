@@ -61,22 +61,22 @@ namespace Gammou {
 		//--------
 
         class buffer_stream :
-                public Sound::data_sink,
-                public Sound::data_source {
+                public Sound::data_output_stream,
+                public Sound::data_input_stream {
 
 		public:
             buffer_stream();
             buffer_stream(buffer_stream&) = delete;
             ~buffer_stream();
 
-			bool seek(const int offset, Sound::data_stream::seek_mode mode) override;
+			bool seek(const int offset, Sound::abstract_data_stream::seek_mode mode) override;
 			unsigned int tell() override;
 
 			unsigned int write(void *data, const unsigned int size) override;
             unsigned int read(void *data, const unsigned size) override;
 
 			void flush_data();
-			void flush_data(Sound::data_sink& target);
+			void flush_data(Sound::data_output_stream& target);
 
 			//	C Style Interface
 			unsigned int get_data_size();
@@ -89,19 +89,19 @@ namespace Gammou {
 
 		//------
 		
-		class constrained_data_source : public Sound::data_source {
+		class constrained_data_source : public Sound::data_input_stream {
 
 		public:
-			constrained_data_source(Sound::data_source& data, const unsigned int max_forward_offset);
+			constrained_data_source(Sound::data_input_stream& data, const unsigned int max_forward_offset);
 			
-			bool seek(const int offset, Sound::data_stream::seek_mode mode) override;
+			bool seek(const int offset, Sound::abstract_data_stream::seek_mode mode) override;
 			unsigned int tell() override;
 			unsigned int read(void *data, const unsigned int size) override;
 
 		private:
 			const unsigned int m_start_offset;
 			const unsigned int m_max_forward_offset;
-			Sound::data_source& m_data;
+			Sound::data_input_stream& m_data;
 		};
 
 		//-----

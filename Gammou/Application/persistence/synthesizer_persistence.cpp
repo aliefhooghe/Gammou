@@ -18,23 +18,23 @@ namespace Gammou {
 		{
 		}
 
-		bool buffer_stream::seek(const int offset, Sound::data_stream::seek_mode mode)
+		bool buffer_stream::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)
 		{
 			int new_cursor;
 
 			switch (mode)
 			{
 
-				case Gammou::Sound::data_stream::seek_mode::CURRENT:
+				case Gammou::Sound::abstract_data_stream::seek_mode::CURRENT:
 					new_cursor =
 						static_cast<int>(m_cursor) + offset;
 					break;
 
-				case Gammou::Sound::data_stream::seek_mode::SET:
+				case Gammou::Sound::abstract_data_stream::seek_mode::SET:
 					new_cursor = static_cast<unsigned int>(offset);
 					break;
 
-				case Gammou::Sound::data_stream::seek_mode::END:
+				case Gammou::Sound::abstract_data_stream::seek_mode::END:
 					return false; // Doesn't make sense here ( TODO Sure ??? )
 					break;
 			}
@@ -90,7 +90,7 @@ namespace Gammou {
 			m_cursor = 0;
 		}
 
-		void buffer_stream::flush_data(Sound::data_sink & target)
+		void buffer_stream::flush_data(Sound::data_output_stream & target)
 		{
 			// TODO more verif
 			if (m_buffer.size() > 1) {
@@ -114,7 +114,7 @@ namespace Gammou {
 
 		//----------------
 
-		constrained_data_source::constrained_data_source(Sound::data_source & data, 
+		constrained_data_source::constrained_data_source(Sound::data_input_stream & data, 
 			const unsigned int max_forward_offset)
 			: m_start_offset(data.tell()),
 				m_max_forward_offset(max_forward_offset),
@@ -123,21 +123,21 @@ namespace Gammou {
 
 		}
 
-		bool constrained_data_source::seek(const int offset, Sound::data_stream::seek_mode mode)
+		bool constrained_data_source::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)
 		{
 			int new_offset; 
 
 			switch (mode)
 			{
-			case Sound::data_stream::seek_mode::CURRENT:
+			case Sound::abstract_data_stream::seek_mode::CURRENT:
 				new_offset = static_cast<int>(tell()) + offset;
 				break;
 
-			case Sound::data_stream::seek_mode::SET:
+			case Sound::abstract_data_stream::seek_mode::SET:
 				new_offset = offset;
 				break;
 
-			case Sound::data_stream::seek_mode::END:
+			case Sound::abstract_data_stream::seek_mode::END:
 				new_offset = static_cast<int>(m_max_forward_offset) + offset;
 				break;
 			}
@@ -145,7 +145,7 @@ namespace Gammou {
 			if (new_offset >= 0) {
 				const unsigned int unsigned_new_offset = static_cast<unsigned int>(new_offset);
 				if(unsigned_new_offset <= m_max_forward_offset)
-					return m_data.seek(m_start_offset + new_offset, Sound::data_stream::seek_mode::SET);
+					return m_data.seek(m_start_offset + new_offset, Sound::abstract_data_stream::seek_mode::SET);
 			}
 
 			return false;

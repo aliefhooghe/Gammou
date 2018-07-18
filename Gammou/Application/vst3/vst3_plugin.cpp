@@ -346,16 +346,16 @@ namespace Gammou {
 		*/
 
 		static Steinberg::IBStream::IStreamSeekMode gammou_to_steinberg_seek_mode(
-			Sound::data_stream::seek_mode mode)
+			Sound::abstract_data_stream::seek_mode mode)
 		{
 
 			switch (mode)
 			{
-			case Sound::data_stream::seek_mode::SET:
+			case Sound::abstract_data_stream::seek_mode::SET:
 				return  Steinberg::IBStream::kIBSeekSet;
 				break;
 
-			case Sound::data_stream::seek_mode::END:
+			case Sound::abstract_data_stream::seek_mode::END:
 				return Steinberg::IBStream::kIBSeekEnd;
 				break;
 
@@ -375,7 +375,7 @@ namespace Gammou {
 		{
 		}
 
-		bool vst3_data_source::seek(const int offset, Sound::data_stream::seek_mode mode)
+		bool vst3_data_source::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)
 		{
 			const Steinberg::IBStream::IStreamSeekMode steinberg_mode = gammou_to_steinberg_seek_mode(mode);
 			return (m_stream->seek(offset, steinberg_mode) == Steinberg::kResultOk);
@@ -409,7 +409,7 @@ namespace Gammou {
 		{
 		}
 
-		bool vst3_data_sink::seek(const int offset, Sound::data_stream::seek_mode mode)
+		bool vst3_data_sink::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)
 		{
 			const Steinberg::IBStream::IStreamSeekMode steinberg_mode = gammou_to_steinberg_seek_mode(mode);
 			return (m_stream->seek(offset, steinberg_mode) == Steinberg::kResultOk);

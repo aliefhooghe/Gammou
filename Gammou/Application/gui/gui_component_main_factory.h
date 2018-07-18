@@ -24,7 +24,7 @@ namespace Gammou {
 			std::unique_ptr<gui_sound_component> get_new_complete_component(
 					const unsigned int factory_id, 
 					const int x, const int y, 
-					Sound::data_source& data, 
+					Sound::data_input_stream& data, 
 					const unsigned int channel_count);
 			std::unique_ptr<gui_sound_component> get_new_complete_component(
 				const unsigned int factory_id,

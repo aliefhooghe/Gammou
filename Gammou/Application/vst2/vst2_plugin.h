@@ -90,7 +90,7 @@ namespace Gammou  {
 				//Persistence::buffer_data_sink m_chunk_buffer;
         };
 
-		class raw_data_source : public Sound::data_source {
+		class raw_data_source : public Sound::data_input_stream {
 
 		public:
 			raw_data_source(
@@ -100,7 +100,7 @@ namespace Gammou  {
 			raw_data_source(raw_data_source&) = delete;
 			~raw_data_source();
 
-			bool seek(const int offset, Sound::data_stream::seek_mode mode) override;
+			bool seek(const int offset, Sound::abstract_data_stream::seek_mode mode) override;
 			unsigned int tell() override;
 			unsigned int read(void *data, const unsigned int size) override;
 

@@ -133,7 +133,7 @@ namespace Gammou {
 			DEBUG_PRINT("Syn Gui DTOR\n");
 		}
 
-		bool synthesizer_gui::save_state(Sound::data_sink & data)
+		bool synthesizer_gui::save_state(Sound::data_output_stream & data)
 		{
 			DEBUG_PRINT("SYN SAVE STATE\n");
 
@@ -151,7 +151,7 @@ namespace Gammou {
 			return true;
 		}
 
-		bool synthesizer_gui::load_state(Sound::data_source & data)
+		bool synthesizer_gui::load_state(Sound::data_input_stream & data)
 		{
 			DEBUG_PRINT("SYN LOAD STATE :\n");
 

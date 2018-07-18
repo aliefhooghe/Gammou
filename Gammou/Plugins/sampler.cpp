@@ -71,7 +71,7 @@ class sampler_factory : public plugin_factory {
 		}
 
 		abstract_sound_component *create_sound_component(
-			data_source& source, 
+			data_input_stream& source, 
 			const unsigned int channel_count) override
 		{
 			return nullptr; // todo

@@ -51,7 +51,7 @@ namespace Gammou {
             gui_component_main_factory::get_new_complete_component(
                 const unsigned int factory_id,
                 const int x, const int y,
-                Sound::data_source & data,
+                Sound::data_input_stream & data,
                 const unsigned int channel_count)
 		{
 			

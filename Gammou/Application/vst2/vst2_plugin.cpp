@@ -326,9 +326,9 @@ namespace Gammou  {
 
 		bool raw_data_source::seek(
 			const int offset, 
-			Sound::data_stream::seek_mode mode)
+			Sound::abstract_data_stream::seek_mode mode)
 		{
-			using seek_mode = Sound::data_source::seek_mode;
+			using seek_mode = Sound::data_input_stream::seek_mode;
 
 			int new_cursor;
 			

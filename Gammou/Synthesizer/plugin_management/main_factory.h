@@ -41,7 +41,7 @@ namespace Gammou {
 
 			abstract_sound_component *get_new_sound_component(
 				const unsigned int factory_id, 
-				data_source& data, 
+				data_input_stream& data, 
 				const unsigned int channel_count);
 			abstract_sound_component *get_new_sound_component(
 				const unsigned int factory_id, 

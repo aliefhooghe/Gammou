@@ -21,7 +21,7 @@ namespace Gammou {
 
 			~control_sound_component() {}
 
-			unsigned int save_state(Sound::data_sink& data) override;
+			unsigned int save_state(Sound::data_output_stream& data) override;
 			void set_normalized_value(const double normalized_value);
 			double get_normalized_value() const;
 

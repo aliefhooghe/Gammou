@@ -35,8 +35,8 @@ namespace Gammou {
 			~synthesizer_gui();
 			
 			// Persistence
-			bool save_state(Sound::data_sink& data);
-			bool load_state(Sound::data_source& data);
+			bool save_state(Sound::data_output_stream& data);
+			bool load_state(Sound::data_input_stream& data);
 
 		private:
 			void add_plugin_factory(Sound::abstract_plugin_factory *factory);

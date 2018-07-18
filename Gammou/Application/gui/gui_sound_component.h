@@ -25,7 +25,7 @@ namespace Gammou {
 			
 			// FACTORY stuff
 			unsigned int get_sound_component_factory_id() const override;
-			unsigned int save_sound_component_state(Sound::data_sink& data) override;
+			unsigned int save_sound_component_state(Sound::data_output_stream& data) override;
 
 			Sound::abstract_sound_component& get_sound_component();
 		protected:
