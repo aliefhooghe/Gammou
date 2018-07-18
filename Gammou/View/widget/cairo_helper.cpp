@@ -36,12 +36,15 @@ namespace Gammou {
 				&& contains(rect.x + rect.width - 1, rect.y);
 		}
 
-
-
-
+        bool rectangle::overlap(const rectangle &rect)
+        {
+            return contains(rect.x, rect.y)
+                || contains(rect.x, rect.y + rect.height - 1)
+                || contains(rect.x + rect.width - 1, rect.y + rect.height - 1)
+                || contains(rect.x + rect.width - 1, rect.y);
+        }
 
 		//////////////////////////////////////////////////////////////////////////////////////
-
 
 		namespace cairo_helper {
 

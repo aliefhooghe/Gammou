@@ -114,7 +114,7 @@ namespace Gammou {
 
 		//----------------
 
-		constrained_data_source::constrained_data_source(Sound::data_input_stream & data, 
+        constrained_input_stream::constrained_input_stream(Sound::data_input_stream & data,
 			const unsigned int max_forward_offset)
 			: m_start_offset(data.tell()),
 				m_max_forward_offset(max_forward_offset),
@@ -123,7 +123,7 @@ namespace Gammou {
 
 		}
 
-		bool constrained_data_source::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)
+        bool constrained_input_stream::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)
 		{
 			int new_offset; 
 
@@ -151,12 +151,12 @@ namespace Gammou {
 			return false;
 		}
 
-		unsigned int constrained_data_source::tell()
+        unsigned int constrained_input_stream::tell()
 		{
 			return m_data.tell() - m_start_offset;
 		}
 
-		unsigned int constrained_data_source::read(void * data, const unsigned int size)
+        unsigned int constrained_input_stream::read(void * data, const unsigned int size)
 		{
 			const unsigned int max_read_size = m_max_forward_offset - tell();
 			const unsigned int read_size = std::min(max_read_size, size);

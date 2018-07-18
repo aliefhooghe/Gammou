@@ -80,10 +80,9 @@ namespace Gammou {
 			widget_type *get_draging_widget(mouse_button& button) const;	
 			
 			std::deque<std::unique_ptr<widget_type> > m_widgets;		
-
-		private:
 			widget_type *get_widget_at_position(const int x, const int y) const;
 
+        private:
 			widget_type *m_focused_widget;	//	under cursor
 			widget_type *m_draging_widget;
 			mouse_button m_draging_button;

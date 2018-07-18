@@ -25,10 +25,16 @@ namespace Gammou {
 			virtual bool on_mouse_dbl_click(const int x, const int y) override;
 			virtual bool on_mouse_wheel(const float distance) override;
 
-			virtual bool on_mouse_drag_start(const mouse_button button, const int x, const int y) override;
-			virtual bool on_mouse_drag(const mouse_button button, const int x, const int y,
-				const int dx, const int dy) override;
-			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y) override;
+            virtual bool on_mouse_drag_start(
+                    const mouse_button button,
+                    const int x, const int y) override;
+            virtual bool on_mouse_drag(
+                    const mouse_button button,
+                    const int x, const int y,
+                    const int dx, const int dy) override;
+            virtual bool on_mouse_drag_end(
+                    const mouse_button button,
+                    const int x, const int y) override;
 
 			// Cannot be overrided, override draw_content instead
 			void draw(cairo_t *cr) override;
@@ -46,8 +52,9 @@ namespace Gammou {
 			void set_scrollable(const bool scrolable = true);
 			void set_sroll_method(const scroll_method method);
 
-			int convert_x(const unsigned int x);
+            int convert_x(const unsigned int x);    //  Convert from widget coord. to childs coord.
 			int convert_y(const unsigned int y);
+
 		private:
 			int m_x_origin;
 			int m_y_origin;
