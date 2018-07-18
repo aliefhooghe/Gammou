@@ -61,8 +61,7 @@ namespace Gammou {
 		//--------
 
         class buffer_stream :
-                public Sound::data_output_stream,
-                public Sound::data_input_stream {
+                public Sound::data_stream {
 
 		public:
             buffer_stream();
@@ -89,10 +88,10 @@ namespace Gammou {
 
 		//------
 		
-		class constrained_data_source : public Sound::data_input_stream {
+        class constrained_input_stream : public Sound::data_input_stream {
 
 		public:
-			constrained_data_source(Sound::data_input_stream& data, const unsigned int max_forward_offset);
+            constrained_input_stream(Sound::data_input_stream& data, const unsigned int max_forward_offset);
 			
 			bool seek(const int offset, Sound::abstract_data_stream::seek_mode mode) override;
 			unsigned int tell() override;

@@ -274,7 +274,7 @@ namespace Gammou {
 				return component;
 			}
 			else if(m_complete_component_factory->check_factory_presence(record_header.factory_id)){
-				Persistence::constrained_data_source cdata(data, record_header.data_size);
+				Persistence::constrained_input_stream cdata(data, record_header.data_size);
 
 				// Build component from data
 				std::unique_ptr<gui_sound_component>
