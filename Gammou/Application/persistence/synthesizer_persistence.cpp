@@ -8,16 +8,17 @@ namespace Gammou {
 
 	namespace Persistence {
 
-		buffer_data_sink::buffer_data_sink()
-			: m_cursor(0u), m_buffer(0u)
+		buffer_stream::buffer_stream()
+            : m_cursor(0u),
+              m_buffer(0u)
 		{
 		}
 
-		buffer_data_sink::~buffer_data_sink()
+		buffer_stream::~buffer_stream()
 		{
 		}
 
-		bool buffer_data_sink::seek(const int offset, Sound::data_stream::seek_mode mode)
+		bool buffer_stream::seek(const int offset, Sound::data_stream::seek_mode mode)
 		{
 			int new_cursor;
 
@@ -51,12 +52,12 @@ namespace Gammou {
 			return true;
 		}
 
-		unsigned int buffer_data_sink::tell()
+		unsigned int buffer_stream::tell()
 		{
 			return m_cursor;
 		}
 
-		unsigned int buffer_data_sink::write(void * data, const unsigned int size)
+		unsigned int buffer_stream::write(void * data, const unsigned int size)
 		{
 			const unsigned new_cursor = m_cursor + size;
 			const unsigned new_minimal_size = new_cursor + 1;
@@ -70,13 +71,26 @@ namespace Gammou {
 			return size;
 		}
 
-		void buffer_data_sink::flush_data()
+        unsigned int buffer_stream::read(void *data, const unsigned int size)
+        {
+            const unsigned new_cursor = m_cursor + size;
+
+            if (new_cursor > m_buffer.size())
+                return 0;
+
+            std::memcpy(data, m_buffer.data() + m_cursor, size);
+            m_cursor = new_cursor;
+
+            return size;
+        }
+
+		void buffer_stream::flush_data()
 		{
 			m_buffer.resize(0);
 			m_cursor = 0;
 		}
 
-		void buffer_data_sink::flush_data(Sound::data_sink & target)
+		void buffer_stream::flush_data(Sound::data_sink & target)
 		{
 			// TODO more verif
 			if (m_buffer.size() > 1) {
@@ -88,12 +102,12 @@ namespace Gammou {
 			m_cursor = 0;
 		}
 
-		unsigned int buffer_data_sink::get_data_size()
+		unsigned int buffer_stream::get_data_size()
 		{
 			return static_cast<unsigned int>(m_buffer.size() - 1);
 		}
 
-		const uint8_t *buffer_data_sink::get_data() const
+		const uint8_t *buffer_stream::get_data() const
 		{
 			return m_buffer.data();
 		}

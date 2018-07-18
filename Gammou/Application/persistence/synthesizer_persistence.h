@@ -60,16 +60,20 @@ namespace Gammou {
 
 		//--------
 
-		class buffer_data_sink : public Sound::data_sink{
+        class buffer_stream :
+                public Sound::data_sink,
+                public Sound::data_source {
 
 		public:
-			buffer_data_sink();
-			buffer_data_sink(buffer_data_sink&) = delete;
-			~buffer_data_sink();
+            buffer_stream();
+            buffer_stream(buffer_stream&) = delete;
+            ~buffer_stream();
 
 			bool seek(const int offset, Sound::data_stream::seek_mode mode) override;
 			unsigned int tell() override;
+
 			unsigned int write(void *data, const unsigned int size) override;
+            unsigned int read(void *data, const unsigned size) override;
 
 			void flush_data();
 			void flush_data(Sound::data_sink& target);

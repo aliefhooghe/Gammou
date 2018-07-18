@@ -33,9 +33,14 @@ namespace Gammou {
 				const unsigned int channel_count);
 
 			unsigned int load_plugin_factory(const std::string& file_path);
-			void register_plugin_factory(Sound::abstract_plugin_factory *factory);
+            void register_plugin_factory(Sound::abstract_plugin_factory *factory);
 			void register_complete_factory(abstract_gui_component_factory *factory);
 			bool check_factory_presence(const unsigned int factory_id) const;
+
+            std::unique_ptr<abstract_gui_component> clone_component(
+                    abstract_gui_component& component,
+                    const int gui_x, const int gui_y,
+                    const unsigned int channel_count);
 
 		protected:
 			std::unique_ptr<gui_sound_component> 

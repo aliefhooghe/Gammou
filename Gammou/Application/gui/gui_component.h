@@ -28,7 +28,8 @@ namespace Gammou {
 		public:
 			abstract_gui_component(
 				const int x, const int y, 
-				const unsigned int initial_input_count, const unsigned int initial_output_count);
+                const unsigned int initial_input_count,
+                const unsigned int initial_output_count);
 
 			virtual ~abstract_gui_component() {}
 

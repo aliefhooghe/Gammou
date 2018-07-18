@@ -229,7 +229,7 @@ namespace Gammou {
 		void abstract_gui_synthesizer_circuit::save_component(Sound::data_sink& data, abstract_gui_component * component)
 		{
 			Persistence::component_record_header record_header;
-			Persistence::buffer_data_sink sound_component_state;
+			Persistence::buffer_stream sound_component_state;
 
 			record_header.factory_id = component->get_sound_component_factory_id();
 			record_header.gui_x_pos = component->get_x();
