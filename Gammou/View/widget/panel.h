@@ -195,10 +195,10 @@ namespace Gammou {
                     widget_type *const w = get_widget_at_position(x, y);
                     bool ret = m_focused_widget->on_mouse_exit();
 
-                    if (w != nullptr) {
+                    if (w != nullptr)
                         ret |= w->on_mouse_enter();
-                        m_focused_widget = w;
-                    }
+
+                    m_focused_widget = w;
 
                     return ret;
                 }
@@ -299,7 +299,6 @@ namespace Gammou {
 		{
             bool ret = false;
 
-
             if (m_draging_widget == nullptr ||
                     !(m_draging_widget->contains(
                         x - m_draging_widget->get_x(),
@@ -376,8 +375,6 @@ namespace Gammou {
 		template<class widget_type>
         widget_type * panel<widget_type>::get_widget_at_position(const int x, const int y) const
 		{
-            static int i = 0;
-            DEBUG_PRINT("VALALALALALALALALAL %d\n", i++);
 			for (auto it = m_widgets.rbegin(); it != m_widgets.rend(); ++it) {
 				auto& w = (*it);
 				if (w->contains(x - w->get_x(), y - w->get_y()))

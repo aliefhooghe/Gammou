@@ -54,6 +54,13 @@ namespace Gammou {
                 },
                 100, 150, 250));
 
+        //  Edit Panel Test
+
+        auto edit_panel =
+            std::make_unique<View::edit_panel<> >(
+                500, 150,
+                300, 300);
+
         //  ListBox Test
 
         auto list_box_ptr = 
@@ -115,7 +122,7 @@ namespace Gammou {
 					get_display()->close();
                 },
 				"Close",
-				600, 400));
+                600, 40));
 
         //  Dialog Opening Test
 
@@ -129,13 +136,7 @@ namespace Gammou {
 				"Dialog",
                 820, 400));
 
-        //  Edit Panel Test
 
-        auto edit_panel =
-            std::make_unique<View::edit_panel<> >(
-                500, 150,
-                300, 300,
-                View::cl_whitesmoke);
 
         add_widget(std::move(edit_panel));
     }

@@ -36,8 +36,7 @@ namespace Gammou {
                     const mouse_button button,
                     const int x, const int y) override;
 
-			// Cannot be overrided, override draw_content instead
-			void draw(cairo_t *cr) override;
+            virtual void draw(cairo_t *cr) override;
 			void redraw_rect(const rectangle& rect) override;
 
 			using panel<widget_type>::add_widget; // For test only
