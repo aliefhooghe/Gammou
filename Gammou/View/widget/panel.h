@@ -293,26 +293,41 @@ namespace Gammou {
 		}
 
 		template<class widget_type>
-		bool panel<widget_type>::on_mouse_drag(const mouse_button button, const int x, const int y, const int dx, const int dy)
+        bool panel<widget_type>::on_mouse_drag(
+                const mouse_button button, const int x,
+                const int y, const int dx, const int dy)
 		{
-			widget_type *w = get_widget_at_position(x, y);
-			bool ret = false;
+            bool ret = false;
 
-			if (m_focused_widget != w) {
-				if (m_focused_widget != nullptr)
-					ret = m_focused_widget->on_mouse_exit();
-				if (w != nullptr)
-					ret |= w->on_mouse_enter();
-				m_focused_widget = w;
-			}
 
-			if (m_draging_widget != nullptr)
-				ret |= m_draging_widget->on_mouse_drag(button,
-					x - m_draging_widget->get_x(),
-					y - m_draging_widget->get_y(),
-					dx, dy);
+            if (m_draging_widget == nullptr ||
+                    !(m_draging_widget->contains(
+                        x - m_draging_widget->get_x(),
+                        y - m_draging_widget->get_y()))) {
 
-			return ret;
+                if (m_focused_widget != nullptr) {
+                    if (!m_focused_widget->contains(
+                                x - m_focused_widget->get_x(),
+                                y - m_focused_widget->get_y())) {
+
+                        ret |= m_focused_widget->on_mouse_exit();
+                        widget_type *w = get_widget_at_position(x, y);
+
+                        if (w != nullptr) {
+                            w->on_mouse_enter();
+                            m_focused_widget = w;
+                        }
+                    }
+                }
+            }
+
+            if (m_draging_widget != nullptr)
+                ret |= m_draging_widget->on_mouse_drag(button,
+                    x - m_draging_widget->get_x(),
+                    y - m_draging_widget->get_y(),
+                    dx, dy);
+
+            return ret;
 		}
 
 		template<class widget_type>
@@ -361,6 +376,8 @@ namespace Gammou {
 		template<class widget_type>
         widget_type * panel<widget_type>::get_widget_at_position(const int x, const int y) const
 		{
+            static int i = 0;
+            DEBUG_PRINT("VALALALALALALALALAL %d\n", i++);
 			for (auto it = m_widgets.rbegin(); it != m_widgets.rend(); ++it) {
 				auto& w = (*it);
 				if (w->contains(x - w->get_x(), y - w->get_y()))
