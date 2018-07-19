@@ -13,11 +13,15 @@ namespace Gammou {
         : View::window_widget(px_width, px_height, View::cl_gray)
     {
 
+        //  Label Test
+
         add_widget(
             std::make_unique<View::label>(
                 "This is a label",
                 10, 10, 100, 12,
                 View::cl_black));
+
+        //  Push Button Test
 
         add_widget(
             std::make_unique<View::push_button>(
@@ -28,6 +32,8 @@ namespace Gammou {
                 "Click Me !",
                 10, 100));
 
+        //  Knob Test
+
         add_widget(
             std::make_unique<View::knob>(
                 [](View::knob *knob)
@@ -37,6 +43,18 @@ namespace Gammou {
                 },
                 10, 150
             ));
+
+        //  Slider TEst
+
+        add_widget(
+            std::make_unique<View::slider>(
+                [](View::slider& slider)
+                {
+                    std::cout << "Slider Value = " << slider.get_normalized_value() << std::endl;
+                },
+                100, 150, 250));
+
+        //  ListBox Test
 
         auto list_box_ptr = 
             std::make_unique<View::list_box>(
@@ -67,7 +85,11 @@ namespace Gammou {
                     list_box.clear();
                 },
                 "Clear !",
-                320, 300));
+                380, 300));
+
+        add_widget(std::move(list_box_ptr));
+
+        //  File Explorer Dialog Test
 
         add_widget(
             std::make_unique<View::push_button>(
@@ -83,6 +105,8 @@ namespace Gammou {
                 "Open Explorer",
                 400, 400));
 
+        //  Close Diaplay From Widget Test
+
 		add_widget(
 			std::make_unique<View::push_button>(
 				[this](View::push_button *p)
@@ -93,6 +117,8 @@ namespace Gammou {
 				"Close",
 				600, 400));
 
+        //  Dialog Opening Test
+
 		add_widget(
 			std::make_unique<View::push_button>(
 				[this](View::push_button *p)
@@ -101,17 +127,17 @@ namespace Gammou {
 					dialog.show("Dialog Title");
 				},
 				"Dialog",
-				750, 400));
+                820, 400));
 
-        add_widget(
-            std::make_unique<View::slider>(
-                [](View::slider& slider)
-                {
-                    std::cout << "Slider Value = " << slider.get_normalized_value() << std::endl;
-                },
-                550, 100, 250));
+        //  Edit Panel Test
 
-        add_widget(std::move(list_box_ptr));
+        auto edit_panel =
+            std::make_unique<View::edit_panel<> >(
+                500, 150,
+                300, 300,
+                View::cl_whitesmoke);
+
+        add_widget(std::move(edit_panel));
     }
 
     bool test_window::on_mouse_dbl_click(const int x, const int y)

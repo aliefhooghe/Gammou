@@ -38,9 +38,6 @@ namespace Gammou {
 
 			// Cannot be overrided, override draw_content instead
 			void draw(cairo_t *cr) override;
-
-			bool contains(const int px, const int py) const override;
-			bool contains(const rectangle & rect) const override;
 			void redraw_rect(const rectangle& rect) override;
 
 			using panel<widget_type>::add_widget; // For test only
@@ -52,7 +49,7 @@ namespace Gammou {
 			void set_scrollable(const bool scrolable = true);
 			void set_sroll_method(const scroll_method method);
 
-            int convert_x(const unsigned int x);    //  Convert from widget coord. to childs coord.
+            int convert_x(const unsigned int x);    //  Convert from widget coord. to childS coord.
 			int convert_y(const unsigned int y);
 
 		private:
@@ -158,18 +155,6 @@ namespace Gammou {
 			cairo_translate(cr, -static_cast<int>(m_x_origin), -static_cast<int>(m_y_origin));
 			draw_content(cr);
 			cairo_restore(cr);
-		}
-
-		template<class widget_type>
-		bool scrollable_panel<widget_type>::contains(const int px, const int py) const
-		{
-			return (px >= 0 && py >= 0);
-		}
-
-		template<class widget_type>
-		bool scrollable_panel<widget_type>::contains(const rectangle & rect) const
-		{
-			return (rect.x >= 0 && rect.y >= 0);
 		}
 
 		template<class widget_type>
