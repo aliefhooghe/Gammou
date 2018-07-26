@@ -24,6 +24,7 @@ namespace Gammou {
 			*/
 
 		enum { INVALID_CHANNEL = 0xFFFFFF , INFINITE_LIFETIME = 0xFFFFFFFF, NO_NOTE = 0xFF};
+        enum class keyboard_mode { POLYPHONIC, LEGATO };
 
 		public:
 			synthesizer(
@@ -36,7 +37,7 @@ namespace Gammou {
 				const unsigned int master_to_polyphonic_count = 2,
 				const unsigned int polyphonic_to_master_count = 2,
 				const unsigned int sample_rate = 44100,
-				const float zero_lifetime = 0.1);
+                const float zero_lifetime = 0.1f);
 
 			~synthesizer();
 
@@ -46,6 +47,10 @@ namespace Gammou {
 			// Midi note : 
 			void send_note_on(const unsigned int midi_note, const double velocity);
 			void send_note_off(const unsigned int midi_note, const double velocity);
+
+            //  Keyboard Mode
+            void set_keyboard_mode(const keyboard_mode mode);
+            keyboard_mode get_keyboard_mode() const;
 
 			void add_sound_component_on_master_circuit(abstract_sound_component *component);
 			void add_sound_component_on_polyphonic_circuit(abstract_sound_component *component);
@@ -71,12 +76,15 @@ namespace Gammou {
 			//
 			unsigned int get_parameter_input_count() const;
 			void set_parameter_value(const double value, const unsigned int automation_id);
-			const double get_parameter_value(const unsigned int automation_id) const;
+            double get_parameter_value(const unsigned int automation_id) const;
 
 			unsigned int get_channel_count() const;
 
+            //
+
 		private:
 			unsigned int get_new_channel();
+            unsigned int get_running_channel_count();
 			void free_channel(const std::vector<unsigned int>::iterator& it);
 
 			// Circuits
@@ -94,6 +102,9 @@ namespace Gammou {
 
 			// Channel note
 			std::vector<unsigned int> m_channels_midi_note;
+
+            //  Keyboard mode
+            keyboard_mode m_keyboard_mode;
 
 			static const double m_note_frequencies[128];
 		};
