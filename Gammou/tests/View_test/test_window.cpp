@@ -67,8 +67,11 @@ namespace Gammou {
             std::make_unique<View::list_box>(
                 10, 300, 
                 200, 400,
-                18,
-                [](unsigned int id){
+                18);
+
+        list_box_ptr->
+            set_item_select_event(
+                [](View::list_box&, unsigned int id){
                     std::cout << "Selected item n° " << id << std::endl;
                 });
 

@@ -22,7 +22,6 @@ namespace Gammou {
 				const unsigned int width, 
 				const unsigned int height, 
 				const unsigned int displayed_items_count, 
-				std::function<void(unsigned int)> on_select = [](unsigned int id) {},
 				const color selected_item_color = cl_lightgrey, 
 				const color background = cl_white, 
 				const color border_color = cl_black, 
@@ -33,7 +32,6 @@ namespace Gammou {
 			list_box(
 				const rectangle& rect, 
 				const unsigned int displayed_items_count,
-				std::function<void(unsigned int)> on_select = [](unsigned int id) {},
 				const color selected_item_color = cl_lightgrey,
 				const color background = cl_white,
 				const color border_color = cl_black,
@@ -41,8 +39,10 @@ namespace Gammou {
 				const unsigned int font_size = 11,
 				const float border_width = 2.0f);
 
-			~list_box() {}
+            ~list_box() override;
 
+            void set_item_select_event(std::function<void(list_box&, unsigned int)> handler);
+            void set_item_dbl_clik_event(std::function<void(list_box&, unsigned int)> handler);
 
 			// No remove function because it would cause issues with id
 			unsigned int get_item_count() const;
@@ -63,7 +63,8 @@ namespace Gammou {
 			void scroll(const int distance);
 			void update_selected(const int y);
 
-			std::function<void(unsigned int)> m_on_select;
+            std::function<void(list_box&, unsigned int)> m_item_select_handler{};
+            std::function<void(list_box&, unsigned int)> m_item_dbl_click_handler{};
 
 			const color m_selected_color;
 			const color m_background_color;

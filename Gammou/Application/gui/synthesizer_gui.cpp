@@ -61,18 +61,21 @@ namespace Gammou {
 					GuiProperties::main_gui_component_choice_box_width, 
 					GuiProperties::main_gui_component_choice_box_height + 2, 
 					GuiProperties::main_gui_component_choice_box_item_count,
-					[&](unsigned int id) 
-					{
-						const unsigned int factory_id = m_factory_ids[id];
-						DEBUG_PRINT("SELECT factory id %u\n", factory_id);
-						m_gui_polyphonic_circuit->select_component_creation_factory_id(factory_id);
-						m_gui_master_circuit->select_component_creation_factory_id(factory_id);
-					},
 					GuiProperties::main_gui_list_box_selected_item_color, 
 					GuiProperties::main_gui_list_box_background, 
 					GuiProperties::main_gui_list_box_border_color, 
 					GuiProperties::main_gui_list_box_font_color, 
 					GuiProperties::main_gui_component_choice_box_font_size);
+
+            plugin_list_box->
+                set_item_select_event(
+                    [&](View::list_box&, unsigned int id)
+                    {
+                        const unsigned int factory_id = m_factory_ids[id];
+                        DEBUG_PRINT("SELECT factory id %u\n", factory_id);
+                        m_gui_polyphonic_circuit->select_component_creation_factory_id(factory_id);
+                        m_gui_master_circuit->select_component_creation_factory_id(factory_id);
+                    });
 
 			m_plugin_list_box = &(*plugin_list_box);
 			add_widget(std::move(plugin_list_box));

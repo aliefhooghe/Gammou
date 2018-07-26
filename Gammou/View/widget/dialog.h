@@ -33,7 +33,7 @@ namespace Gammou {
             file_explorer_dialog(
                 const std::string& initial_path, 
                 const color background = cl_lightgrey);
-            virtual ~file_explorer_dialog() {}            
+            virtual ~file_explorer_dialog();
 
             bool get_filename(std::string& name);
 #ifdef _WIN32	

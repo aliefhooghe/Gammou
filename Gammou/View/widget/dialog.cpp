@@ -45,14 +45,7 @@ namespace Gammou {
                 std::make_unique<View::list_box>(
                     0, 0, 
                     get_width(), get_height() - 30,
-                    15,
-                    [this](unsigned int id){
-                    auto p = get_path_by_id(id);
-                    if (std::filesystem::is_directory(p)) {
-                        m_current_path = std::move(p);
-                        update_list_box();       
-                    }
-                    });
+                    15);
                 
             m_list_box = list_box.get();
             add_widget(std::move(list_box));
@@ -80,10 +73,21 @@ namespace Gammou {
                         if (selected_item < 0)
                             return;
 
-                        auto p = get_path_by_id(selected_item);
-                        m_filename = p;
-                        m_filename_was_set = true;
-                        get_display()->close();
+                        auto p =
+                            get_path_by_id(
+                                static_cast<unsigned int>(selected_item));
+
+                        if (std::filesystem::is_directory(p)) {
+                            m_current_path = std::move(p);
+                            update_list_box();
+                        }
+                        else {
+                            m_filename = p;
+                            m_filename_was_set = true;
+
+                            get_display()->close();
+                        }
+
                     },
                     "Open",
                     1 + get_width() / 2,
@@ -97,6 +101,11 @@ namespace Gammou {
 			m_filename_was_set(false)
 		{
 #endif
+        }
+
+        file_explorer_dialog::~file_explorer_dialog()
+        {
+
         }
 
         bool file_explorer_dialog::get_filename(std::string& name)
