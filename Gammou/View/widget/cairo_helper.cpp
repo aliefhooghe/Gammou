@@ -36,7 +36,7 @@ namespace Gammou {
 				&& contains(rect.x + rect.width - 1, rect.y);
 		}
 
-        bool rectangle::overlap(const rectangle &rect)
+        bool rectangle::overlap(const rectangle &rect) const
         {
             return contains(rect.x, rect.y)
                 || contains(rect.x, rect.y + rect.height - 1)

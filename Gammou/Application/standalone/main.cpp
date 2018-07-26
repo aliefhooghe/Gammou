@@ -95,8 +95,8 @@ int main()
     std::cout << "Starting OSC Query server" << std::endl;
 
     ossia::net::generic_device gammou_ossia{std::move(protocol), "Gammou"};
-	multiplex.expose_to(std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678));
-	multiplex.expose_to(std::make_unique<Gammou::synthesizer_ossia_protocol>(&synthesizer));
+	  multiplex.expose_to(std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678));
+	  multiplex.expose_to(std::make_unique<Gammou::synthesizer_ossia_protocol>(&synthesizer));
 #endif
 
     //-----
