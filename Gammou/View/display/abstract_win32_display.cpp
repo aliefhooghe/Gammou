@@ -14,6 +14,8 @@ namespace Gammou {
 			m_window_handle(nullptr),
 			m_has_focus(false)
 		{
+			int i = 5;
+			i++;
 			register_window_class();
 		}
 

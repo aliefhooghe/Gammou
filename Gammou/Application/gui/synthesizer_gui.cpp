@@ -102,6 +102,29 @@ namespace Gammou {
 					pages_ptr->select_page(page_id);
 				}
 				, "Master Circuit", 705, 16, 110, 27, 9));
+			
+			//---
+
+			
+
+			tool_box->add_widget(
+				std::make_unique<View::push_button>(
+					[synthesizer](View::push_button *self)
+					{
+						typedef Sound::synthesizer::keyboard_mode mode;
+
+						if (synthesizer->get_keyboard_mode() == mode::POLYPHONIC) {
+							synthesizer->set_keyboard_mode(mode::LEGATO);
+							self->set_text("Legato");
+						}
+						else {	//	LEGATO
+							synthesizer->set_keyboard_mode(mode::POLYPHONIC);
+							self->set_text("Polyphonic");
+						}
+					},
+					"Polyphonic", 512, 16, 110, 27, 9));
+
+			//---
 
 			const unsigned int offset = (GuiProperties::main_gui_size_unit - 50) / 2;
 

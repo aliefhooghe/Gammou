@@ -27,8 +27,8 @@ set(WIDGET_SRC
 	widget/common_widgets.cpp
 	widget/dialog.h
 	widget/dialog.cpp
-  widget/edit_panel.h
-  widget/edit_panel.cpp
+	#widget/edit_panel.h
+	#widget/edit_panel.cpp
 	widget/event.h
 	widget/list_box.h
 	widget/list_box.cpp

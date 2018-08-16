@@ -55,12 +55,12 @@ namespace Gammou {
                 100, 150, 250));
 
         //  Edit Panel Test
-
+		/*
         auto edit_panel =
             std::make_unique<View::edit_panel<> >(
                 500, 150,
                 300, 300);
-
+		*/
         //  ListBox Test
 
         auto list_box_ptr = 
@@ -141,7 +141,7 @@ namespace Gammou {
 
 
 
-        add_widget(std::move(edit_panel));
+        //add_widget(std::move(edit_panel));
     }
 
     bool test_window::on_mouse_dbl_click(const int x, const int y)

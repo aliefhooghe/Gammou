@@ -45,8 +45,6 @@ set(GUI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Application/gui")
 set(GUI_SRC
 	Application/gui/abstract_gui_component_factory.h
 	Application/gui/abstract_gui_component_factory.cpp
-  Application/gui/component_creator.h
-  Application/gui/component_creator.cpp
 	Application/gui/gui_component.cpp
 	Application/gui/gui_component.h
 	Application/gui/gui_component_main_factory.h
