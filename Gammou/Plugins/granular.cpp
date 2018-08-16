@@ -23,13 +23,16 @@ class granular_component : public sound_component {
 public:
 	granular_component(
 		wav_t *sample,
+		const std::string& sample_path,	//	for state serialization
 		const unsigned int grain_count,
 		const unsigned int channel_count);
 
 	~granular_component();
 
-	void process(const double input[]) override;
 	void initialize_process() override;
+	void process(const double input[]) override;
+
+	unsigned int save_state(data_output_stream& data) override;
 
 private:
 	inline const double random_grain_pos(
@@ -41,6 +44,7 @@ private:
 	}
 
 	wav_t * m_sample;
+	std::string m_sample_path;
 	const unsigned int m_grain_count;
 	multi_channel_array<grain> m_grain;
 
@@ -50,10 +54,12 @@ private:
 
 granular_component::granular_component(
 	wav_t *sample,
+	const std::string& sample_path,
 	const unsigned int grain_count,
 	const unsigned int channel_count)
 	: sound_component("Granular", 5, 1, channel_count),
 		m_sample(sample),
+		m_sample_path(sample_path),
 		m_grain_count(grain_count),
 		m_grain(this, grain_count),
 		m_time(this),
@@ -115,6 +121,19 @@ void granular_component::process(const double input[])
 	m_output[0] = out;
 }
 
+unsigned int granular_component::save_state(data_output_stream & data)
+{
+	unsigned int path_len = m_sample_path.size();
+	char path[256];
+
+	std::memcpy(path, m_sample_path.c_str(), path_len);
+
+	data.write(&path_len, sizeof(unsigned int));
+	data.write(path, path_len);
+	
+	return sizeof(unsigned int) + path_len;
+}
+
 
 class granular_factory : public plugin_factory {
 
@@ -135,7 +154,26 @@ class granular_factory : public plugin_factory {
 			data_input_stream& source, 
 			const unsigned int channel_count) override
 		{
-			return nullptr; // todo
+			char path[256];
+			unsigned int path_len;
+
+			//	Todo check !!!
+			source.read(&path_len, sizeof(unsigned int));
+			source.read(path, path_len);
+			path[path_len] = 0;	//	null terminated string
+
+			std::string str_path(path);
+
+			wav_t *sample = wav_load(path);
+			if (sample == nullptr)
+				throw std::runtime_error("Unable to load " + str_path);
+
+			return new
+				granular_component(
+					sample,
+					str_path,
+					32,
+					channel_count);
 		}
 
 		abstract_sound_component *create_sound_component(
@@ -155,6 +193,7 @@ class granular_factory : public plugin_factory {
 			return new 
 				granular_component(
 					sample,
+					path,
 					32, 
 					channel_count);
 		}
