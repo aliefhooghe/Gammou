@@ -9,8 +9,8 @@ namespace Gammou {
 	namespace Sound {
 
 		/*
-		*
-		*/
+		 *
+		 */
 
 		synthesizer::synthesizer(
 			Process::abstract_frame_processor<double>& master_circuit_processor,
@@ -91,18 +91,21 @@ namespace Gammou {
 		{
             unsigned int channel;
 
-            if (m_keyboard_mode == keyboard_mode::POLYPHONIC ||
-                    get_running_channel_count() == 0)
-                channel = get_new_channel();
-            else
-                channel = m_channels[0];
+			if (m_keyboard_mode == keyboard_mode::POLYPHONIC ||
+				get_running_channel_count() == 0) {
+				channel = get_new_channel();
+				m_polyphonic_circuit.initialize_channel(channel);
+			}
+			else {
+				channel = m_channels[0];
+			}
 
             if( channel != INVALID_CHANNEL ){
 
                 DEBUG_PRINT("on : channel = %d, note = %d, fr = %f)\n", channel, midi_note, m_note_frequencies[midi_note]);
 
                 m_channels_midi_note[channel] = midi_note;
-                m_polyphonic_circuit.initialize_channel(channel);
+              
                 m_polyphonic_circuit.set_channel_pitch(channel, m_note_frequencies[midi_note]);
                 m_polyphonic_circuit.set_channel_attack_velocity(channel, velocity);
                 m_polyphonic_circuit.set_channel_gate_state(channel, true);
@@ -263,8 +266,6 @@ namespace Gammou {
 			std::iter_swap(it, m_running_channels_end - 1);
 			m_running_channels_end--;
 		}
-
-
 
 		const double synthesizer::m_note_frequencies[128] =
 		{

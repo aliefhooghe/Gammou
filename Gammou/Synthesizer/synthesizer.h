@@ -24,9 +24,11 @@ namespace Gammou {
 			*/
 
 		enum { INVALID_CHANNEL = 0xFFFFFF , INFINITE_LIFETIME = 0xFFFFFFFF, NO_NOTE = 0xFF};
-        enum class keyboard_mode { POLYPHONIC, LEGATO };
 
 		public:
+
+			enum class keyboard_mode { POLYPHONIC, LEGATO };
+
 			synthesizer(
 				Process::abstract_frame_processor<double>& master_circuit_processor,
 				Process::abstract_frame_processor<double>& polyphonic_circuit_processor,
