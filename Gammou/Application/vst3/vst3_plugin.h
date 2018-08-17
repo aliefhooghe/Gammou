@@ -23,8 +23,6 @@
 
 #include <view.h>
 
-#define GAMMOU_VST_PARAMETER_INPUT_COUNT 16u
-
 namespace Gammou {
 
 	namespace VST3 {

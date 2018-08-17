@@ -20,7 +20,8 @@ namespace Gammou {
 		:	View::window_widget(
 				GuiProperties::main_gui_width, 
 				GuiProperties::main_gui_height,
-				View::cl_chartreuse) // for gui debuging
+				View::cl_chartreuse), // for gui debuging
+			m_synthesizer(*synthesizer)
 		{
 			DEBUG_PRINT("SYN GUI CTOR\n");
 
@@ -161,7 +162,27 @@ namespace Gammou {
 
 		bool synthesizer_gui::save_state(Sound::data_output_stream & data)
 		{
+			Persistence::synthesizer_record_header header;
+
 			DEBUG_PRINT("SYN SAVE STATE\n");
+
+			// Fill header
+			std::memcpy(header.magic, "GAMMOU", 6);
+			header.format_version_id = Persistence::gammou_format_version_id;
+			header.parameter_count = GAMMOU_PARAMETER_INPUT_COUNT;
+
+			// Save header
+			if (data.write(&header, sizeof(header)) != sizeof(header))
+				return false;
+
+			// Save Parameters
+			for (unsigned int i = 0; i < GAMMOU_PARAMETER_INPUT_COUNT; ++i) {
+				double param_value =
+					m_synthesizer.get_parameter_value(i);
+
+				if (data.write(&param_value, sizeof(double)) != sizeof(double))
+					return false;
+			}
 
 			// Save Master Volume
 			double master_volume = m_master_volume->get_normalized_value();
@@ -180,6 +201,32 @@ namespace Gammou {
 		bool synthesizer_gui::load_state(Sound::data_input_stream & data)
 		{
 			DEBUG_PRINT("SYN LOAD STATE :\n");
+
+			// Loading header
+			Persistence::synthesizer_record_header header;
+			if (data.read(&header, sizeof(header)) != sizeof(header))
+				return false;
+
+			// Check magic Id
+			if (std::strncmp(header.magic, "GAMMOU", 6) != 0)
+				return false;
+
+			// Check format version
+			if (header.format_version_id != Persistence::gammou_format_version_id)
+				return false;
+
+			// Load Parameters
+			if (header.parameter_count != GAMMOU_PARAMETER_INPUT_COUNT)
+				return false;
+
+			for (unsigned int i = 0; i < GAMMOU_PARAMETER_INPUT_COUNT; ++i) {
+				double param_value;
+
+				if (data.read(&param_value, sizeof(double)) != sizeof(double))
+					return false;
+
+				m_synthesizer.set_parameter_value(param_value, i);
+			}
 
 			// Load Master Volume
 			double master_volume;
