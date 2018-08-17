@@ -87,7 +87,8 @@ namespace Gammou  {
                 Gui::synthesizer_gui m_gui;
 			    View::vst2_display m_display;
 
-				//Persistence::buffer_data_sink m_chunk_buffer;
+				//	Using the same buffer several time avoid multiple reallocation
+				Persistence::buffer_stream m_chunk_buffer;
         };
 
 		class raw_data_source : public Sound::data_input_stream {

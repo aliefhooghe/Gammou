@@ -109,31 +109,45 @@ namespace Gammou  {
 
 		unsigned int plugin::save_state(void **data)
 		{
-            /*
 			//	reset buffer
 			m_chunk_buffer.flush_data();
 			
+			//	Save synth state in buffer
 			const bool ret = m_gui.save_state(m_chunk_buffer);
 
+			//	if state saving was successful
 			if (ret) {
-				*data = (void*)m_chunk_buffer.get_data();
-				return m_chunk_buffer.get_data_size();
+				const unsigned int data_size = 
+					m_chunk_buffer.get_data_size();
+
+				if ((*data = std::malloc(data_size)) == nullptr)
+					return 0u;
+
+				//	Copy data to chunk
+				std::memcpy(*data, m_chunk_buffer.get_data(), data_size);
+
+				DEBUG_PRINT("Saved %u bytes\n", data_size);
+
+				return data_size;
 			}
 			else {
-				return 0;
+				return 0u;
 			}
-			*/
-            return 0u;
 		}
 
 		unsigned int plugin::load_state(void *data, const unsigned int size)
 		{
-            /*
 			raw_data_source source(data, size);
-			if (m_gui.load_state(source))
+
+			DEBUG_PRINT("Loading %u bytes\n", size);
+
+			if (m_gui.load_state(source)) {
 				return size;
-			else return 0;*/
-            return 0u;
+			}
+			else {
+				DEBUG_PRINT("State Load failed\n");
+				return 0u;
+			}
 		}
 
         AEffect *plugin::create_AEffect_instance()
@@ -206,7 +220,7 @@ namespace Gammou  {
                 case effSetChunk:
 					DEBUG_PRINT("Set chunk (index = %u, size = %u)\n", index, value);
 					if (index == 0)
-						self->load_state(ptr, value);
+						return self->load_state(ptr, value);
                     break;
 
                 case effProcessEvents:
@@ -242,7 +256,7 @@ namespace Gammou  {
 
                 default:
                    // DEBUG_PRINT("Unknown VST opcode : %u\n", opcode);
-                    break;
+                   break;
             }
 
             return 0u;
@@ -375,7 +389,7 @@ namespace Gammou  {
 				static_cast<int>(m_cursor) +
 				size;
 
-			if (new_cursor < static_cast<int>(m_size_limit)) {
+			if (new_cursor <= static_cast<int>(m_size_limit)) {
 				std::memcpy(data, m_begin + m_cursor, size);
 				m_cursor = static_cast<unsigned int>(new_cursor);
 				return size;
