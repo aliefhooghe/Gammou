@@ -1,4 +1,6 @@
 
+#include <cstring>
+
 #include <experimental/filesystem>
 #include <filesystem>
 

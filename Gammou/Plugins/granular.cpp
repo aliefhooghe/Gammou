@@ -1,5 +1,6 @@
 
 #include <cstdlib>
+#include <cstring>
 
 #include "plugin_helper.h"
 #include "wav.h"
