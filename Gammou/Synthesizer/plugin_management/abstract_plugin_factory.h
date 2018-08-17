@@ -26,7 +26,7 @@ namespace Gammou {
 			unsigned int get_factory_id() const;
 
 			const request_form& get_request_form();
-			virtual abstract_sound_component *get_new_sound_component(data_source& source, const unsigned int channel_count) = 0;
+			virtual abstract_sound_component *get_new_sound_component(data_input_stream& source, const unsigned int channel_count) = 0;
 			virtual abstract_sound_component *get_new_sound_component(const answer_form& answers, const unsigned int channel_count) = 0;
 
 			virtual void delete_sound_component(abstract_sound_component*component) const = 0;
@@ -49,13 +49,13 @@ namespace Gammou {
 			plugin_factory(const std::string& name, const std::string& category, unsigned int factory_id);
 			virtual ~plugin_factory() {}
 
-			abstract_sound_component *get_new_sound_component(data_source& source, const unsigned int channel_count) override;
+			abstract_sound_component *get_new_sound_component(data_input_stream& source, const unsigned int channel_count) override;
 			abstract_sound_component *get_new_sound_component(const answer_form& answer, const unsigned int channel_count) override;
 
 			void delete_sound_component(abstract_sound_component*component) const override;
 
 		protected:
-			virtual abstract_sound_component *create_sound_component(data_source& source, const unsigned int channel_count) = 0;
+			virtual abstract_sound_component *create_sound_component(data_input_stream& source, const unsigned int channel_count) = 0;
 			virtual abstract_sound_component *create_sound_component(const answer_form& answer_form, const unsigned int channel_count) = 0;
 
         };
@@ -74,7 +74,7 @@ namespace Gammou {
 
 		protected:
 			virtual abstract_sound_component *create_sound_component(
-				data_source& source, 
+				data_input_stream& source, 
 				const unsigned int channel_count) override
 			{
 				return new sound_component_type(channel_count);

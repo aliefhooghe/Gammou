@@ -75,7 +75,7 @@ namespace Gammou {
 
 		std::unique_ptr<gui_sound_component> value_integer_gui_component_factory::create_complete_component(
 			const int x, const int y, 
-			Sound::data_source & source, const unsigned int channel_count)
+			Sound::data_input_stream & source, const unsigned int channel_count)
 		{
 			int value;
 			source.read(&value, sizeof(int));
@@ -109,7 +109,7 @@ namespace Gammou {
 
 		std::unique_ptr<gui_sound_component> gain_integer_gui_component_factory::create_complete_component(
 			const int x, const int y,
-			Sound::data_source & source, 
+			Sound::data_input_stream & source, 
 			const unsigned int channel_count)
 		{
 			int value;

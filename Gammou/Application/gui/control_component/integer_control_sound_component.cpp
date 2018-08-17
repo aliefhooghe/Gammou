@@ -21,7 +21,7 @@ namespace Gammou{
 			set_value(initial_value);
 		}
 
-		unsigned int integer_sound_component::save_state(Sound::data_sink & data)
+		unsigned int integer_sound_component::save_state(Sound::data_output_stream & data)
 		{
 			return data.write(&m_value, sizeof(int));
 		}

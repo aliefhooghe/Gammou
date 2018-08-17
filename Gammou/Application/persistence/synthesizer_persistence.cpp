@@ -8,32 +8,33 @@ namespace Gammou {
 
 	namespace Persistence {
 
-		buffer_data_sink::buffer_data_sink()
-			: m_cursor(0u), m_buffer(0u)
+		buffer_stream::buffer_stream()
+            : m_cursor(0u),
+              m_buffer(0u)
 		{
 		}
 
-		buffer_data_sink::~buffer_data_sink()
+		buffer_stream::~buffer_stream()
 		{
 		}
 
-		bool buffer_data_sink::seek(const int offset, Sound::data_stream::seek_mode mode)
+		bool buffer_stream::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)
 		{
 			int new_cursor;
 
 			switch (mode)
 			{
 
-				case Gammou::Sound::data_stream::seek_mode::CURRENT:
+				case Gammou::Sound::abstract_data_stream::seek_mode::CURRENT:
 					new_cursor =
 						static_cast<int>(m_cursor) + offset;
 					break;
 
-				case Gammou::Sound::data_stream::seek_mode::SET:
+				case Gammou::Sound::abstract_data_stream::seek_mode::SET:
 					new_cursor = static_cast<unsigned int>(offset);
 					break;
 
-				case Gammou::Sound::data_stream::seek_mode::END:
+				case Gammou::Sound::abstract_data_stream::seek_mode::END:
 					return false; // Doesn't make sense here ( TODO Sure ??? )
 					break;
 			}
@@ -51,12 +52,12 @@ namespace Gammou {
 			return true;
 		}
 
-		unsigned int buffer_data_sink::tell()
+		unsigned int buffer_stream::tell()
 		{
 			return m_cursor;
 		}
 
-		unsigned int buffer_data_sink::write(void * data, const unsigned int size)
+		unsigned int buffer_stream::write(void * data, const unsigned int size)
 		{
 			const unsigned new_cursor = m_cursor + size;
 			const unsigned new_minimal_size = new_cursor + 1;
@@ -70,13 +71,26 @@ namespace Gammou {
 			return size;
 		}
 
-		void buffer_data_sink::flush_data()
+        unsigned int buffer_stream::read(void *data, const unsigned int size)
+        {
+            const unsigned new_cursor = m_cursor + size;
+
+            if (new_cursor > m_buffer.size())
+                return 0;
+
+            std::memcpy(data, m_buffer.data() + m_cursor, size);
+            m_cursor = new_cursor;
+
+            return size;
+        }
+
+		void buffer_stream::flush_data()
 		{
 			m_buffer.resize(0);
 			m_cursor = 0;
 		}
 
-		void buffer_data_sink::flush_data(Sound::data_sink & target)
+		void buffer_stream::flush_data(Sound::data_output_stream & target)
 		{
 			// TODO more verif
 			if (m_buffer.size() > 1) {
@@ -88,19 +102,19 @@ namespace Gammou {
 			m_cursor = 0;
 		}
 
-		unsigned int buffer_data_sink::get_data_size()
+		unsigned int buffer_stream::get_data_size()
 		{
 			return static_cast<unsigned int>(m_buffer.size() - 1);
 		}
 
-		const uint8_t *buffer_data_sink::get_data() const
+		const uint8_t *buffer_stream::get_data() const
 		{
 			return m_buffer.data();
 		}
 
 		//----------------
 
-		constrained_data_source::constrained_data_source(Sound::data_source & data, 
+        constrained_input_stream::constrained_input_stream(Sound::data_input_stream & data,
 			const unsigned int max_forward_offset)
 			: m_start_offset(data.tell()),
 				m_max_forward_offset(max_forward_offset),
@@ -109,21 +123,21 @@ namespace Gammou {
 
 		}
 
-		bool constrained_data_source::seek(const int offset, Sound::data_stream::seek_mode mode)
+        bool constrained_input_stream::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)
 		{
 			int new_offset; 
 
 			switch (mode)
 			{
-			case Sound::data_stream::seek_mode::CURRENT:
+			case Sound::abstract_data_stream::seek_mode::CURRENT:
 				new_offset = static_cast<int>(tell()) + offset;
 				break;
 
-			case Sound::data_stream::seek_mode::SET:
+			case Sound::abstract_data_stream::seek_mode::SET:
 				new_offset = offset;
 				break;
 
-			case Sound::data_stream::seek_mode::END:
+			case Sound::abstract_data_stream::seek_mode::END:
 				new_offset = static_cast<int>(m_max_forward_offset) + offset;
 				break;
 			}
@@ -131,18 +145,18 @@ namespace Gammou {
 			if (new_offset >= 0) {
 				const unsigned int unsigned_new_offset = static_cast<unsigned int>(new_offset);
 				if(unsigned_new_offset <= m_max_forward_offset)
-					return m_data.seek(m_start_offset + new_offset, Sound::data_stream::seek_mode::SET);
+					return m_data.seek(m_start_offset + new_offset, Sound::abstract_data_stream::seek_mode::SET);
 			}
 
 			return false;
 		}
 
-		unsigned int constrained_data_source::tell()
+        unsigned int constrained_input_stream::tell()
 		{
 			return m_data.tell() - m_start_offset;
 		}
 
-		unsigned int constrained_data_source::read(void * data, const unsigned int size)
+        unsigned int constrained_input_stream::read(void * data, const unsigned int size)
 		{
 			const unsigned int max_read_size = m_max_forward_offset - tell();
 			const unsigned int read_size = std::min(max_read_size, size);

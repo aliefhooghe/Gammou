@@ -37,8 +37,8 @@ namespace Gammou {
 			virtual bool on_mouse_dbl_click(const int x, const int y) override;
 			void select_component_creation_factory_id(const unsigned int factory_id);
 
-			bool save_state(Sound::data_sink& data);
-			bool load_state(Sound::data_source& data);
+			bool save_state(Sound::data_output_stream& data);
+			bool load_state(Sound::data_input_stream& data);
 
 		protected:
 			virtual void add_sound_component_to_frame(Sound::abstract_sound_component *sound_component) = 0;
@@ -51,9 +51,9 @@ namespace Gammou {
 			Sound::synthesizer *const m_synthesizer;
 
 		private:
-			void save_component(Sound::data_sink& data, abstract_gui_component *component);
-			abstract_gui_component *load_component(Sound::data_source& data); // Add the process_component on the frame
-			void save_link(Sound::data_sink& data, const unsigned int src_record_id, const unsigned int output_id,
+			void save_component(Sound::data_output_stream& data, abstract_gui_component *component);
+			abstract_gui_component *load_component(Sound::data_input_stream& data); // Add the process_component on the frame
+			void save_link(Sound::data_output_stream& data, const unsigned int src_record_id, const unsigned int output_id,
 				const unsigned int dst_record_id, const unsigned int input_id);
 
 			void reset_content();
@@ -96,7 +96,7 @@ namespace Gammou {
 				return Persistence::INTERNAL_FACTORY_ID;
 			}
 
-			unsigned int save_sound_component_state(Sound::data_sink& data) override
+			unsigned int save_sound_component_state(Sound::data_output_stream& data) override
 			{
 				uint32_t id = m_internal_component_id; // for constness
 				return data.write(&id, sizeof(uint32_t));

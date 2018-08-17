@@ -1,5 +1,6 @@
 
 #include "gui_component_main_factory.h"
+#include "../persistence/synthesizer_persistence.h"    //  buffer sink
 
 namespace Gammou {
 
@@ -47,7 +48,11 @@ namespace Gammou {
 		}
 
 		std::unique_ptr<gui_sound_component>
-			gui_component_main_factory::get_new_complete_component(const unsigned int factory_id, const int x, const int y, Sound::data_source & data, const unsigned int channel_count)
+            gui_component_main_factory::get_new_complete_component(
+                const unsigned int factory_id,
+                const int x, const int y,
+                Sound::data_input_stream & data,
+                const unsigned int channel_count)
 		{
 			
 			if (m_main_factory.check_factory_presence(factory_id)) {
@@ -104,6 +109,26 @@ namespace Gammou {
 			return m_main_factory.check_factory_presence(factory_id) ||
 				(m_complete_component_factories.find(factory_id) != m_complete_component_factories.end());
 		}
+
+        std::unique_ptr<abstract_gui_component> gui_component_main_factory::clone_component(
+                abstract_gui_component &component,
+                const int gui_x, const int gui_y,
+                const unsigned int channel_count)
+        {
+            const unsigned int factory_id = component.get_sound_component_factory_id();
+            Persistence::buffer_stream chunk_buffer;
+
+            //  Save the state ...
+            component.save_sound_component_state(chunk_buffer);
+            chunk_buffer.seek(0, Persistence::buffer_stream::seek_mode::SET);
+
+            //  ... and restore it in a new component
+            return get_new_complete_component(
+                        factory_id,
+                        gui_x, gui_y,
+                        chunk_buffer,
+                        channel_count);
+        }
 
 		std::unique_ptr<gui_sound_component>
 			gui_component_main_factory::create_default_complete_component(

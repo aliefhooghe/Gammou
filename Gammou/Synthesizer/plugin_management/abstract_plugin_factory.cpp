@@ -55,7 +55,7 @@ namespace Gammou {
 			
 		}
 
-		abstract_sound_component * plugin_factory::get_new_sound_component(data_source & source, const unsigned int channel_count)
+		abstract_sound_component * plugin_factory::get_new_sound_component(data_input_stream & source, const unsigned int channel_count)
 		{
 			abstract_sound_component *component = create_sound_component(source, channel_count);
 			stamp_sound_component(component);	//	set factory ID

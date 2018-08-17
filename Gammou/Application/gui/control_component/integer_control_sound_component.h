@@ -20,7 +20,7 @@ namespace Gammou {
 
 			virtual ~integer_sound_component() {}
 
-			unsigned int save_state(Sound::data_sink& data) override;
+			unsigned int save_state(Sound::data_output_stream& data) override;
 
 			void set_value(const int v);
 			void shift_value(const int offset);

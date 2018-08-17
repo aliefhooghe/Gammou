@@ -23,8 +23,6 @@
 
 #include <view.h>
 
-#define GAMMOU_VST_PARAMETER_INPUT_COUNT 16u
-
 namespace Gammou {
 
 	namespace VST3 {
@@ -72,14 +70,14 @@ namespace Gammou {
 			Persistence management
 		*/
 
-		class vst3_data_source : public Sound::data_source {
+		class vst3_data_source : public Sound::data_input_stream {
 
 		public:
 			vst3_data_source(Steinberg::IBStream *stream);
 			vst3_data_source(vst3_data_source&) = delete;
 			~vst3_data_source();
 
-			bool seek(const int offset, Sound::data_stream::seek_mode mode) override;
+			bool seek(const int offset, Sound::abstract_data_stream::seek_mode mode) override;
 			unsigned int tell() override;
 			unsigned int read(void *data, const unsigned int size) override;
 		
@@ -87,14 +85,14 @@ namespace Gammou {
 			Steinberg::IBStream *m_stream;
 		};
 
-		class vst3_data_sink : public Sound::data_sink {
+		class vst3_data_sink : public Sound::data_output_stream {
 
 		public:
 			vst3_data_sink(Steinberg::IBStream *stream);
 			vst3_data_sink(vst3_data_sink&) = delete;
 			~vst3_data_sink();
 
-			bool seek(const int offset, Sound::data_stream::seek_mode mode) override;
+			bool seek(const int offset, Sound::abstract_data_stream::seek_mode mode) override;
 			unsigned int tell() override;
 			unsigned int write(void *data, const unsigned int size) override;
 

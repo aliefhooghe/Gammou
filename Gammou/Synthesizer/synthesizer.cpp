@@ -9,8 +9,8 @@ namespace Gammou {
 	namespace Sound {
 
 		/*
-		*
-		*/
+		 *
+		 */
 
 		synthesizer::synthesizer(
 			Process::abstract_frame_processor<double>& master_circuit_processor,
@@ -37,13 +37,11 @@ namespace Gammou {
 			m_channels(channel_count),
 			m_running_channels_end(m_channels.begin()),
 			m_channels_lifetime(channel_count),
-			m_channel_zero_lifetime(channel_zero_lifetime),
-		//	m_channel_zero_sample_count(static_cast<unsigned int>(sample_rate * channel_zero_lifetime)),
-			m_channels_midi_note(channel_count)
+            m_channel_zero_lifetime(static_cast<double>(channel_zero_lifetime)),
+            m_channels_midi_note(channel_count),
+            m_keyboard_mode(keyboard_mode::POLYPHONIC)
 		{
 			DEBUG_PRINT("Synthesizer CTOR\n");
-			//m_master_circuit.set_sample_rate(sample_rate);
-			//m_polyphonic_circuit.set_sample_rate(sample_rate);
 			set_sample_rate(sample_rate);
 			std::iota(m_channels.begin(), m_channels.end(), 0u);
 		}
@@ -91,31 +89,37 @@ namespace Gammou {
 
 		void synthesizer::send_note_on(const unsigned int midi_note, const double velocity)
 		{
-			const unsigned int channel = get_new_channel();
+            unsigned int channel;
 
-			if( channel != INVALID_CHANNEL ){
-
-				DEBUG_PRINT("on : channel = %d, note = %d, fr = %f)\n", channel, midi_note, m_note_frequencies[midi_note]);
-
-				m_channels_midi_note[channel] = midi_note;
+			if (m_keyboard_mode == keyboard_mode::POLYPHONIC ||
+				get_running_channel_count() == 0) {
+				channel = get_new_channel();
 				m_polyphonic_circuit.initialize_channel(channel);
-				m_polyphonic_circuit.set_channel_pitch(channel, m_note_frequencies[midi_note]);
-				m_polyphonic_circuit.set_channel_attack_velocity(channel, velocity);
-				m_polyphonic_circuit.set_channel_gate_state(channel, true);
-				// default value (avoid undetermined component behavior)
-				m_polyphonic_circuit.set_channel_release_velocity(channel, 0.5);
-
-				m_channels_lifetime[channel] = m_channel_zero_sample_count;
 			}
 			else {
-				DEBUG_PRINT("No more channel for note on\n");
+				channel = m_channels[0];
 			}
 
-			// Else do nothing
+            if( channel != INVALID_CHANNEL ){
+
+                DEBUG_PRINT("on : channel = %d, note = %d, fr = %f)\n", channel, midi_note, m_note_frequencies[midi_note]);
+
+                m_channels_midi_note[channel] = midi_note;
+              
+                m_polyphonic_circuit.set_channel_pitch(channel, m_note_frequencies[midi_note]);
+                m_polyphonic_circuit.set_channel_attack_velocity(channel, velocity);
+                m_polyphonic_circuit.set_channel_gate_state(channel, true);
+
+                // default reelase value (avoid undetermined component behavior)
+                m_polyphonic_circuit.set_channel_release_velocity(channel, 0.5);
+
+                m_channels_lifetime[channel] = m_channel_zero_sample_count;
+            }
 		}
 
 		void synthesizer::send_note_off(const unsigned int midi_note, const double velocity)
 		{
+            //  TODO use map
 			for(auto it = m_channels.begin(); it != m_running_channels_end; ++it){
 				const unsigned int channel = *it;
 
@@ -130,6 +134,16 @@ namespace Gammou {
 
 			DEBUG_PRINT("off Inaplicable : (n = %d)\n", midi_note);
 		}
+
+        void synthesizer::set_keyboard_mode(const keyboard_mode mode)
+        {
+            m_keyboard_mode = mode;
+        }
+
+        synthesizer::keyboard_mode synthesizer::get_keyboard_mode() const
+        {
+            return m_keyboard_mode;
+        }
 
 		void synthesizer::add_sound_component_on_master_circuit(abstract_sound_component *component)
 		{
@@ -222,7 +236,7 @@ namespace Gammou {
 			m_master_circuit.m_parameter_buffer[automation_id] = value;
 		}
 
-		const double synthesizer::get_parameter_value(const unsigned int automation_id) const
+        double synthesizer::get_parameter_value(const unsigned int automation_id) const
 		{
 			return m_master_circuit.m_parameter_buffer[automation_id];
 		}
@@ -240,13 +254,18 @@ namespace Gammou {
 				return INVALID_CHANNEL;
 		}
 
+        unsigned int synthesizer::get_running_channel_count()
+        {
+            return
+                static_cast<unsigned int>(
+                        m_running_channels_end - m_channels.begin());
+        }
+
 		void synthesizer::free_channel(const std::vector<unsigned int>::iterator& it)
 		{
 			std::iter_swap(it, m_running_channels_end - 1);
 			m_running_channels_end--;
 		}
-
-
 
 		const double synthesizer::m_note_frequencies[128] =
 		{

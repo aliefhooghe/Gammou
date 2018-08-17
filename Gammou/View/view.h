@@ -13,6 +13,7 @@
 #include "widget/common_widgets.h"
 #include "widget/window_widget.h"
 #include "widget/dialog.h"
+//#include "widget/edit_panel.h"
 
 //----------------------------------------------------------------------
 #ifdef __linux__

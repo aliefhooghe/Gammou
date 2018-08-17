@@ -17,12 +17,12 @@
 #include "control_component/slider_gui_component.h"
 #include "control_component/integer_gui_component.h"
 
-
 #ifndef GAMMOU_PLUGINS_DIRECTORY_PATH
 #error "GAMMOU_PLUGINS_DIRECTORY_PATH must be defined"
 #endif
 
 #define GAMMOU_SYNTHESIZER_CHANNEL_COUNT 128
+#define GAMMOU_PARAMETER_INPUT_COUNT 16u
 
 namespace Gammou {
 
@@ -31,12 +31,14 @@ namespace Gammou {
 		class synthesizer_gui : public View::window_widget {
 
 		public:
-			synthesizer_gui(Sound::synthesizer *synthesizer, std::mutex *synthesizer_mutex);
+			synthesizer_gui(
+				Sound::synthesizer *synthesizer, 
+				std::mutex *synthesizer_mutex);
 			~synthesizer_gui();
 			
 			// Persistence
-			bool save_state(Sound::data_sink& data);
-			bool load_state(Sound::data_source& data);
+			bool save_state(Sound::data_output_stream& data);
+			bool load_state(Sound::data_input_stream& data);
 
 		private:
 			void add_plugin_factory(Sound::abstract_plugin_factory *factory);
@@ -44,6 +46,9 @@ namespace Gammou {
 			void load_plugin_factory(const std::string& path);
 
 			void init_main_factory(); // Load all built-in and plug in component
+
+			//
+			Sound::synthesizer& m_synthesizer;
 
 			//	UI Widgets (All freed by their panels)
 			View::list_box *m_plugin_list_box;

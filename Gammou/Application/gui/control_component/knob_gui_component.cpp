@@ -45,7 +45,7 @@ namespace Gammou {
 		}
 
 		std::unique_ptr<gui_sound_component> value_knob_gui_component_factory::create_complete_component(
-			const int x, const int y, Sound::data_source & source, const unsigned int channel_count)
+			const int x, const int y, Sound::data_input_stream & source, const unsigned int channel_count)
 		{
 			// Load normalized value
 			double normalized_value;
@@ -80,7 +80,7 @@ namespace Gammou {
 		}
 
 		std::unique_ptr<gui_sound_component> gain_knob_gui_component_factory::create_complete_component(
-			const int x, const int y, Sound::data_source & source, const unsigned int channel_count)
+			const int x, const int y, Sound::data_input_stream & source, const unsigned int channel_count)
 		{
 			// Load normalized value
 			double normalized_value;

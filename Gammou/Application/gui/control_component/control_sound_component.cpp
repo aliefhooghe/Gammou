@@ -21,7 +21,7 @@ namespace Gammou {
 			set_normalized_value(initial_normalized_value);
 		}
 
-		unsigned int control_sound_component::save_state(Sound::data_sink & data)
+		unsigned int control_sound_component::save_state(Sound::data_output_stream & data)
 		{
 			return data.write(&m_normalized_value, sizeof(double));
 		}

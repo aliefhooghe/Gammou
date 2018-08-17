@@ -26,7 +26,7 @@ namespace Gammou {
 			return m_sound_component->get_factory_id();
 		}
 
-		unsigned int gui_sound_component::save_sound_component_state(Sound::data_sink & data)
+		unsigned int gui_sound_component::save_sound_component_state(Sound::data_output_stream & data)
 		{
 			return m_sound_component->save_state(data);
 		}

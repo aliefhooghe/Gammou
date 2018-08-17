@@ -29,7 +29,7 @@ namespace Gammou {
 			virtual ~abstract_sound_component() {}
 
 			unsigned int get_factory_id() const;
-			virtual unsigned int save_state(data_sink& data) { return 0; };
+			virtual unsigned int save_state(data_output_stream& data) { return 0; };
 
 			virtual unsigned int get_channel_count() const { return 1;  }
 			virtual void set_working_channel_ref(const unsigned int *chanel_ref) {};

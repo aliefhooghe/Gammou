@@ -120,14 +120,14 @@ namespace Gammou {
 		{
 			m_absolute_rect.x = x;
 			m_absolute_rect.y = y;
-			redraw();
+            redraw_parent();
 		}
 
 		void widget::resize(const unsigned int width, const unsigned int height)
 		{
 			m_absolute_rect.width = width;
 			m_absolute_rect.height = height;
-			redraw();
+            redraw_parent();
 		}
 
 		void widget::set_rect(const rectangle & rect)
@@ -136,7 +136,7 @@ namespace Gammou {
 				m_absolute_rect = rect;
 			else
 				throw std::domain_error("Invalid widget rect");
-			redraw();
+            redraw_parent();
 		}
 
 		abstract_display *widget::get_display()

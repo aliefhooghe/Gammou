@@ -20,7 +20,8 @@ namespace Gammou {
 		:	View::window_widget(
 				GuiProperties::main_gui_width, 
 				GuiProperties::main_gui_height,
-				View::cl_chartreuse) // for gui debuging
+				View::cl_chartreuse), // for gui debuging
+			m_synthesizer(*synthesizer)
 		{
 			DEBUG_PRINT("SYN GUI CTOR\n");
 
@@ -61,18 +62,21 @@ namespace Gammou {
 					GuiProperties::main_gui_component_choice_box_width, 
 					GuiProperties::main_gui_component_choice_box_height + 2, 
 					GuiProperties::main_gui_component_choice_box_item_count,
-					[&](unsigned int id) 
-					{
-						const unsigned int factory_id = m_factory_ids[id];
-						DEBUG_PRINT("SELECT factory id %u\n", factory_id);
-						m_gui_polyphonic_circuit->select_component_creation_factory_id(factory_id);
-						m_gui_master_circuit->select_component_creation_factory_id(factory_id);
-					},
 					GuiProperties::main_gui_list_box_selected_item_color, 
 					GuiProperties::main_gui_list_box_background, 
 					GuiProperties::main_gui_list_box_border_color, 
 					GuiProperties::main_gui_list_box_font_color, 
 					GuiProperties::main_gui_component_choice_box_font_size);
+
+            plugin_list_box->
+                set_item_select_event(
+                    [&](View::list_box&, unsigned int id)
+                    {
+                        const unsigned int factory_id = m_factory_ids[id];
+                        DEBUG_PRINT("SELECT factory id %u\n", factory_id);
+                        m_gui_polyphonic_circuit->select_component_creation_factory_id(factory_id);
+                        m_gui_master_circuit->select_component_creation_factory_id(factory_id);
+                    });
 
 			m_plugin_list_box = &(*plugin_list_box);
 			add_widget(std::move(plugin_list_box));
@@ -99,6 +103,29 @@ namespace Gammou {
 					pages_ptr->select_page(page_id);
 				}
 				, "Master Circuit", 705, 16, 110, 27, 9));
+			
+			//---
+
+			
+
+			tool_box->add_widget(
+				std::make_unique<View::push_button>(
+					[synthesizer](View::push_button *self)
+					{
+						typedef Sound::synthesizer::keyboard_mode mode;
+
+						if (synthesizer->get_keyboard_mode() == mode::POLYPHONIC) {
+							synthesizer->set_keyboard_mode(mode::LEGATO);
+							self->set_text("Legato");
+						}
+						else {	//	LEGATO
+							synthesizer->set_keyboard_mode(mode::POLYPHONIC);
+							self->set_text("Polyphonic");
+						}
+					},
+					"Polyphonic", 512, 16, 110, 27, 9));
+
+			//---
 
 			const unsigned int offset = (GuiProperties::main_gui_size_unit - 50) / 2;
 
@@ -133,9 +160,29 @@ namespace Gammou {
 			DEBUG_PRINT("Syn Gui DTOR\n");
 		}
 
-		bool synthesizer_gui::save_state(Sound::data_sink & data)
+		bool synthesizer_gui::save_state(Sound::data_output_stream & data)
 		{
+			Persistence::synthesizer_record_header header;
+
 			DEBUG_PRINT("SYN SAVE STATE\n");
+
+			// Fill header
+			std::memcpy(header.magic, "GAMMOU", 6);
+			header.format_version_id = Persistence::gammou_format_version_id;
+			header.parameter_count = GAMMOU_PARAMETER_INPUT_COUNT;
+
+			// Save header
+			if (data.write(&header, sizeof(header)) != sizeof(header))
+				return false;
+
+			// Save Parameters
+			for (unsigned int i = 0; i < GAMMOU_PARAMETER_INPUT_COUNT; ++i) {
+				double param_value =
+					m_synthesizer.get_parameter_value(i);
+
+				if (data.write(&param_value, sizeof(double)) != sizeof(double))
+					return false;
+			}
 
 			// Save Master Volume
 			double master_volume = m_master_volume->get_normalized_value();
@@ -151,9 +198,35 @@ namespace Gammou {
 			return true;
 		}
 
-		bool synthesizer_gui::load_state(Sound::data_source & data)
+		bool synthesizer_gui::load_state(Sound::data_input_stream & data)
 		{
 			DEBUG_PRINT("SYN LOAD STATE :\n");
+
+			// Loading header
+			Persistence::synthesizer_record_header header;
+			if (data.read(&header, sizeof(header)) != sizeof(header))
+				return false;
+
+			// Check magic Id
+			if (std::strncmp(header.magic, "GAMMOU", 6) != 0)
+				return false;
+
+			// Check format version
+			if (header.format_version_id != Persistence::gammou_format_version_id)
+				return false;
+
+			// Load Parameters
+			if (header.parameter_count != GAMMOU_PARAMETER_INPUT_COUNT)
+				return false;
+
+			for (unsigned int i = 0; i < GAMMOU_PARAMETER_INPUT_COUNT; ++i) {
+				double param_value;
+
+				if (data.read(&param_value, sizeof(double)) != sizeof(double))
+					return false;
+
+				m_synthesizer.set_parameter_value(param_value, i);
+			}
 
 			// Load Master Volume
 			double master_volume;

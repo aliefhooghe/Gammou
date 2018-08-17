@@ -1,5 +1,6 @@
 #include "adsr_env.h"
 
+#define M_DEFAULT_GATE_FACT 1.001
 
 namespace Gammou {
     namespace Sound {
@@ -19,7 +20,8 @@ namespace Gammou {
 
             void adsr_env::initialize_process()
             {
-                m_gate_fact = 1.001; // 
+				DEBUG_PRINT("Initialize Env Process\n");
+                m_gate_fact = M_DEFAULT_GATE_FACT; // 
 				m_output[0] = 0.0;
 				m_tau_index = 0; // attack
             }
@@ -37,19 +39,19 @@ namespace Gammou {
 						else if (m_tau_index == 3) { // on release
 							//DEBUG_PRINT("Release -> Attack\n");
 							m_tau_index = 0; // goto attack
-							m_gate_fact = 1.0;
+							m_gate_fact = M_DEFAULT_GATE_FACT;
 						}
-					}
-					else if(m_tau_index != 3 ){
-						//DEBUG_PRINT("* to Release\n");
-						m_tau_index = 3; // goto release
-					}
+				}
+				else if(m_tau_index != 3 ){
+					//DEBUG_PRINT("* to Release\n");
+					m_tau_index = 3; // goto release
+				}
 
-					const double gate = m_gate_fact * input[4];
-					const double tau = input[m_tau_index];
-					const double fact = tau / get_sample_duration();
+				const double gate = m_gate_fact * input[4];
+				const double tau = input[m_tau_index];
+				const double fact = tau / get_sample_duration();
 					
-					m_output[0] = (gate + fact * m_output[0]) / (1.0 + fact);
+				m_output[0] = (gate + fact * m_output[0]) / (1.0 + fact);
             }
         }
     }

@@ -14,11 +14,12 @@ namespace Gammou {
 			// copy ctor by compiler is ok !
 			rectangle();
 			rectangle(const int px, const int py, const int width, const int height);
-			~rectangle() {};
+            ~rectangle() {}
 
 			rectangle translate(const int px, const int py) const;
 			bool contains(const int px, const int py) const;
 			bool contains(const rectangle& rect) const;
+            bool overlap(const rectangle& rect) const;
 
 			int x;
 			int y;

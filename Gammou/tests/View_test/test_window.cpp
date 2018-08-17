@@ -13,11 +13,15 @@ namespace Gammou {
         : View::window_widget(px_width, px_height, View::cl_gray)
     {
 
+        //  Label Test
+
         add_widget(
             std::make_unique<View::label>(
                 "This is a label",
                 10, 10, 100, 12,
                 View::cl_black));
+
+        //  Push Button Test
 
         add_widget(
             std::make_unique<View::push_button>(
@@ -27,6 +31,8 @@ namespace Gammou {
                 },
                 "Click Me !",
                 10, 100));
+
+        //  Knob Test
 
         add_widget(
             std::make_unique<View::knob>(
@@ -38,12 +44,34 @@ namespace Gammou {
                 10, 150
             ));
 
+        //  Slider TEst
+
+        add_widget(
+            std::make_unique<View::slider>(
+                [](View::slider& slider)
+                {
+                    std::cout << "Slider Value = " << slider.get_normalized_value() << std::endl;
+                },
+                100, 150, 250));
+
+        //  Edit Panel Test
+		/*
+        auto edit_panel =
+            std::make_unique<View::edit_panel<> >(
+                500, 150,
+                300, 300);
+		*/
+        //  ListBox Test
+
         auto list_box_ptr = 
             std::make_unique<View::list_box>(
                 10, 300, 
                 200, 400,
-                18,
-                [](unsigned int id){
+                18);
+
+        list_box_ptr->
+            set_item_select_event(
+                [](View::list_box&, unsigned int id){
                     std::cout << "Selected item n° " << id << std::endl;
                 });
 
@@ -67,7 +95,11 @@ namespace Gammou {
                     list_box.clear();
                 },
                 "Clear !",
-                320, 300));
+                380, 300));
+
+        add_widget(std::move(list_box_ptr));
+
+        //  File Explorer Dialog Test
 
         add_widget(
             std::make_unique<View::push_button>(
@@ -83,6 +115,8 @@ namespace Gammou {
                 "Open Explorer",
                 400, 400));
 
+        //  Close Diaplay From Widget Test
+
 		add_widget(
 			std::make_unique<View::push_button>(
 				[this](View::push_button *p)
@@ -91,7 +125,9 @@ namespace Gammou {
 					get_display()->close();
                 },
 				"Close",
-				600, 400));
+                600, 40));
+
+        //  Dialog Opening Test
 
 		add_widget(
 			std::make_unique<View::push_button>(
@@ -101,17 +137,11 @@ namespace Gammou {
 					dialog.show("Dialog Title");
 				},
 				"Dialog",
-				750, 400));
+                820, 400));
 
-        add_widget(
-            std::make_unique<View::slider>(
-                [](View::slider& slider)
-                {
-                    std::cout << "Slider Value = " << slider.get_normalized_value() << std::endl;
-                },
-                550, 100, 250));
 
-        add_widget(std::move(list_box_ptr));
+
+        //add_widget(std::move(edit_panel));
     }
 
     bool test_window::on_mouse_dbl_click(const int x, const int y)

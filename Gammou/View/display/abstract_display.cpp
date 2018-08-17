@@ -81,8 +81,10 @@ namespace Gammou {
 
 		bool abstract_display::sys_mouse_move(const unsigned int cx, const unsigned int cy)
 		{
-			const unsigned int scaled_cx = static_cast<unsigned int>(static_cast<float>(cx) / m_scale_factor);
-			const unsigned int scaled_cy = static_cast<unsigned int>(static_cast<float>(cy) / m_scale_factor);
+            const unsigned int scaled_cx =
+                    static_cast<unsigned int>(static_cast<float>(cx) / m_scale_factor);
+            const unsigned int scaled_cy =
+                    static_cast<unsigned int>(static_cast<float>(cy) / m_scale_factor);
 
 			bool ret;
 			if (m_is_draging) {

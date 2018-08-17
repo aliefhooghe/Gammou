@@ -114,7 +114,7 @@ namespace Gammou {
 				DEBUG_PRINT("Unregisterd Factory");
 		}
 
-		bool abstract_gui_synthesizer_circuit::save_state(Sound::data_sink & data)
+		bool abstract_gui_synthesizer_circuit::save_state(Sound::data_output_stream & data)
 		{
 			Persistence::circuit_record_header record_header;
 
@@ -172,14 +172,14 @@ namespace Gammou {
 			// save header 
 			const unsigned int current_pos = data.tell();
 
-			data.seek(start_pos, Gammou::Sound::data_stream::seek_mode::SET);
+			data.seek(start_pos, Gammou::Sound::abstract_data_stream::seek_mode::SET);
 			data.write(&record_header, sizeof(record_header));
-			data.seek(current_pos, Gammou::Sound::data_stream::seek_mode::SET);
+			data.seek(current_pos, Gammou::Sound::abstract_data_stream::seek_mode::SET);
 
 			return true;
 		}
 
-		bool abstract_gui_synthesizer_circuit::load_state(Sound::data_source & data)
+		bool abstract_gui_synthesizer_circuit::load_state(Sound::data_input_stream & data)
 		{
 			//	Delete current content
 			reset_content();
@@ -226,10 +226,10 @@ namespace Gammou {
 			return true;
 		}
 
-		void abstract_gui_synthesizer_circuit::save_component(Sound::data_sink& data, abstract_gui_component * component)
+		void abstract_gui_synthesizer_circuit::save_component(Sound::data_output_stream& data, abstract_gui_component * component)
 		{
 			Persistence::component_record_header record_header;
-			Persistence::buffer_data_sink sound_component_state;
+			Persistence::buffer_stream sound_component_state;
 
 			record_header.factory_id = component->get_sound_component_factory_id();
 			record_header.gui_x_pos = component->get_x();
@@ -242,7 +242,7 @@ namespace Gammou {
 			sound_component_state.flush_data(data);				//	Write Sound Component data
 		}
 
-		abstract_gui_component *abstract_gui_synthesizer_circuit::load_component(Sound::data_source & data)
+		abstract_gui_component *abstract_gui_synthesizer_circuit::load_component(Sound::data_input_stream & data)
 		{
 			Persistence::component_record_header record_header;
 
@@ -274,7 +274,7 @@ namespace Gammou {
 				return component;
 			}
 			else if(m_complete_component_factory->check_factory_presence(record_header.factory_id)){
-				Persistence::constrained_data_source cdata(data, record_header.data_size);
+				Persistence::constrained_input_stream cdata(data, record_header.data_size);
 
 				// Build component from data
 				std::unique_ptr<gui_sound_component>
@@ -301,7 +301,7 @@ namespace Gammou {
 			
 		}
 
-		void abstract_gui_synthesizer_circuit::save_link(Sound::data_sink& data, const unsigned int src_record_id, 
+		void abstract_gui_synthesizer_circuit::save_link(Sound::data_output_stream& data, const unsigned int src_record_id, 
 			const unsigned int output_id, const unsigned int dst_record_id, const unsigned int input_id)
 		{
 			Persistence::link_record link;

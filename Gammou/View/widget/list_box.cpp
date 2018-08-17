@@ -6,12 +6,9 @@ namespace Gammou {
 
 	namespace View {
 
-
-
 		list_box::list_box(
 			const int x, const int y, const unsigned int width, const unsigned int height, 
 			const unsigned int displayed_items_count, 
-			std::function<void(unsigned int)> on_select,
 			const color selected_item_color, 
 			const color background, 
 			const color border_color, 
@@ -19,7 +16,6 @@ namespace Gammou {
 			const unsigned int font_size,
 			const float border_width)
 			: widget(x, y, width, height),
-			m_on_select(on_select),
 			m_selected_color(selected_item_color),
 			m_background_color(background),
 			m_font_color(font_color),
@@ -36,7 +32,6 @@ namespace Gammou {
 		list_box::list_box(
 			const rectangle & rect,
 			const unsigned int displayed_items_count, 
-			std::function<void(unsigned int)> on_select,
 			const color selected_item_color, 
 			const color background, 
 			const color border_color, 
@@ -44,7 +39,6 @@ namespace Gammou {
 			const unsigned int font_size,
 			const float border_width)
 			: widget(rect),
-			m_on_select(on_select),
 			m_selected_color(selected_item_color),
 			m_background_color(background),
 			m_font_color(font_color),
@@ -58,7 +52,21 @@ namespace Gammou {
 			m_selected_id(-1),
 			m_first_displayed(0)
 		{
-		}
+        }
+
+        list_box::~list_box()
+        {
+        }
+
+        void list_box::set_item_select_event(std::function<void(list_box&, unsigned int)> handler)
+        {
+            m_item_select_handler = handler;
+        }
+
+        void list_box::set_item_dbl_clik_event(std::function<void(list_box&, unsigned int)> handler)
+        {
+            m_item_dbl_click_handler = handler;
+        }
 
 		unsigned int list_box::get_item_count() const
 		{
@@ -211,7 +219,9 @@ namespace Gammou {
 				if (new_selected < static_cast<int>(m_items.size()) &&
 					new_selected != m_selected_id) {
 					m_selected_id = new_selected;
-					m_on_select(m_selected_id);
+                    if (m_item_select_handler)
+                        m_item_select_handler(
+                            *this, static_cast<unsigned int>(m_selected_id));
 					redraw();
 				}
 			}
