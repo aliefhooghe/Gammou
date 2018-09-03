@@ -122,7 +122,9 @@ namespace Gammou {
 		class multi_channel_queue : private multi_channel_data {
 
 		public:
-			multi_channel_queue(polyphonic_sound_component *owner, const unsigned int capacity);
+			multi_channel_queue(
+				polyphonic_sound_component *owner, 
+				const unsigned int capacity);
 
 			inline void operator<<(const T& rvalue);	//	enqueue
 			inline void operator>>(T& lvalue);			//	dequeue
