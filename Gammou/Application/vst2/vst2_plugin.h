@@ -9,6 +9,8 @@
 
 #include "../gui/synthesizer_gui.h"
 #include "synthesizer.h"
+#include "midi_driver/midi_driver.h"
+
 #include "jit_frame_processor/jit_frame_processor.h"
 
 #include <view.h>
@@ -83,6 +85,7 @@ namespace Gammou  {
                 //Sound::jit_frame_processor m_master_circuit_processor;
                 //Sound::jit_frame_processor m_polyphonic_circuit_processor;
 			    Sound::synthesizer m_synthesizer;
+                Sound::midi_driver m_midi_driver;
 
                 Gui::synthesizer_gui m_gui;
 			    View::vst2_display m_display;

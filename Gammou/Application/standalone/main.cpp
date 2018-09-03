@@ -21,17 +21,21 @@ struct snd_callback_data{
     std::mutex *synthesizer_mutex;
 };
 
-int snd_callback(void *output_buffer, void *input_buffer, unsigned int sample_count, 
-                    double streamTime, RtAudioStreamStatus status, void *void_data)
+int snd_callback(
+    void *output_buffer, 
+    void *input_buffer, 
+    unsigned int sample_count, 
+    double streamTime, 
+    RtAudioStreamStatus status, 
+    void *void_data)
 {
-    double input[2] = {-1.0, 1.0};
+    double *input = (double*)input_buffer;
     double *output = (double*)output_buffer;
     snd_callback_data *data = (snd_callback_data*)void_data;
 
     data->synthesizer_mutex->lock();
-    for(unsigned int i = 0; i < sample_count; ++i, output += 2){
-       data->synthesizer->process(input, output);
-    }
+    for(unsigned int i = 0; i < sample_count; ++i, output += 2, input += 2)
+        data->synthesizer->process(input, output);
 
     data->synthesizer_mutex->unlock();
 
@@ -47,20 +51,26 @@ int main()
         exit(0);
     }
 
-    RtAudio::StreamParameters parameters;
-    parameters.deviceId = dac.getDefaultOutputDevice();
-    parameters.nChannels = 2;
-    parameters.firstChannel = 0;
-    unsigned int sampleRate = 48000;
-    unsigned int bufferFrames = 256; // 256 sample frames
+    RtAudio::StreamParameters input_param, output_param;
+
+    input_param.deviceId = dac.getDefaultInputDevice();
+    input_param.nChannels = 2;
+    input_param.firstChannel = 0;
+
+    output_param.deviceId = dac.getDefaultOutputDevice();
+    output_param.nChannels = 2;
+    output_param.firstChannel = 0;
+    
+    const unsigned int sampleRate = 48000;
+    unsigned int bufferFrames = 512; 
 
     std::mutex synthesizer_mutex;
 
-    Gammou::Sound::jit_frame_processor processor1;
-    Gammou::Sound::jit_frame_processor processor2;
+    //Gammou::Sound::jit_frame_processor processor1;
+    //Gammou::Sound::jit_frame_processor processor2;
 
-    //Gammou::Process::bytecode_frame_processor<double> processor1;
-   // Gammou::Process::bytecode_frame_processor<double> processor2;
+    Gammou::Process::bytecode_frame_processor<double> processor1;
+    Gammou::Process::bytecode_frame_processor<double> processor2;
 
     Gammou::Sound::synthesizer synthesizer(
         processor1, processor2, 
@@ -76,8 +86,14 @@ int main()
     struct snd_callback_data data = {&synthesizer, &synthesizer_mutex};
 
     try {
-        dac.openStream( &parameters, nullptr, RTAUDIO_FLOAT64,
-        		sampleRate, &bufferFrames, &snd_callback, (void *)(&data));
+        dac.openStream( 
+            &output_param,
+            &input_param, 
+            RTAUDIO_FLOAT64,
+        	sampleRate, 
+            &bufferFrames, 
+            &snd_callback, 
+            (void *)(&data));
 
         dac.startStream();
     }

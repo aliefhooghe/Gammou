@@ -1,8 +1,6 @@
 
 #include "vst2_plugin.h"
 
-#define MIDI_NOTE_OFF	0x80u
-#define MIDI_NOTE_ON	0x90u
 
 namespace Gammou  {
     
@@ -19,6 +17,7 @@ namespace Gammou  {
                 GAMMOU_VST2_OUTPUT_COUNT,
                 GAMMOU_VST2_CHANNEL_COUNT,
                 GAMMOU_VST2_PARAMETER_COUNT),
+            m_midi_driver(m_synthesizer),
             m_gui(&m_synthesizer, &m_synthesizer_mutex),
             m_display(m_gui)
         {
@@ -83,22 +82,7 @@ namespace Gammou  {
 				return;
 
 			VstMidiEvent* midi_ev = (VstMidiEvent*)(&ev);
-
-			// ignore midi Channels
-			const uint8_t cmd =
-				(midi_ev->midiData[0] & 0xf0);
-
-			const uint8_t note =
-				(midi_ev->midiData[1] & 0x7f);
-
-			const uint8_t velocity =
-				(midi_ev->midiData[2] & 0x7f);
-
-			if (cmd == MIDI_NOTE_OFF ||
-				(cmd == MIDI_NOTE_ON && velocity == 0u))
-				m_synthesizer.send_note_off(note, static_cast<float>(velocity) / 127.0f);
-			else if (cmd == MIDI_NOTE_ON)
-				m_synthesizer.send_note_on(note, static_cast<float>(velocity) / 127.0f);
+			m_midi_driver.handle_midi_event(midi_ev->midiData);
 		}
 
 		void plugin::get_param_name(char * str, const unsigned int index)

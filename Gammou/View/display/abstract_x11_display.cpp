@@ -296,10 +296,17 @@ namespace Gammou {
 
                     case MotionNotify:
                     {
-                        self->sys_mouse_move(
+                        static int t = 0;
+                        const int interval = 2;
+                        
+                        if (true || t % interval == 0) {
+                          self->sys_mouse_move(
                             static_cast<unsigned int>(event.xmotion.x),
                             static_cast<unsigned int>(event.xmotion.y)
-                        );
+                          );
+                        }
+
+                        t++;
                     }
                         break;
 

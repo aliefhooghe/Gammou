@@ -16,7 +16,7 @@ add_subdirectory("../Process" Process)
 set(SYNTHESIZER_SRC
 	sound_processing_helper.h
 	sound_processing_helper.cpp
-    synthesizer.h
+  synthesizer.h
 	synthesizer.cpp
 	jit_frame_processor/jit_frame_processor.h
 	jit_frame_processor/jit_frame_processor.cpp
@@ -67,11 +67,17 @@ set(SOUND_COMPONENT_SRC
 	sound_component/sound_component_manager.cpp
 )
 
+set(MIDI_DRIVER_SRC
+  midi_driver/midi_driver.h
+  midi_driver/midi_driver.cpp
+)
+
 add_library(synthesizer STATIC
 	${SYNTHESIZER_SRC}
 	${SYNTHESIZER_BUILTIN_COMPONENTS_SRC}
 	${PLUGIN_MANAGEMENT_SRC}
 	${SOUND_COMPONENT_SRC}
+  ${MIDI_DRIVER_SRC}
 )
 
 target_link_libraries(synthesizer PUBLIC process)

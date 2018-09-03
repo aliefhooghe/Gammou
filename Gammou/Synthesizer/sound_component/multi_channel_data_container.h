@@ -126,7 +126,7 @@ namespace Gammou {
 
 			inline void operator<<(const T& rvalue);	//	enqueue
 			inline void operator>>(T& lvalue);			//	dequeue
-			//inline T& operator[](const unsigned int offset);	//	value from back
+			inline T& operator[](const unsigned int offset);	//	value from back
 
 		private:
 			const unsigned int m_capacity; // todo : allow resize
@@ -181,16 +181,16 @@ namespace Gammou {
 				m_index[channel].first = new_read_pos;
 			}
 		}
-		/*
+		
 		template<class T>
 		inline T & multi_channel_queue<T>::operator[](const unsigned int offset)
 		{
 			const unsigned int channel = multi_channel_data::get_current_working_channel();
 			const unsigned int base = m_capacity * channel;
-			const int pos = static_cast<int>(m_index[channel.second]) - static_cast<int>(offset);
+			auto index = m_index[channel];
 
-
-		}*/
+			const int pos = static_cast<int>(m_index[channel].second) - static_cast<int>(offset);
+		}
 
 } /* Sound */
 
