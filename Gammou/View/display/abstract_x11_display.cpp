@@ -189,7 +189,6 @@ namespace Gammou {
         void abstract_x11_display::draw_display()
         {
             sys_draw(m_cr);
-            cairo_surface_flush(m_cairo_surface);
             
             // Swap Buffer
             XdbeSwapInfo info;
