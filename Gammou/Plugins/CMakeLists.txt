@@ -89,7 +89,7 @@ target_link_libraries(RTGranular PRIVATE wav)
 
 add_gammou_plugin(Noise noise.cpp)
 add_gammou_plugin(Delay delay.cpp)
-
+add_gammou_plugin(DCBlocker dc_blocker.cpp)
 ############ 	Joystick Plugin
 
 #find_package(SDL2 REQUIRED)

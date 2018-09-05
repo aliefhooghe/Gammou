@@ -15,6 +15,7 @@
 
 #include <RtAudio.h>
 
+#define SAMPLE_RATE 44100
 
 struct snd_callback_data{
     Gammou::Sound::synthesizer *synthesizer;
@@ -61,7 +62,7 @@ int main()
     output_param.nChannels = 2;
     output_param.firstChannel = 0;
     
-    const unsigned int sampleRate = 48000;
+    const unsigned int sampleRate = SAMPLE_RATE;
     unsigned int bufferFrames = 512; 
 
     std::mutex synthesizer_mutex;
@@ -76,7 +77,7 @@ int main()
         processor1, processor2, 
         2, 2, 128, 16);
 
-    synthesizer.set_sample_rate(48000);
+    synthesizer.set_sample_rate(SAMPLE_RATE);
 
 	Gammou::Gui::synthesizer_gui window(&synthesizer, &synthesizer_mutex);
     Gammou::View::application_display display(window);

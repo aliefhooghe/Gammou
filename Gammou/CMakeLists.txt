@@ -145,9 +145,10 @@ if(GAMMOU_STANDALONE_BUILD)
 	
 	# Os specific addition
 	
-    #if(WIN32)                   # MICROSOFT WINDOWS
-    
-    if(UNIX)                	 # LINUX and OSX
+    if(WIN32)                   # MICROSOFT WINDOWS
+		#target_link_libraries(gammou_standalone PRIVATE dsound)	#	use direct sound
+		target_compile_definitions(gammou_standalone PRIVATE __WINDOWS_WASAPI__)	
+    elseif(UNIX)                	 # LINUX and OSX
         
         # For Rtaudio
         if(APPLE)               # Only OSX
@@ -288,8 +289,8 @@ if(GAMMOU_VST2_BUILD)
   if(WIN32)                   # MICROSOFT WINDOWS
     set_target_properties(gammou-vst2 PROPERTIES LINK_FLAGS "/EXPORT:VSTPluginMain")
     
-    # Add Post Build Copy To VST3 directory	
-		add_post_build_copy(gammou-vst2 "C:/Program Files/Common Files/VST2")
+    # Add Post Build Copy To VST2 directory	
+	add_post_build_copy(gammou-vst2 "C:/Program Files/Common Files/VST2")
   endif()
 
 endif()
