@@ -15,25 +15,25 @@ namespace Gammou {
 			 */
 
 			// Component maps
-			const View::color background = 0x002339ff;
-			const View::color linking_color = 0x1896d1ff;
-			const View::color link_color = 0x439d9eff;
+			const View::color background = 0x171819ff;
+			const View::color linking_color = 0xeb9434ff;
+			const View::color link_color = 0x17d563ff;
 			const View::color highlight_socket_color = linking_color;
 
 			// Components
-			const View::color component_border = 0x205065ff;
-			const View::color component_background = 0x003147ff;
-			const View::color moving_component_background = component_background;
+			const View::color component_border = 0x23cde8ff;
+			const View::color component_background = 0x2f3032ff;
+			const View::color moving_component_background = 0x484b4eff;
 
-			const View::color component_input_socket_color = View::cl_firebrick;
-			const View::color component_linked_input_socket_color = View::cl_red;
+			const View::color component_input_socket_color = link_color;
+			const View::color component_linked_input_socket_color = link_color;
 			const View::color component_output_socket_color = component_linked_input_socket_color;
 			const View::color focused_component_output_socket_color = linking_color;
 
 			const View::color component_font_color = 0xbec7e6ff;
 
 			const View::color knob_off_color = component_font_color;
-			const View::color knob_on_color = 0xc53a3dff;
+			const View::color knob_on_color = 0xbd63c5ff;
 
 			const View::color slider_on_color = knob_on_color;
 			const View::color slider_off_color = knob_off_color;
@@ -42,7 +42,7 @@ namespace Gammou {
 
 			// Listboxs
 			const View::color main_gui_list_box_background = component_background;
-			const View::color main_gui_list_box_selected_item_color = component_border;
+			const View::color main_gui_list_box_selected_item_color = moving_component_background;
 			const View::color main_gui_list_box_border_color = component_border;	//	TODO
 			const View::color main_gui_list_box_font_color = component_font_color;
 
