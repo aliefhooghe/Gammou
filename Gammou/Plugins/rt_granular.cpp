@@ -72,7 +72,7 @@ rt_granular_component::rt_granular_component(
 	: sound_component("RTGranular", 6, 1, channel_count),
 		m_grain_count(grain_count),
 		m_grain(this, grain_count),
-		m_queue(this, 100000),
+		m_queue(this, 44100 * 10),
 		m_time(this),
 		m_first_grain_time(this)
 {
@@ -99,6 +99,7 @@ void rt_granular_component::initialize_process()
 
 	m_time = 0.0;
 	m_first_grain_time = 0.0;
+	m_queue.reset();
 }
 
 void rt_granular_component::process(const double input[])

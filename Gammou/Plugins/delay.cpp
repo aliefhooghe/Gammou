@@ -12,8 +12,8 @@ public:
 	~delay_component() {}
 
 	void process(const double input[]) override;
+	void initialize_process() override;
 
-	//void on_sample_rate_change(const double new_sample_rate) override;
 private:
 	multi_channel_queue<double> m_queue;
 };
@@ -26,6 +26,11 @@ delay_component::delay_component(const unsigned int channel_count)
 	set_input_name("Time", 1);
 
 	set_output_name("Output", 0);
+}
+
+void delay_component::initialize_process()
+{
+	m_queue.reset();
 }
 
 void delay_component::process(const double input[])

@@ -117,7 +117,6 @@ namespace Gammou {
 		*		Multi Channel Queue
 		*/
 
-
 		template<class T>
 		class multi_channel_queue : private multi_channel_data {
 
@@ -130,6 +129,7 @@ namespace Gammou {
 			inline void operator>>(T& lvalue);			//	dequeue
 			inline T operator[](const unsigned int offset);	//	value from back
 
+			void reset();
 		private:
 			const unsigned int m_capacity; // todo : allow resize
 
@@ -150,7 +150,8 @@ namespace Gammou {
 		template<class T>
 		inline void multi_channel_queue<T>::operator<<(const T & rvalue)
 		{
-			const unsigned int channel = multi_channel_data::get_current_working_channel();
+			const unsigned int channel = 
+				multi_channel_data::get_current_working_channel();
 			const unsigned int base = m_capacity * channel;
 			auto index = m_index[channel];
 
@@ -169,7 +170,8 @@ namespace Gammou {
 		template<class T>
 		inline void multi_channel_queue<T>::operator>>(T & lvalue)
 		{
-			const unsigned int channel = multi_channel_data::get_current_working_channel();
+			const unsigned int channel = 
+				multi_channel_data::get_current_working_channel();
 			const unsigned int base = m_capacity * channel;
 			auto index = m_index[channel];
 
@@ -187,7 +189,8 @@ namespace Gammou {
 		template<class T>
 		inline T multi_channel_queue<T>::operator[](const unsigned int offset)
 		{
-			const unsigned int channel = multi_channel_data::get_current_working_channel();
+			const unsigned int channel = 
+				multi_channel_data::get_current_working_channel();
 			const unsigned int base = m_capacity * channel;
 			auto index = m_index[channel];
 
@@ -201,6 +204,15 @@ namespace Gammou {
 				
 				return m_data[base + (pos + m_capacity) % m_capacity];
 			}
+		}
+
+		template<class T>
+		inline void multi_channel_queue<T>::reset()
+		{
+			const unsigned int channel = 
+				multi_channel_data::get_current_working_channel();
+
+			m_index[channel] = std::make_pair(0u, 1u);
 		}
 
 } /* Sound */
