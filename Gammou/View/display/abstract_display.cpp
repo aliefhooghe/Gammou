@@ -77,8 +77,10 @@ namespace Gammou {
 
 		void abstract_display::sys_draw(cairo_t * cr)
 		{
+			cairo_save(cr);
 			cairo_scale(cr, m_scale_factor, m_scale_factor);
 			draw(cr);
+			cairo_restore(cr);
 		}
 
 		bool abstract_display::sys_mouse_move(const unsigned int cx, const unsigned int cy)
