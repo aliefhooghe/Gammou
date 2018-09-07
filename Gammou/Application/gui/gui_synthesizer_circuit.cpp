@@ -226,6 +226,21 @@ namespace Gammou {
 			return true;
 		}
 
+        void abstract_gui_synthesizer_circuit::reset_content()
+        {
+            std::deque<abstract_gui_component*> to_remove;
+
+            for (auto& component : m_widgets) {
+                if (component->get_sound_component_factory_id()
+                    != Persistence::INTERNAL_FACTORY_ID) {
+                    to_remove.push_back(component.get());
+                }
+            }
+
+            for (auto component : to_remove)
+                remove_widget(component);
+        }
+
 		void abstract_gui_synthesizer_circuit::save_component(Sound::data_output_stream& data, abstract_gui_component * component)
 		{
 			Persistence::component_record_header record_header;
@@ -316,20 +331,7 @@ namespace Gammou {
 			data.write(&link, sizeof(link));
 		}
 
-		void abstract_gui_synthesizer_circuit::reset_content()
-		{
-			std::deque<abstract_gui_component*> to_remove;
 
-			for (auto& component : m_widgets) {
-				if (component->get_sound_component_factory_id()
-					!= Persistence::INTERNAL_FACTORY_ID) {
-					to_remove.push_back(component.get());
-				}
-			}
-
-			for (auto component : to_remove) 
-				remove_widget(component);
-		}
 
 
 	} /* Gui */
