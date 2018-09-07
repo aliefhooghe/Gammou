@@ -277,7 +277,6 @@ namespace Gammou {
 		{
 
 			// Built In Components
-
 			add_plugin_factory(new Sound::Builtin::sin_factory());
 			add_plugin_factory(new Sound::Builtin::sum_component_factory());
 			add_plugin_factory(new Sound::Builtin::product_factory());
@@ -295,10 +294,6 @@ namespace Gammou {
 			add_plugin_factory(new Sound::Builtin::function_factory<fabs>("abs", 106));
 			add_plugin_factory(new Sound::Builtin::function_factory<atan>("atan", 107));
 
-			//add_plugin_factory(new Sound::Builtin::perfect_saw_factory());
-			//add_plugin_factory(new Sound::Builtin::naive_saw_factory());
-			//add_plugin_factory(new Sound::Builtin::cracra_factory());
-
 			// Control Components
 
 			add_control_factory(new value_knob_gui_component_factory());
@@ -309,7 +304,8 @@ namespace Gammou {
 
 			add_control_factory(new value_integer_gui_component_factory());
 			add_control_factory(new gain_integer_gui_component_factory());
-			// Plugins 
+
+			// Plugins Components
 
 			const std::string plugin_dir_path(GAMMOU_PLUGINS_DIRECTORY_PATH);
 			
