@@ -1,3 +1,6 @@
+
+#include <cmath>
+
 #include "../../debug.h"
 #include "common_widgets.h"
 
@@ -247,22 +250,31 @@ namespace Gammou {
 			const float offset = 0.5f * static_cast<float>(get_width());
 			const float radius = 0.4f * static_cast<float>(get_width());
 			
-			cairo_set_line_width(cr, 3);
+			const float start_angle = 1.57 + theta;
+			const float end_angle = 1.57 - theta;
+			const float cur_angle = start_angle + m_angle; 
+			
+			//	Off part
+			cairo_set_line_width(cr, 3.0);
 
 			cairo_helper::set_source_color(cr, m_off_color);
-			cairo_new_path(cr);
-			cairo_arc(cr, offset, offset, radius, 1.57 + theta, 1.57 - theta);
+			cairo_new_path(cr);	//	should not be needed, to check
+			cairo_arc(cr, offset, offset, radius, start_angle, end_angle);
 			cairo_stroke(cr);
+
+			//	On part
+			cairo_helper::set_source_color(cr, m_on_color);
+			cairo_arc(cr, offset, offset, radius, start_angle, cur_angle);
+			cairo_stroke(cr);
+			
+			//	Cursor
+			const float cur_dist = 0.6 * radius;
+			const float cur_cx = offset + cur_dist * std::cos(cur_angle);
+			const float cur_cy = offset + cur_dist * std::sin(cur_angle);
 
 			cairo_helper::set_source_color(cr, m_on_color);
-
-			cairo_set_line_width(cr, 3.6);
-			cairo_arc(cr, offset, offset, radius, 1.57 + theta, 1.57 + theta + m_angle);
-
-
-			cairo_line_to(cr, offset, offset);
-
-			cairo_stroke(cr);
+			cairo_helper::circle(cr, cur_cx, cur_cy, 3.5);
+			cairo_fill(cr);
 		}
 
 		bool knob::on_mouse_drag(

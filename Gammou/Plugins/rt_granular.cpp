@@ -99,6 +99,7 @@ void rt_granular_component::initialize_process()
 
 	m_time = 0.0;
 	m_first_grain_time = 0.0;
+	m_queue.reset();
 }
 
 void rt_granular_component::process(const double input[])

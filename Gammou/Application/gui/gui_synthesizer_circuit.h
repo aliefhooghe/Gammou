@@ -40,6 +40,7 @@ namespace Gammou {
 			bool save_state(Sound::data_output_stream& data);
 			bool load_state(Sound::data_input_stream& data);
 
+            void reset_content();
 		protected:
 			virtual void add_sound_component_to_frame(Sound::abstract_sound_component *sound_component) = 0;
 
@@ -56,7 +57,6 @@ namespace Gammou {
 			void save_link(Sound::data_output_stream& data, const unsigned int src_record_id, const unsigned int output_id,
 				const unsigned int dst_record_id, const unsigned int input_id);
 
-			void reset_content();
 			//----------------
 			
 			std::mutex *const m_synthesizer_mutex;

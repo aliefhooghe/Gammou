@@ -51,15 +51,15 @@ namespace Gammou {
 			Sound::synthesizer& m_synthesizer;
 
 			//	UI Widgets (All freed by their panels)
-			View::list_box *m_plugin_list_box;
-			gui_master_circuit *m_gui_master_circuit;
-			gui_polyphonic_circuit *m_gui_polyphonic_circuit;
-			View::knob *m_master_volume;
+            View::list_box *m_plugin_list_box{};
+            gui_master_circuit *m_gui_master_circuit{};
+            gui_polyphonic_circuit *m_gui_polyphonic_circuit{};
+            View::knob *m_master_volume{};
 
-			// Factory
-			std::vector<unsigned int> m_factory_ids;
-			gui_component_main_factory m_gui_component_factory;
-			
+            // Factory
+            std::vector<unsigned int> m_factory_ids;
+            gui_component_main_factory m_gui_component_factory;
+
 			// -----
 			unsigned int page_id;
 		};

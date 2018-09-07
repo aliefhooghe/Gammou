@@ -33,19 +33,19 @@ namespace Gammou {
 				std::make_unique<gui_master_circuit>(
 					&m_gui_component_factory, synthesizer, synthesizer_mutex, 
 					0, 0, GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height);
-			m_gui_master_circuit = &(*master_circuit);
+            m_gui_master_circuit = master_circuit.get();
 
 			auto polyphonic_circuit = 
 				std::make_unique<gui_polyphonic_circuit>(
 					&m_gui_component_factory, synthesizer, synthesizer_mutex, 
 					0, 0, GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height);
-			m_gui_polyphonic_circuit = &(*polyphonic_circuit);
+            m_gui_polyphonic_circuit = polyphonic_circuit.get();
 
 			auto pages =
 				std::make_unique<View::page_container>(
 					GuiProperties::main_gui_component_choice_box_width, GuiProperties::main_gui_toolbox_height, 
 					GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height, View::cl_chartreuse);
-			View::page_container *pages_ptr = &(*pages);
+            View::page_container *pages_ptr = pages.get();
 
 
 			pages->add_page(std::move(master_circuit));
@@ -135,8 +135,8 @@ namespace Gammou {
 				std::make_unique<View::knob>(
 					[synthesizer](View::knob *kn) 
 					{ 
-						const double norm = kn->get_normalized_value();
-						const double volume = (expf(5.0f * norm) - 1.0) / (expf(5.0f) - 1.0);
+                        const float norm = kn->get_normalized_value();
+                        const double volume = (expf(5.0f * norm) - 1.0) / (expf(5.0f) - 1.0);
 						synthesizer->set_master_volume(volume); 
 					},
 					offset + GuiProperties::main_gui_width - GuiProperties::main_gui_size_unit,
@@ -158,9 +158,13 @@ namespace Gammou {
 
 		synthesizer_gui::~synthesizer_gui()
 		{
-			// widgets deleted by panel
 			DEBUG_PRINT("Syn Gui DTOR\n");
-		}
+
+            //  Force user gui_component deletion here in order to
+            //  remove loaded sound_component to be deleted before their factory
+            m_gui_master_circuit->reset_content();
+            m_gui_polyphonic_circuit->reset_content();
+        }
 
 		bool synthesizer_gui::save_state(Sound::data_output_stream & data)
 		{
@@ -277,7 +281,6 @@ namespace Gammou {
 		{
 
 			// Built In Components
-
 			add_plugin_factory(new Sound::Builtin::sin_factory());
 			add_plugin_factory(new Sound::Builtin::sum_component_factory());
 			add_plugin_factory(new Sound::Builtin::product_factory());
@@ -295,10 +298,6 @@ namespace Gammou {
 			add_plugin_factory(new Sound::Builtin::function_factory<fabs>("abs", 106));
 			add_plugin_factory(new Sound::Builtin::function_factory<atan>("atan", 107));
 
-			//add_plugin_factory(new Sound::Builtin::perfect_saw_factory());
-			//add_plugin_factory(new Sound::Builtin::naive_saw_factory());
-			//add_plugin_factory(new Sound::Builtin::cracra_factory());
-
 			// Control Components
 
 			add_control_factory(new value_knob_gui_component_factory());
@@ -309,7 +308,8 @@ namespace Gammou {
 
 			add_control_factory(new value_integer_gui_component_factory());
 			add_control_factory(new gain_integer_gui_component_factory());
-			// Plugins 
+
+			// Plugins Components
 
 			const std::string plugin_dir_path(GAMMOU_PLUGINS_DIRECTORY_PATH);
 			

@@ -73,7 +73,7 @@ set_target_properties(wav PROPERTIES POSITION_INDEPENDENT_CODE ON)
 ###############################################
 
 add_gammou_plugin(Template template.cpp)
-add_gammou_plugin(Plugin1 plugin1.cpp)
+
 add_gammou_plugin(Tanh tanh.cpp)
 add_gammou_plugin(BitCrusher bit_crusher.cpp)
 add_gammou_plugin(LadderFilter ladder_filter.cpp)

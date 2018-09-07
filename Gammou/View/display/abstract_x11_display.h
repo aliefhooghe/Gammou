@@ -52,6 +52,11 @@ namespace Gammou {
 
             cairo_surface_t *m_cairo_surface{};
 			cairo_t *m_cr{};
+
+			//	For event handling
+			Time m_last_click_time{};
+			unsigned int m_last_button{};
+			int m_motion_notify_count{};
 		};
 
 	} /* View */

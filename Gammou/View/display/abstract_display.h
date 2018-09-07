@@ -14,7 +14,7 @@ namespace Gammou {
 			abstract_display(widget& root_widget);
 			virtual ~abstract_display();
 
-			double get_scale_factor() const;
+			float get_scale_factor() const;
 			virtual void set_scale_factor(const float scale_factor);
 
 			unsigned int get_display_width() const;

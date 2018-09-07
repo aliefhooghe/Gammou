@@ -8,10 +8,15 @@ namespace Gammou {
 
 		enum plugins_id : unsigned int {
 			template_id = 10000,
-			plugin1_id	= 10001
+			delay_id,
+			granular_id,
+			joystick_id,
+			ladder_filter_id,
+			noise_id,
+			rt_granular_id,
+			sampler_id
 			// .....
 		};
-
 	}
 }
 

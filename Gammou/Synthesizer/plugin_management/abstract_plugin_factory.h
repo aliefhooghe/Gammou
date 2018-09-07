@@ -70,7 +70,7 @@ namespace Gammou {
 				const std::string &category, 
 				unsigned int factory_id)
 				: plugin_factory(name, category, factory_id) {}
-			~default_plugin_factory() {}
+			virtual ~default_plugin_factory() {}
 
 		protected:
 			virtual abstract_sound_component *create_sound_component(

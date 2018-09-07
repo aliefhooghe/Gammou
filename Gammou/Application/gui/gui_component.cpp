@@ -284,7 +284,7 @@ namespace Gammou {
 			if (!View::panel<>::on_mouse_drag(button, x, y, dx, dy)) {
 				if (!is_linking()) {
 					set_rect(get_absolute_rect().translate(dx, dy));
-					redraw_parent();
+					//	No need to redraw here, this is done by component map
 				}
 			}
 			
@@ -525,12 +525,12 @@ namespace Gammou {
 
 				int output_id = focused_component->get_output_id_by_pos(map_x, map_y);
 
-				DEBUG_PRINT("Start linking from output_id = %d\n", output_id);
-
 				if (output_id != -1) {
 					m_is_linking = true;
 					m_linking_output_id = output_id;
 					m_linking_component = focused_component;
+
+					DEBUG_PRINT("Start linking from output_id = %d\n", output_id);
 
 					set_scrollable(false); // prevent drag from scrolling the map
 					focused_component->set_linking(); // prenvent from moving while being linked

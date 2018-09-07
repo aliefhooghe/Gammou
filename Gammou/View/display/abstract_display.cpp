@@ -27,13 +27,15 @@ namespace Gammou {
 			release_widget(m_root_widget);
 		}
 
-		double abstract_display::get_scale_factor() const
+		float abstract_display::get_scale_factor() const
 		{
 			return m_scale_factor;
 		}
 
 		void abstract_display::set_scale_factor(const float scale_factor)
 		{
+			if (m_scale_factor <= 0.0f)
+				throw std::invalid_argument("a display scale factor should be >= 0");
 			m_scale_factor = scale_factor;
 		}
 
@@ -75,8 +77,10 @@ namespace Gammou {
 
 		void abstract_display::sys_draw(cairo_t * cr)
 		{
+			cairo_save(cr);
 			cairo_scale(cr, m_scale_factor, m_scale_factor);
 			draw(cr);
+			cairo_restore(cr);
 		}
 
 		bool abstract_display::sys_mouse_move(const unsigned int cx, const unsigned int cy)

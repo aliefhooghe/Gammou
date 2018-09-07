@@ -28,19 +28,24 @@ namespace Gammou {
 
 		main_factory::~main_factory()
 		{
+            DEBUG_PRINT("Main Factory DTOR : \n");
+
 			for (auto it = m_plugin_factory.begin(); it != m_plugin_factory.end(); ++it) {
 				plugin_lib lib = it->second.first;
 				abstract_plugin_factory *factory = it->second.second;
 
+                DEBUG_PRINT("Deleting factory '%s'\n", factory->get_name().c_str());
+
 				if (lib.lib_handle == nullptr) { // registered builtin factory
 					delete factory;
 				}
-				else { // dynamicaly loaded facotry 
+                else { // dynamicaly loaded factory
 					lib.factory_delete(factory);
 					DYNAMIC_LIB_CLOSE(lib.lib_handle);
 				}
-				
 			}
+
+            DEBUG_PRINT("Main Factory DTOR finnished !\n");
 		}
 		
 		unsigned int main_factory::load_factory(const std::string & file_path)
