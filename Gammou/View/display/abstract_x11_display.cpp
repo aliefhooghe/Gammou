@@ -215,8 +215,6 @@ namespace Gammou {
             abstract_x11_display* self,
             XEvent& event)
         {
-            static Time last_time = 0;
-            static unsigned int last_button = 0u;
 
             switch( event.type ){
 
@@ -226,15 +224,18 @@ namespace Gammou {
                         switch(event.xbutton.button){
 
                             case 1: // left
-                            self->sys_mouse_button_down(mouse_button::LeftButton);
+                            self->sys_mouse_button_down(
+                                mouse_button::LeftButton);
                             break;
 
                             case 2: // wheel
-                            self->sys_mouse_button_down(mouse_button::WheelButton);
+                            self->sys_mouse_button_down(
+                                mouse_button::WheelButton);
                             break;
 
                             case 3: // right
-                            self->sys_mouse_button_down(mouse_button::RightButton);
+                            self->sys_mouse_button_down(
+                                mouse_button::RightButton);
                             break;
 
                             case 4:
@@ -257,29 +258,33 @@ namespace Gammou {
                             if( button == 1 || button == 3 ){
                                 const Time now = event.xbutton.time;
 
-                                if (event.xbutton.button == last_button) {
-                                    const Time delta = now - last_time;
+                                if (event.xbutton.button == self->m_last_button) {
+                                    const Time delta = 
+                                        now - self->m_last_click_time;
                                     
                                     //  
                                     if( delta > 50 && delta < 250 )
                                         self->sys_mouse_dbl_click();
                                 }
                                 
-                                last_time = now;
-                                last_button = event.xbutton.button;
+                                self->m_last_click_time = now;
+                                self->m_last_button = event.xbutton.button;
                             }
 
                             switch(button){
                                 case 1: // left
-                                self->sys_mouse_button_up(mouse_button::LeftButton);
+                                self->sys_mouse_button_up(
+                                    mouse_button::LeftButton);
                                 break;
 
                                 case 2: // wheel
-                                self->sys_mouse_button_up(mouse_button::WheelButton);
+                                self->sys_mouse_button_up(
+                                    mouse_button::WheelButton);
                                 break;
 
                                 case 3: // right
-                                self->sys_mouse_button_up(mouse_button::RightButton);
+                                self->sys_mouse_button_up(
+                                    mouse_button::RightButton);
                                 break;
                             }
                         }
@@ -295,17 +300,18 @@ namespace Gammou {
 
                     case MotionNotify:
                     {
-                        static int t = 0;
-                        const int interval = 2;
+                        //  Decrease cpu usage by decreasing mouse_move event rate
+
+                        const int interval = 4;
                         
-                        if (true || t % interval == 0) {
+                        if (self->m_motion_notify_count % interval == 0) {
                           self->sys_mouse_move(
                             static_cast<unsigned int>(event.xmotion.x),
                             static_cast<unsigned int>(event.xmotion.y)
                           );
                         }
 
-                        t++;
+                        self->m_motion_notify_count++;
                     }
                         break;
 
