@@ -72,7 +72,7 @@ rt_granular_component::rt_granular_component(
 	: sound_component("RTGranular", 6, 1, channel_count),
 		m_grain_count(grain_count),
 		m_grain(this, grain_count),
-		m_queue(this, 100000),
+		m_queue(this, 44100 * 10),
 		m_time(this),
 		m_first_grain_time(this)
 {
@@ -141,7 +141,7 @@ class rt_granular_factory : public plugin_factory {
 
 	public:
 		rt_granular_factory()
-			: plugin_factory("RTGranular", "", 447975152)
+			: plugin_factory("RTGranular", "", 8797516152)
 		{}
 		~rt_granular_factory() {}
 
