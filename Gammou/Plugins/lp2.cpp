@@ -43,8 +43,8 @@ void lp2_component::initialize_process()
 
 void lp2_component::process(const double input[])
 {
-	const double omega = 6.28318530718 * input[1];
-	const double Q = input[2] / 4096.0;
+	const double omega = std::abs(6.28318530718 * input[1]);
+	const double Q = std::abs(input[2] / 128.0);
 	const double dt = get_sample_duration();
 
 
