@@ -294,7 +294,7 @@ namespace Gammou {
 		bool knob::on_mouse_wheel(const float distance)
 		{
 			if (is_enabled()) {
-				on_change(-distance * 0.1f);
+				on_change(-distance * 0.2f);
 				return true;
 			}
 			else {
@@ -429,7 +429,7 @@ namespace Gammou {
 		
 		bool slider::on_mouse_wheel(const float distance)
 		{
-			change_cursor_value(m_cursor + distance);
+			change_cursor_value(m_cursor + distance * 3.0);
 			return false;
 		}
 
