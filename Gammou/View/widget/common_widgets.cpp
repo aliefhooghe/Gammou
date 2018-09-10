@@ -294,7 +294,7 @@ namespace Gammou {
 		bool knob::on_mouse_wheel(const float distance)
 		{
 			if (is_enabled()) {
-				on_change(-distance * 0.25f);
+				on_change(-distance * 0.1f);
 				return true;
 			}
 			else {
@@ -345,11 +345,11 @@ namespace Gammou {
 		:	control(x, y, width, cursor_radius * 2),
 			m_change_action(change_action),
 			m_cursor(0u),
+			m_cursor_max(width - 2 * cursor_radius),
 			m_on_color(on_color), 
 			m_off_color(off_color),
 			m_cursor_is_moving(false)
 		{
-
 		}
 
 		void slider::draw(cairo_t *cr)
@@ -360,20 +360,20 @@ namespace Gammou {
 
 			//	On part
 			cairo_helper::set_source_color(cr, m_on_color);
-			cairo_move_to(cr, 0, middle);
-			cairo_line_to(cr, m_cursor, middle);
+			cairo_move_to(cr, cursor_radius, middle);
+			cairo_line_to(cr, cursor_radius + m_cursor, middle);
 			cairo_stroke(cr);
 
 			//	Off part
 			cairo_helper::set_source_color(cr, m_off_color);
-			cairo_move_to(cr, m_cursor, middle);
-			cairo_line_to(cr, get_width(), middle);
+			cairo_move_to(cr, cursor_radius + m_cursor, middle);
+			cairo_line_to(cr, get_width() - cursor_radius, middle);
 			cairo_stroke(cr);
 
 			//	Cursor
 			cairo_helper::set_source_color(cr, m_on_color);
 			cairo_helper::circle(
-				cr, m_cursor, middle, 
+				cr, cursor_radius + m_cursor, middle, 
 				m_cursor_is_moving ? cursor_radius - 2 : cursor_radius);
 			cairo_fill(cr);
 		}
@@ -383,21 +383,7 @@ namespace Gammou {
 			const int x, const int y,
 			const int dx, const int dy)
 		{
-			unsigned int new_value;
-
-			if (x < 0)
-				new_value = 0;
-			else if (x > get_width())
-				new_value = get_width();
-			else
-				new_value = x;
-
-			if (new_value != m_cursor) {
-				m_cursor = new_value;
-				m_change_action(*this);
-				redraw();
-			}
-
+			change_cursor_value(x - cursor_radius);
 			return true;
 		}
 
@@ -424,6 +410,7 @@ namespace Gammou {
 			const int x, const int y)
 		{ 
 			m_cursor_is_moving = true; 
+			change_cursor_value(x - cursor_radius);
 			redraw();
 			return true;
 		} 
@@ -432,14 +419,17 @@ namespace Gammou {
 			const mouse_button button, 
 			const int x, const int y)
 		{ 
-			m_cursor_is_moving = false;
-			redraw();
+			if (m_cursor_is_moving) {
+				m_cursor_is_moving = false;
+				redraw();
+			}
+
 			return true;
 		}
 		
 		bool slider::on_mouse_wheel(const float distance)
 		{
-			// TODO
+			change_cursor_value(m_cursor + distance);
 			return false;
 		}
 
@@ -448,11 +438,11 @@ namespace Gammou {
 			if (normalized_value < 0.0)
 				m_cursor = 0u;
 			else if (normalized_value > 1.0)
-				m_cursor = get_width();
+				m_cursor = m_cursor_max;
 			else
 				m_cursor = 
 					static_cast<unsigned int>(normalized_value * 
-						static_cast<float>(get_width()));
+						static_cast<float>(m_cursor_max));
 
 			m_change_action(*this);
 			redraw();
@@ -462,9 +452,26 @@ namespace Gammou {
 		{
 			return 
 				static_cast<float>(m_cursor) /
-				static_cast<float>(get_width());
+				static_cast<float>(m_cursor_max);
 		}
 		
+		void slider::change_cursor_value(const int v)
+		{
+			unsigned int new_value;
+
+			if (v < 0)
+				new_value = 0;
+			else if (v > m_cursor_max)
+				new_value = m_cursor_max;
+			else
+				new_value = v;
+
+			if (new_value != m_cursor) {
+				m_cursor = new_value;
+				m_change_action(*this);
+				redraw();
+			}
+		}
 
 } /* View */
 

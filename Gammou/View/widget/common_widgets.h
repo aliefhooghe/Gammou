@@ -181,8 +181,13 @@ namespace Gammou {
 				float get_normalized_value() const;
 
 			private:
+				void change_cursor_value(const int new_value);
+
 				std::function<void(slider&)> m_change_action;
+				
 				unsigned int m_cursor;
+				unsigned int m_cursor_max;
+
 				const color m_on_color;
 				const color m_off_color;
 				bool m_cursor_is_moving;
