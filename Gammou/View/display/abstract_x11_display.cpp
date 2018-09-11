@@ -336,7 +336,6 @@ namespace Gammou {
                         break;
 
                     default:
-                        DEBUG_PRINT(" Unkxnow Event\n");
                         break;
 
                 }
