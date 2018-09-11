@@ -15,15 +15,15 @@ namespace Gammou {
 			 */
 
 			// Component maps
-			const View::color background = 0x171819ff;
-			const View::color linking_color = 0xeb9434ff;
+			const View::color background = 0x242526ff;
+			const View::color linking_color = 0xe89131ff;
 			const View::color link_color = 0x17d563ff;
 			const View::color highlight_socket_color = linking_color;
 
 			// Components
-			const View::color component_border = 0x23cde8ff;
-			const View::color component_background = 0x2f3032ff;
-			const View::color moving_component_background = 0x484b4eff;
+			const View::color component_border = 0x20cae5ff;
+			const View::color component_background = 0x313234ff;
+			const View::color moving_component_background = 0x4a4d50ff;
 
 			const View::color component_input_socket_color = link_color;
 			const View::color component_linked_input_socket_color = link_color;
