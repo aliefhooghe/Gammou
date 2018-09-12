@@ -57,6 +57,8 @@ namespace Gammou {
 					}
 			};
 
+			#define FUNCTION_COMPONENT_FACTORY(func) Sound::Builtin::function_factory<func>(#func, Sound::Builtin::func##_component_id)
+
 		} /* Builtin */
 
 	} /* Sound */

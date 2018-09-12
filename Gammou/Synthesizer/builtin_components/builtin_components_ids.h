@@ -9,16 +9,28 @@ namespace Gammou {
 		namespace Builtin {
 
 			enum builtin_ids : unsigned int {
-				sin_component_id		= 1000u,
-				adsr_env_component_id	= 1001u,
-				sum_component_id		= 1002u,
-				lp2_component_id		= 1003u,
-				product_component_id	= 1004u,
-				saw_component_id		= 1005u,
+
+				
+				//	Function_component
+				cos_component_id = 100,
+				exp_component_id,
+				log_component_id,
+				cosh_component_id,
+				sinh_component_id,
+				sqrt_component_id,
+				fabs_component_id,
+				atan_component_id,
+
+				//---
+				sin_component_id = 1000u,
+				adsr_env_component_id,
+				sum_component_id,
+				lp2_component_id,
+				product_component_id,
+				saw_component_id,
 
 				//	Functionals : TODO
-
-
+				
 			};
 
 		}
