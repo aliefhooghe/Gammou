@@ -142,7 +142,7 @@ class rt_granular_factory : public plugin_factory {
 
 	public:
 		rt_granular_factory()
-			: plugin_factory("RTGranular", "", 447975152)
+			: plugin_factory("RTGranular", "", rt_granular_id)
 		{}
 		~rt_granular_factory() {}
 

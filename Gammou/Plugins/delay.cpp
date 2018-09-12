@@ -57,5 +57,5 @@ EXPORT_DEFAULT_FACTORY(
 	delay_component,			//		Classe
 	"delay",					//		Nom
 	"Exemple",					//		Categorie
-	25681846		//		Factory Id
+	delay_id					//		Factory Id
 )

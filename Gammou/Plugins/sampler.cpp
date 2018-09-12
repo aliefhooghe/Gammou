@@ -59,7 +59,7 @@ class sampler_factory : public plugin_factory {
 
 	public:
 		sampler_factory()
-			: plugin_factory("Sampler", "", 485975163)
+			: plugin_factory("Sampler", "", sampler_id)
 		{}
 		~sampler_factory() {}
 

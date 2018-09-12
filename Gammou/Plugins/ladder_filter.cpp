@@ -71,5 +71,5 @@ EXPORT_DEFAULT_FACTORY(
 	ladder_component,			//		Classe
 	"ladder",					//		Nom
 	"TEsting",					//		Categorie
-	42414340		//		Factory Id
+	ladder_filter_id			//		Factory Id
 )
