@@ -289,14 +289,14 @@ namespace Gammou {
 			add_plugin_factory(new Sound::Builtin::saw_factory());
 
 
-			add_plugin_factory(new Sound::Builtin::function_factory<cos>("cos", 100));
-			add_plugin_factory(new Sound::Builtin::function_factory<exp>("exp", 101));
-			add_plugin_factory(new Sound::Builtin::function_factory<log>("log", 102));
-			add_plugin_factory(new Sound::Builtin::function_factory<cosh>("cosh", 103));
-			add_plugin_factory(new Sound::Builtin::function_factory<sinh>("sinh", 104));
-			add_plugin_factory(new Sound::Builtin::function_factory<sqrt>("sqrt", 105));
-			add_plugin_factory(new Sound::Builtin::function_factory<fabs>("abs", 106));
-			add_plugin_factory(new Sound::Builtin::function_factory<atan>("atan", 107));
+			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(cos));
+			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(exp));
+			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(log));
+			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(cosh));
+			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(sinh));
+			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(sqrt));
+			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(fabs));
+			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(atan));
 
 			// Control Components
 

@@ -30,5 +30,5 @@ EXPORT_DEFAULT_FACTORY(
 	noise_component,			//		Classe
 	"Noise",					//		Nom
 	"Exemple",					//		Categorie
-	1616232326					//		Factory Id
+	noise_id					//		Factory Id
 )
