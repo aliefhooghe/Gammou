@@ -46,7 +46,8 @@ namespace Gammou {
 
 		Steinberg::tresult PLUGIN_API Plugin::initialize(FUnknown * context)
 		{
-			const Steinberg::tresult result = SingleComponentEffect::initialize(context);
+			const Steinberg::tresult result = 
+				SingleComponentEffect::initialize(context);
 
 			if (result != Steinberg::kResultOk)
 				return result;
@@ -58,15 +59,14 @@ namespace Gammou {
 			addAudioOutput(USTRING("Stereo Output"), Steinberg::Vst::SpeakerArr::kStereo);
 
 			//	Create Midi Input
-			addEventInput(USTRING("Midi In"), 1); // 1 channel
+			addEventInput(USTRING("Midi Input"), 1); // 1 channel
 
 			// Create Parameter inputs
 			for (unsigned int i = 0; i < GAMMOU_PARAMETER_INPUT_COUNT; ++i) {
-				std::string param_name = ("Parameter " + std::to_string(i));
-				parameters.addParameter(new Steinberg::Vst::Parameter(USTRING(param_name.c_str()), i));
+				const std::string param_name = ("Parameter " + std::to_string(i));
+				parameters.addParameter(
+					new Steinberg::Vst::Parameter(USTRING(param_name.c_str()), i));
 			}
-
-			DEBUG_PRINT("Gammou Initialize\n");
 
 			return Steinberg::kResultOk;
 		}
@@ -85,7 +85,8 @@ namespace Gammou {
 
 		Steinberg::tresult PLUGIN_API Plugin::canProcessSampleSize(Steinberg::int32 symbolicSampleSize)
 		{
-			return (symbolicSampleSize == Steinberg::Vst::kSample64 ||
+			return 
+			(	symbolicSampleSize == Steinberg::Vst::kSample64 ||
 				symbolicSampleSize == Steinberg::Vst::kSample32) ?
 				Steinberg::kResultTrue : Steinberg::kResultFalse;
 		}
@@ -230,7 +231,8 @@ namespace Gammou {
 			return Steinberg::kResultOk;
 		}
 
-		Steinberg::tresult PLUGIN_API Plugin::setBusArrangements(Steinberg::Vst::SpeakerArrangement* inputs, Steinberg::int32 numIns,
+		Steinberg::tresult PLUGIN_API Plugin::setBusArrangements(
+			Steinberg::Vst::SpeakerArrangement* inputs, Steinberg::int32 numIns,
 			Steinberg::Vst::SpeakerArrangement* outputs, Steinberg::int32 numOuts)
 		{
 			// Host ask to change
@@ -244,8 +246,6 @@ namespace Gammou {
 			else
 				return Steinberg::kResultOk;
 		}
-
-		// TODO ne pas, oublier get_editor state (????)
 
 		Steinberg::tresult PLUGIN_API Plugin::setState(Steinberg::IBStream * state)
 		{
