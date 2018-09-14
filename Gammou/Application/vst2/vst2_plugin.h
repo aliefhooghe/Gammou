@@ -1,4 +1,4 @@
-#ifndef VST2_PLUGIN_H
+#ifndef VST2_PLUGIN_H_
 #define VST2_PLUGIN_H_
 
 #include <mutex>

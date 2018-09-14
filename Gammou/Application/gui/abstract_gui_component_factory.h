@@ -36,10 +36,10 @@ namespace Gammou {
 		private:
 			Sound::abstract_sound_component *get_new_sound_component(
 				Sound::data_input_stream& source, 
-				const unsigned int channel_count) { return nullptr;  } // stubs
+				const unsigned int channel_count) override { return nullptr;  } // stubs
 			Sound::abstract_sound_component *get_new_sound_component(
 				const Sound::answer_form& answer, 
-				const unsigned int channel_count) { return nullptr; }
+				const unsigned int channel_count) override { return nullptr; }
 		};
 		
 	}

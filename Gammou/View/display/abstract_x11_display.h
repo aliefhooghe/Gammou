@@ -28,7 +28,7 @@ namespace Gammou {
 
 		protected:
 			void create_window(Window parent, const std::string& title);
-			void sys_redraw_rect(const rectangle& rect);
+			void sys_redraw_rect(const rectangle& rect) override;
 			void draw_display();
 			void wait_window_thread();
 
