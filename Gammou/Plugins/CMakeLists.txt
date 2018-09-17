@@ -19,24 +19,28 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 add_subdirectory(../Synthesizer tmp/Synthesizer)
 
 #######################################################
+
+# set install path
+
+if(WIN32)                   # MICROSOFT WINDOWS
+  set(GAMMOU_PLUGINS_INSTALL_PATH "Common Files/Gammou/Plugins" CACHE PATH "")
+elseif(UNIX)
+
+  if(APPLE)                 # APPLE OSX
+    #TODO
+  else()                    # Linux
+    set(GAMMOU_PLUGINS_INSTALL_PATH "$ENV{HOME}/.Gammou/Plugins" CACHE PATH "")
+  endif()
+endif()
+
+#######################################################
 project(GammouPlugins LANGUAGES C CXX)	# c is for wav
 set(CMAKE_CXX_STANDARD 17)
 
 if(NOT DEFINED GAMMOU_PLUGINS_OUTPUT_PATH)
-set(GAMMOU_PLUGINS_OUTPUT_PATH 
-	"${CMAKE_BINARY_DIR}/GammouPlugins"
-) # gammou Plugins
+  set(GAMMOU_PLUGINS_OUTPUT_PATH "${CMAKE_BINARY_DIR}/GammouPlugins" CACHE PATH "")
 endif()
 
-if(NOT DEFINED GAMMOU_PLUGINS_DIR)
-set(GAMMOU_PLUGINS_DIR                       
-	${GAMMOU_PLUGINS_OUTPUT_PATH}    
-	CACHE PATH "Choose the gammou Plugins directory"
-)
-endif()
-
-message( STATUS "Gammou Plugins Will be Built in ${GAMMOU_PLUGINS_OUTPUT_PATH}")
-message( STATUS "Gammou Plugins Will be Copied in ${GAMMOU_PLUGINS_DIR}")
 
 # Create a Gammou plugin ; usage : add_gammou_plugin(plugin_name src1.cpp src2.cpp ....)
 macro(add_gammou_plugin name)
@@ -44,18 +48,20 @@ macro(add_gammou_plugin name)
 	add_library(${name} MODULE 
 		${plugin_sources}
 		plugins_ids.h
-		plugin_helper.h)
+		plugin_helper.h
+	)
 	target_link_libraries(${name} PRIVATE synthesizer)
-	set_target_properties(${name} PROPERTIES 
+	set_target_properties(
+	    ${name} PROPERTIES 
 	    FOLDER "GammouPlugins"
-	    LIBRARY_OUTPUT_DIRECTORY ${GAMMOU_PLUGINS_OUTPUT_PATH}
+	    LIBRARY_OUTPUT_DIRECTORY "${GAMMOU_PLUGINS_OUTPUT_PATH}"  # override LIBRARY_OUTPUT_PATH
 	    PREFIX ""
 	    SUFFIX ".gammou"
 	)
-	
-	if(NOT "${GAMMOU_PLUGINS_OUTPUT_PATH}" STREQUAL "${GAMMOU_PLUGINS_DIR}")
-	    add_post_build_copy(${name} ${GAMMOU_PLUGINS_DIR})
-    endif()
+	install(
+	    TARGETS ${name}
+	    LIBRARY DESTINATION "${GAMMOU_PLUGINS_INSTALL_PATH}"
+	)
 endmacro()
 
 
