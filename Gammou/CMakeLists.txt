@@ -100,6 +100,12 @@ set(PERSISTENCE_SRC
 # Build Plugins (Provide the GAMMOU_PLUGINS_INSTALL_PATH variable)
 add_subdirectory(Plugins tmp/Plugins)
 
+if (IS_ABSOLUTE "${GAMMOU_PLUGINS_INSTALL_PATH}")
+	set(GAMMOU_PLUGINS_PATH "${GAMMOU_PLUGINS_INSTALL_PATH}")
+else()
+	set(GAMMOU_PLUGINS_PATH "${CMAKE_INSTALL_PREFIX}/${GAMMOU_PLUGINS_INSTALL_PATH}")
+endif()
+
 ################################################
 #                                              #
 #       Gammou Standalone Application          #
@@ -136,7 +142,7 @@ if(GAMMOU_STANDALONE_BUILD)
 	
 	target_compile_definitions(gammou_standalone PRIVATE 
 	    GAMMOU_VIEW_APP
-	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_INSTALL_PATH}"
+	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_PATH}"
 	)
 	
 	# OSSIA binding
@@ -233,7 +239,7 @@ if(GAMMOU_VST3_BUILD)
   target_link_libraries(gammou PRIVATE view synthesizer base sdk)	# base and sdk from VST3_SDK
 	target_compile_definitions(gammou PRIVATE 
 	    GAMMOU_VIEW_VST3
-	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_INSTALL_PATH}"
+	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_PATH}"
 	)
 	
 	set_target_properties(gammou PROPERTIES 
@@ -293,7 +299,7 @@ if(GAMMOU_VST2_BUILD)
 
   target_compile_definitions(gammou-vst2 PRIVATE 
 	    GAMMOU_VIEW_VST2
-	    GAMMOU_PLUGINS_DIRECTORY_PATH="$[GAMMOU_PLUGINS_INSTALL_PATH}"
+	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGIN_PATH}"
 	)
 
   set_target_properties(gammou-vst2 PROPERTIES 
@@ -337,12 +343,10 @@ target_compile_definitions(view_test PRIVATE GAMMOU_VIEW_APP)
 ## 
 
 
-
 #################################################
 #################################################
 #################################################
 #################################################
-
 
 
 # Include Gammou View and Synthesizer libs
