@@ -322,7 +322,7 @@ namespace Gammou {
 			Persistence::link_record link;
 
 			DEBUG_PRINT("LINK SAVE\n");
-			2529292525;
+
 			link.src_record_id = static_cast<uint32_t>(src_record_id);
 			link.output_id = static_cast<uint32_t>(output_id);
 			link.dst_record_id = static_cast<uint32_t>(dst_record_id);

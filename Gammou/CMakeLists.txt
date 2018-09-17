@@ -22,20 +22,33 @@ mark_as_advanced(FORCE
 # Enable cmake FOLDER propertie
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# Set output build paths
-set(VST3_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin" CACHE PATH "")                      	  # gammou (VST3)
-set(GAMMOU_PLUGINS_OUTPUT_PATH "${CMAKE_BINARY_DIR}/GammouPlugins" CACHE PATH "")     # gammou Plugins
-set(GAMMOU_PLUGINS_DIR ${GAMMOU_PLUGINS_OUTPUT_PATH} CACHE PATH "")
-set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE PATH "")                      # View, synthesizer, vstsdk, ....
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin" CACHE PATH "")                   # gammou Standalone
+# Set output build paths (install path are in cmake/default_path.cmake)
 
-#
+set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE PATH "")                              # View, synthesizer, vstsdk, ....
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin" CACHE PATH "")                           # Vst2-3 plugins, standalone, ....
+set(GAMMOU_PLUGINS_OUTPUT_PATH "${CMAKE_BINARY_DIR}/GammouPlugins" CACHE PATH "")       # Gammou Plugins
+
+# Set Install path
+
+if(WIN32)                   # MICROSOFT WINDOWS
+  set(VST3_INSTALL_PATH "Common Files/VST3" CACHE PATH "")
+  set(VST2_INSTALL_PATH "Common Files/VST2" CACHE PATH "")
+elseif(UNIX)
+
+  if(APPLE)                 # APPLE OSX
+    #TODO
+  else()                    # Linux
+    set(VST3_INSTALL_PATH "$ENV{HOME}/.vst3" CACHE PATH "")
+    set(VST2_INSTALL_PATH "lib/vst" CACHE PATH "")
+  endif()
+endif()
+
+# 
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
     $<$<CONFIG:Debug>:_DEBUG>
     $<$<CONFIG:Release>:NDEBUG>
 )
-
 
 #################################################
 
@@ -80,10 +93,12 @@ set(GUI_SRC
 )
 
 set(PERSISTENCE_SRC
-    Application/persistence/synthesizer_persistence.h
+  Application/persistence/synthesizer_persistence.h
 	Application/persistence/synthesizer_persistence.cpp
 )
 
+# Build Plugins (Provide the GAMMOU_PLUGINS_INSTALL_PATH variable)
+add_subdirectory(Plugins tmp/Plugins)
 
 ################################################
 #                                              #
@@ -121,15 +136,15 @@ if(GAMMOU_STANDALONE_BUILD)
 	
 	target_compile_definitions(gammou_standalone PRIVATE 
 	    GAMMOU_VIEW_APP
-	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_DIR}"
+	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_INSTALL_PATH}"
 	)
 	
 	# OSSIA binding
 	
-	if (GAMMOU_STANDALONE_LIBOSSIA)
+	  if (GAMMOU_STANDALONE_LIBOSSIA)
     	set(LIBOSSIA_DIR
     		"${CMAKE_SOURCE_DIR}/../3rdparty/libossia/" 
-			CACHE PATH "Choose libossia path"
+			  CACHE PATH "Choose libossia path"
     	)
     	
     	add_subdirectory(${LIBOSSIA_DIR} tmp/OSSIA EXCLUDE_FROM_ALL)
@@ -146,8 +161,8 @@ if(GAMMOU_STANDALONE_BUILD)
 	# Os specific addition
 	
     if(WIN32)                   # MICROSOFT WINDOWS
-		#target_link_libraries(gammou_standalone PRIVATE dsound)	#	use direct sound
-		target_compile_definitions(gammou_standalone PRIVATE __WINDOWS_WASAPI__)	
+		  #target_link_libraries(gammou_standalone PRIVATE dsound)	#	use direct sound
+		  target_compile_definitions(gammou_standalone PRIVATE __WINDOWS_WASAPI__)	
     elseif(UNIX)                	 # LINUX and OSX
         
         # For Rtaudio
@@ -189,7 +204,7 @@ if(GAMMOU_VST3_BUILD)
 		SMTG_ADD_VST3_HOSTING_SAMPLES
 		SMTG_ADD_VST3_PLUGINS_SAMPLES
 		SMTG_ADD_VSTGUI
-		SMTG_CREATE_VST2_VERSION
+		SMTG_CREATE_VST2_VERSIONtmp/View/CMakeFiles/view.dir/build.make
 		SMTG_CREATE_VST3_LINK
 		SMTG_ENABLE_USE_OF_JACK
 		SMTG_MYPLUGINS_SRC_PATH
@@ -206,7 +221,6 @@ if(GAMMOU_VST3_BUILD)
 		Application/vst3/factory.cpp
     Application/vst3/vst3_plugin.h
 		Application/vst3/vst3_plugin.cpp
-		${VST3_PLUGIN_SRC} 
 		${GUI_SRC} 
 		${PERSISTENCE_SRC}
 	)
@@ -219,15 +233,18 @@ if(GAMMOU_VST3_BUILD)
   target_link_libraries(gammou PRIVATE view synthesizer base sdk)	# base and sdk from VST3_SDK
 	target_compile_definitions(gammou PRIVATE 
 	    GAMMOU_VIEW_VST3
-	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_DIR}"
+	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_INSTALL_PATH}"
 	)
 	
 	set_target_properties(gammou PROPERTIES 
-	    LIBRARY_OUTPUT_DIRECTORY "${VST3_OUTPUT_PATH}"
+	    LIBRARY_OUTPUT_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}"
 	    POSITION_INDEPENDENT_CODE ON    
 	)
-	
 
+  # Install
+  install(
+    TARGETS gammou
+    DESTINATION "${VST3_INSTALL_PATH}")
 
 	# Os specific addition
 
@@ -247,6 +264,7 @@ if(GAMMOU_VST3_BUILD)
   else()
     message( FATAL_ERROR "Cant Build a VST3 Plugin on this OS")
   endif()
+  
 	
 endif()
 
@@ -263,7 +281,6 @@ if(GAMMOU_VST2_BUILD)
     Application/vst2/vst_compat.hpp
 		Application/vst2/vst2_plugin.h
 		Application/vst2/vst2_plugin.cpp
-		${VST3_PLUGIN_SRC} 
 		${GUI_SRC} 
 		${PERSISTENCE_SRC}
 	)
@@ -276,21 +293,24 @@ if(GAMMOU_VST2_BUILD)
 
   target_compile_definitions(gammou-vst2 PRIVATE 
 	    GAMMOU_VIEW_VST2
-	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_DIR}"
+	    GAMMOU_PLUGINS_DIRECTORY_PATH="$[GAMMOU_PLUGINS_INSTALL_PATH}"
 	)
 
   set_target_properties(gammou-vst2 PROPERTIES 
-	    LIBRARY_OUTPUT_DIRECTORY "${VST3_OUTPUT_PATH}"
+	    LIBRARY_OUTPUT_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}"
 	    POSITION_INDEPENDENT_CODE ON    
 	)
+
+  # Install
+  
+  install(
+    TARGETS gammou-vst2
+    DESTINATION "${VST2_INSTALL_PATH}")
 
   # Os specific addition
 
   if(WIN32)                   # MICROSOFT WINDOWS
     set_target_properties(gammou-vst2 PROPERTIES LINK_FLAGS "/EXPORT:VSTPluginMain")
-    
-    # Add Post Build Copy To VST2 directory	
-	add_post_build_copy(gammou-vst2 "C:/Program Files/Common Files/VST2")
   endif()
 
 endif()
@@ -337,11 +357,6 @@ add_subdirectory(View tmp/View)
 
 # Build Gammou Synthesizer lib
 add_subdirectory(Synthesizer tmp/Synthesizer)
-
-# Build Plugins
-add_subdirectory(Plugins tmp/Plugins)
-
-
 
 
 

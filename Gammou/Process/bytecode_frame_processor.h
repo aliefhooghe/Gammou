@@ -57,7 +57,7 @@ namespace Gammou {
                 void execute_process_program() override;
                 void execute_initialize_program() override;
 
-                void compile_component(abstract_component<T>* component);
+                void compile_component(abstract_component<T>* component) override;
 
             private:
                 void clear_program() override;

@@ -89,8 +89,8 @@ namespace Gammou {
 			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y) override;
 			virtual bool on_mouse_button_down(const mouse_button button, const int cx, const int cy) override;
 			virtual bool on_mouse_button_up(const mouse_button button, const int cx, const int cy) override;
-			virtual bool on_mouse_enter(void);
-			virtual bool on_mouse_exit(void);
+			virtual bool on_mouse_enter(void) override;
+			virtual bool on_mouse_exit(void) override;
 
 			void set_text(const std::string& text);
 		
@@ -170,10 +170,10 @@ namespace Gammou {
 					const int x, const int y) override;
 				virtual bool on_mouse_button_down(
 					const mouse_button button, 
-					const int x, const int y);
+					const int x, const int y) override;
 				virtual bool on_mouse_button_up(
 					const mouse_button button, 
-					const int x, const int y);
+					const int x, const int y) override;
 
 				virtual bool on_mouse_wheel(const float distance) override;
 

@@ -1,5 +1,5 @@
 #ifndef X11_VST2_DISPLAY_H_
-#define X11_VST2_DISPLAY_H8
+#define X11_VST2_DISPLAY_H_
 
 #include "display/abstract_x11_display.h"
 #include "display/abstract_vst2_display.h"

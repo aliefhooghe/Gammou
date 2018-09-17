@@ -202,7 +202,6 @@ namespace Gammou  {
                     break;
 
                 case effSetChunk:
-					DEBUG_PRINT("Set chunk (index = %u, size = %u)\n", index, value);
 					if (index == 0)
 						return self->load_state(ptr, value);
                     break;
