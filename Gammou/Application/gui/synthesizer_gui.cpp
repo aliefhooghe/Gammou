@@ -31,13 +31,13 @@ namespace Gammou {
 
 			auto master_circuit = 
 				std::make_unique<gui_master_circuit>(
-					&m_gui_component_factory, synthesizer, synthesizer_mutex, 
+                    m_gui_component_factory, synthesizer, synthesizer_mutex,
 					0, 0, GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height);
             m_gui_master_circuit = master_circuit.get();
 
 			auto polyphonic_circuit = 
 				std::make_unique<gui_polyphonic_circuit>(
-					&m_gui_component_factory, synthesizer, synthesizer_mutex, 
+                    m_gui_component_factory, synthesizer, synthesizer_mutex,
 					0, 0, GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height);
             m_gui_polyphonic_circuit = polyphonic_circuit.get();
 

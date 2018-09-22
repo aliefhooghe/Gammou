@@ -11,24 +11,31 @@ namespace Gammou {
 		*/
 
 		gui_master_circuit::gui_master_circuit(
-			gui_component_main_factory *complete_component_factory,
+            gui_component_main_factory& complete_component_factory,
 			Sound::synthesizer * synthesizer,
 			std::mutex *synthesizer_mutex,
-			const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const View::color background)
+            const int x,
+            const int y,
+            const unsigned int width,
+            const unsigned int height,
+            const View::color background)
 			: abstract_gui_synthesizer_circuit(
-				complete_component_factory, 1u, synthesizer, synthesizer_mutex,
+                complete_component_factory, 1u,
+                synthesizer, synthesizer_mutex,
 				x, y, width, height, background)
 		{
 			add_internal_components(synthesizer_mutex);
 		}
 
 		gui_master_circuit::gui_master_circuit(
-			gui_component_main_factory *complete_component_factory,
+            gui_component_main_factory& complete_component_factory,
 			Sound::synthesizer * synthesizer,
 			std::mutex *synthesizer_mutex,
-			const View::rectangle & rect, const View::color background)
+            const View::rectangle & rect,
+            const View::color background)
 			: abstract_gui_synthesizer_circuit(
-				complete_component_factory, 1u, synthesizer, synthesizer_mutex,
+                complete_component_factory, 1u,
+                synthesizer, synthesizer_mutex,
 				rect, background)
 		{
 			add_internal_components(synthesizer_mutex);

@@ -351,14 +351,12 @@ namespace Gammou {
 		 */
 
 		abstract_gui_component_map::abstract_gui_component_map(
-			std::mutex *circuit_mutex, 
 			const int x,
 			const int y, 
 			const unsigned int width,
 			const unsigned int height, 
 			const View::color background)
 			: scrollable_panel<abstract_gui_component>(x, y, width, height, background),
-			m_circuit_mutex(circuit_mutex),
 			m_is_linking(false),
 			m_linking_component(nullptr),
 			m_linking_output_id(0),
@@ -372,11 +370,9 @@ namespace Gammou {
 		}
 
 		abstract_gui_component_map::abstract_gui_component_map(
-			std::mutex *circuit_mutex,
 			const View::rectangle & rect, 
 			const View::color background)
 			: scrollable_panel<abstract_gui_component>(rect, background),
-			m_circuit_mutex(circuit_mutex),
 			m_is_linking(false),
 			m_linking_component(nullptr),
 			m_linking_output_id(0),
@@ -394,7 +390,7 @@ namespace Gammou {
 			Process::abstract_component<double> *cmpt = component->get_component();
 
 			if (cmpt != nullptr) {
-				m_component_association[cmpt] = &(*component);
+                m_component_association[cmpt] = component.get();
 				add_widget(std::move(component));
 			}
 		}

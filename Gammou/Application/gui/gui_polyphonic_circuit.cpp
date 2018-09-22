@@ -10,10 +10,14 @@ namespace Gammou {
 		*/
 
 		gui_polyphonic_circuit::gui_polyphonic_circuit(
-			gui_component_main_factory *complete_component_factory,
+            gui_component_main_factory& complete_component_factory,
 			Sound::synthesizer * synthesizer,
-			std::mutex * synthesizer_mutex, unsigned int x,
-			const unsigned int y, const unsigned int width, const unsigned height, const View::color background)
+            std::mutex * synthesizer_mutex,
+            const int x,
+            const int y,
+            const unsigned int width,
+            const unsigned int height,
+            const View::color background)
 			: abstract_gui_synthesizer_circuit(
 				complete_component_factory, synthesizer->get_channel_count(), synthesizer,
 				synthesizer_mutex, x, y, width, height, background)
@@ -22,10 +26,11 @@ namespace Gammou {
 		}
 
 		gui_polyphonic_circuit::gui_polyphonic_circuit(
-			gui_component_main_factory *complete_component_factory,
+            gui_component_main_factory& complete_component_factory,
 			Sound::synthesizer * synthesizer,
 			std::mutex * synthesizer_mutex,
-			const View::rectangle & rect, const View::color background)
+            const View::rectangle & rect,
+            const View::color background)
 			: abstract_gui_synthesizer_circuit(
 				complete_component_factory, synthesizer->get_channel_count(), synthesizer,
 				synthesizer_mutex, rect, background)

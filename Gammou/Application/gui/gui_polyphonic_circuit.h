@@ -20,17 +20,17 @@ namespace Gammou {
 
 		public:
 			gui_polyphonic_circuit(
-				gui_component_main_factory *complete_component_factory,
+                gui_component_main_factory& complete_component_factory,
 				Sound::synthesizer *synthesizer,
 				std::mutex *synthesizer_mutex,
-				unsigned int x,
-				const unsigned int y,
+                const int x,
+                const int y,
 				const unsigned int width,
 				const unsigned height,
 				const View::color background = GuiProperties::background);
 
 			gui_polyphonic_circuit(
-				gui_component_main_factory *complete_component_factory,
+                gui_component_main_factory& complete_component_factory,
 				Sound::synthesizer *synthesizer,
 				std::mutex *synthesizer_mutex,
 				const View::rectangle& rect,
