@@ -130,7 +130,7 @@ namespace Gammou {
 
             DEBUG_PRINT("CIRCUIT SAVE STATE\n");
 
-            //	We skip header (saved at end)
+            //	We skip header (it will be written after)
             const unsigned int start_pos = data.tell();
             data.seek(sizeof(record_header));
 
@@ -383,6 +383,46 @@ namespace Gammou {
         {
             m_synthesizer_mutex->unlock();
         }
+
+
+        /*
+                internal gui component implementation
+        */
+
+        internal_gui_component::internal_gui_component(
+            Process::abstract_component<double> *component,
+            const uint32_t internal_id,
+            const int x,
+            const int y)
+        :   abstract_gui_component(
+                x, y,
+                component->get_input_count(),
+                component->get_output_count()),
+            m_internal_component_id(internal_id),
+            m_component(component)
+        {
+        }
+
+        internal_gui_component::~internal_gui_component()
+        {
+        }
+
+        Process::abstract_component<double> *internal_gui_component::get_component() const
+        {
+            return m_component;
+        }
+
+        unsigned int internal_gui_component::get_sound_component_factory_id() const
+        {
+            return Persistence::INTERNAL_FACTORY_ID;
+        }
+
+        unsigned int internal_gui_component::save_sound_component_state(Sound::data_output_stream& data)
+        {
+            uint32_t id = m_internal_component_id; // for constness
+            return data.write(&id, sizeof(uint32_t));
+        }
+
 
 	} /* Gui */
 

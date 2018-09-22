@@ -105,30 +105,17 @@ namespace Gammou {
 			internal_gui_component(
 				Process::abstract_component<double> *component, 
 				const uint32_t internal_id,
-				const int x, const int y)
-				: abstract_gui_component(x, y, component->get_input_count(), component->get_output_count()),
-                    m_internal_component_id(internal_id),
-                    m_component(component)
-            {}
+                const int x,
+                const int y);
 
-			virtual ~internal_gui_component() {}
+            virtual ~internal_gui_component();
 
-			Process::abstract_component<double> *get_component() const override
-			{
-				return m_component;
-			}
+            Process::abstract_component<double> *get_component() const override;
 
 			// FACTORY stuff
-			unsigned int get_sound_component_factory_id() const override
-			{
-				return Persistence::INTERNAL_FACTORY_ID;
-			}
-
-			unsigned int save_sound_component_state(Sound::data_output_stream& data) override
-			{
-				uint32_t id = m_internal_component_id; // for constness
-				return data.write(&id, sizeof(uint32_t));
-			}
+            unsigned int get_sound_component_factory_id() const override;
+            unsigned int save_sound_component_state(
+                    Sound::data_output_stream& data) override;
 
 		protected:
 			const uint32_t m_internal_component_id;
