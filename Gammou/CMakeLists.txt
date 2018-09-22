@@ -54,7 +54,6 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
 
 set(GUI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Application/gui")
 
-
 set(GUI_SRC
 	Application/gui/abstract_gui_component_factory.h
 	Application/gui/abstract_gui_component_factory.cpp
@@ -97,6 +96,21 @@ set(PERSISTENCE_SRC
 	Application/persistence/synthesizer_persistence.cpp
 )
 
+set(USER_COMPONENT_SRC
+  Application/user_component/user_component_circuit.cpp
+	Application/user_component/user_component_circuit.h
+	Application/user_component/user_gui_component.cpp
+	Application/user_component/user_gui_component.h
+	Application/user_component/user_sound_component.cpp
+	Application/user_component/user_sound_component.h
+)
+
+set(GAMMOU_COMMON_SRC
+	${GUI_SRC}
+	${PERSISTENCE_SRC}
+	#${USER_COMPONENT_SRC}
+)
+
 # Build Plugins (Provide the GAMMOU_PLUGINS_INSTALL_PATH variable)
 add_subdirectory(Plugins tmp/Plugins)
 
@@ -108,7 +122,7 @@ add_subdirectory(Plugins tmp/Plugins)
 
 
 if(GAMMOU_STANDALONE_BUILD)
-  set_option(VIEW_APP ON) 						# Enable Application Display in View
+  set_option(VIEW_APP ON) 						# Enable Application Display in View 
 	
 	# RtAudio and RtMidi
 
@@ -123,9 +137,8 @@ if(GAMMOU_STANDALONE_BUILD)
 	)
 
   add_executable(gammou_standalone
-    	Application/standalone/main.cpp
-		${GUI_SRC} 
-		${PERSISTENCE_SRC}
+    Application/standalone/main.cpp
+		${GAMMOU_COMMON_SRC}
 		"${RTAUDIO_DIR}/RtAudio.cpp"
 		"${RTMIDI_DIR}/RtMidi.cpp"
 	)
@@ -232,8 +245,7 @@ if(GAMMOU_VST3_BUILD)
 		Application/vst3/factory.cpp
     Application/vst3/vst3_plugin.h
 		Application/vst3/vst3_plugin.cpp
-		${GUI_SRC} 
-		${PERSISTENCE_SRC}
+		${GAMMOU_COMMON_SRC}
 	)
 	
 	target_include_directories(gammou PRIVATE 
@@ -292,8 +304,7 @@ if(GAMMOU_VST2_BUILD)
     Application/vst2/vst_compat.hpp
 		Application/vst2/vst2_plugin.h
 		Application/vst2/vst2_plugin.cpp
-		${GUI_SRC} 
-		${PERSISTENCE_SRC}
+		${GAMMOU_COMMON_SRC}
 	)
 
   target_include_directories(gammou-vst2 PRIVATE 
@@ -304,7 +315,7 @@ if(GAMMOU_VST2_BUILD)
 
   target_compile_definitions(gammou-vst2 PRIVATE 
 	    GAMMOU_VIEW_VST2
-	    GAMMOU_PLUGINS_DIRECTORY_PATH="$[GAMMOU_PLUGINS_INSTALL_PATH}"
+	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_INSTALL_PATH}"
 	)
 
   set_target_properties(gammou-vst2 PROPERTIES 
