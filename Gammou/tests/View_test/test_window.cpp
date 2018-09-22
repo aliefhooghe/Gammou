@@ -150,6 +150,16 @@ namespace Gammou {
         return true;
     }
 
+    bool test_window::on_key_down(const View::keycode key)
+    {
+        if (key == View::key_A)
+            DEBUG_PRINT("AAA\n");
+
+        DEBUG_PRINT("Keyboard Key Down keycode = %u %s !\n", 
+            key, key == View::key_unknown ? "(unknown)" : "");
+        return true;
+    }
+
 	test_dialog::test_dialog()
 		: View::dialog(100, 100, View::cl_chartreuse)
 	{

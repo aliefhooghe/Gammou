@@ -14,6 +14,7 @@ namespace Gammou {
                 const unsigned int py_height);
 
             bool on_mouse_dbl_click(const int x, const int y) override;
+            bool on_key_down(const View::keycode key) override;
     };
 
 	class test_dialog : public View::dialog {
