@@ -12,7 +12,8 @@ namespace Gammou {
 			m_current_working_channel(0),
 			m_current_sample_rate(DEFAULT_SAMPLE_RATE)
 		{
-
+            if (channel_count == 0)
+                throw std::range_error("Cannot create a component manager with 0 channel");
 		}
 
 		sound_component_manager::~sound_component_manager()

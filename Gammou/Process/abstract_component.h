@@ -72,8 +72,8 @@ namespace Gammou {
 					const unsigned int output_count);
 			virtual ~abstract_component();
 
-			const unsigned int get_input_count() const noexcept;
-			const unsigned int get_output_count() const noexcept;
+            unsigned int get_input_count() const noexcept;
+            unsigned int get_output_count() const noexcept;
 
 			const std::string& get_name() const noexcept;
 			const std::string& get_input_name(const unsigned int input_id) const;
@@ -88,7 +88,7 @@ namespace Gammou {
 			// To be implemented
 			virtual T fetch_output(const unsigned int output_id) =0;
 			virtual void process(const T input[]) =0;
-			virtual void initialize_process() {};
+            virtual void initialize_process() {}
 
 			// Link 
 			abstract_component<T> *get_input_src(const unsigned int input_id,
@@ -245,13 +245,13 @@ namespace Gammou {
 		}
 
 		template<class T>
-		const unsigned int abstract_component<T>::get_input_count() const noexcept
+        unsigned int abstract_component<T>::get_input_count() const noexcept
 		{
 			return static_cast<unsigned int>(m_input_name.size());
 		}
 
 		template<class T>
-		const unsigned int abstract_component<T>::get_output_count() const noexcept
+        unsigned int abstract_component<T>::get_output_count() const noexcept
 		{
 			return static_cast<unsigned int>(m_output_name.size());
 		}

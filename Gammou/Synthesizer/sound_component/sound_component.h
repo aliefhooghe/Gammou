@@ -25,7 +25,6 @@ namespace Gammou {
 
 		protected:
 			multi_channel_array<double> m_output;
-
 		};
 
 

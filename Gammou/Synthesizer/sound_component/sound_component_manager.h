@@ -1,10 +1,3 @@
-/*
- * sound_module_manager.h
- *
- *  Created on: 2 oct. 2017
- *      Author: liefhooghe
- */
-
 #ifndef SOUND_MODULE_MANAGER_H_
 #define SOUND_MODULE_MANAGER_H_
 
@@ -21,7 +14,7 @@ namespace Gammou {
 		class sound_component_manager : private Process::subject<sound_component_manager, sound_component_notification_tag> {
 
 		public:
-			sound_component_manager(const unsigned int channel_count);  // securité a prevoir >0
+            sound_component_manager(const unsigned int channel_count);
 			~sound_component_manager();
 
 			unsigned int get_channel_count() const;
