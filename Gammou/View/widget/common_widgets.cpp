@@ -250,12 +250,12 @@ namespace Gammou {
 			const float offset = 0.5f * static_cast<float>(get_width());
 			const float radius = 0.4f * static_cast<float>(get_width());
 			
-			const float start_angle = 1.57 + theta;
-			const float end_angle = 1.57 - theta;
+			const float start_angle = 1.57f + theta;
+			const float end_angle = 1.57f - theta;
 			const float cur_angle = start_angle + m_angle; 
 			
 			//	Off part
-			cairo_set_line_width(cr, 3.0);
+			cairo_set_line_width(cr, 3.0f);
 
 			cairo_helper::set_source_color(cr, m_off_color);
 			cairo_new_path(cr);	//	should not be needed, to check
@@ -268,12 +268,12 @@ namespace Gammou {
 			cairo_stroke(cr);
 			
 			//	Cursor
-			const float cur_dist = 0.6 * radius;
+			const float cur_dist = 0.6f * radius;
 			const float cur_cx = offset + cur_dist * std::cos(cur_angle);
 			const float cur_cy = offset + cur_dist * std::sin(cur_angle);
 
 			cairo_helper::set_source_color(cr, m_on_color);
-			cairo_helper::circle(cr, cur_cx, cur_cy, 3.5);
+			cairo_helper::circle(cr, cur_cx, cur_cy, 3.5f);
 			cairo_fill(cr);
 		}
 
@@ -429,15 +429,15 @@ namespace Gammou {
 		
 		bool slider::on_mouse_wheel(const float distance)
 		{
-			change_cursor_value(m_cursor + distance * 3.0);
+			change_cursor_value(m_cursor + distance * 12.0f);
 			return false;
 		}
 
 		void slider::set_normalized_value(const float normalized_value)
 		{
-			if (normalized_value < 0.0)
+			if (normalized_value < 0.0f)
 				m_cursor = 0u;
-			else if (normalized_value > 1.0)
+			else if (normalized_value > 1.0f)
 				m_cursor = m_cursor_max;
 			else
 				m_cursor = 
