@@ -68,8 +68,10 @@ namespace Gammou {
 			friend class abstract_frame<T>;
 
 		public:
-			abstract_component(const std::string& name, const unsigned int input_count,
-					const unsigned int output_count);
+            abstract_component(
+                const std::string& name,
+                const unsigned int input_count,
+                const unsigned int output_count);
 			virtual ~abstract_component();
 
             unsigned int get_input_count() const noexcept;

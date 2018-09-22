@@ -15,7 +15,7 @@ namespace Gammou {
 		constexpr unsigned int NO_FACTORY = 0xFFFFFFFF;
 		
 		class abstract_sound_component : public Process::abstract_component<double>,
-											public Process::observer<sound_component_manager, sound_component_notification_tag>  {
+                                            public Process::observer<abstract_sound_component_manager, sound_component_notification_tag>  {
 
 			friend class abstract_plugin_factory;
 			friend class sound_component_manager;
