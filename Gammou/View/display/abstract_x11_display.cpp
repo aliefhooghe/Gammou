@@ -291,11 +291,15 @@ namespace Gammou {
                         break;
 
                     case KeyPress:
-                        // todo
+                        self->sys_key_down(
+                            convert_key(
+                                XLookupKeysym(&(event.xkey), 0)));
                         break;
 
                     case KeyRelease:
-                        // todo
+                        self->sys_key_up(
+                            convert_key(
+                                XLookupKeysym(&(event.xkey), 0)));
                         break;
 
                     case MotionNotify:
@@ -391,5 +395,98 @@ namespace Gammou {
             DEBUG_PRINT("Quit thread Xloop function\n");
         }
 
+
+        #define TRANSLATE_KEY(xk, k) \
+            case xk: \
+                return k; \
+                break;
+
+        keycode abstract_x11_display::convert_key(const KeySym xkey)
+        {
+
+            if (xkey >= XK_a && xkey <= XK_z) {
+                const unsigned int offset = xkey - XK_a;
+                return 
+                    static_cast<keycode>(
+                        static_cast<unsigned int>(key_A) + 
+                        offset);
+            }
+            else{
+
+                switch (xkey) {
+                    TRANSLATE_KEY(XK_BackSpace, key_backspace)
+                    TRANSLATE_KEY(XK_Tab, key_tab)
+                    TRANSLATE_KEY(XK_Return, key_enter)
+                    TRANSLATE_KEY(XK_Shift_L, key_shift_left)
+                    TRANSLATE_KEY(XK_Shift_R, key_shift_right)
+                    TRANSLATE_KEY(XK_Control_L,key_ctrl_left)
+                    TRANSLATE_KEY(XK_Control_R,key_ctrl_right)
+                    TRANSLATE_KEY(XK_Alt_L,key_alt_left)
+                    TRANSLATE_KEY(XK_Alt_R,key_alt_right)
+                    TRANSLATE_KEY(XK_Pause, key_pause_break)
+                    TRANSLATE_KEY(XK_Caps_Lock, key_caps_lock)
+                    TRANSLATE_KEY(XK_Escape, key_escape)
+                    TRANSLATE_KEY(XK_space, key_space)
+                    TRANSLATE_KEY(XK_Page_Up, key_page_up)
+                    TRANSLATE_KEY(XK_Page_Down, key_page_down)
+                    TRANSLATE_KEY(XK_End, key_end)
+                    TRANSLATE_KEY(XK_Home, key_home)
+                    TRANSLATE_KEY(XK_Left, key_left_arrow)
+                    TRANSLATE_KEY(XK_Up, key_up_arrow)
+                    TRANSLATE_KEY(XK_Right, key_right_arrow)
+                    TRANSLATE_KEY(XK_Down, key_down_arrow)
+                    TRANSLATE_KEY(XK_Insert, key_insert)
+                    TRANSLATE_KEY(XK_Delete, key_delete)
+                    TRANSLATE_KEY(XK_0, key_0)
+                    TRANSLATE_KEY(XK_1, key_1)
+                    TRANSLATE_KEY(XK_2, key_2)
+                    TRANSLATE_KEY(XK_3, key_3)
+                    TRANSLATE_KEY(XK_4, key_4)
+                    TRANSLATE_KEY(XK_5, key_5)
+                    TRANSLATE_KEY(XK_6, key_6)
+                    TRANSLATE_KEY(XK_7, key_7)
+                    TRANSLATE_KEY(XK_8, key_8)
+                    TRANSLATE_KEY(XK_9, key_9)
+                    TRANSLATE_KEY(XK_Select, key_select)
+                    TRANSLATE_KEY(XK_KP_0, key_numpad_0)
+                    TRANSLATE_KEY(XK_KP_1, key_numpad_1)
+                    TRANSLATE_KEY(XK_KP_2, key_numpad_2)
+                    TRANSLATE_KEY(XK_KP_3, key_numpad_3)
+                    TRANSLATE_KEY(XK_KP_4, key_numpad_4)
+                    TRANSLATE_KEY(XK_KP_5, key_numpad_5)
+                    TRANSLATE_KEY(XK_KP_6, key_numpad_6)
+                    TRANSLATE_KEY(XK_KP_7, key_numpad_7)
+                    TRANSLATE_KEY(XK_KP_8, key_numpad_8)
+                    TRANSLATE_KEY(XK_KP_9, key_numpad_9)
+                    TRANSLATE_KEY(XK_KP_Multiply, key_multiply)
+                    TRANSLATE_KEY(XK_KP_Add, key_add)
+                    TRANSLATE_KEY(XK_KP_Subtract, key_subtract)
+                    TRANSLATE_KEY(XK_KP_Decimal, key_decimal_point)
+                    TRANSLATE_KEY(XK_KP_Divide, key_divide)
+                    TRANSLATE_KEY(XK_F1, key_f1)
+                    TRANSLATE_KEY(XK_F2, key_f2)
+                    TRANSLATE_KEY(XK_F3, key_f3)
+                    TRANSLATE_KEY(XK_F4, key_f4)
+                    TRANSLATE_KEY(XK_F5, key_f5)
+                    TRANSLATE_KEY(XK_F6, key_f6)
+                    TRANSLATE_KEY(XK_F7, key_f7)
+                    TRANSLATE_KEY(XK_F8, key_f8)
+                    TRANSLATE_KEY(XK_F9, key_f9)
+                    TRANSLATE_KEY(XK_F10, key_f10)
+                    TRANSLATE_KEY(XK_F11, key_f11)
+                    TRANSLATE_KEY(XK_F12, key_f12)
+                    TRANSLATE_KEY(XK_Num_Lock, key_num_lock)
+                    TRANSLATE_KEY(XK_Scroll_Lock, key_scroll_lock)
+                    TRANSLATE_KEY(XK_semicolon, key_semi_colon)
+                    TRANSLATE_KEY(XK_equal, key_equal_sign)
+
+                    default:
+                        return key_unknown;
+                }
+            }
+        }
+
     } /* View */
 } /* Gammou */
+
+

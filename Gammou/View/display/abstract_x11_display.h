@@ -37,6 +37,7 @@ namespace Gammou {
 		private:
             static void x_event_loop(abstract_x11_display *self);
 			static void handle_event(abstract_x11_display* self, XEvent& event);
+			static View::keycode convert_key(const KeySym xkey);
 
             std::thread m_event_loop_thread;
 
