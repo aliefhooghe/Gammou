@@ -19,7 +19,7 @@ namespace Gammou {
 				const std::string& name, 
 				const std::string& category, 
 				unsigned int factory_id);
-			virtual ~abstract_plugin_factory() {}
+            virtual ~abstract_plugin_factory() {}
 
 			const std::string& get_name() const;
 			const std::string& get_category() const;

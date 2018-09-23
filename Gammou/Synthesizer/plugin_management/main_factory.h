@@ -3,6 +3,7 @@
 #define GAMMOU_MAIN_FACTORY_H_
 
 #include <map>
+#include <functional>
 #include "abstract_plugin_factory.h"
 
 
@@ -18,11 +19,7 @@ namespace Gammou {
 
 			typedef void (*factory_delete_fct)(abstract_plugin_factory*);
 			typedef abstract_plugin_factory *(*factory_make_fct)(void);
-
-			struct plugin_lib {
-				void *lib_handle;
-				factory_delete_fct factory_delete;
-			};
+            typedef std::function<void(abstract_plugin_factory*)> factory_deleter;
 
 		public:
 			main_factory();
@@ -30,7 +27,7 @@ namespace Gammou {
 
 			//-------------
 			unsigned int load_factory(const std::string& file_path);
-			void register_factory(abstract_plugin_factory *factory);
+            void add_factory(std::unique_ptr<abstract_plugin_factory> && factory);
 			bool check_factory_presence(const unsigned int factory_id) const;
 
 			//--------------
@@ -52,8 +49,13 @@ namespace Gammou {
 
 		private:
 			abstract_plugin_factory *factory_by_id(const unsigned int factory_id) const;
-		
-			std::map<unsigned int, std::pair<plugin_lib, abstract_plugin_factory*> > m_plugin_factory;
+
+            factory_deleter get_default_factory_deleter();
+            factory_deleter get_plugin_factory_deleter(void *lib_handle, factory_delete_fct delete_fct);
+
+            std::map<
+                unsigned int,
+                std::unique_ptr<abstract_plugin_factory, factory_deleter> > m_plugin_factory;
 		};
 
 	}
