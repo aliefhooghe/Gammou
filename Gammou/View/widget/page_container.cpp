@@ -152,6 +152,13 @@ namespace Gammou {
 			m_pages.push_back(std::move(page));
 		}
 
+        void page_container::pop_page()
+        {
+            if (m_current_page_id == static_cast<int>(get_page_count() - 1))
+                m_current_page_id = -1;
+            m_pages.pop_back();
+        }
+
 		void page_container::reset_page(const unsigned int page_id, std::unique_ptr<widget> && page)
 		{
 			if (page_id >= get_page_count())
