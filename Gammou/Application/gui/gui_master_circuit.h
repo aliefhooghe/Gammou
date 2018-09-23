@@ -44,7 +44,7 @@ namespace Gammou {
 			abstract_gui_component *gui_component_by_internal_id(const uint32_t id) override;
 
 		private:
-			void add_internal_components(std::mutex *synthesizer_mutex);
+            void add_internal_components();
 
 			abstract_gui_component *m_parameter_input;
 			abstract_gui_component *m_polyphonic_input;

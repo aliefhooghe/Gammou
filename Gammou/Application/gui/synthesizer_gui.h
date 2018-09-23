@@ -17,6 +17,8 @@
 #include "control_component/slider_gui_component.h"
 #include "control_component/integer_gui_component.h"
 
+#include "user_component/user_gui_component.h"
+
 #ifndef GAMMOU_PLUGINS_DIRECTORY_PATH
 #error "GAMMOU_PLUGINS_DIRECTORY_PATH must be defined"
 #endif

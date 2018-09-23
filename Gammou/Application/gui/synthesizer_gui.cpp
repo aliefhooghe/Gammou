@@ -309,6 +309,8 @@ namespace Gammou {
 			add_control_factory(new value_integer_gui_component_factory());
 			add_control_factory(new gain_integer_gui_component_factory());
 
+            add_control_factory(new user_gui_component_factory(m_gui_component_factory));
+
 			// Plugins Components
 
 			const std::string plugin_dir_path(GAMMOU_PLUGINS_DIRECTORY_PATH);

@@ -97,18 +97,18 @@ set(PERSISTENCE_SRC
 )
 
 set(USER_COMPONENT_SRC
-  Application/user_component/user_component_circuit.cpp
-	Application/user_component/user_component_circuit.h
-	Application/user_component/user_gui_component.cpp
-	Application/user_component/user_gui_component.h
-	Application/user_component/user_sound_component.cpp
-	Application/user_component/user_sound_component.h
+  Application/gui/user_component/user_component_gui_circuit.cpp
+	Application/gui/user_component/user_component_gui_circuit.h
+	Application/gui/user_component/user_gui_component.cpp
+	Application/gui/user_component/user_gui_component.h
+	Application/gui/user_component/user_sound_component.cpp
+	Application/gui/user_component/user_sound_component.h
 )
 
 set(GAMMOU_COMMON_SRC
 	${GUI_SRC}
 	${PERSISTENCE_SRC}
-	#${USER_COMPONENT_SRC}
+	${USER_COMPONENT_SRC}
 )
 
 # Build Plugins (Provide the GAMMOU_PLUGINS_INSTALL_PATH variable)

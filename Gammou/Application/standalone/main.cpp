@@ -112,7 +112,7 @@ int main()
 
     DEBUG_PRINT("%u Midi Port Where Found\n", midi_input_port_count);
 
-    if (midi_input_port_count == 0) {
+    if (midi_input_port_count <= 1) {
         DEBUG_PRINT("No Midi Port Where Found\n");
     }
     else {
