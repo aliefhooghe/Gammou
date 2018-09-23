@@ -150,6 +150,16 @@ namespace Gammou {
         unsigned int user_sound_component::save_state(Sound::data_output_stream& data)
         {
             const unsigned int start = data.tell();
+
+            //  Save input count
+            unsigned int count = get_input_count();
+            data.write(&count, sizeof(count));
+
+            //  Save output count
+            count = get_output_count();
+            data.write(&count, sizeof(count));
+
+            //  Save circuit state
             m_gui_circuit.save_state(data);
             return data.tell() - start;
         }
@@ -174,7 +184,7 @@ namespace Gammou {
             return m_gui_circuit;
         }
 
-        bool user_sound_component::load_state(Sound::data_input_stream& data)
+        bool user_sound_component::load_circuit_state(Sound::data_input_stream& data)
         {
             return m_gui_circuit.load_state(data);
         }

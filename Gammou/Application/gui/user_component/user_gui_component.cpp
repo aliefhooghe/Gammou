@@ -25,7 +25,7 @@ namespace Gammou {
                         display.wait();
                     },
                     "Edit",
-                    10, 10);
+                    20, 20, 40, 25);
 
             add_widget(std::move(button));
         }
@@ -43,10 +43,17 @@ namespace Gammou {
         std::unique_ptr<gui_sound_component> user_gui_component_factory::create_complete_component(
             const int x, const int y, Sound::data_input_stream& source, const unsigned int channel_count)
         {
-            user_sound_component *component =
-                new user_sound_component("Nom", 3, 3, channel_count, m_factory);
+            //  Load input and output count
+            unsigned int input_count, output_count;
 
-            //component->load_state(source);
+            source.read(&input_count, sizeof(input_count));
+            source.read(&output_count, sizeof(output_count));
+
+            user_sound_component *component =
+                new user_sound_component("Nom", input_count, output_count, channel_count, m_factory);
+
+            //  Load circuit state
+            component->load_circuit_state(source);
 
             return std::make_unique<user_gui_component>(component, x, y);
         }
@@ -54,10 +61,9 @@ namespace Gammou {
         std::unique_ptr<gui_sound_component> user_gui_component_factory::create_complete_component(
             const int x, const int y, const Sound::answer_form& answer_form, const unsigned int channel_count)
         {
+            //  TODO : ask user to get input and output count
             user_sound_component *component =
                 new user_sound_component("Nom", 3, 3, channel_count, m_factory);
-
-            //component->load_state(source);
 
             return std::make_unique<user_gui_component>(component, x, y);
         }

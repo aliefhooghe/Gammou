@@ -49,6 +49,8 @@ namespace Gammou {
         class user_sound_component :
             public Sound::abstract_sound_component {
 
+                friend class user_gui_component_factory;
+
             public:
                 user_sound_component(
                         const std::string& name,
@@ -77,10 +79,11 @@ namespace Gammou {
 
                 //  Editing
                 View::widget& get_gui_circuit();
-                bool load_state(Sound::data_input_stream& data);
                 void reset_content();
 
             private:
+                bool load_circuit_state(Sound::data_input_stream& data);    //  assume that in-out count have been loaded by factory
+
                 const unsigned int m_channel_count;
 
                 Process::bytecode_frame_processor<double> m_processor;
