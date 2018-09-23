@@ -23,7 +23,8 @@ noise_component::noise_component(const unsigned int channel_count)
 
 void noise_component::process(const double input[])
 {
-	m_output[0] = static_cast<double>((rand() % 65536)) / 65535.0; 
+	m_output[0] = 
+		-1.0 + static_cast<double>((rand() % 65536)) / 32768.0; 
 }
 
 EXPORT_DEFAULT_FACTORY(

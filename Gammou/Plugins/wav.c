@@ -21,12 +21,12 @@ struct wav_t {
 #endif
 
 PACKED(
-struct wav_file_header {                // En tete wav
-  char RIFF[4];
-  unsigned int taille_m8;
+struct wav_file_header {                // Wav file header
+  char RIFF[4];							//	==	"RIFF"
+  unsigned int taille_m8;				
   char WAVEfmt[8];
   unsigned int nb_octet_block_format;
-  unsigned short int format;
+  unsigned short int format;			//	PCM = 1
   unsigned short int nb_ch;
   unsigned int sample_rate;
   unsigned int octet_par_sec;
