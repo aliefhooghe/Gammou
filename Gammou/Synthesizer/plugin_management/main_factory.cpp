@@ -131,7 +131,6 @@ namespace Gammou {
         {
             return [](abstract_plugin_factory *factory)
             {
-                DEBUG_PRINT("Deleting built-in factory : '%s'\n", factory->get_name().c_str());
                 delete factory;
             };
         }
@@ -140,7 +139,6 @@ namespace Gammou {
         {
             return [lib_handle, delete_fct](abstract_plugin_factory *factory)
             {
-                DEBUG_PRINT("Deleting plugin loaded factory : '%s'\n", factory->get_name().c_str());
                 delete_fct(factory);
                 DYNAMIC_LIB_CLOSE(lib_handle);
             };

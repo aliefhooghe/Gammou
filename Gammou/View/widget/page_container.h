@@ -46,7 +46,7 @@ namespace Gammou {
 			widget *get_current_page() const;
 			bool check_widget_size(const widget *w) const;
 
-			std::vector<std::unique_ptr<widget> > m_pages;
+            std::vector<std::unique_ptr<widget> > m_pages{};
 			int m_current_page_id;
 		};
 
