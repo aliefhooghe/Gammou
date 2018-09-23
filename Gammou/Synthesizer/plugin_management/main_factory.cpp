@@ -21,65 +21,53 @@ namespace Gammou {
 		main_factory::main_factory()
 		{
 #ifdef _WIN32
-			// Avoid error windows showing msg whenLoadLibrary fail
+            // Avoid error popup showing msg whenLoadLibrary fail
 			SetErrorMode(SEM_FAILCRITICALERRORS);
 #endif
 		}
 
 		main_factory::~main_factory()
 		{
-            DEBUG_PRINT("Main Factory DTOR : \n");
-
-			for (auto it = m_plugin_factory.begin(); it != m_plugin_factory.end(); ++it) {
-				plugin_lib lib = it->second.first;
-				abstract_plugin_factory *factory = it->second.second;
-
-                DEBUG_PRINT("Deleting factory '%s'\n", factory->get_name().c_str());
-
-				if (lib.lib_handle == nullptr) { // registered builtin factory
-					delete factory;
-				}
-                else { // dynamicaly loaded factory
-					lib.factory_delete(factory);
-					DYNAMIC_LIB_CLOSE(lib.lib_handle);
-				}
-			}
-
-            DEBUG_PRINT("Main Factory DTOR finnished !\n");
+            //  Everything cleaned bu unique_ptr !
 		}
 		
 		unsigned int main_factory::load_factory(const std::string & file_path)
 		{
-			plugin_lib lib = { nullptr, nullptr };
-
-			lib.lib_handle = DYNAMIC_LIB_OPEN(file_path.c_str());
-			if (lib.lib_handle == nullptr)
+            void *lib_handle = DYNAMIC_LIB_OPEN(file_path.c_str());
+            if (lib_handle == nullptr)
 				throw std::runtime_error("Cannot open Gammou Plugin file");
 
 			factory_make_fct make_factory = nullptr;
-			make_factory = reinterpret_cast<factory_make_fct>(DYNAMIC_LIB_SYMB(lib.lib_handle, GAMMOU_MAKE_FACTORY_SYMBOL));
+            make_factory =
+                    reinterpret_cast<factory_make_fct>(DYNAMIC_LIB_SYMB(lib_handle, GAMMOU_MAKE_FACTORY_SYMBOL));
 			if (make_factory == nullptr) {
-				DYNAMIC_LIB_CLOSE(lib.lib_handle);
+                DYNAMIC_LIB_CLOSE(lib_handle);
 				throw std::runtime_error("Cannot find " GAMMOU_MAKE_FACTORY_SYMBOL);
 			}
 
-			lib.factory_delete = reinterpret_cast<factory_delete_fct>(DYNAMIC_LIB_SYMB(lib.lib_handle, GAMMOU_DELETE_FACTORY_SYMBOL));
-			if (lib.factory_delete == nullptr) {
-				DYNAMIC_LIB_CLOSE(lib.lib_handle);
+            factory_delete_fct factory_delete =
+                    reinterpret_cast<factory_delete_fct>(DYNAMIC_LIB_SYMB(lib_handle, GAMMOU_DELETE_FACTORY_SYMBOL));
+            if (factory_delete == nullptr) {
+                DYNAMIC_LIB_CLOSE(lib_handle);
 				throw std::runtime_error("Cannot find " GAMMOU_DELETE_FACTORY_SYMBOL);
 			}
 
 			abstract_plugin_factory *factory = make_factory();
 			const unsigned int factory_id = factory->get_factory_id();
-			m_plugin_factory[factory_id] = std::make_pair(lib, factory);
+            m_plugin_factory[factory_id] =
+                    std::unique_ptr<abstract_plugin_factory, factory_deleter>(
+                        factory,
+                        get_plugin_factory_deleter(lib_handle, factory_delete));
 			
 			return factory_id;
 		}
 
-		void main_factory::register_factory(abstract_plugin_factory * factory)
+        void main_factory::add_factory(std::unique_ptr<abstract_plugin_factory> && factory)
 		{
-			plugin_lib lib = { nullptr, nullptr };
-			m_plugin_factory[factory->get_factory_id()] = std::make_pair(lib, factory);
+            const unsigned int factory_id = factory->get_factory_id();
+            m_plugin_factory[factory_id] =
+                std::unique_ptr<abstract_plugin_factory, factory_deleter>(
+                    factory.release(), get_default_factory_deleter());
 		}
 
 		bool main_factory::check_factory_presence(const unsigned int factory_id) const
@@ -136,8 +124,25 @@ namespace Gammou {
 			if (it == m_plugin_factory.end())
 				throw std::domain_error("Factory id is not registered");
 			else
-				return it->second.second;
+                return it->second.get();
 		}
+
+        main_factory::factory_deleter main_factory::get_default_factory_deleter()
+        {
+            return [](abstract_plugin_factory *factory)
+            {
+                delete factory;
+            };
+        }
+
+        main_factory::factory_deleter main_factory::get_plugin_factory_deleter(void *lib_handle, factory_delete_fct delete_fct)
+        {
+            return [lib_handle, delete_fct](abstract_plugin_factory *factory)
+            {
+                delete_fct(factory);
+                DYNAMIC_LIB_CLOSE(lib_handle);
+            };
+        }
 
 	} /* Sound */
 

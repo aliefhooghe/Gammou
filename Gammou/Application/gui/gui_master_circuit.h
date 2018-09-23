@@ -21,17 +21,17 @@ namespace Gammou {
 		public:
 
 			gui_master_circuit(
-				gui_component_main_factory *complete_component_factory,
+                gui_component_main_factory& complete_component_factory,
 				Sound::synthesizer *synthesizer,
 				std::mutex *synthesizer_mutex,
-				unsigned int x,
-				const unsigned int y,
+                const int x,
+                const int y,
 				const unsigned int width,
 				const unsigned int height,
 				const View::color background = GuiProperties::background);
 
 			gui_master_circuit(
-				gui_component_main_factory *complete_component_factory,
+                gui_component_main_factory& complete_component_factory,
 				Sound::synthesizer *synthesizer,
 				std::mutex *synthesizer_mutex,
 				const View::rectangle& rect,
@@ -44,7 +44,7 @@ namespace Gammou {
 			abstract_gui_component *gui_component_by_internal_id(const uint32_t id) override;
 
 		private:
-			void add_internal_components(std::mutex *synthesizer_mutex);
+            void add_internal_components();
 
 			abstract_gui_component *m_parameter_input;
 			abstract_gui_component *m_polyphonic_input;

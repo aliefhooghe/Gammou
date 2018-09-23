@@ -31,15 +31,17 @@ namespace Gammou {
 
 			auto master_circuit = 
 				std::make_unique<gui_master_circuit>(
-					&m_gui_component_factory, synthesizer, synthesizer_mutex, 
+                    m_gui_component_factory, synthesizer, synthesizer_mutex,
 					0, 0, GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height);
             m_gui_master_circuit = master_circuit.get();
 
 			auto polyphonic_circuit = 
 				std::make_unique<gui_polyphonic_circuit>(
-					&m_gui_component_factory, synthesizer, synthesizer_mutex, 
+                    m_gui_component_factory, synthesizer, synthesizer_mutex,
 					0, 0, GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height);
             m_gui_polyphonic_circuit = polyphonic_circuit.get();
+
+            //  Pages
 
 			auto pages =
 				std::make_unique<View::page_container>(
@@ -51,9 +53,9 @@ namespace Gammou {
 			pages->add_page(std::move(master_circuit));
 			pages->add_page(std::move(polyphonic_circuit));
 
-			page_id = 0;
-			pages->select_page(page_id);
-
+            m_page_id = 0;
+            pages->select_page(m_page_id);
+            m_pages = pages.get();
 			add_widget(std::move(pages));
 
 			// Component Choice ListBox
@@ -94,21 +96,19 @@ namespace Gammou {
 			tool_box->add_widget(std::make_unique<View::push_button>(
 				[&, pages_ptr](View::push_button *self)
 				{
-					if (page_id == 0) {
-						page_id = 1;
+                    if (m_page_id == 0) {
+                        m_page_id = 1;
 						self->set_text("Polyphonic Circuit");
 					}
 					else {
-						page_id = 0;
+                        m_page_id = 0;
 						self->set_text("Master Circuit");
 					}
-					pages_ptr->select_page(page_id);
+                    pages_ptr->select_page(m_page_id);
 				}
 				, "Master Circuit", 705, 16, 110, 27, 9));
 			
 			//---
-
-			
 
 			tool_box->add_widget(
 				std::make_unique<View::push_button>(
@@ -251,19 +251,19 @@ namespace Gammou {
 			return true;
 		}
 
-		void synthesizer_gui::add_plugin_factory(Sound::abstract_plugin_factory * factory)
+        void synthesizer_gui::add_plugin_factory(std::unique_ptr<Sound::abstract_plugin_factory> && factory)
 		{
-			m_gui_component_factory.register_plugin_factory(factory);
 			m_plugin_list_box->add_item(factory->get_name());
 			m_factory_ids.push_back(factory->get_factory_id());
-		}
+            m_gui_component_factory.add_plugin_factory(std::move(factory));
+        }
 
-		void synthesizer_gui::add_control_factory(abstract_gui_component_factory * factory)
+        void synthesizer_gui::add_control_factory(std::unique_ptr<abstract_gui_component_factory> && factory)
 		{
-			m_gui_component_factory.register_complete_factory(factory);
 			m_plugin_list_box->add_item(factory->get_name());
 			m_factory_ids.push_back(factory->get_factory_id());
-		}
+            m_gui_component_factory.add_complete_factory(std::move(factory));
+        }
 
 		void synthesizer_gui::load_plugin_factory(const std::string & path)
 		{
@@ -281,33 +281,35 @@ namespace Gammou {
 		{
 
 			// Built In Components
-			add_plugin_factory(new Sound::Builtin::sin_factory());
-			add_plugin_factory(new Sound::Builtin::sum_component_factory());
-			add_plugin_factory(new Sound::Builtin::product_factory());
-			add_plugin_factory(new Sound::Builtin::lp2_factory());
-			add_plugin_factory(new Sound::Builtin::adsr_env_factory());
-			add_plugin_factory(new Sound::Builtin::saw_factory());
+            add_plugin_factory(std::make_unique<Sound::Builtin::sin_factory>());
+            add_plugin_factory(std::make_unique<Sound::Builtin::sum_component_factory>());
+            add_plugin_factory(std::make_unique<Sound::Builtin::product_factory>());
+            add_plugin_factory(std::make_unique<Sound::Builtin::lp2_factory>());
+            add_plugin_factory(std::make_unique<Sound::Builtin::adsr_env_factory>());
+            add_plugin_factory(std::make_unique<Sound::Builtin::saw_factory>());
 
 
-			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(cos));
-			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(exp));
-			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(log));
-			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(cosh));
-			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(sinh));
-			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(sqrt));
-			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(fabs));
-			add_plugin_factory(new FUNCTION_COMPONENT_FACTORY(atan));
+            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(cos));
+            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(exp));
+            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(log));
+            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(cosh));
+            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(sinh));
+            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(sqrt));
+            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(fabs));
+            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(atan));
 
 			// Control Components
 
-			add_control_factory(new value_knob_gui_component_factory());
-			add_control_factory(new gain_knob_gui_component_factory());
+            add_control_factory(std::make_unique<value_knob_gui_component_factory>());
+            add_control_factory(std::make_unique<gain_knob_gui_component_factory>());
 
-			add_control_factory(new value_slider_gui_component_factory());
-			add_control_factory(new gain_slider_gui_component_factory());
+            add_control_factory(std::make_unique<value_slider_gui_component_factory>());
+            add_control_factory(std::make_unique<gain_slider_gui_component_factory>());
 
-			add_control_factory(new value_integer_gui_component_factory());
-			add_control_factory(new gain_integer_gui_component_factory());
+            add_control_factory(std::make_unique<value_integer_gui_component_factory>());
+            add_control_factory(std::make_unique<gain_integer_gui_component_factory>());
+
+            add_control_factory(std::make_unique<user_gui_component_factory>(m_gui_component_factory));
 
 			// Plugins Components
 

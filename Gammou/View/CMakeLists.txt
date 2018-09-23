@@ -36,6 +36,8 @@ set(WIDGET_SRC
 	widget/page_container.cpp
 	widget/panel.h
 	widget/panel.cpp
+	widget/proxy_widget.h
+	widget/proxy_widget.cpp
 	widget/scrollable_panel.h
 	widget/window_widget.h
 	widget/window_widget.cpp

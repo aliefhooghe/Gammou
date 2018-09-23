@@ -84,7 +84,6 @@ namespace Gammou {
 
 		public:
 			abstract_gui_component_map(
-				std::mutex *circuit_mutex,
 				const int x, 
 				const int y,
 				const unsigned int width,
@@ -92,7 +91,6 @@ namespace Gammou {
 				const View::color background = GuiProperties::background);
 
 			abstract_gui_component_map(
-				std::mutex *circuit_mutex, 
 				const View::rectangle& rect,
 				const View::color background = GuiProperties::background);
 
@@ -116,8 +114,8 @@ namespace Gammou {
 				abstract_gui_component *dst, const unsigned int input_id);
 			void disconnect(abstract_gui_component *component, const unsigned int input_id);
 
-			inline void lock_circuit() { m_circuit_mutex->lock();  }
-			inline void unlock_circuit() { m_circuit_mutex->unlock(); }
+            virtual void lock_circuit() = 0;
+            virtual void unlock_circuit() = 0;
 
 			unsigned int get_input_count(const std::unique_ptr<abstract_gui_component> &component);
 			abstract_gui_component *get_input_src(
@@ -127,7 +125,6 @@ namespace Gammou {
 
 		private:
 			std::map<Process::abstract_component<double>*, abstract_gui_component*> m_component_association;
-			std::mutex *m_circuit_mutex;
 
 			bool m_is_linking;
 			abstract_gui_component *m_linking_component;

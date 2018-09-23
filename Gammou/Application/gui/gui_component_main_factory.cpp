@@ -94,14 +94,14 @@ namespace Gammou {
 			return m_main_factory.load_factory(file_path);
 		}
 
-		void gui_component_main_factory::register_plugin_factory(Sound::abstract_plugin_factory * factory)
+        void gui_component_main_factory::add_plugin_factory(std::unique_ptr<Sound::abstract_plugin_factory> && factory)
 		{
-			return m_main_factory.register_factory(factory);
+            return m_main_factory.add_factory(std::move(factory));
 		}
 
-		void gui_component_main_factory::register_complete_factory(abstract_gui_component_factory * factory)
+        void gui_component_main_factory::add_complete_factory(std::unique_ptr<abstract_gui_component_factory> && factory)
 		{
-			m_complete_component_factories[factory->get_factory_id()] = factory;
+            m_complete_component_factories[factory->get_factory_id()] = std::move(factory);
 		}
 
 		bool gui_component_main_factory::check_factory_presence(const unsigned int factory_id) const
@@ -146,7 +146,7 @@ namespace Gammou {
 			if (it == m_complete_component_factories.end())
 				throw std::domain_error("Factory id is not registered");
 			else
-				return it->second;
+                return it->second.get();
 		}
 	}
 

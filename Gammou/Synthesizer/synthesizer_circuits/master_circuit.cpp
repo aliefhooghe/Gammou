@@ -66,7 +66,6 @@ namespace Gammou {
 		{
 			add_component(component);
 			m_sound_component_manager.register_sound_component(component);
-			component->set_sample_rate(m_sound_component_manager.get_current_sample_rate());
 			component->initialize_process();
 		}
 

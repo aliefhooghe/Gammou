@@ -11,7 +11,7 @@ namespace Gammou {
 
     namespace Process {
 
-
+        //  TODO : this class is not anymore abstract : rename it
         template<class T>
         class abstract_process_frame : public abstract_frame<T> {
 

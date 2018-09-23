@@ -57,7 +57,9 @@ namespace Gammou {
 					}
 			};
 
-			#define FUNCTION_COMPONENT_FACTORY(func) Sound::Builtin::function_factory<func>(#func, Sound::Builtin::func##_component_id)
+            #define MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(func) \
+                std::make_unique<Sound::Builtin::function_factory<func> >(#func, Sound::Builtin::func##_component_id)
+
 
 		} /* Builtin */
 

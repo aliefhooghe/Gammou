@@ -35,6 +35,7 @@ namespace Gammou {
 			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y) override;
 
 			void add_page(std::unique_ptr<widget> && page);
+            void pop_page();
 			void reset_page(const unsigned int page_id, std::unique_ptr<widget> && new_page);
 			unsigned int get_page_count() const;
 			widget& get_page(const unsigned int page_id) const;
@@ -45,7 +46,7 @@ namespace Gammou {
 			widget *get_current_page() const;
 			bool check_widget_size(const widget *w) const;
 
-			std::vector<std::unique_ptr<widget> > m_pages;
+            std::vector<std::unique_ptr<widget> > m_pages{};
 			int m_current_page_id;
 		};
 

@@ -7,6 +7,7 @@
 
 #include <mutex>
 #include <synthesizer.h>
+#include <midi_driver/midi_driver.h>
 #include <synthesizer_gui.h>
 
 #include "jit_frame_processor/jit_frame_processor.h"
@@ -14,13 +15,15 @@
 #include "../debug.h"
 
 #include <RtAudio.h>
+#include <RtMidi.h>
 
 #define SAMPLE_RATE 44100
 
-struct snd_callback_data{
+struct snd_callback_data {
     Gammou::Sound::synthesizer *synthesizer;
     std::mutex *synthesizer_mutex;
 };
+
 
 int snd_callback(
     void *output_buffer, 
@@ -28,11 +31,11 @@ int snd_callback(
     unsigned int sample_count, 
     double streamTime, 
     RtAudioStreamStatus status, 
-    void *void_data)
+    void *user_data)
 {
     double *input = (double*)input_buffer;
     double *output = (double*)output_buffer;
-    snd_callback_data *data = (snd_callback_data*)void_data;
+    snd_callback_data *data = (snd_callback_data*)user_data;
 
     data->synthesizer_mutex->lock();
     for(unsigned int i = 0; i < sample_count; ++i, output += 2, input += 2)
@@ -43,8 +46,20 @@ int snd_callback(
     return 0;
 }
 
+void midi_callback(
+    double deltatime, 
+    std::vector<unsigned char> *message, 
+    void *user_data)
+{
+    Gammou::Sound::midi_driver *driver = 
+        reinterpret_cast<Gammou::Sound::midi_driver*>(user_data);
+    driver->handle_midi_event(*message);
+}
+
 int main()
 {
+
+    //  RT AUDio
    RtAudio dac;
 
    if ( dac.getDeviceCount() < 1 ) {
@@ -65,6 +80,8 @@ int main()
     const unsigned int sampleRate = SAMPLE_RATE;
     unsigned int bufferFrames = 512; 
 
+    // Gammou
+
     std::mutex synthesizer_mutex;
 
     //Gammou::Sound::jit_frame_processor processor1;
@@ -79,8 +96,29 @@ int main()
 
     synthesizer.set_sample_rate(SAMPLE_RATE);
 
-	Gammou::Gui::synthesizer_gui window(&synthesizer, &synthesizer_mutex);
+    //  Midi Driver
+    Gammou::Sound::midi_driver midi_driver(synthesizer);
+
+	//  Grapihc User Interface
+
+    Gammou::Gui::synthesizer_gui window(&synthesizer, &synthesizer_mutex);
     Gammou::View::application_display display(window);
+
+    //  RtMidi
+
+    RtMidiIn midi_input;
+    const unsigned int midi_input_port_count = 
+        midi_input.getPortCount();
+
+    DEBUG_PRINT("%u Midi Port Where Found\n", midi_input_port_count);
+
+    if (midi_input_port_count <= 1) {
+        DEBUG_PRINT("No Midi Port Where Found\n");
+    }
+    else {
+        midi_input.openPort(1);
+        midi_input.setCallback(midi_callback, &midi_driver);
+    }
 
     //   Start Rt Audio 
 

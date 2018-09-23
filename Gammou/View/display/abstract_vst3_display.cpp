@@ -75,9 +75,9 @@ namespace Gammou {
 					TRANSLATE_KEY(KEY_NUMLOCK, key_num_lock);
 					TRANSLATE_KEY(KEY_SCROLL, key_scroll_lock);
 
-					TRANSLATE_KEY(KEY_SHIFT, key_shift);
-					TRANSLATE_KEY(KEY_CONTROL, key_ctrl);
-					TRANSLATE_KEY(KEY_ALT, key_alt);
+					TRANSLATE_KEY(KEY_SHIFT, key_shift_left);
+					TRANSLATE_KEY(KEY_CONTROL, key_ctrl_left);
+					TRANSLATE_KEY(KEY_ALT, key_alt_left);
 
 				default:
 					return key_unknown;

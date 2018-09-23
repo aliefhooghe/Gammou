@@ -9,13 +9,15 @@ namespace Gammou {
 			const int x, const int y, 
 			const unsigned int width, const unsigned int height, 
 			const color background)
-			:	abstract_panel(x, y, width, height, background) 
+            :	abstract_panel(x, y, width, height, background),
+                m_current_page_id(-1)
 
 		{
 		}
 
 		page_container::page_container(const rectangle & rect, const color background)
-			:	abstract_panel(rect, background)
+            :	abstract_panel(rect, background),
+                m_current_page_id(-1)
 		{
 		}
 
@@ -151,6 +153,13 @@ namespace Gammou {
 			get_ownership(*page);
 			m_pages.push_back(std::move(page));
 		}
+
+        void page_container::pop_page()
+        {
+            if (m_current_page_id == static_cast<int>(get_page_count() - 1))
+                m_current_page_id = -1;
+            m_pages.pop_back();
+        }
 
 		void page_container::reset_page(const unsigned int page_id, std::unique_ptr<widget> && page)
 		{

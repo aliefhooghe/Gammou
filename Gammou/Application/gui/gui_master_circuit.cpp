@@ -11,27 +11,34 @@ namespace Gammou {
 		*/
 
 		gui_master_circuit::gui_master_circuit(
-			gui_component_main_factory *complete_component_factory,
+            gui_component_main_factory& complete_component_factory,
 			Sound::synthesizer * synthesizer,
 			std::mutex *synthesizer_mutex,
-			const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const View::color background)
+            const int x,
+            const int y,
+            const unsigned int width,
+            const unsigned int height,
+            const View::color background)
 			: abstract_gui_synthesizer_circuit(
-				complete_component_factory, 1u, synthesizer, synthesizer_mutex,
+                complete_component_factory, 1u,
+                synthesizer, synthesizer_mutex,
 				x, y, width, height, background)
 		{
-			add_internal_components(synthesizer_mutex);
+            add_internal_components();
 		}
 
 		gui_master_circuit::gui_master_circuit(
-			gui_component_main_factory *complete_component_factory,
+            gui_component_main_factory& complete_component_factory,
 			Sound::synthesizer * synthesizer,
 			std::mutex *synthesizer_mutex,
-			const View::rectangle & rect, const View::color background)
+            const View::rectangle & rect,
+            const View::color background)
 			: abstract_gui_synthesizer_circuit(
-				complete_component_factory, 1u, synthesizer, synthesizer_mutex,
+                complete_component_factory, 1u,
+                synthesizer, synthesizer_mutex,
 				rect, background)
 		{
-			add_internal_components(synthesizer_mutex);
+            add_internal_components();
 		}
 
 		void gui_master_circuit::add_sound_component_to_frame(Sound::abstract_sound_component * sound_component)
@@ -72,40 +79,39 @@ namespace Gammou {
 
 		}
 
-		void gui_master_circuit::add_internal_components(std::mutex *synthesizer_mutex)
+        void gui_master_circuit::add_internal_components()
 		{
-			// Todo position
 			auto polyphonic_input = std::make_unique<internal_gui_component>(
 				m_synthesizer->get_master_circuit_polyphonic_input(),
 				internal_component_id::POLY_IN,
 				50, 10);
-			m_polyphonic_input = &(*polyphonic_input);
+            m_polyphonic_input = polyphonic_input.get();
 			
 
 			auto polyphonic_output = std::make_unique<internal_gui_component>(
 				m_synthesizer->get_master_circuit_polyphonic_output(),
 				internal_component_id::POLY_OUT,
 				200, 10);
-			m_polyphonic_output = &(*polyphonic_output);
+            m_polyphonic_output = polyphonic_output.get();
 
 
 			auto main_input = std::make_unique<internal_gui_component>(
 				m_synthesizer->get_master_main_input(),
 				internal_component_id::INPUT,
 				50, 200);
-			m_main_input = &(*main_input);
+            m_main_input = main_input.get();
 
 			auto main_output = std::make_unique<internal_gui_component>(
 				m_synthesizer->get_master_main_output(),
 				internal_component_id::OUTPUT,
 				200, 200);
-			m_main_output = &(*main_output);
+            m_main_output = main_output.get();
 
 			auto parameter_input = std::make_unique<internal_gui_component>(
 				m_synthesizer->get_master_circuit_parameter_input(),
 				internal_component_id::PARAMETERS,
 				50, 350);
-			m_parameter_input = &(*parameter_input);
+            m_parameter_input = parameter_input.get();
 
 			add_gui_component(std::move(parameter_input));
 			add_gui_component(std::move(polyphonic_input));
