@@ -85,13 +85,15 @@ namespace Gammou {
 			m_plugin_list_box = &(*plugin_list_box);
 			add_widget(std::move(plugin_list_box));
 						
-			// ToolBox
+			//// ToolBox
 
 			auto tool_box =
 				std::make_unique<View::border_panel<> >(
 					0, 0,
 					GuiProperties::main_gui_toolbox_width, GuiProperties::main_gui_toolbox_height,
 					GuiProperties::main_gui_tool_box_background, GuiProperties::main_gui_tool_box_border_color);
+
+			//	Circuit Selector
 
 			tool_box->add_widget(std::make_unique<View::push_button>(
 				[&, pages_ptr](View::push_button *self)
@@ -108,24 +110,35 @@ namespace Gammou {
 				}
 				, "Master Circuit", 705, 16, 110, 27, 9));
 			
-			//---
+			//	Legato - Polyphonic selector
+
+			auto keyboard_mode_selector = 
+				std::make_unique<View::list_box>(
+					512, 0, 
+					110, 60, 
+					2,
+					GuiProperties::main_gui_list_box_selected_item_color, 
+					GuiProperties::main_gui_list_box_background, 
+					GuiProperties::main_gui_list_box_border_color, 
+					GuiProperties::main_gui_list_box_font_color, 
+					GuiProperties::main_gui_component_choice_box_font_size);
+
+			keyboard_mode_selector->add_item("Polyphonic");
+			keyboard_mode_selector->add_item("Legato");
+
+			keyboard_mode_selector->set_item_select_event(
+                [synthesizer](View::list_box&, unsigned int id)
+                {
+					using mode = Sound::synthesizer::keyboard_mode;
+
+                    if (id == 0)
+						synthesizer->set_keyboard_mode(mode::POLYPHONIC);
+					else
+						synthesizer->set_keyboard_mode(mode::LEGATO);
+                });
 
 			tool_box->add_widget(
-				std::make_unique<View::push_button>(
-					[synthesizer](View::push_button *self)
-					{
-						typedef Sound::synthesizer::keyboard_mode mode;
-
-						if (synthesizer->get_keyboard_mode() == mode::POLYPHONIC) {
-							synthesizer->set_keyboard_mode(mode::LEGATO);
-							self->set_text("Legato");
-						}
-						else {	//	LEGATO
-							synthesizer->set_keyboard_mode(mode::POLYPHONIC);
-							self->set_text("Polyphonic");
-						}
-					},
-					"Polyphonic", 512, 16, 110, 27, 9));
+				std::move(keyboard_mode_selector));
 
 			//---
 
