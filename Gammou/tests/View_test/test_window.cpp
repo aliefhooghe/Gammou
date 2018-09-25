@@ -147,7 +147,7 @@ namespace Gammou {
     bool test_window::on_mouse_dbl_click(const int x, const int y)
     {
         DEBUG_PRINT("Mouse DoublClick !\n");
-        return true;
+        return View::window_widget::on_mouse_dbl_click(x, y);
     }
 
     bool test_window::on_key_down(const View::keycode key)
@@ -157,7 +157,8 @@ namespace Gammou {
 
         DEBUG_PRINT("Keyboard Key Down keycode = %u %s !\n", 
             key, key == View::key_unknown ? "(unknown)" : "");
-        return true;
+
+        return View::window_widget::on_key_down(key);
     }
 
 	test_dialog::test_dialog()

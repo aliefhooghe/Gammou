@@ -62,9 +62,6 @@ namespace Gammou {
             // Factory
             std::vector<unsigned int> m_factory_ids;
             gui_component_main_factory m_gui_component_factory;
-
-			// -----
-            unsigned int m_page_id;   //  Current page id
 		};
 
 	}

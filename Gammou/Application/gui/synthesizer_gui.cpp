@@ -47,14 +47,11 @@ namespace Gammou {
 				std::make_unique<View::page_container>(
 					GuiProperties::main_gui_component_choice_box_width, GuiProperties::main_gui_toolbox_height, 
 					GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height, View::cl_chartreuse);
-            View::page_container *pages_ptr = pages.get();
-
 
 			pages->add_page(std::move(master_circuit));
 			pages->add_page(std::move(polyphonic_circuit));
 
-            m_page_id = 0;
-            pages->select_page(m_page_id);
+            pages->select_page(0);
             m_pages = pages.get();
 			add_widget(std::move(pages));
 
@@ -67,8 +64,8 @@ namespace Gammou {
 					GuiProperties::main_gui_component_choice_box_height + 2, 
 					GuiProperties::main_gui_component_choice_box_item_count,
 					GuiProperties::main_gui_list_box_selected_item_color, 
+					GuiProperties::main_gui_list_box_hovered_item_color,
 					GuiProperties::main_gui_list_box_background, 
-					GuiProperties::main_gui_list_box_border_color, 
 					GuiProperties::main_gui_list_box_font_color, 
 					GuiProperties::main_gui_component_choice_box_font_size);
 
@@ -85,47 +82,71 @@ namespace Gammou {
 			m_plugin_list_box = &(*plugin_list_box);
 			add_widget(std::move(plugin_list_box));
 						
-			// ToolBox
+			//// ToolBox
 
 			auto tool_box =
-				std::make_unique<View::border_panel<> >(
+				std::make_unique<View::panel<> >(
 					0, 0,
-					GuiProperties::main_gui_toolbox_width, GuiProperties::main_gui_toolbox_height,
-					GuiProperties::main_gui_tool_box_background, GuiProperties::main_gui_tool_box_border_color);
+					GuiProperties::main_gui_toolbox_width, 
+					GuiProperties::main_gui_toolbox_height,
+					GuiProperties::main_gui_tool_box_background);
 
-			tool_box->add_widget(std::make_unique<View::push_button>(
-				[&, pages_ptr](View::push_button *self)
-				{
-                    if (m_page_id == 0) {
-                        m_page_id = 1;
-						self->set_text("Polyphonic Circuit");
-					}
-					else {
-                        m_page_id = 0;
-						self->set_text("Master Circuit");
-					}
-                    pages_ptr->select_page(m_page_id);
-				}
-				, "Master Circuit", 705, 16, 110, 27, 9));
-			
-			//---
+			//	Circuit Selector
+
+			auto circuit_selector = 
+				std::make_unique<View::list_box>(
+					GuiProperties::main_gui_size_unit * 2, 0, 
+					GuiProperties::main_gui_size_unit * 3, GuiProperties::main_gui_size_unit, 
+					2,
+					GuiProperties::main_gui_list_box_selected_item_color, 
+					GuiProperties::main_gui_list_box_hovered_item_color,
+					GuiProperties::main_gui_list_box_background, 
+					GuiProperties::main_gui_list_box_font_color, 
+					GuiProperties::main_gui_component_choice_box_font_size);
+
+			circuit_selector->add_item("Master Circuit");
+			circuit_selector->add_item("Polyphonic Circuit");
+			circuit_selector->select_item(0);
+
+			circuit_selector->set_item_select_event(
+                [this](View::list_box&, unsigned int id)
+                {
+                    m_pages->select_page(id);
+                });
 
 			tool_box->add_widget(
-				std::make_unique<View::push_button>(
-					[synthesizer](View::push_button *self)
-					{
-						typedef Sound::synthesizer::keyboard_mode mode;
+				std::move(circuit_selector));
+			
+			//	Legato - Polyphonic selector
 
-						if (synthesizer->get_keyboard_mode() == mode::POLYPHONIC) {
-							synthesizer->set_keyboard_mode(mode::LEGATO);
-							self->set_text("Legato");
-						}
-						else {	//	LEGATO
-							synthesizer->set_keyboard_mode(mode::POLYPHONIC);
-							self->set_text("Polyphonic");
-						}
-					},
-					"Polyphonic", 512, 16, 110, 27, 9));
+			auto keyboard_mode_selector = 
+				std::make_unique<View::list_box>(
+					GuiProperties::main_gui_size_unit * 5, 0, 
+					GuiProperties::main_gui_size_unit * 3, GuiProperties::main_gui_size_unit, 
+					2,
+					GuiProperties::main_gui_list_box_selected_item_color, 
+					GuiProperties::main_gui_list_box_hovered_item_color,
+					GuiProperties::main_gui_list_box_background, 
+					GuiProperties::main_gui_list_box_font_color, 
+					GuiProperties::main_gui_component_choice_box_font_size);
+
+			keyboard_mode_selector->add_item("Polyphonic Keyboard");
+			keyboard_mode_selector->add_item("Legato Keyboard");
+			keyboard_mode_selector->select_item(0);
+
+			keyboard_mode_selector->set_item_select_event(
+                [synthesizer](View::list_box&, unsigned int id)
+                {
+					using mode = Sound::synthesizer::keyboard_mode;
+
+                    if (id == 0)
+						synthesizer->set_keyboard_mode(mode::POLYPHONIC);
+					else
+						synthesizer->set_keyboard_mode(mode::LEGATO);
+                });
+
+			tool_box->add_widget(
+				std::move(keyboard_mode_selector));
 
 			//---
 

@@ -23,21 +23,19 @@ namespace Gammou {
 				const unsigned int height, 
 				const unsigned int displayed_items_count, 
 				const color selected_item_color = cl_lightgrey, 
+				const color hovered_item_color = cl_lemonchiffon,
 				const color background = cl_white, 
-				const color border_color = cl_black, 
 				const color font_color = cl_black, 
-				const unsigned int font_size = 11,
-				const float border_width = 2.0f);
+				const unsigned int font_size = 11);
 
 			list_box(
 				const rectangle& rect, 
 				const unsigned int displayed_items_count,
 				const color selected_item_color = cl_lightgrey,
+				const color hovered_item_color = cl_lemonchiffon,
 				const color background = cl_white,
-				const color border_color = cl_black,
 				const color font_color = cl_black,
-				const unsigned int font_size = 11,
-				const float border_width = 2.0f);
+				const unsigned int font_size = 11);
 
             ~list_box() override;
 
@@ -55,28 +53,35 @@ namespace Gammou {
 			bool on_mouse_drag_end(const mouse_button button, const int x, const int y) override;
 
 			bool on_key_down(const keycode key) override;
+
+			bool on_mouse_exit(void) override;
+			bool on_mouse_move(const int x, const int y) override;
 			bool on_mouse_wheel(const float distance) override;
 			
 			void draw(cairo_t *cr) override;
 
 		private:
 			void scroll(const int distance);
+			int id_by_pos(const int y);
 			void update_selected(const int y);
 
             std::function<void(list_box&, unsigned int)> m_item_select_handler{};
             std::function<void(list_box&, unsigned int)> m_item_dbl_click_handler{};
 
 			const color m_selected_color;
+			const color m_hovered_color;
 			const color m_background_color;
 			const color m_font_color;
-			const color m_border_color;
 			const unsigned int m_font_size;
-			const float m_border_width;
-			const float m_item_height;
 			const unsigned int m_displayed_item_count;
+
+			static const float epsilon;
+			const float m_item_width;
+			const float m_item_height;
 
 			std::vector<std::string> m_items;
 			int m_selected_id;
+			int m_hovered_id;
 			unsigned int m_first_displayed;
 		};
 

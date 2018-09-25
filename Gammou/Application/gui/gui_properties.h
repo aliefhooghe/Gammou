@@ -23,7 +23,7 @@ namespace Gammou {
 			// Components
 			const View::color component_border = 0x20cae5ff;
 			const View::color component_background = 0x313234ff;
-			const View::color moving_component_background = 0x4a4d50ff;
+			const View::color moving_component_background = component_background;
 
 			const View::color component_input_socket_color = link_color;
 			const View::color component_linked_input_socket_color = link_color;
@@ -42,13 +42,12 @@ namespace Gammou {
 
 			// Listboxs
 			const View::color main_gui_list_box_background = component_background;
-			const View::color main_gui_list_box_selected_item_color = moving_component_background;
-			const View::color main_gui_list_box_border_color = component_border;	//	TODO
+			const View::color main_gui_list_box_selected_item_color = 0x4a4d50ff;
+			const View::color main_gui_list_box_hovered_item_color = 0x54575aff;
 			const View::color main_gui_list_box_font_color = component_font_color;
 
 			// ToolBox
-			const View::color main_gui_tool_box_background = main_gui_list_box_background;
-			const View::color main_gui_tool_box_border_color = main_gui_list_box_border_color;
+			const View::color main_gui_tool_box_background = component_background;	// todo
 
 			/*
 			 *		Dimension
@@ -65,13 +64,13 @@ namespace Gammou {
 
 			const float component_rectangle_corner_radius = 6.5;
 
-			const float component_border_width = 2.2f;
-			const float moving_component_border_width = 4.0;
+			const float component_border_width = 1.5f;
+			const float moving_component_border_width = 3.0;
 
 			const float component_socket_radius = 3.0;
 			const float focused_component_socket_radius = 4.0;
 			
-			const float link_width = 3;
+			const float link_width = 2;
 
 			/* Main Gui */
 			// Main gui : width*height = 24*12 (unit)
