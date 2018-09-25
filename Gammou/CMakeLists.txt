@@ -114,6 +114,7 @@ set(GAMMOU_COMMON_SRC
 # Build Plugins (Provide the GAMMOU_PLUGINS_INSTALL_PATH variable)
 add_subdirectory(Plugins tmp/Plugins)
 
+# We need an absolute path
 if (IS_ABSOLUTE "${GAMMOU_PLUGINS_INSTALL_PATH}")
 	set(GAMMOU_PLUGINS_PATH "${GAMMOU_PLUGINS_INSTALL_PATH}")
 else()
@@ -249,7 +250,7 @@ if(GAMMOU_VST3_BUILD)
 	add_library(gammou MODULE 
 		${VST3_SDK_DIR}/public.sdk/source/vst/vstsinglecomponenteffect.cpp
 		Application/vst3/factory.cpp
-    Application/vst3/vst3_plugin.h
+		Application/vst3/vst3_plugin.h
 		Application/vst3/vst3_plugin.cpp
 		${GAMMOU_COMMON_SRC}
 	)
@@ -259,7 +260,7 @@ if(GAMMOU_VST3_BUILD)
 		${GUI_INCLUDE_DIR}
 	)
 	
-  target_link_libraries(gammou PRIVATE view synthesizer base sdk)	# base and sdk from VST3_SDK
+	target_link_libraries(gammou PRIVATE view synthesizer base sdk)	# base and sdk from VST3_SDK
 	target_compile_definitions(gammou PRIVATE 
 	    GAMMOU_VIEW_VST3
 	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_PATH}"
@@ -279,13 +280,8 @@ if(GAMMOU_VST3_BUILD)
 
   if(WIN32)                   # MICROSOFT WINDOWS
     target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/dllmain.cpp")
-	  set_target_properties(gammou PROPERTIES SUFFIX ".vst3")
-
-		set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory")
-		
-		# Add Post Build Copy To VST3 directory	
-		add_post_build_copy(gammou "C:/Program Files/Common Files/VST3")
-
+	set_target_properties(gammou PROPERTIES SUFFIX ".vst3")
+	set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory")
   elseif(UNIX AND NOT APPLE)  # LINUX		
    target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/linuxmain.cpp")
   elseif(APPLE)               # Apple OSX
@@ -321,7 +317,7 @@ if(GAMMOU_VST2_BUILD)
 
   target_compile_definitions(gammou-vst2 PRIVATE 
 	    GAMMOU_VIEW_VST2
-	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_INSTALL_PATH}"
+	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_PATH}"
 	)
 
   set_target_properties(gammou-vst2 PROPERTIES 
