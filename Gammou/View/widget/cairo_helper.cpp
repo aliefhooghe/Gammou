@@ -91,19 +91,19 @@ namespace Gammou {
 				show_centered_text(cr, rect, text.c_str());
 			}
 
-			void show_left_aligned_text(cairo_t * cr, const rectangle & rect, const char * text)
+			void show_left_aligned_text(cairo_t * cr, const rectangle & rect, const char * text, const float offset)
 			{
 				cairo_text_extents_t te;
 
 				cairo_text_extents(cr, text, &te);
-				cairo_move_to(cr, rect.x, rect.y + (rect.height + te.height) / 2);
+				cairo_move_to(cr, rect.x + offset, rect.y + (rect.height + te.height) / 2);
 
 				cairo_show_text(cr, text);
 			}
 
-			void show_left_aligned_text(cairo_t * cr, const rectangle & rect, const std::string & text)
+			void show_left_aligned_text(cairo_t * cr, const rectangle & rect, const std::string & text, const float offset)
 			{
-				show_left_aligned_text(cr, rect, text.c_str());
+				show_left_aligned_text(cr, rect, text.c_str(), offset);
 			}
 
 			void show_right_aligned_text(cairo_t *cr, const rectangle& rect, const char *text)

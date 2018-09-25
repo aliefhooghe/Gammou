@@ -43,8 +43,8 @@ namespace Gammou {
 			void show_centered_text(cairo_t *cr, const rectangle& rect, const char *text);
 			void show_centered_text(cairo_t *cr, const rectangle& rect, const std::string& text);
 
-			void show_left_aligned_text(cairo_t *cr, const rectangle& rect, const char *text);
-			void show_left_aligned_text(cairo_t *cr, const rectangle& rect, const std::string& text);
+			void show_left_aligned_text(cairo_t *cr, const rectangle& rect, const char *text, const float offset = 0.0f);
+			void show_left_aligned_text(cairo_t *cr, const rectangle& rect, const std::string& text, const float offset = 0.0f);
 
 			void show_right_aligned_text(cairo_t *cr, const rectangle& rect, const char *text);
 			void show_right_aligned_text(cairo_t *cr, const rectangle& rect, const std::string& text);

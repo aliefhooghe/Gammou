@@ -6,25 +6,30 @@ namespace Gammou {
 
 	namespace View {
 
+		const float list_box::epsilon = 2.0f;
+
 		list_box::list_box(
 			const int x, const int y, const unsigned int width, const unsigned int height, 
 			const unsigned int displayed_items_count, 
 			const color selected_item_color, 
+			const color hovered_item_color,
 			const color background, 
-			const color border_color, 
 			const color font_color, 
-			const unsigned int font_size,
-			const float border_width)
+			const unsigned int font_size)
 			: widget(x, y, width, height),
 			m_selected_color(selected_item_color),
+			m_hovered_color(hovered_item_color),
 			m_background_color(background),
 			m_font_color(font_color),
-			m_border_color(border_color),
 			m_font_size(font_size),
-			m_border_width(border_width),
-			m_item_height(static_cast<float>(get_height()) / static_cast<float>(displayed_items_count)),
 			m_displayed_item_count(displayed_items_count),
+			m_item_height(
+				(static_cast<float>(get_height()) - 2.0f * epsilon) / 
+				static_cast<float>(displayed_items_count)),
+			m_item_width(
+				static_cast<float>(get_width() - 2.0f * epsilon)),
 			m_selected_id(-1),
+			m_hovered_id(-1),
 			m_first_displayed(0)
 		{
 		}
@@ -33,23 +38,24 @@ namespace Gammou {
 			const rectangle & rect,
 			const unsigned int displayed_items_count, 
 			const color selected_item_color, 
+			const color hovered_item_color,
 			const color background, 
-			const color border_color, 
 			const color font_color, 
-			const unsigned int font_size,
-			const float border_width)
+			const unsigned int font_size)
 			: widget(rect),
 			m_selected_color(selected_item_color),
+			m_hovered_color(hovered_item_color),
 			m_background_color(background),
 			m_font_color(font_color),
-			m_border_color(border_color),
 			m_font_size(font_size),
-			m_border_width(border_width),
-			m_item_height(
-				(static_cast<float>(get_height()) - 2.0f * border_width)/
-				static_cast<float>(displayed_items_count)),
 			m_displayed_item_count(displayed_items_count),
+			m_item_height(
+				(static_cast<float>(get_height()) - 2.0f * epsilon) / 
+				static_cast<float>(displayed_items_count)),
+			m_item_width(
+				static_cast<float>(get_width() - 2.0f * epsilon)),
 			m_selected_id(-1),
+			m_hovered_id(-1),
 			m_first_displayed(0)
 		{
         }
@@ -136,6 +142,27 @@ namespace Gammou {
 			}
 		}
 
+		bool list_box::on_mouse_exit(void)
+		{
+			if (m_hovered_id != -1) {
+				m_hovered_id = -1;
+				redraw();
+			}
+			return true;
+		}
+
+		bool list_box::on_mouse_move(const int x, const int y)
+		{
+			const int id = id_by_pos(y);
+
+			if (id != -1 && id != m_hovered_id) {
+				m_hovered_id = id;
+				redraw();
+			}
+
+			return true;
+		}
+
 		bool list_box::on_mouse_wheel(const float distance)
 		{
 			scroll(static_cast<int>(distance));
@@ -154,7 +181,6 @@ namespace Gammou {
 			cairo_helper::set_source_color(cr, m_background_color);
 			cairo_fill(cr);
 
-
 			// Items
 			cairo_set_font_size(cr, m_font_size);
 			cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
@@ -163,29 +189,26 @@ namespace Gammou {
 			unsigned int j = 0;
 			for (unsigned int i = m_first_displayed; i < end_displayed; ++i, ++j) {
 				const rectangle rect(
-					5, // for text
-					static_cast<int>(m_border_width + static_cast<float>(j) * m_item_height),
-					get_width(),
+					epsilon, // for text
+					static_cast<int>(epsilon + static_cast<float>(j) * m_item_height),
+					static_cast<unsigned int>(m_item_width),
 					static_cast<unsigned int>(m_item_height));
 
-				if (static_cast<int>(i) == get_selected_item()) {
+				if (static_cast<int>(i) == m_selected_id) {
 					cairo_helper::set_source_color(cr, m_selected_color);
-					cairo_rectangle(cr, 0, rect.y, rect.width, rect.height);
+					cairo_helper::simple_rectangle(cr, rect);
+					cairo_fill(cr);
+					cairo_helper::set_source_color(cr, m_font_color);
+				}
+				else if (static_cast<int>(i) == m_hovered_id) {
+					cairo_helper::set_source_color(cr, m_hovered_color);
+					cairo_helper::simple_rectangle(cr, rect);
 					cairo_fill(cr);
 					cairo_helper::set_source_color(cr, m_font_color);
 				}
 
-				//cairo_helper::show_centered_text(cr, rect, m_items[i]);
-				cairo_helper::show_left_aligned_text(cr, rect, m_items[i]);
+				cairo_helper::show_left_aligned_text(cr, rect, m_items[i], epsilon);
 			}
-
-			// Border (after Items to avoid overlap)
-			cairo_rectangle(cr, 
-				0.5f * m_border_width, 0.5f * m_border_width, 
-				static_cast<float>(get_width()) - m_border_width, 
-				static_cast<float>(get_height()) - m_border_width);
-			cairo_helper::set_source_color(cr, m_border_color);
-			cairo_stroke(cr);
 		}
 
 		void list_box::scroll(const int distance)
@@ -206,28 +229,36 @@ namespace Gammou {
 			}
 		}
 
-		void list_box::update_selected(const int y)
+		int list_box::id_by_pos(const int y)
 		{
 			const int offset =
-				static_cast<int>(static_cast<float>(y) / m_item_height);
+				static_cast<int>(static_cast<float>(y - epsilon) / 
+				m_item_height);
 
 			if (offset >= 0 && 
 				static_cast<unsigned int>(offset) < m_displayed_item_count) {
+				const int id = m_first_displayed + offset;
 
-				const int new_selected = m_first_displayed + offset;
+				if (id < static_cast<int>(m_items.size()))
+					return id;
+			}
+			
+			return -1;
+		}
 
-				if (new_selected < static_cast<int>(m_items.size()) &&
-					new_selected != m_selected_id) {
-					m_selected_id = new_selected;
-                    if (m_item_select_handler)
-                        m_item_select_handler(
-                            *this, static_cast<unsigned int>(m_selected_id));
+		void list_box::update_selected(const int y)
+		{
+			const int id = id_by_pos(y);
+
+			if (id != -1 && id != m_selected_id) {
+				m_selected_id = id;
+				if (m_item_select_handler) {
+                    m_item_select_handler(
+                        *this, static_cast<unsigned int>(id));
 					redraw();
 				}
 			}
 		}
-
-
 
 	} /* View */
 

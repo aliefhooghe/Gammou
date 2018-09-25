@@ -334,7 +334,7 @@ namespace Gammou {
 		*	Slider
 		*/
 
-		const unsigned int slider::cursor_radius = 8;
+		const unsigned int slider::cursor_radius = 5;
 
 		slider::slider(
 			std::function<void(slider&)> change_action,
@@ -342,7 +342,7 @@ namespace Gammou {
 			const unsigned int width,
 			const color on_color, 
 			const color off_color)
-		:	control(x, y, width, cursor_radius * 2),
+		:	control(x, y, width, 24),
 			m_change_action(change_action),
 			m_cursor(0u),
 			m_cursor_max(width - 2 * cursor_radius),
