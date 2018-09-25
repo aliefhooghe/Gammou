@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "../../Application/gui/gui_properties.h"
+#include "widget/cairo_helper.h"
 #include "test_window.h"
 
 
@@ -162,7 +163,7 @@ namespace Gammou {
     }
 
 	test_dialog::test_dialog()
-		: View::dialog(100, 100, View::cl_chartreuse)
+		: View::dialog(215, 256, View::cl_chartreuse)
 	{
 		add_widget(
 			std::make_unique<View::push_button>(
@@ -172,6 +173,14 @@ namespace Gammou {
 				},
 				"Ok",
 				20, 20, 60, 60));
+	}
+
+	void test_dialog::draw(cairo_t *cr)
+	{
+		dialog::draw(cr);
+		View::cairo_helper::set_source_color(cr, 0xff0000ff);
+		View::cairo_helper::simple_rectangle(cr, get_relative_rect());
+		cairo_stroke(cr);
 	}
 
 } /* Gammou */

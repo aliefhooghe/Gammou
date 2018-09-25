@@ -116,44 +116,46 @@ namespace Gammou {
 			std::function<void(push_button*)> push_action, 
 			const std::string& text, 
 			const int x, const int y, 
-			const unsigned int width, const unsigned int height, 
-			const unsigned int font_size)
-			: m_pushed(false),  m_push_action(push_action), 
-			m_text(text), m_font_size(font_size), control(x, y, width, height)
+			const unsigned int width, 
+			const unsigned int height, 
+			const unsigned int font_size,
+			const color pushed_color,
+			const color background_color,
+			const color font_color)
+		:	m_pushed(false),  
+			m_push_action(push_action), 
+			m_text(text), 
+			m_font_size(font_size), 
+			m_pushed_color(pushed_color),
+			m_background_color(background_color),
+			m_font_color(font_color),
+			control(x, y, width, height)
 		{
 		}
 
 		void push_button::draw(cairo_t * cr)
 		{
-			float offset;
-
 			if (m_pushed) {
 				cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-				offset = 1.5;
+				cairo_helper::set_source_color(cr, m_pushed_color);
 			}
 			else {
 				cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-				offset = 1.0;
+				cairo_helper::set_source_color(cr, m_background_color);
 			}
 
-			if (is_enabled()) {
-				if (is_focused())
-					cairo_helper::set_source_color(cr, cl_lightblue);
-				else
-					cairo_helper::set_source_color(cr, cl_gainsboro);
-			}
-			else {
-				cairo_helper::set_source_color(cr, cl_gray);
-			}
-			
-			cairo_helper::rounded_rectangle(cr, offset / 2.0f, offset / 2.0f, get_width() - offset, get_height() - offset, 2.0f * offset);
-			cairo_fill_preserve(cr);
-			cairo_helper::set_source_color(cr, cl_black);
+			cairo_helper::simple_rectangle(cr, get_relative_rect());
+			cairo_fill(cr);
 
-			cairo_set_line_width(cr, offset);
-			cairo_set_line_join(cr, CAIRO_LINE_JOIN_ROUND);
-			cairo_stroke(cr);
+			if (is_focused()) {
+				cairo_helper::simple_rectangle(cr, get_relative_rect());
+				cairo_helper::set_source_color(cr, m_pushed_color);
+				cairo_set_line_width(cr, 3.0);
+				cairo_set_line_join(cr, CAIRO_LINE_JOIN_ROUND);
+				cairo_stroke(cr);
+			}	
 
+			cairo_helper::set_source_color(cr, m_font_color);
 			cairo_set_font_size(cr, m_font_size);
 			cairo_helper::show_centered_text(cr, get_relative_rect(), m_text.c_str());
 		}

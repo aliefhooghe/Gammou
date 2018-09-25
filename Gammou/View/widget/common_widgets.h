@@ -81,9 +81,11 @@ namespace Gammou {
 				const int x, const int y, 
 				const unsigned int width = 95, 
 				const unsigned int height = 27, 
-				const unsigned int font_size = 10);
+				const unsigned int font_size = 10,
+				const color pushed_color = cl_darkgray,
+				const color backgound_color = cl_darkblue,
+				const color font_color = cl_blanchedalmond);
 			// TODO rectangle ctor
-			// TODO visual settings (color, ...)
 			virtual ~push_button() {};
 
 			virtual bool on_mouse_drag_end(const mouse_button button, const int x, const int y) override;
@@ -102,6 +104,9 @@ namespace Gammou {
 			std::function<void(push_button*)> m_push_action;
 			std::string m_text;
 			const unsigned int m_font_size;
+			const color m_pushed_color;
+			const color m_background_color;
+			const color m_font_color;
 			bool m_pushed;
 		};
 

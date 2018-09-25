@@ -27,7 +27,7 @@ namespace Gammou {
 				6 * unit, 2 * unit,
 				GuiProperties::component_font_color
 			);
-			View::label *label_ptr = &(*label);
+			View::label *label_ptr = label.get();
 
 			auto dec =
 				std::make_unique<View::push_button>(
@@ -38,9 +38,13 @@ namespace Gammou {
 				},
 				"-",
 				1.5 * unit, 5 * unit, // x, y
-				3 * unit, 3 * unit // w , h
+				3 * unit, 3 * unit, // w , h
+				10,	// font size
+				GuiProperties::main_gui_list_box_hovered_item_color,
+				GuiProperties::main_gui_list_box_selected_item_color,
+				GuiProperties::component_font_color
 			);
-			m_dec = &(*dec);
+			m_dec = dec.get();
 
 			auto inc =
 				std::make_unique<View::push_button>(
@@ -51,9 +55,13 @@ namespace Gammou {
 				},
 				"+",
 				5.5 * unit, 5 * unit, // x, y
-				3 * unit, 3 * unit // w , h
+				3 * unit, 3 * unit, // w , h
+				10,	// font size
+				GuiProperties::main_gui_list_box_hovered_item_color,
+				GuiProperties::main_gui_list_box_selected_item_color,
+				GuiProperties::component_font_color
 			);
-			m_inc = &(*inc);
+			m_inc = inc.get();
 
 			add_widget(std::move(label));
 			add_widget(std::move(dec));

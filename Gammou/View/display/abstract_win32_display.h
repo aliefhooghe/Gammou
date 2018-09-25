@@ -42,7 +42,7 @@ namespace Gammou {
 
 			bool m_is_open;
 		private:
-			HWND m_parent_window_handle;
+			//HWND m_parent_window_handle;
 			HWND m_window_handle;
 			bool m_has_focus;
 		};

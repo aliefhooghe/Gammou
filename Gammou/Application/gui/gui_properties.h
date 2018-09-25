@@ -15,7 +15,7 @@ namespace Gammou {
 			 */
 
 			// Component maps
-			const View::color background = 0x242526ff;
+			const View::color background = 0x272829ff;
 			const View::color linking_color = 0xe89131ff;
 			const View::color link_color = 0x17d563ff;
 			const View::color highlight_socket_color = linking_color;
@@ -70,7 +70,7 @@ namespace Gammou {
 			const float component_socket_radius = 3.0;
 			const float focused_component_socket_radius = 4.0;
 			
-			const float link_width = 2;
+			const float link_width = 2.5;
 
 			/* Main Gui */
 			// Main gui : width*height = 24*12 (unit)

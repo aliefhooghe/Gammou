@@ -14,9 +14,6 @@ namespace Gammou {
 			m_window_handle(nullptr),
 			m_has_focus(false)
 		{
-			int i = 5;
-			i++;
-			register_window_class();
 		}
 
 		abstract_win32_display::abstract_win32_display(
@@ -27,10 +24,8 @@ namespace Gammou {
 			m_window_handle(nullptr),
 			m_has_focus(false)
 		{
-			m_parent_window_handle =
-				(HWND)get_sys_window_handle();
-			register_window_class();
-			//
+			//m_parent_window_handle =
+			//	(HWND)get_sys_window_handle();
 		}
 
 		abstract_win32_display::~abstract_win32_display()
@@ -49,6 +44,8 @@ namespace Gammou {
 			const unsigned int width = get_display_width();
 			const unsigned int height = get_display_height();
 
+			register_window_class();	//	make sure this is done in the window thread
+
 			if (m_window_handle != nullptr)
 				DestroyWindow(m_window_handle);
 
@@ -59,38 +56,19 @@ namespace Gammou {
 			else
 				style |= WS_CHILD;							//	vst3
 
-
-			//
+			// Default value, ok for a plugin
 
 			unsigned int real_width = width;
 			unsigned int real_height = height;
+			int x = 0, y = 0;
+			
+			if (parent_window == nullptr) {	//	Root window
+				//	Make window appear near cursor and 
+				//	take care of menu bar height
 
-			if (parent_window == nullptr) {
-				RECT real_size;
-				AdjustWindowRectEx(&real_size, style, true, 0);
-
-				real_width += (real_size.right - real_size.left);
-				real_height += (real_size.bottom - real_size.top);
-			}
-
-			//
-
-			m_window_handle =
-				CreateWindowA(
-					WNDCLASS_NAME,
-					title.c_str(), style,
-					0, 0, real_width, real_height,
-					parent_window, nullptr, nullptr,
-					this);
-
-			// resize
-
-			int x, y;
-
-			if (parent_window == nullptr) {		//	app
 				POINT p;
-				GetCursorPos(&p);		
-				
+				GetCursorPos(&p);
+
 				x = p.x - width / 2;
 				y = p.y - height / 2;
 
@@ -98,16 +76,23 @@ namespace Gammou {
 					x = 0;
 				if (y < 0)
 					y = 0;
-			}
-			else {			//	vst3
-				x = 0;
-				y = 0;
-			}
 
-			DEBUG_PRINT("Window at x = %d, y = %d\n", x, y);
+				real_width += GetSystemMetrics(SM_CYBORDER);
+				real_height += 
+					(GetSystemMetrics(SM_CYFRAME) + 
+						GetSystemMetrics(SM_CYCAPTION));
+			}
+			
+			//
 
-			SetWindowPos(
-				m_window_handle, nullptr, x, y, real_width, real_height, 0);
+			m_window_handle =
+				CreateWindowA(
+					WNDCLASS_NAME,
+					title.c_str(), style,
+					x, y, real_width, real_height,
+					parent_window, nullptr, nullptr,
+					this);
+
 		}
 
 		void abstract_win32_display::destroy_window()
@@ -149,22 +134,27 @@ namespace Gammou {
 
 		void abstract_win32_display::register_window_class()
 		{
-			WNDCLASS window_class;
+			static bool have_been_registered = false;
 
-			memset(&window_class, 0, sizeof(WNDCLASS));
+			if (!have_been_registered) {
+				WNDCLASS window_class;
 
-			window_class.style = CS_DBLCLKS; // CS_HREDRAW |CS_VREDRAW; redraw if size change
-			window_class.lpfnWndProc = windowProc;
-			window_class.cbClsExtra = 0;
-			window_class.cbWndExtra = 0;
-			window_class.hInstance = nullptr;
-			window_class.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
-			window_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
-			window_class.hbrBackground = nullptr;
-			window_class.lpszMenuName = nullptr;
-			window_class.lpszClassName = TEXT(WNDCLASS_NAME);
+				memset(&window_class, 0, sizeof(WNDCLASS));
 
-			RegisterClass(&window_class);
+				window_class.style = CS_DBLCLKS; // CS_HREDRAW |CS_VREDRAW; redraw if size change
+				window_class.lpfnWndProc = windowProc;
+				window_class.cbClsExtra = 0;
+				window_class.cbWndExtra = 0;
+				window_class.hInstance = nullptr;
+				window_class.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+				window_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
+				window_class.hbrBackground = nullptr;
+				window_class.lpszMenuName = nullptr;
+				window_class.lpszClassName = TEXT(WNDCLASS_NAME);
+
+				RegisterClass(&window_class);
+				have_been_registered = true;
+			}
 		}
 
 		LRESULT abstract_win32_display::windowProc(HWND window, UINT msg, WPARAM w_param, LPARAM l_param)

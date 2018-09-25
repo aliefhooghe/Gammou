@@ -21,6 +21,7 @@ namespace Gammou {
 
 		public:
 			test_dialog();
+			void draw(cairo_t *cr) override;
 
 	};
 
