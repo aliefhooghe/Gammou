@@ -27,6 +27,7 @@ set(WIDGET_SRC
 	widget/common_widgets.cpp
 	widget/dialog.h
 	widget/dialog.cpp
+	widget/directory_model.h 
 	#widget/edit_panel.h
 	#widget/edit_panel.cpp
 	widget/event.h
@@ -39,6 +40,7 @@ set(WIDGET_SRC
 	widget/proxy_widget.h
 	widget/proxy_widget.cpp
 	widget/scrollable_panel.h
+	widget/tree_view.h
 	widget/window_widget.h
 	widget/window_widget.cpp
 	widget/widget.h

@@ -14,6 +14,7 @@
 #include "widget/window_widget.h"
 #include "widget/dialog.h"
 #include "widget/proxy_widget.h"
+#include "widget/tree_view.h"
 //#include "widget/edit_panel.h"
 
 //----------------------------------------------------------------------
