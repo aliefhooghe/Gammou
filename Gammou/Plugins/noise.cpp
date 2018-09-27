@@ -21,15 +21,15 @@ noise_component::noise_component(const unsigned int channel_count)
 
 }
 
-void noise_component::process(const double input[])
+void noise_component::process(const double[])
 {
 	m_output[0] = 
 		-1.0 + static_cast<double>((rand() % 65536)) / 32768.0; 
 }
 
 EXPORT_DEFAULT_FACTORY(
-	noise_component,			//		Classe
-	"Noise",					//		Nom
-	"Exemple",					//		Categorie
-	noise_id					//		Factory Id
+    noise_component,
+    "Noise",
+    ComponentCategory::Noise,
+    noise_id
 )

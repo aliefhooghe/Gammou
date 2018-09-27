@@ -79,6 +79,6 @@ void lp2_component::process(const double input[])
 EXPORT_DEFAULT_FACTORY(
 	lp2_component,			//		Classe
 	"_lp2",					//		Nom
-	"Exemple",					//		Categorie
-	65245412		//		Factory Id
+    "Experimental",         //		Categorie
+    65245412                //		Factory Id
 )

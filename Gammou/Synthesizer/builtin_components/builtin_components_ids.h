@@ -1,6 +1,7 @@
 #ifndef GAMMOU_BUILTIN_COMPONENTS_IDS_H_
 #define GAMMOU_BUILTIN_COMPONENTS_IDS_H_
 
+#include "component_category.h"
 
 namespace Gammou {
 
@@ -9,7 +10,6 @@ namespace Gammou {
 		namespace Builtin {
 
 			enum builtin_ids : unsigned int {
-
 				
 				//	Function_component
 				cos_component_id = 100,
@@ -20,6 +20,7 @@ namespace Gammou {
 				sqrt_component_id,
 				fabs_component_id,
 				atan_component_id,
+                tanh_component_id,
 
 				//---
 				sin_component_id = 1000u,
@@ -27,10 +28,7 @@ namespace Gammou {
 				sum_component_id,
 				lp2_component_id,
 				product_component_id,
-				saw_component_id,
-
-				//	Functionals : TODO
-				
+				saw_component_id,				
 			};
 
 		}

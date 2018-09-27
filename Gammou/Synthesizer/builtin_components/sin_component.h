@@ -30,7 +30,7 @@ namespace Gammou {
 
 			public:
 				sin_factory()
-					: default_plugin_factory<sin_component>("Sine", "Oscillator", sin_component_id) {}
+                    : default_plugin_factory<sin_component>("Sine", ComponentCategory::Oscillator, sin_component_id) {}
 				~sin_factory() {}
 			};
 

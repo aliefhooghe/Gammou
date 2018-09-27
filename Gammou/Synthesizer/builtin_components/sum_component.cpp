@@ -14,7 +14,6 @@ namespace Gammou {
 
 			sum_component::~sum_component()
 			{
-				DEBUG_PRINT("DEBUG Component DTOR\n");
 			}
 
 			void sum_component::process(const double input[])
@@ -28,18 +27,13 @@ namespace Gammou {
 				m_output[0] = ret;
 			}
 
-			void sum_component::initialize_process()
-			{
-				const unsigned int channel = get_current_working_channel();
-			}
-
-			void sum_component::on_input_connection(const unsigned int input_id)
+            void sum_component::on_input_connection(const unsigned int)
 			{
 				if (free_input_count() == 0)
 					push_input();
 			}
 
-			void sum_component::on_input_deconnection(const unsigned int input_id)
+            void sum_component::on_input_deconnection(const unsigned int)
 			{	
 				unsigned int ic = get_input_count(); 
 				unsigned int free_input = free_input_count();

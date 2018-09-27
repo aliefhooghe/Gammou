@@ -283,9 +283,9 @@ namespace Gammou {
             m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(sqrt));
             m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(fabs));
             m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(atan));
+            m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(tanh));
 
 			// Control Components
-
             m_component_selector->add_control_factory(std::make_unique<value_knob_gui_component_factory>());
             m_component_selector->add_control_factory(std::make_unique<gain_knob_gui_component_factory>());
 
@@ -298,7 +298,6 @@ namespace Gammou {
             m_component_selector->add_control_factory(std::make_unique<user_gui_component_factory>(m_gui_component_factory));
 
 			// Plugins Components
-
 			const std::string plugin_dir_path(GAMMOU_PLUGINS_DIRECTORY_PATH);
 			
 			try {
@@ -314,7 +313,7 @@ namespace Gammou {
 				}
 			}
 			catch(...){
-				DEBUG_PRINT("Error while loding plugins in '%s'\n", GAMMOU_PLUGINS_DIRECTORY_PATH);
+                DEBUG_PRINT("Error while listing plugin directory '%s'\n", GAMMOU_PLUGINS_DIRECTORY_PATH);
 			}
 		}
 

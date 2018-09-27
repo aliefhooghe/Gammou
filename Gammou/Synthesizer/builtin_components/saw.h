@@ -20,8 +20,6 @@ namespace Gammou {
 
 		namespace Builtin {
 
-			// A netoyer
-
 			class saw : public sound_component {
 
 			public:
@@ -32,7 +30,6 @@ namespace Gammou {
 					m_next_dirac_time(this),
 					m_slope(this)
 				{
-					DEBUG_PRINT("Saw CTOR\n");
 					set_input_name("Freq", 0);
 				}
 
@@ -72,7 +69,7 @@ namespace Gammou {
 
 				double dirac_filtre(const double t, const double f0)
 				{
-					if (std::abs(t) <= std::numeric_limits<float>::min()) {
+                    if (std::abs(t) <= static_cast<double>(std::numeric_limits<float>::min())) {
 						return 2.0 * f0;
 					}
 					else {
@@ -87,7 +84,6 @@ namespace Gammou {
 						const double delta_t = m_time - m_next_dirac_time;
 
 						m_time = delta_t;// m_next_dirac_time;
-						//m_integral = 0.0;// integral(m_next_dirac_time, delta_t); // recentrage
 
 						m_next_dirac_time = (1.0 / f);
 						m_slope = f;// *(delta_integral * 0.5 + 1.0);
@@ -115,15 +111,13 @@ namespace Gammou {
 				multi_channel_variable<double> m_time;
 				multi_channel_variable<double> m_next_dirac_time;
 				multi_channel_variable<double> m_slope;
-			//	multi_channel_variable<double> m_integral;
-			//	multi_channel_variable<double> m_prev_output;
 			};
 
 			class saw_factory : public default_plugin_factory<saw> {
 
 			public:
 				saw_factory()
-					: default_plugin_factory<saw>("Saw", "Oscillator", saw_component_id) {}
+                    : default_plugin_factory<saw>("Saw", ComponentCategory::Oscillator, saw_component_id) {}
 				~saw_factory() {}
 			};
 

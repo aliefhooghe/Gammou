@@ -20,7 +20,6 @@ namespace Gammou {
 
             void adsr_env::initialize_process()
             {
-				DEBUG_PRINT("Initialize Env Process\n");
                 m_gate_fact = M_DEFAULT_GATE_FACT; // 
 				m_output[0] = 0.0;
 				m_tau_index = 0; // attack
@@ -31,19 +30,16 @@ namespace Gammou {
                 if (input[4] > 0.5) { // gate on
 						if (m_tau_index == 0){ // on attack
 							if (m_output[0] >= 1.0) { // attack -> decay
-								//DEBUG_PRINT("Attack -> Decay\n");
 								m_tau_index = 1;
 								m_gate_fact = input[2]; // sustain
 							}
 						}
 						else if (m_tau_index == 3) { // on release
-							//DEBUG_PRINT("Release -> Attack\n");
 							m_tau_index = 0; // goto attack
 							m_gate_fact = M_DEFAULT_GATE_FACT;
 						}
 				}
 				else if(m_tau_index != 3 ){
-					//DEBUG_PRINT("* to Release\n");
 					m_tau_index = 3; // goto release
 				}
 

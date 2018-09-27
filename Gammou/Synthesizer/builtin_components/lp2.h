@@ -13,8 +13,6 @@ namespace Gammou {
 
 		namespace Builtin {
 
-			// A netoyer
-
 			class lp2 : public sound_component {
 
 			public:
@@ -24,7 +22,11 @@ namespace Gammou {
 				void initialize_process() override;
 				void process(const double input[]) override;
 
-				inline double yd2(const double in, const double omega0, const double Q, const double y, const double yd)
+                inline double yd2(
+                    const double in,
+                    const double omega0,
+                    const double Q,
+                    const double y, const double yd)
 				{
 					return (omega0 * omega0)
 						* (in - ((1.0 / (omega0 * Q)) * yd) - y);
@@ -38,7 +40,7 @@ namespace Gammou {
 
 			public:
 				lp2_factory()
-					: default_plugin_factory<lp2>("lp2", "Filter", lp2_component_id) {}
+                    : default_plugin_factory<lp2>("lp2", ComponentCategory::Filter, lp2_component_id) {}
 				~lp2_factory() {}
 			};
 
