@@ -35,17 +35,17 @@ namespace Gammou {
 
 				virtual ~directory_model() {}
 				virtual unsigned int get_item_count() const = 0;
-				virtual const item& get_item(const Key& key) const = 0;
-				virtual const node& get_node(const unsigned int index) const = 0;
+				virtual item& get_item(const Key& key) = 0;
+				virtual node& get_node(const unsigned int index) = 0;
+				virtual directory_model<Key, Value>& add_directory(const Key& key) = 0;
+				virtual void add_value(const Key& key, const Value& value) = 0;
 		};
 
 
 		template<class Key, class Value>
 		class storage_directory_model : public directory_model<Key, Value> {
 
-
 			public:
-
 				using typename directory_model<Key, Value>::item;
 				using typename directory_model<Key, Value>::node;
 				using typename directory_model<Key, Value>::directory;
@@ -57,12 +57,11 @@ namespace Gammou {
 
 				// abstract_directory_model ovrride
 				unsigned int get_item_count() const override;
-				const item& get_item(const Key& key) const override;
-				const node& get_node(const unsigned int index) const override;
+				item& get_item(const Key& key) override;
+				node& get_node(const unsigned int index) override;
 
-				//storage_directory_model<Key, Value>& get_storage_node(const unsigned int index);
-				storage_directory_model<Key, Value>& add_directory(const Key& key);
-				void add_value(const Key& key, const Value& value);
+				storage_directory_model<Key, Value>& add_directory(const Key& key) override;
+				void add_value(const Key& key, const Value& value) override;
 
 			private:
 				std::map<Key, item> m_child;
@@ -91,8 +90,8 @@ namespace Gammou {
 		}
 
 		template<class Key, class Value>
-		const typename storage_directory_model<Key, Value>::item&
-		storage_directory_model<Key, Value>::get_item(const Key& key) const
+		typename storage_directory_model<Key, Value>::item&
+		storage_directory_model<Key, Value>::get_item(const Key& key)
 		{
 			auto it = m_child.find(key);
 
@@ -103,8 +102,8 @@ namespace Gammou {
 		}
 
 		template<class Key, class Value>
-		const typename storage_directory_model<Key, Value>::node&
-		storage_directory_model<Key, Value>::get_node(const unsigned int index) const
+		typename storage_directory_model<Key, Value>::node&
+		storage_directory_model<Key, Value>::get_node(const unsigned int index)
 		{
 			auto it = m_child.begin();
 			std::advance(it, index);

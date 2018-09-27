@@ -1,5 +1,5 @@
-#ifndef TREE_VIEW_H_
-#define TREE_VIEW_H_
+#ifndef DIRECTORY_VIEW_H_
+#define DIRECTORY_VIEW_H_
 
 #include <map>
 #include <memory>
@@ -23,14 +23,14 @@ namespace Gammou {
                     std::function<void(directory_view<Value>&, const std::string& key, const Value&)>;
 
                 explicit directory_view(
-                    const model& m,
+                    model& m,
                     const int x,
                     const int y,
                     const unsigned int width,
                     const unsigned int height,
                     const unsigned int displayed_items_count,
-                    const color selected_item_color = cl_lightgrey,
-                    const color hovered_item_color = cl_lemonchiffon,
+                    const color selected_cell_color = cl_lightgrey,
+                    const color hovered_cell_color = cl_lemonchiffon,
                     const color background = cl_white,
                     const color font_color = cl_black,
                     const unsigned int font_size = 11);
@@ -57,14 +57,14 @@ namespace Gammou {
                     const unsigned int level);
                 void draw_directory(
                     cairo_t *cr,
-                    const model& m,
+                    model& m,
                     unsigned int& cell,
                     const unsigned int level);
 
                 bool is_open(const typename model::directory& n) const;
                 bool is_directory(const typename model::node& node);
 
-                const model& m_model;
+                model& m_model;
 
                 const color m_selected_color;
                 const color m_hovered_color;
@@ -95,7 +95,7 @@ namespace Gammou {
         const float directory_view<Value>::epsilon = 2.0f;
 
         template<class Value>
-        const float directory_view<Value>::subdirectory_offset = 8.0f;
+        const float directory_view<Value>::subdirectory_offset = 16.0f;
 
         template<class Value>
         const float directory_view<Value>::arrow_size_scale = 0.3f;
@@ -104,33 +104,33 @@ namespace Gammou {
 
         template<class Value>
         directory_view<Value>::directory_view(
-            const model& m,
+            model& m,
             const int x,
             const int y,
             const unsigned int width,
             const unsigned int height,
-            const unsigned int displayed_items_count,
-            const color selected_item_color,
-            const color hovered_item_color,
+            const unsigned int displayed_cell_count,
+            const color selected_cell_color,
+            const color hovered_cell_color,
             const color background,
             const color font_color,
             const unsigned int font_size)
         :   widget(x, y, width, height),
             m_model(m),
-            m_selected_color(selected_item_color),
-            m_hovered_color(hovered_item_color),
+            m_selected_color(selected_cell_color),
+            m_hovered_color(hovered_cell_color),
             m_background_color(background),
             m_font_color(font_color),
             m_font_size(font_size),
-            m_displayed_cell_count(displayed_items_count),
+            m_displayed_cell_count(displayed_cell_count),
             m_cell_height(
               (static_cast<float>(get_height()) - 2.0f * epsilon) /
-              static_cast<float>(displayed_items_count)),
+              static_cast<float>(displayed_cell_count)),
             m_cell_width(
                 static_cast<float>(get_width() - 2.0f * epsilon)),
             m_selected_cell(-1),
             m_hovered_cell(-1),
-            m_nodes(displayed_items_count)
+            m_nodes(displayed_cell_count)
         {}
 
         template<class Value>
@@ -185,6 +185,10 @@ namespace Gammou {
         template<class Value>
         void directory_view<Value>::draw(cairo_t *cr)
         {
+            //  Set Font settings
+            cairo_set_font_size(cr, m_font_size);
+            cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+
             // Background
             cairo_rectangle(
                 cr, 0, 0,
@@ -320,7 +324,7 @@ namespace Gammou {
         template<class Value>
         void directory_view<Value>::draw_directory(
             cairo_t *cr,
-            const model& m,
+            model& m,
             unsigned int& cell,
             const unsigned int level)
         {
