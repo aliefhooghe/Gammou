@@ -149,7 +149,7 @@ namespace Gammou {
 				std::move(keyboard_mode_selector));
 
 			//---
-
+			//	TODO : mieux
 			const unsigned int offset = (GuiProperties::main_gui_size_unit - 50) / 2;
 
 			auto master_volume = 
@@ -166,7 +166,7 @@ namespace Gammou {
 					GuiProperties::knob_off_color
 				);
 
-			m_master_volume = &(*master_volume);
+			m_master_volume = master_volume.get();
 			
 			master_volume->set_normalized_value(1.0); // coherence with synthesizer initial value
 			tool_box->add_widget(std::move(master_volume));
