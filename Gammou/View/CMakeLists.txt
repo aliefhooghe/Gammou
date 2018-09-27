@@ -27,6 +27,8 @@ set(WIDGET_SRC
 	widget/common_widgets.cpp
 	widget/dialog.h
 	widget/dialog.cpp
+	widget/directory_model.h 
+	widget/directory_view.h
 	#widget/edit_panel.h
 	#widget/edit_panel.cpp
 	widget/event.h

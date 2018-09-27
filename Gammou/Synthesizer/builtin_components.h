@@ -5,8 +5,6 @@
 			BUILTIN COMPONENTS
 */
 
-
-
 #include "builtin_components/sin_component.h"
 #include "builtin_components/sum_component.h"
 #include "builtin_components/product_component.h"

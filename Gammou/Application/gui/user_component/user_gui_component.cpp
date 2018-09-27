@@ -40,7 +40,7 @@ namespace Gammou {
         }
 
 
-        std::unique_ptr<gui_sound_component> user_gui_component_factory::create_complete_component(
+        std::unique_ptr<gui_sound_component> user_gui_component_factory::create_gui_component(
             const int x, const int y, Sound::data_input_stream& source, const unsigned int channel_count)
         {
             //  Load input and output count
@@ -58,7 +58,7 @@ namespace Gammou {
             return std::make_unique<user_gui_component>(component, x, y);
         }
 
-        std::unique_ptr<gui_sound_component> user_gui_component_factory::create_complete_component(
+        std::unique_ptr<gui_sound_component> user_gui_component_factory::create_gui_component(
             const int x, const int y, const Sound::answer_form& answer_form, const unsigned int channel_count)
         {
             //  TODO : ask user to get input and output count

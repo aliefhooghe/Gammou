@@ -81,7 +81,7 @@ namespace Gammou {
 			return factory->get_name();
 		}
 
-		const std::string & main_factory::get_factory_description(const unsigned int factory_id)
+        const std::string & main_factory::get_factory_category(const unsigned int factory_id)
 		{
 			const abstract_plugin_factory *factory = factory_by_id(factory_id);
 			return factory->get_category();

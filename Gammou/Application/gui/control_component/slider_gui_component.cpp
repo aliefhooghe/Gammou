@@ -30,14 +30,15 @@ namespace Gammou {
                     [&](View::slider& self)
                     {
                         m_control->set_normalized_value(
-                            self.get_normalized_value());
+                            static_cast<double>(self.get_normalized_value()));
                     },
                     x_offset, y_offset,
                     get_width() - 2 * x_offset,
 					GuiProperties::slider_on_color,
 					GuiProperties::slider_off_color);
             
-            slider_control->set_normalized_value(control->get_normalized_value());
+            slider_control->set_normalized_value(
+                        static_cast<float>(control->get_normalized_value()));
             add_widget(std::move(slider_control));
 		}
 
@@ -46,11 +47,11 @@ namespace Gammou {
         // value_slider_gui_component_factory implementation
 
 		value_slider_gui_component_factory::value_slider_gui_component_factory()
-			: abstract_gui_component_factory("Slider", "Control", control_ids::slider_value_id)
+            : abstract_gui_component_factory("Slider", ControlCategory, control_ids::slider_value_id)
 		{
 		}
 
-		std::unique_ptr<gui_sound_component> value_slider_gui_component_factory::create_complete_component(
+		std::unique_ptr<gui_sound_component> value_slider_gui_component_factory::create_gui_component(
 			const int x, const int y, Sound::data_input_stream & source, const unsigned int channel_count)
 		{
 			// Load normalized value
@@ -66,8 +67,8 @@ namespace Gammou {
 			return std::make_unique<slider_gui_component>(sound_component, x, y);
 		}
 
-		std::unique_ptr<gui_sound_component> value_slider_gui_component_factory::create_complete_component(
-			const int x, const int y, const Sound::answer_form & answer_form, const unsigned int channel_count)
+		std::unique_ptr<gui_sound_component> value_slider_gui_component_factory::create_gui_component(
+            const int x, const int y, const Sound::answer_form&, const unsigned int channel_count)
 		{
 			control_sound_component *sound_component =
 				new value_sound_component("Slider", channel_count,
@@ -81,11 +82,11 @@ namespace Gammou {
 		// gain_slider_gui_component_factory Implementation
 
 		gain_slider_gui_component_factory::gain_slider_gui_component_factory()
-			: abstract_gui_component_factory("Gain Slider", "Control", control_ids::slider_gain_id)
+            : abstract_gui_component_factory("Gain Slider", ControlCategory, control_ids::slider_gain_id)
 		{
 		}
 
-		std::unique_ptr<gui_sound_component> gain_slider_gui_component_factory::create_complete_component(
+		std::unique_ptr<gui_sound_component> gain_slider_gui_component_factory::create_gui_component(
 			const int x, const int y, Sound::data_input_stream & source, const unsigned int channel_count)
 		{
 			// Load normalized value
@@ -101,8 +102,8 @@ namespace Gammou {
 			return std::make_unique<slider_gui_component>(sound_component, x, y);
 		}
 
-		std::unique_ptr<gui_sound_component> gain_slider_gui_component_factory::create_complete_component(
-			const int x, const int y, const Sound::answer_form & answer_form, const unsigned int channel_count)
+		std::unique_ptr<gui_sound_component> gain_slider_gui_component_factory::create_gui_component(
+            const int x, const int y, const Sound::answer_form&, const unsigned int channel_count)
 		{
 			control_sound_component *sound_component =
 				new gain_sound_component("Gain Slider", channel_count,

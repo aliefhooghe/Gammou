@@ -5,8 +5,13 @@ namespace Gammou {
 
 	namespace Sound {
 
-		abstract_plugin_factory::abstract_plugin_factory(const std::string & name, const std::string & category, unsigned int factory_id)
-			: m_name(name), m_category(m_name), m_factory_id(factory_id)
+        abstract_plugin_factory::abstract_plugin_factory(
+            const std::string & name,
+            const std::string & category,
+            unsigned int factory_id)
+        :   m_name(name),
+            m_category(category),
+            m_factory_id(factory_id)
 		{
 		}
 
@@ -49,10 +54,12 @@ namespace Gammou {
 
 		///////////////
 
-		plugin_factory::plugin_factory(const std::string& name, const std::string& category, const unsigned int factory_id)
-			: abstract_plugin_factory(name, category, factory_id)
+        plugin_factory::plugin_factory(
+            const std::string& name,
+            const std::string& category,
+            const unsigned int factory_id)
+        :   abstract_plugin_factory(name, category, factory_id)
 		{
-			
 		}
 
 		abstract_sound_component * plugin_factory::get_new_sound_component(data_input_stream & source, const unsigned int channel_count)

@@ -19,7 +19,6 @@ namespace Gammou {
 				~sum_component();
 
 				void process(const double input[]) override;
-				void initialize_process() override;
 				void on_input_connection(const unsigned int input_id) override;
 				void on_input_deconnection(const unsigned int input_id) override;
 			private:
@@ -32,7 +31,7 @@ namespace Gammou {
 			public:
 				sum_component_factory()
 					: default_plugin_factory<sum_component>
-						("Sum", "Calculus", sum_component_id) {}
+                        ("Sum", ComponentCategory::Calculus, sum_component_id) {}
 				~sum_component_factory() {}
 			};
 

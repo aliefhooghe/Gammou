@@ -25,10 +25,10 @@ namespace Gammou {
 			}
 		}
 
-		const std::string & gui_component_main_factory::get_factory_description(const unsigned int factory_id)
+        const std::string & gui_component_main_factory::get_factory_category(const unsigned int factory_id)
 		{
 			if (m_main_factory.check_factory_presence(factory_id)) {
-				return m_main_factory.get_factory_description(factory_id);
+                return m_main_factory.get_factory_category(factory_id);
 			}
 			else {
 				abstract_gui_component_factory *factory = factory_by_id(factory_id);
@@ -48,7 +48,7 @@ namespace Gammou {
 		}
 
 		std::unique_ptr<gui_sound_component>
-            gui_component_main_factory::get_new_complete_component(
+            gui_component_main_factory::get_new_gui_component(
                 const unsigned int factory_id,
                 const int x, const int y,
                 Sound::data_input_stream & data,
@@ -65,12 +65,12 @@ namespace Gammou {
 			}
 			else {
 				abstract_gui_component_factory *factory = factory_by_id(factory_id);
-				return factory->create_complete_component(x, y, data, channel_count);
+				return factory->create_gui_component(x, y, data, channel_count);
 			}
 		}
 
 		std::unique_ptr<gui_sound_component>
-			gui_component_main_factory::get_new_complete_component(
+            gui_component_main_factory::get_new_gui_component(
 				const unsigned int factory_id, 
 				const int x, const int y, 
 				const Sound::answer_form & answer_form, 
@@ -85,7 +85,7 @@ namespace Gammou {
 			}
 			else {
 				abstract_gui_component_factory *factory = factory_by_id(factory_id);
-				return factory->create_complete_component(x, y, answer_form, channel_count);
+				return factory->create_gui_component(x, y, answer_form, channel_count);
 			}
 		}
 
@@ -123,7 +123,7 @@ namespace Gammou {
             chunk_buffer.seek(0, Persistence::buffer_stream::seek_mode::SET);
 
             //  ... and restore it in a new component
-            return get_new_complete_component(
+            return get_new_gui_component(
                         factory_id,
                         gui_x, gui_y,
                         chunk_buffer,

@@ -14,6 +14,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_subdirectory("../Process" Process)
  
 set(SYNTHESIZER_SRC
+  component_category.h
 	sound_processing_helper.h
 	sound_processing_helper.cpp
   synthesizer.h

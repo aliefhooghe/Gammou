@@ -23,7 +23,7 @@ namespace Gammou {
 
 			public:
 				product_factory()
-					: default_plugin_factory<product_component>("Product", "Calculus", product_component_id) {}
+                    : default_plugin_factory<product_component>("Product", ComponentCategory::Calculus, product_component_id) {}
 				~product_factory() {}
 			};
 

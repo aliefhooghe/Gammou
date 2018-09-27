@@ -21,6 +21,13 @@ namespace Gammou {
 		public:
             virtual ~data_input_stream() {}
 			virtual unsigned int read(void *data, const unsigned int size) =0;
+
+			template<class T>
+			unsigned int read(T& lvalue)
+			{
+				static_assert(std::is_integral<T>::value);
+				return read(&lvalue, sizeof(T));
+			}
 		};
 
         class data_output_stream : public virtual abstract_data_stream {
@@ -29,10 +36,11 @@ namespace Gammou {
 			virtual unsigned int write(void *data, const unsigned int size) =0;
 		};
 
-
         class data_stream :
                 public data_input_stream,
                 public data_output_stream {};
+
+
 
 
 	} /* Sound */

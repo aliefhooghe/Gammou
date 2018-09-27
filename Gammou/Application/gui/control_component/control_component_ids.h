@@ -15,6 +15,7 @@ namespace Gammou {
 			slider_gain_id		=	505u
 		};
 
+        constexpr auto ControlCategory = "Control";
 	}
 
 }

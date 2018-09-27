@@ -29,7 +29,7 @@ namespace Gammou {
 			m_value.force_current_value(m_param_value);
 		}
 
-		void value_sound_component::process(const double input[])
+        void value_sound_component::process(const double[])
 		{
 			m_output[0] = m_value;
 			m_value.tick(m_param_value, get_sample_duration());

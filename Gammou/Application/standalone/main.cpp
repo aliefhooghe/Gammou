@@ -173,5 +173,7 @@ int main()
     if ( dac.isStreamOpen() ) 
         dac.closeStream();
     
+
+    DEBUG_PRINT("FIN\n");
     return 0;
 }

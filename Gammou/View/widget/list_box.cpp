@@ -119,12 +119,12 @@ namespace Gammou {
 
 		bool list_box::on_mouse_drag_end(const mouse_button button, const int x, const int y)
 		{
-			if (button == mouse_button::LeftButton) {
-				update_selected(y);
-				return true;
-			}
+            if (button == mouse_button::LeftButton) {
+                update_selected(y);
+                return true;
+            }
 
-			return false;
+            return false;
 		}
 
 		bool list_box::on_key_down(const keycode key)
@@ -177,7 +177,7 @@ namespace Gammou {
 					m_first_displayed + m_displayed_item_count);
 
 			// Background
-			cairo_rectangle(cr, 0, 0, static_cast<float>(get_width()), static_cast<float>(get_height()));
+            cairo_rectangle(cr, 0, 0, static_cast<double>(get_width()), static_cast<double>(get_height()));
 			cairo_helper::set_source_color(cr, m_background_color);
 			cairo_fill(cr);
 
@@ -189,7 +189,7 @@ namespace Gammou {
 			unsigned int j = 0;
 			for (unsigned int i = m_first_displayed; i < end_displayed; ++i, ++j) {
 				const rectangle rect(
-					epsilon, // for text
+                    static_cast<int>(epsilon), // for text
 					static_cast<int>(epsilon + static_cast<float>(j) * m_item_height),
 					static_cast<unsigned int>(m_item_width),
 					static_cast<unsigned int>(m_item_height));

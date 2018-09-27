@@ -14,6 +14,8 @@ namespace Gammou {
         : View::window_widget(px_width, px_height, View::cl_gray)
     {
 
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
         //  Label Test
 
         add_widget(
@@ -22,6 +24,8 @@ namespace Gammou {
                 10, 10, 100, 12,
                 View::cl_black));
 
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
         //  Push Button Test
 
         add_widget(
@@ -33,6 +37,8 @@ namespace Gammou {
                 "Click Me !",
                 10, 100));
 
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
         //  Knob Test
 
         add_widget(
@@ -45,6 +51,8 @@ namespace Gammou {
                 10, 150
             ));
 
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
         //  Slider TEst
 
         add_widget(
@@ -55,13 +63,8 @@ namespace Gammou {
                 },
                 100, 150, 250));
 
-        //  Edit Panel Test
-		/*
-        auto edit_panel =
-            std::make_unique<View::edit_panel<> >(
-                500, 150,
-                300, 300);
-		*/
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
         //  ListBox Test
 
         auto list_box_ptr = 
@@ -100,6 +103,8 @@ namespace Gammou {
 
         add_widget(std::move(list_box_ptr));
 
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
         //  File Explorer Dialog Test
 
         add_widget(
@@ -116,7 +121,9 @@ namespace Gammou {
                 "Open Explorer",
                 400, 400));
 
-        //  Close Diaplay From Widget Test
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
+        //  Close Display From Widget Test
 
 		add_widget(
 			std::make_unique<View::push_button>(
@@ -128,6 +135,8 @@ namespace Gammou {
 				"Close",
                 600, 40));
 
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
         //  Dialog Opening Test
 
 		add_widget(
@@ -140,9 +149,39 @@ namespace Gammou {
 				"Dialog",
                 820, 400));
 
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
+        //  directory view test
 
+        auto& d1 = m_model.add_directory("Mes Documents");
+        auto& d2 = m_model.add_directory("Ma Musique");
 
-        //add_widget(std::move(edit_panel));
+        d2.add_value("music1.mp3", 1);
+        d2.add_value("music42.wav", 42);
+        auto& d3 = d2.add_directory("Mozart");
+        auto& d4 = d3.add_directory("Requiem");
+
+        d3.add_value("La flute", 1);
+        d4.add_value("Introitus", 5);
+        d4.add_value("Lacrimosa", 2);
+        d3.add_value("Don Julius", 2);
+
+        d1.add_value("Document1" , 0);
+        d1.add_value("Document2", 0);
+
+        auto tree_view =
+            std::make_unique<View::directory_view<int> >(
+                m_model,
+                500, 150,
+                200, 400, 18);
+
+        tree_view->set_value_select_event(
+        [](View::directory_view<int>&, const std::string& key, const int& value)
+        {
+           DEBUG_PRINT("Selected %s, value = %d\n", key.c_str(), value);
+        });
+
+        add_widget(std::move(tree_view));
     }
 
     bool test_window::on_mouse_dbl_click(const int x, const int y)

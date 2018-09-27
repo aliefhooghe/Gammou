@@ -11,8 +11,6 @@ namespace Gammou {
 
 		namespace Builtin {
 
-			// A netoyer
-
 			class adsr_env : public sound_component {
 
 			public:
@@ -31,7 +29,7 @@ namespace Gammou {
 
 			public:
 				adsr_env_factory()
-					: default_plugin_factory<adsr_env>("AdsrEnv", "Envelope", adsr_env_component_id) {}
+                    : default_plugin_factory<adsr_env>("AdsrEnv", ComponentCategory::Envelope, adsr_env_component_id) {}
 				~adsr_env_factory() {}
 			};
 

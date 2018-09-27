@@ -11,10 +11,10 @@ public:
 	template_component(const unsigned int channel_count);
 	~template_component() {}
 
-	// Doit être implémentées
+    // Doit ?tre implémentées
 	void process(const double input[]) override;
 
-	// Peuvent être implémentées
+    // Peuvent ?tre implémentées
 	void initialize_process() override;
 	//void on_sample_rate_change(const double new_sample_rate) override;
 private:

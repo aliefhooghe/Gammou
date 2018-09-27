@@ -57,30 +57,23 @@ namespace Gammou {
 
 			// Component Choice ListBox
 
-			auto plugin_list_box = 
-				std::make_unique<View::list_box>(
+            auto selector =
+                std::make_unique<component_selector>(
 					0, GuiProperties::main_gui_toolbox_height - 2, 
 					GuiProperties::main_gui_component_choice_box_width, 
 					GuiProperties::main_gui_component_choice_box_height + 2, 
-					GuiProperties::main_gui_component_choice_box_item_count,
-					GuiProperties::main_gui_list_box_selected_item_color, 
-					GuiProperties::main_gui_list_box_hovered_item_color,
-					GuiProperties::main_gui_list_box_background, 
-					GuiProperties::main_gui_list_box_font_color, 
-					GuiProperties::main_gui_component_choice_box_font_size);
+                    GuiProperties::main_gui_component_choice_box_item_count,
+                    m_gui_component_factory);
 
-            plugin_list_box->
-                set_item_select_event(
-                    [&](View::list_box&, unsigned int id)
-                    {
-                        const unsigned int factory_id = m_factory_ids[id];
-                        DEBUG_PRINT("SELECT factory id %u\n", factory_id);
-                        m_gui_polyphonic_circuit->select_component_creation_factory_id(factory_id);
-                        m_gui_master_circuit->select_component_creation_factory_id(factory_id);
-                    });
+            selector->set_value_select_event(
+            [this](View::directory_view<unsigned int>&, const std::string&, const unsigned int& id)
+            {
+                m_gui_master_circuit->select_component_creation_factory_id(id);
+                m_gui_polyphonic_circuit->select_component_creation_factory_id(id);
+            });
 
-			m_plugin_list_box = &(*plugin_list_box);
-			add_widget(std::move(plugin_list_box));
+            m_component_selector = selector.get();
+            add_widget(std::move(selector));
 						
 			//// ToolBox
 
@@ -272,68 +265,39 @@ namespace Gammou {
 			return true;
 		}
 
-        void synthesizer_gui::add_plugin_factory(std::unique_ptr<Sound::abstract_plugin_factory> && factory)
-		{
-			m_plugin_list_box->add_item(factory->get_name());
-			m_factory_ids.push_back(factory->get_factory_id());
-            m_gui_component_factory.add_plugin_factory(std::move(factory));
-        }
-
-        void synthesizer_gui::add_control_factory(std::unique_ptr<abstract_gui_component_factory> && factory)
-		{
-			m_plugin_list_box->add_item(factory->get_name());
-			m_factory_ids.push_back(factory->get_factory_id());
-            m_gui_component_factory.add_complete_factory(std::move(factory));
-        }
-
-		void synthesizer_gui::load_plugin_factory(const std::string & path)
-		{
-			const unsigned int factory_id = m_gui_component_factory.load_plugin_factory(path);
-
-			DEBUG_PRINT("Loaded Factory : id = %u\n", factory_id);
-
-			m_plugin_list_box->add_item(m_gui_component_factory.get_factory_name(factory_id));
-			m_factory_ids.push_back(factory_id);
-		}
-
-
-
 		void synthesizer_gui::init_main_factory()
 		{
-
 			// Built In Components
-            add_plugin_factory(std::make_unique<Sound::Builtin::sin_factory>());
-            add_plugin_factory(std::make_unique<Sound::Builtin::sum_component_factory>());
-            add_plugin_factory(std::make_unique<Sound::Builtin::product_factory>());
-            add_plugin_factory(std::make_unique<Sound::Builtin::lp2_factory>());
-            add_plugin_factory(std::make_unique<Sound::Builtin::adsr_env_factory>());
-            add_plugin_factory(std::make_unique<Sound::Builtin::saw_factory>());
+            m_component_selector->add_plugin_factory(std::make_unique<Sound::Builtin::sin_factory>());
+            m_component_selector->add_plugin_factory(std::make_unique<Sound::Builtin::sum_component_factory>());
+            m_component_selector->add_plugin_factory(std::make_unique<Sound::Builtin::product_factory>());
+            m_component_selector->add_plugin_factory(std::make_unique<Sound::Builtin::lp2_factory>());
+            m_component_selector->add_plugin_factory(std::make_unique<Sound::Builtin::adsr_env_factory>());
+            m_component_selector->add_plugin_factory(std::make_unique<Sound::Builtin::saw_factory>());
 
-
-            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(cos));
-            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(exp));
-            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(log));
-            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(cosh));
-            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(sinh));
-            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(sqrt));
-            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(fabs));
-            add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(atan));
+            m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(cos));
+            m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(exp));
+            m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(log));
+            m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(cosh));
+            m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(sinh));
+            m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(sqrt));
+            m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(fabs));
+            m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(atan));
+            m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(tanh));
 
 			// Control Components
+            m_component_selector->add_control_factory(std::make_unique<value_knob_gui_component_factory>());
+            m_component_selector->add_control_factory(std::make_unique<gain_knob_gui_component_factory>());
 
-            add_control_factory(std::make_unique<value_knob_gui_component_factory>());
-            add_control_factory(std::make_unique<gain_knob_gui_component_factory>());
+            m_component_selector->add_control_factory(std::make_unique<value_slider_gui_component_factory>());
+            m_component_selector->add_control_factory(std::make_unique<gain_slider_gui_component_factory>());
 
-            add_control_factory(std::make_unique<value_slider_gui_component_factory>());
-            add_control_factory(std::make_unique<gain_slider_gui_component_factory>());
+            m_component_selector->add_control_factory(std::make_unique<value_integer_gui_component_factory>());
+            m_component_selector->add_control_factory(std::make_unique<gain_integer_gui_component_factory>());
 
-            add_control_factory(std::make_unique<value_integer_gui_component_factory>());
-            add_control_factory(std::make_unique<gain_integer_gui_component_factory>());
-
-            add_control_factory(std::make_unique<user_gui_component_factory>(m_gui_component_factory));
+            m_component_selector->add_control_factory(std::make_unique<user_gui_component_factory>(m_gui_component_factory));
 
 			// Plugins Components
-
 			const std::string plugin_dir_path(GAMMOU_PLUGINS_DIRECTORY_PATH);
 			
 			try {
@@ -341,7 +305,7 @@ namespace Gammou {
 					try {
 						const std::string plugin_path(p.path().string());
 						DEBUG_PRINT("Loading %s\n", plugin_path.c_str());
-						load_plugin_factory(plugin_path);
+                        m_component_selector->load_plugin_factory(plugin_path);
 					}
 					catch(...){
 						DEBUG_PRINT("Failed\n");
@@ -349,7 +313,7 @@ namespace Gammou {
 				}
 			}
 			catch(...){
-				DEBUG_PRINT("Error while loding plugins in '%s'\n", GAMMOU_PLUGINS_DIRECTORY_PATH);
+                DEBUG_PRINT("Error while listing plugin directory '%s'\n", GAMMOU_PLUGINS_DIRECTORY_PATH);
 			}
 		}
 
