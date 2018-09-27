@@ -22,13 +22,13 @@ namespace Gammou {
                 using value_select_callback =
                     std::function<void(directory_view<Value>&, const std::string& key, const Value&)>;
 
-                explicit directory_view(
+                directory_view(
                     model& m,
                     const int x,
                     const int y,
                     const unsigned int width,
                     const unsigned int height,
-                    const unsigned int displayed_items_count,
+                    const unsigned int displayed_cell_count,
                     const color selected_cell_color = cl_lightgrey,
                     const color hovered_cell_color = cl_lemonchiffon,
                     const color background = cl_white,
@@ -62,7 +62,6 @@ namespace Gammou {
                     const unsigned int level);
 
                 bool is_open(const typename model::directory& n) const;
-                bool is_directory(const typename model::node& node);
 
                 model& m_model;
 
@@ -88,6 +87,9 @@ namespace Gammou {
 
                 value_select_callback m_value_select_callback;
         };
+
+
+        //--------------------------------------------------------------------------------------
 
         //  Drawing constants
 
@@ -238,7 +240,7 @@ namespace Gammou {
 
             const auto& node = *ptr;
 
-            if (is_directory(node)) {
+            if (m_model.is_directory(node)) {
                 const auto& dir =
                     std::get<typename model::directory>(node.second);
                 m_node_is_open[&dir] = !(is_open(dir));
@@ -283,7 +285,7 @@ namespace Gammou {
 
             unsigned int text_offset = epsilon;
 
-            if (is_directory(node)) {   //  Arrow
+            if (m_model.is_directory(node)) {   //  Arrow
                 const auto& dir =
                     std::get<typename model::directory>(node.second);
 
@@ -339,7 +341,7 @@ namespace Gammou {
                 if (cell >= m_displayed_cell_count)
                     break;
 
-                if (is_directory(node)) {
+                if (m_model.is_directory(node)) {
                     const auto& dir =
                         std::get<typename model::directory>(node.second);
 
@@ -359,13 +361,6 @@ namespace Gammou {
                 return false;
             else
                 return it->second;
-        }
-
-        template<class Value>
-        bool directory_view<Value>::is_directory(const typename model::node& node)
-        {
-            const auto& item = node.second;
-            return std::holds_alternative<typename model::directory>(item);
         }
 
     } /* View */

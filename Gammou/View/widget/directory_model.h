@@ -11,14 +11,10 @@ namespace Gammou {
 
 		//  TODO add Observers
 
-
-		template<
-			class Key,
-			class Value>
+		template<class Key, class Value>
 		class directory_model {
 
 			public:
-
 				using directory =
 					std::unique_ptr<
 						directory_model<
@@ -34,13 +30,29 @@ namespace Gammou {
 					std::pair<const Key, item>;
 
 				virtual ~directory_model() {}
+				
 				virtual unsigned int get_item_count() const = 0;
-				virtual item& get_item(const Key& key) = 0;
+				virtual item* get_item(const Key& key) = 0;
 				virtual node& get_node(const unsigned int index) = 0;
+				
+				//	todo move sementic + add_dir(key, directory)
 				virtual directory_model<Key, Value>& add_directory(const Key& key) = 0;
 				virtual void add_value(const Key& key, const Value& value) = 0;
+				virtual bool contains(const Key& k) const = 0;
+
+				bool is_directory(const item& item)
+				{
+					return std::holds_alternative<directory>(item);
+				}
+
+				bool is_directory(const node& node)
+				{
+					return is_directory(node.second);
+				}
 		};
 
+
+		//--------------------------------------------------------------------
 
 		template<class Key, class Value>
 		class storage_directory_model : public directory_model<Key, Value> {
@@ -56,12 +68,13 @@ namespace Gammou {
 				~storage_directory_model();
 
 				// abstract_directory_model ovrride
-				unsigned int get_item_count() const override;
-				item& get_item(const Key& key) override;
-				node& get_node(const unsigned int index) override;
+				virtual unsigned int get_item_count() const override;
+				virtual item* get_item(const Key& key) override;
+				virtual node& get_node(const unsigned int index) override;
+				virtual bool contains(const Key& k) const override;
 
-				storage_directory_model<Key, Value>& add_directory(const Key& key) override;
-				void add_value(const Key& key, const Value& value) override;
+				virtual storage_directory_model<Key, Value>& add_directory(const Key& key) override;
+				virtual void add_value(const Key& key, const Value& value) override;
 
 			private:
 				std::map<Key, item> m_child;
@@ -90,15 +103,21 @@ namespace Gammou {
 		}
 
 		template<class Key, class Value>
-		typename storage_directory_model<Key, Value>::item&
+		bool storage_directory_model<Key, Value>::contains(const Key& k) const
+		{
+			return (m_child.find(k) != m_child.end());
+		}
+
+		template<class Key, class Value>
+		typename storage_directory_model<Key, Value>::item *
 		storage_directory_model<Key, Value>::get_item(const Key& key)
 		{
 			auto it = m_child.find(key);
 
 			if (it == m_child.end())
-				throw std::domain_error("storage directory model : Unknonw key");
+				return nullptr;
 			else
-				return it->second;
+				return &(it->second);
 		}
 
 		template<class Key, class Value>
