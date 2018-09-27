@@ -23,6 +23,8 @@ namespace Gammou {
 
 		public:
 			main_factory();
+            main_factory(const main_factory&) = delete;
+            main_factory(main_factory &&) = delete;
 			~main_factory();
 
 			//-------------
@@ -32,7 +34,7 @@ namespace Gammou {
 
 			//--------------
 			const std::string& get_factory_name(const unsigned int factory_id);
-			const std::string& get_factory_description(const unsigned int factory_id);
+			const std::string& get_factory_category(const unsigned int factory_id);
 
 			const request_form& get_plugin_request_form(const unsigned int factory_id);
 

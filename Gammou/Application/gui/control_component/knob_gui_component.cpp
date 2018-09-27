@@ -44,7 +44,7 @@ namespace Gammou {
 		{
 		}
 
-		std::unique_ptr<gui_sound_component> value_knob_gui_component_factory::create_complete_component(
+		std::unique_ptr<gui_sound_component> value_knob_gui_component_factory::create_gui_component(
 			const int x, const int y, Sound::data_input_stream & source, const unsigned int channel_count)
 		{
 			// Load normalized value
@@ -58,7 +58,7 @@ namespace Gammou {
 			return std::make_unique<knob_gui_component>(sound_component, x, y);
 		}
 
-		std::unique_ptr<gui_sound_component> value_knob_gui_component_factory::create_complete_component(
+		std::unique_ptr<gui_sound_component> value_knob_gui_component_factory::create_gui_component(
 			const int x, const int y, const Sound::answer_form & answer_form, const unsigned int channel_count)
 		{
 			// No answer needed, default knob
@@ -79,7 +79,7 @@ namespace Gammou {
 		{
 		}
 
-		std::unique_ptr<gui_sound_component> gain_knob_gui_component_factory::create_complete_component(
+		std::unique_ptr<gui_sound_component> gain_knob_gui_component_factory::create_gui_component(
 			const int x, const int y, Sound::data_input_stream & source, const unsigned int channel_count)
 		{
 			// Load normalized value
@@ -93,7 +93,7 @@ namespace Gammou {
 			return std::make_unique<knob_gui_component>(sound_component, x, y);
 		}
 
-		std::unique_ptr<gui_sound_component> gain_knob_gui_component_factory::create_complete_component(
+		std::unique_ptr<gui_sound_component> gain_knob_gui_component_factory::create_gui_component(
 			const int x, const int y, const Sound::answer_form & answer_form, const unsigned int channel_count)
 		{
 			// No answer needed, default knob

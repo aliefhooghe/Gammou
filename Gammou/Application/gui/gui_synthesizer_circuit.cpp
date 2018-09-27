@@ -88,7 +88,7 @@ namespace Gammou {
                     try {
                         std::unique_ptr<gui_sound_component>
                             component =
-                                m_complete_component_factory.get_new_complete_component(
+                                m_complete_component_factory.get_new_gui_component(
                                     m_creation_factory_id,
                                     convert_x(static_cast<unsigned int>(x)),
                                     convert_y(static_cast<unsigned int>(y)),
@@ -297,7 +297,7 @@ namespace Gammou {
 
                 // Build component from data
                 std::unique_ptr<gui_sound_component>
-                    component = m_complete_component_factory.get_new_complete_component(
+                    component = m_complete_component_factory.get_new_gui_component(
                         record_header.factory_id,
                         record_header.gui_x_pos,
                         record_header.gui_y_pos,

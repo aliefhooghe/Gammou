@@ -17,16 +17,16 @@ namespace Gammou {
 			~gui_component_main_factory();
 
 			const std::string& get_factory_name(const unsigned int factory_id);
-			const std::string& get_factory_description(const unsigned int factory_id);
+            const std::string& get_factory_category(const unsigned int factory_id);
 
 			const Sound::request_form& get_plugin_request_form(const unsigned int factory_id);
 
-			std::unique_ptr<gui_sound_component> get_new_complete_component(
+            std::unique_ptr<gui_sound_component> get_new_gui_component(
 					const unsigned int factory_id, 
 					const int x, const int y, 
 					Sound::data_input_stream& data, 
 					const unsigned int channel_count);
-			std::unique_ptr<gui_sound_component> get_new_complete_component(
+            std::unique_ptr<gui_sound_component> get_new_gui_component(
 				const unsigned int factory_id,
 				const int x, const int y,
 				const Sound::answer_form& answer_form,
