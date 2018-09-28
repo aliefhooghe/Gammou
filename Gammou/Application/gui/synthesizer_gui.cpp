@@ -55,7 +55,7 @@ namespace Gammou {
             m_pages = pages.get();
 			add_widget(std::move(pages));
 
-			// Component Choice ListBox
+			// Component Choice DirectoryView
 
             auto selector =
                 std::make_unique<component_selector>(
@@ -307,16 +307,18 @@ namespace Gammou {
 						DEBUG_PRINT("Loading %s\n", plugin_path.c_str());
                         m_component_selector->load_plugin_factory(plugin_path);
 					}
-					catch(...){
-						DEBUG_PRINT("Failed\n");
+					catch(std::exception& e){
+						DEBUG_PRINT("Failed : %s\n", e.what());
 					}
+
 				}
 			}
-			catch(...){
-                DEBUG_PRINT("Error while listing plugin directory '%s'\n", GAMMOU_PLUGINS_DIRECTORY_PATH);
+			catch(std::exception& e){
+                DEBUG_PRINT(
+					"Error while listing plugin in directory '%s' : %s\n", 
+					GAMMOU_PLUGINS_DIRECTORY_PATH, e.what());
 			}
 		}
-
 
 	} /* Gui */
 

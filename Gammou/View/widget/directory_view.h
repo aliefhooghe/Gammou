@@ -187,10 +187,6 @@ namespace Gammou {
         template<class Value>
         void directory_view<Value>::draw(cairo_t *cr)
         {
-            //  Set Font settings
-            cairo_set_font_size(cr, m_font_size);
-            cairo_select_font_face(cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-
             // Background
             cairo_rectangle(
                 cr, 0, 0,
@@ -283,9 +279,10 @@ namespace Gammou {
 
             // Text
 
+            const bool is_directory = m_model.is_directory(node);
             unsigned int text_offset = epsilon;
 
-            if (m_model.is_directory(node)) {   //  Arrow
+            if (is_directory) {   //  Arrow
                 const auto& dir =
                     std::get<typename model::directory>(node.second);
 
@@ -310,10 +307,14 @@ namespace Gammou {
             }
 
             // Text
-
             const std::string& text = node.first;
 
+            //  Set Font settings
+            cairo_set_font_size(cr, m_font_size);
+            cairo_select_font_face(
+                cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, is_directory ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
             cairo_helper::set_source_color(cr, m_font_color);
+
             const rectangle
                 rect{left, top, width,
                     static_cast<int>(m_cell_height)};
