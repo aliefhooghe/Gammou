@@ -1,7 +1,6 @@
 #ifndef GAMMOU_SAW_H_
 #define GAMMOU_SAW_H_
 
-
 #include <cmath>
 #include <limits>
 #include <algorithm>
@@ -45,8 +44,8 @@ namespace Gammou {
 
 				void process(const double input[]) override
 				{
-					const double f = input[0];
-					const double f_estim = f;// (f + 1.5 * (f - m_f_prev));
+					const double f = std::abs(input[0]);
+					const double f_estim = f >= 0.5f ? f : 0.5f;
 					const double t = m_time;
 					const double dt = get_sample_duration();
 

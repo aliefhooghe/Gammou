@@ -55,13 +55,16 @@ namespace Gammou {
         ///////////////////////////////////////////////////////////////////////
         //  Slider TEst
 
-        add_widget(
+        auto slider =
             std::make_unique<View::slider>(
-                [](View::slider& slider)
+                [](View::slider& s)
                 {
-                    std::cout << "Slider Value = " << slider.get_normalized_value() << std::endl;
+                    const float f = s.get_normalized_value();
+                    std::cout << "Slider Value = " << f << std::endl;
                 },
-                100, 150, 250));
+                100, 150, 250);
+
+        add_widget(std::move(slider));
 
         ///////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////

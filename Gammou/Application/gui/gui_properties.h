@@ -91,7 +91,7 @@ namespace Gammou {
 			const unsigned int main_gui_component_choice_box_font_size = 11;
 #endif
 
-			const unsigned int main_gui_component_choice_box_item_count = 40;
+			const unsigned int main_gui_component_choice_box_item_count = 30;
 
 			const unsigned int main_gui_circuit_width = main_gui_width - main_gui_component_choice_box_width;
 			const unsigned int main_gui_circuit_height = main_gui_height - main_gui_toolbox_height;
