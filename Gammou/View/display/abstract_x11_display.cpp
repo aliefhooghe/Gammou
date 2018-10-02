@@ -6,7 +6,7 @@
 
 #define GAMMOU_X_EVENT_MASK KeyPressMask | KeyReleaseMask | ExposureMask | StructureNotifyMask | \
                             LeaveWindowMask | PointerMotionMask | ButtonPressMask | ButtonReleaseMask | \
-                            EnterWindowMask
+                            EnterWindowMask | ConfigureNotify
 
 namespace Gammou {
 
@@ -93,9 +93,6 @@ namespace Gammou {
             if( m_xvisual_info_found == nullptr || found_count < 1 )
                 throw std::runtime_error("No Visual With Double Buffering\n");
 
-            // Enbale window close event
-            m_wm_delete_message = XInternAtom(m_display, "WM_DELETE_WINDOW", false);
-
             const int screen = DefaultScreen(m_display);
 
             XSetWindowAttributes xattributs;
@@ -112,18 +109,18 @@ namespace Gammou {
             if (parent != 0)
                 XReparentWindow(m_display, m_window, parent, 0, 0);
             
-            // enable window close event
+            // Enbale window close event
+            m_wm_delete_message = XInternAtom(m_display, "WM_DELETE_WINDOW", false);
             XSetWMProtocols(m_display, m_window, &m_wm_delete_message, 1);
 
-            // Prevent resizing (not handled on X11 now)
             XSizeHints constrain;
             std::memset(&constrain, 0, sizeof(constrain));
 
             constrain.flags = PMinSize | PMaxSize;
-            constrain.max_width = px_width;
-            constrain.min_width = px_width;
-            constrain.max_height = px_height;
-            constrain.min_height = px_height;
+            constrain.max_width = static_cast<int>(px_width);
+            constrain.min_width = static_cast<int>(px_width);
+            constrain.max_height = static_cast<int>(px_height);
+            constrain.min_height = static_cast<int>(px_height);
 
             XSetWMNormalHints(m_display, m_window, &constrain);
 
@@ -219,8 +216,6 @@ namespace Gammou {
             switch( event.type ){
 
                     case ButtonPress:
-            
-
                         switch(event.xbutton.button){
 
                             case 1: // left
@@ -245,7 +240,6 @@ namespace Gammou {
                             case 5:
                             self->sys_mouse_wheel(-1.0f);
                             break;
-
                         }
                         break;
 
@@ -338,6 +332,22 @@ namespace Gammou {
                             
                         }
                         break;
+/*
+                    case ConfigureNotify:
+                        {
+                            const auto w = static_cast<int>(self->get_display_width());
+                            const auto h = static_cast<int>(self->get_display_height());
+
+                            const auto& conf = event.xconfigure;
+
+                            if  (conf.width != w || conf.height != h) {
+                                cairo_xlib_surface_set_size(
+                                    self->m_cairo_surface,
+                                    conf.width, conf.height);
+                            }
+                        }
+                        break;
+*/
 
                     default:
                         break;

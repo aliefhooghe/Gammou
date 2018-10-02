@@ -155,6 +155,7 @@ int main()
 #endif
 
     //-----
+
     display.open("Gammou");
     display.wait();
 
