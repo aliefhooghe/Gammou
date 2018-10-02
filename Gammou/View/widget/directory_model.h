@@ -31,21 +31,22 @@ namespace Gammou {
 
 				virtual ~directory_model() {}
 				
-				virtual unsigned int get_item_count() const = 0;
+                virtual unsigned int get_item_count() = 0;
 				virtual item* get_item(const Key& key) = 0;
 				virtual node& get_node(const unsigned int index) = 0;
 				
 				//	todo move sementic + add_dir(key, directory)
 				virtual directory_model<Key, Value>& add_directory(const Key& key) = 0;
+                virtual directory_model<Key, Value>& add_directory(const Key&, directory && dir) = 0;
 				virtual void add_value(const Key& key, const Value& value) = 0;
-				virtual bool contains(const Key& k) const = 0;
+                virtual bool contains(const Key& k) = 0;
 
-				bool is_directory(const item& item)
+                static bool is_directory(const item& item)
 				{
 					return std::holds_alternative<directory>(item);
 				}
 
-				bool is_directory(const node& node)
+                static bool is_directory(const node& node)
 				{
 					return is_directory(node.second);
 				}
@@ -68,12 +69,13 @@ namespace Gammou {
 				~storage_directory_model();
 
 				// abstract_directory_model ovrride
-				virtual unsigned int get_item_count() const override;
+                virtual unsigned int get_item_count() override;
 				virtual item* get_item(const Key& key) override;
 				virtual node& get_node(const unsigned int index) override;
-				virtual bool contains(const Key& k) const override;
+                virtual bool contains(const Key& k) override;
 
 				virtual storage_directory_model<Key, Value>& add_directory(const Key& key) override;
+                virtual directory_model<Key, Value>& add_directory(const Key&, directory && dir) override;
 				virtual void add_value(const Key& key, const Value& value) override;
 
 			private:
@@ -97,13 +99,13 @@ namespace Gammou {
 		}
 
 		template<class Key, class Value>
-		unsigned int storage_directory_model<Key, Value>::get_item_count() const
+        unsigned int storage_directory_model<Key, Value>::get_item_count()
 		{
 			return m_child.size();
 		}
 
 		template<class Key, class Value>
-		bool storage_directory_model<Key, Value>::contains(const Key& k) const
+        bool storage_directory_model<Key, Value>::contains(const Key& k)
 		{
 			return (m_child.find(k) != m_child.end());
 		}
@@ -132,16 +134,27 @@ namespace Gammou {
 		template<class Key, class Value>
 		storage_directory_model<Key, Value>& storage_directory_model<Key, Value>::add_directory(const Key& key)
 		{
-			auto dir =
-				std::make_unique<storage_directory_model<Key, Value> >();
-			auto dir_ptr = dir.get();
-			auto ret = m_child.emplace(key, std::move(dir));
+            auto dir = std::make_unique<storage_directory_model<Key, Value> >();
+            auto dir_ptr = dir.get();
 
-			if (!ret.second)
-				throw std::runtime_error("storage directory model : this directory already exist");
+            add_directory(key, std::move(dir));
 
-			return *dir_ptr;
+            return *dir_ptr;
 		}
+
+        template<class Key, class Value>
+        directory_model<Key, Value>& storage_directory_model<Key, Value>::add_directory(
+            const Key& key,
+            typename storage_directory_model<Key, Value>::directory && dir)
+        {
+            auto dir_ptr = dir.get();
+            auto ret = m_child.emplace(key, std::move(dir));
+
+            if (!ret.second)
+                throw std::runtime_error("storage directory model : this directory already exist");
+
+            return *dir_ptr;
+        }
 
 		template<class Key, class Value>
 		void storage_directory_model<Key, Value>::add_value(const Key& key, const Value& value)

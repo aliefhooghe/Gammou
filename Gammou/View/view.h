@@ -15,6 +15,7 @@
 #include "widget/dialog.h"
 #include "widget/proxy_widget.h"
 #include "widget/directory_view.h"
+#include "widget/file_system_view.h"
 //#include "widget/edit_panel.h"
 
 //----------------------------------------------------------------------
