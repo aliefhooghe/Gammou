@@ -62,7 +62,7 @@ namespace Gammou {
             add_widget(std::move(dir_view));
             
 #else
-			m_filename_was_set(false)
+			m_path_was_set(false)
 		{
 #endif
         }
@@ -116,8 +116,8 @@ namespace Gammou {
 			dialog.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
 			if (GetOpenFileNameA(&dialog)) {
-				m_filename = std::string(cpath);
-				m_filename_was_set = true;
+				m_path = std::string(cpath);
+				m_path_was_set = true;
 			}
 
 		}
