@@ -51,6 +51,7 @@ namespace Gammou {
 
             user_sound_component *component =
                 new user_sound_component("Nom", input_count, output_count, channel_count, m_factory);
+            stamp_sound_component(component);
 
             //  Load circuit state
             component->load_circuit_state(source);
@@ -64,6 +65,7 @@ namespace Gammou {
             //  TODO : ask user to get input and output count
             user_sound_component *component =
                 new user_sound_component("Nom", 3, 3, channel_count, m_factory);
+            stamp_sound_component(component);
 
             return std::make_unique<user_gui_component>(component, x, y);
         }
