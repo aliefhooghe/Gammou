@@ -9,11 +9,13 @@ namespace Gammou {
 		:	abstract_panel (w.get_absolute_rect()),
 			m_widget(w)
 		{
-
+            get_ownership(w);
 		}
 
 		proxy_widget::~proxy_widget()
-		{}
+        {
+            release_widget(m_widget);
+        }
 
 		bool proxy_widget::on_key_up(const keycode key)
 		{

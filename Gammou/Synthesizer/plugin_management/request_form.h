@@ -68,7 +68,7 @@ namespace Gammou {
 				std::make_unique<request_form>(request_list{});
 			auto& list = std::get<request_list>(*ret);
 			container_append(list, std::forward<Requests&&>(requests)...);
-			return std::move(ret);
+            return ret;
 		}
 
 		//	Answers
@@ -105,7 +105,7 @@ namespace Gammou {
 			
 			auto& list = std::get<answer_list>(*ret);
 			container_append(list, std::forward<Answers&&>(answers)...);
-			return std::move(ret);
+            return ret;
 		}
 
 	} /* Sound */

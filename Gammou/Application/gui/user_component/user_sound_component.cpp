@@ -1,5 +1,6 @@
 
 #include "user_sound_component.h"
+#include "gui_properties.h"
 
 namespace Gammou {
 
@@ -85,7 +86,9 @@ namespace Gammou {
 			m_output_component(output_count),
             m_gui_circuit(
                 factory, *this,
-                0, 0, 512, 512)
+                0, GuiProperties::user_component_editor_toolbox_height,
+                GuiProperties::user_component_editor_circuit_width,
+                GuiProperties::user_component_editor_circuit_height)
         {
 			m_frame.add_component(&m_input_component);
 			m_frame.add_component(&m_output_component);
@@ -182,6 +185,11 @@ namespace Gammou {
         View::widget& user_sound_component::get_gui_circuit()
         {
             return m_gui_circuit;
+        }
+
+        void user_sound_component::select_component_creation_factory_id(const unsigned int factory_id)
+        {
+            m_gui_circuit.select_component_creation_factory_id(factory_id);
         }
 
         bool user_sound_component::load_circuit_state(Sound::data_input_stream& data)

@@ -79,6 +79,7 @@ namespace Gammou {
 
                 //  Editing
                 View::widget& get_gui_circuit();
+                void select_component_creation_factory_id(const unsigned int factory_id);
                 void reset_content();
 
             private:
