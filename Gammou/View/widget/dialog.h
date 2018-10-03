@@ -3,9 +3,6 @@
 
 #include <view.h>
 
-#ifndef _WIN32
-#include <filesystem>
-#endif
 
 namespace Gammou {
 
@@ -45,15 +42,8 @@ namespace Gammou {
                 const std::string & ext);
 
         private:
-			bool m_filename_was_set;
-			std::string m_filename;
-#ifndef _WIN32
-            std::filesystem::path get_path_by_id(const unsigned int id);
-            void update_list_box();
-                      
-            std::filesystem::path m_current_path;
-            View::list_box *m_list_box;
-#endif
+            bool m_path_was_set;
+            std::string m_path;
 		};
 
     } /* View */

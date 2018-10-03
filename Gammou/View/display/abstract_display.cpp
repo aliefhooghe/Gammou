@@ -36,21 +36,27 @@ namespace Gammou {
 		{
 			if (m_scale_factor <= 0.0f)
 				throw std::invalid_argument("a display scale factor should be >= 0");
+
 			m_scale_factor = scale_factor;
-		}
+            m_display_width =
+                static_cast<unsigned int>(
+                    static_cast<float>(
+                        m_root_widget.get_width() * m_scale_factor));
+            m_display_height =
+                static_cast<unsigned int>(
+                    static_cast<float>(
+                        m_root_widget.get_height() * m_scale_factor));
+        }
 
 		unsigned int abstract_display::get_display_width() const
 		{
-			return static_cast<unsigned int>(
-				static_cast<float>(
-					m_root_widget.get_width() * m_scale_factor));
+            return m_display_width;
+
 		}
 
 		unsigned int abstract_display::get_display_height() const
 		{
-			return static_cast<unsigned int>(
-				static_cast<float>(
-					m_root_widget.get_height() * m_scale_factor));
+            return m_display_height;
 		}
 
 		abstract_display *abstract_display::get_display() 
@@ -78,7 +84,10 @@ namespace Gammou {
 		void abstract_display::sys_draw(cairo_t * cr)
 		{
 			cairo_save(cr);
-			cairo_scale(cr, m_scale_factor, m_scale_factor);
+            cairo_scale(
+                cr,
+                static_cast<double>(m_scale_factor),
+                static_cast<double>(m_scale_factor));
 			draw(cr);
 			cairo_restore(cr);
 		}

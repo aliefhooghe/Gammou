@@ -19,8 +19,9 @@ namespace Gammou {
 
             public:
                 using model = directory_model<std::string, Value>;
-                using value_select_callback =
+                using directory_view_callback =
                     std::function<void(directory_view<Value>&, const std::string& key, const Value&)>;
+
 
                 directory_view(
                     model& m,
@@ -36,26 +37,30 @@ namespace Gammou {
                     const unsigned int font_size = 11);
                 ~directory_view();
 
+                bool on_mouse_dbl_click(const int x, const int y) override;
                 bool on_mouse_button_up(const mouse_button button, const int x, const int y) override;
                 bool on_mouse_drag_end(const mouse_button button, const int x, const int y) override;
 
+                bool on_mouse_wheel(const float distance) override;
                 bool on_mouse_exit(void) override;
                 bool on_mouse_move(const int x, const int y) override;
 
                 void draw(cairo_t *cr) override;
 
-                void set_value_select_event(value_select_callback callback);
+                void set_value_select_event(directory_view_callback callback);
+                void set_value_open_event(directory_view_callback callback);
             private:
                 void scroll(const int distance);
                 int cell_by_pos(const int y);
-                void cell_select(const unsigned int cell);
+                void cell_select(
+                    const unsigned int cell, bool dblclick);
 
                 void draw_cell(
                     cairo_t *cr,
                     const typename model::node& node,
                     const unsigned int cell,
                     const unsigned int level);
-                void draw_directory(
+                bool draw_directory(
                     cairo_t *cr,
                     model& m,
                     unsigned int& cell,
@@ -79,13 +84,15 @@ namespace Gammou {
                 const float m_cell_width;
                 const float m_cell_height;
 
-                int m_selected_cell;
-                int m_hovered_cell;
+                int m_selected_cell{-1};
+                int m_hovered_cell{-1};
+                int m_start_offset{0};
 
                 std::vector<const typename model::node*> m_nodes;   //  updated by draw
                 std::map<const typename model::directory*, bool> m_node_is_open;
 
-                value_select_callback m_value_select_callback;
+                directory_view_callback m_value_select_callback;
+                directory_view_callback m_value_open_callback;
         };
 
 
@@ -130,14 +137,19 @@ namespace Gammou {
               static_cast<float>(displayed_cell_count)),
             m_cell_width(
                 static_cast<float>(get_width() - 2.0f * epsilon)),
-            m_selected_cell(-1),
-            m_hovered_cell(-1),
             m_nodes(displayed_cell_count)
         {}
 
         template<class Value>
         directory_view<Value>::~directory_view()
         {}
+
+        template<class Value>
+        bool directory_view<Value>::on_mouse_wheel(const float distance)
+        {
+            scroll(static_cast<int>(distance));
+            return true;
+        }
 
         template<class Value>
         bool directory_view<Value>::on_mouse_exit(void)
@@ -150,12 +162,22 @@ namespace Gammou {
         }
 
         template<class Value>
+        bool directory_view<Value>::on_mouse_dbl_click(const int x, const int y)
+        {
+            const int cell = cell_by_pos(y);
+            if (cell >= 0)
+                cell_select(static_cast<unsigned int>(cell), true);
+            return true;
+        }
+
+        template<class Value>
         bool directory_view<Value>::on_mouse_button_up(const mouse_button button, const int x, const int y)
         {
             if (button == mouse_button::LeftButton) {
                 const int cell = cell_by_pos(y);
                 if (cell >= 0)
-                    cell_select(static_cast<unsigned int>(cell));
+                    cell_select(static_cast<unsigned int>(cell), false);
+                return true;
             }
             return false;
         }
@@ -166,7 +188,7 @@ namespace Gammou {
             if (button == mouse_button::LeftButton) {
                 const int cell = cell_by_pos(y);
                 if (cell >= 0)
-                    cell_select(static_cast<unsigned int>(cell));
+                    cell_select(static_cast<unsigned int>(cell), false);
             }
             return false;
         }
@@ -201,36 +223,52 @@ namespace Gammou {
         }
 
         template<class Value>
-        void directory_view<Value>::set_value_select_event(value_select_callback callback)
+        void directory_view<Value>::set_value_select_event(directory_view_callback callback)
         {
             m_value_select_callback = callback;
         }
 
         template<class Value>
+        void directory_view<Value>::set_value_open_event(directory_view_callback callback)
+        {
+            m_value_open_callback = callback;
+        }
+
+        template<class Value>
         void directory_view<Value>::scroll(const int distance)
         {
-            //  TODO
+            const int n = static_cast<int>(m_start_offset) - distance;
+
+            if (n < 0)
+                m_start_offset = 0;
+            else
+                m_start_offset = n;
+
+            redraw();
         }
 
         template<class Value>
         int directory_view<Value>::cell_by_pos(const int y)
         {
-            const int cell =
+            const int n =
                 static_cast<int>(
                     static_cast<float>(y - epsilon) /
                     m_cell_height);
 
-            if (cell >= 0 &&
-                static_cast<unsigned int>(cell) < m_displayed_cell_count)
-                    return cell;
+            if (n >= 0 &&
+                static_cast<unsigned int>(n) < m_displayed_cell_count)
+                    return n + m_start_offset;
             else
                 return -1;
         }
 
         template<class Value>
-        void directory_view<Value>::cell_select(const unsigned int cell)
+        void directory_view<Value>::cell_select(
+                const unsigned int cell,
+                const bool dbl_click)
         {
-            const auto ptr = m_nodes[cell];
+            const auto n = cell - m_start_offset;
+            const auto ptr = m_nodes[n];
             if( ptr == nullptr)
                 return;
 
@@ -244,7 +282,12 @@ namespace Gammou {
             else {
                 const Value& v =
                     std::get<Value>(node.second);
-                if (m_value_select_callback)
+
+                if (dbl_click) {
+                    if(m_value_open_callback)
+                        m_value_open_callback(*this, node.first, v);
+                }
+                else if (m_value_select_callback)
                     m_value_select_callback(*this, node.first, v);
             }
 
@@ -259,7 +302,8 @@ namespace Gammou {
             const unsigned int cell,
             const unsigned int level)
         {
-            const int top = static_cast<int>(epsilon + m_cell_height * cell);
+            const unsigned int n = cell - m_start_offset;
+            const int top = static_cast<int>(epsilon + m_cell_height * n);
             const float offset = subdirectory_offset * level;
             const int left = static_cast<int>(epsilon + offset);
             const int width = static_cast<int>(m_cell_width - offset);
@@ -321,11 +365,11 @@ namespace Gammou {
             cairo_helper::show_left_aligned_text(cr, rect, text, text_offset);
 
             //  Update
-            m_nodes[cell] = &node;
+            m_nodes[n] = &node;
         }
 
         template<class Value>
-        void directory_view<Value>::draw_directory(
+        bool directory_view<Value>::draw_directory(
             cairo_t *cr,
             model& m,
             unsigned int& cell,
@@ -336,21 +380,26 @@ namespace Gammou {
             for (unsigned int i = 0; i < count; ++i) {
                 const auto& node = m.get_node(i);
 
-                draw_cell(
-                    cr, node, cell++, level);
+                if (cell >= m_start_offset)
+                    draw_cell(
+                        cr, node, cell, level);
+                cell++;
 
-                if (cell >= m_displayed_cell_count)
-                    break;
+                if (cell >= (m_displayed_cell_count + m_start_offset))
+                    return true;
 
                 if (m_model.is_directory(node)) {
                     const auto& dir =
                         std::get<typename model::directory>(node.second);
 
-                    if (is_open(dir))
+                    if (is_open(dir) &&
                         draw_directory(
-                            cr, *dir, cell, level + 1);
+                            cr, *dir, cell, level + 1))
+                        return true;
                 }
             }
+
+            return false;
         }
 
         template<class Value>

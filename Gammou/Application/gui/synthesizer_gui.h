@@ -18,6 +18,7 @@
 #include "control_component/integer_gui_component.h"
 
 #include "user_component/user_gui_component.h"
+#include "user_component/user_component_editor.h"
 #include "component_selector.h"
 
 #ifndef GAMMOU_PLUGINS_DIRECTORY_PATH
@@ -55,6 +56,7 @@ namespace Gammou {
             //  see ~synthesizer_gui
             gui_master_circuit *m_gui_master_circuit{};
             gui_polyphonic_circuit *m_gui_polyphonic_circuit{};
+            user_component_editor *m_user_component_editor{};
 
             View::page_container* m_pages;
             View::knob *m_master_volume{};

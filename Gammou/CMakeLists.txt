@@ -99,6 +99,8 @@ set(PERSISTENCE_SRC
 )
 
 set(USER_COMPONENT_SRC
+  Application/gui/user_component/user_component_editor.cpp
+	Application/gui/user_component/user_component_editor.h
   Application/gui/user_component/user_component_gui_circuit.cpp
 	Application/gui/user_component/user_component_gui_circuit.h
 	Application/gui/user_component/user_gui_component.cpp

@@ -378,7 +378,7 @@ namespace Gammou {
 			for (auto it = m_widgets.rbegin(); it != m_widgets.rend(); ++it) {
 				auto& w = (*it);
 				if (w->contains(x - w->get_x(), y - w->get_y()))
-					return &(*w);
+                    return w.get();
 			}
 
 			return nullptr;

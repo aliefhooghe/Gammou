@@ -15,7 +15,7 @@ namespace Gammou {
 			virtual ~abstract_display();
 
 			float get_scale_factor() const;
-			virtual void set_scale_factor(const float scale_factor);
+            void set_scale_factor(const float scale_factor);
 
 			unsigned int get_display_width() const;
 			unsigned int get_display_height() const;

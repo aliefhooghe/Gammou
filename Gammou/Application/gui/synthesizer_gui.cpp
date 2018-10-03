@@ -9,6 +9,8 @@
 #include "synthesizer_gui.h"
 #include "gui_properties.h"
 
+#include "user_component/user_component_editor.h"
+
 // for test
 #include "plugin_request_dialog.h"
 
@@ -41,15 +43,34 @@ namespace Gammou {
 					0, 0, GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height);
             m_gui_polyphonic_circuit = polyphonic_circuit.get();
 
+            //  User component editor
+
+            auto component_editor =
+                std::make_unique<user_component_editor>(
+                    0, 0,
+                    GuiProperties::user_component_editor_width,
+                    GuiProperties::user_component_editor_circuit_height);
+
+            component_editor->set_component_open_action(
+            [this]()
+            {
+                m_pages->select_page(2);    //  go to editor page
+            });
+
+            m_user_component_editor = component_editor.get();
+
             //  Pages
 
 			auto pages =
 				std::make_unique<View::page_container>(
-					GuiProperties::main_gui_component_choice_box_width, GuiProperties::main_gui_toolbox_height, 
-					GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height, View::cl_chartreuse);
+                    GuiProperties::main_gui_component_choice_box_width,
+                    GuiProperties::main_gui_toolbox_height,
+                    GuiProperties::main_gui_circuit_width,
+                    GuiProperties::main_gui_circuit_height, View::cl_chartreuse);
 
 			pages->add_page(std::move(master_circuit));
 			pages->add_page(std::move(polyphonic_circuit));
+            pages->add_page(std::move(component_editor));
 
             pages->select_page(0);
             m_pages = pages.get();
@@ -70,6 +91,7 @@ namespace Gammou {
             {
                 m_gui_master_circuit->select_component_creation_factory_id(id);
                 m_gui_polyphonic_circuit->select_component_creation_factory_id(id);
+                m_user_component_editor->select_component_creation_factory_id(id);
             });
 
             m_component_selector = selector.get();
@@ -105,6 +127,8 @@ namespace Gammou {
                 [this](View::list_box&, unsigned int id)
                 {
                     m_pages->select_page(id);
+                    //  make sure that a component cannot be destroyed while editing
+                    m_user_component_editor->close_user_component();
                 });
 
 			tool_box->add_widget(
@@ -295,7 +319,9 @@ namespace Gammou {
             m_component_selector->add_control_factory(std::make_unique<value_integer_gui_component_factory>());
             m_component_selector->add_control_factory(std::make_unique<gain_integer_gui_component_factory>());
 
-            m_component_selector->add_control_factory(std::make_unique<user_gui_component_factory>(m_gui_component_factory));
+            m_component_selector->add_control_factory(
+                std::make_unique<user_gui_component_factory>
+                    (*m_user_component_editor, m_gui_component_factory));
 
 			// Plugins Components
 			const std::string plugin_dir_path(GAMMOU_PLUGINS_DIRECTORY_PATH);

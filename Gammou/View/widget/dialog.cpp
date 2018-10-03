@@ -2,6 +2,8 @@
 
 #ifdef _WIN32	
 #include <Windows.h>
+#else
+#include "file_system_view.h"
 #endif
 
 #include "dialog.h"
@@ -33,70 +35,32 @@ namespace Gammou {
         //--------
         
         file_explorer_dialog::file_explorer_dialog(
-            const std::string& initial_path,
+            const std::string& root_path,
             const color background)
 			:
 #ifndef _WIN32
 			dialog(300, 400, background),
-            m_filename_was_set(false),
-            m_current_path(initial_path)
+            m_path_was_set(false)
         {
-            auto list_box = 
-                std::make_unique<View::list_box>(
+            auto dir_view =
+                std::make_unique<View::file_system_view>(
+                    root_path,
                     0, 0, 
-                    get_width(), get_height() - 30,
+                    get_width(), get_height(),
                     15);
+
+            dir_view->set_value_open_event(
+            [this](View::directory_view<std::string>&, const std::string&, const std::string& p)
+            {
+                m_path = p;
+                m_path_was_set = true;
+                auto * dpy = get_display();
+                if (dpy != nullptr)
+                    dpy->close();
+            });
                 
-            m_list_box = list_box.get();
-            add_widget(std::move(list_box));
+            add_widget(std::move(dir_view));
             
-            add_widget(
-                std::make_unique<View::push_button>(
-                    [this](View::push_button *b)
-                    {
-                        m_current_path = m_current_path.parent_path();
-                        update_list_box();
-                    },
-                    "up",
-                    1,
-                    get_height() - 30 + 1,
-                    get_width() / 2 - 2,
-                    30 - 2));
-
-            add_widget(
-                std::make_unique<View::push_button>(
-                    [this](View::push_button *b)
-                    {
-                        const auto selected_item = 
-                            m_list_box->get_selected_item();
-                        
-                        if (selected_item < 0)
-                            return;
-
-                        auto p =
-                            get_path_by_id(
-                                static_cast<unsigned int>(selected_item));
-
-                        if (std::filesystem::is_directory(p)) {
-                            m_current_path = std::move(p);
-                            update_list_box();
-                        }
-                        else {
-                            m_filename = p;
-                            m_filename_was_set = true;
-
-                            get_display()->close();
-                        }
-
-                    },
-                    "Open",
-                    1 + get_width() / 2,
-                    1 + get_height() - 30,
-                    get_width() / 2 - 2,
-                    30 - 2));
-
-
-            update_list_box();
 #else
 			m_filename_was_set(false)
 		{
@@ -110,8 +74,8 @@ namespace Gammou {
 
         bool file_explorer_dialog::get_filename(std::string& name)
         {
-            if (m_filename_was_set) {
-                name = m_filename;
+            if (m_path_was_set) {
+                name = m_path;
                 return true;
             }
             return false;
@@ -167,48 +131,14 @@ namespace Gammou {
             file_explorer_dialog dialog("/");
             dialog.show(title);
 
-            if (dialog.m_filename_was_set) {
-                path = dialog.m_filename;
+            if (dialog.m_path_was_set) {
+                path = dialog.m_path;
                 return true;
             }
 
             return false;
         }
-#ifndef _WIN32
-        std::filesystem::path file_explorer_dialog::get_path_by_id(const unsigned int id)
-        {
-            unsigned int i = 0;
-            for (auto & p : std::filesystem::directory_iterator(m_current_path)) {
-                if (i == id) {
-                    return std::move(p);
-                }
-                i++;
-            }
 
-            throw std::runtime_error("id invalide get_path_by_id");
-        }
-
-        void file_explorer_dialog::update_list_box()
-        {
-            m_list_box->clear();
-
-            try {
-                for (auto & p : std::filesystem::directory_iterator(m_current_path)) {
-                    const std::string entry{p.path().filename()};
-
-                    if (std::filesystem::is_directory(p))
-                        m_list_box->add_item(entry + "/");
-                    else
-                        m_list_box->add_item(entry);
-
-                }
-            }
-            catch(std::filesystem::filesystem_error& error)  //  Not a fatal error
-            {
-                DEBUG_PRINT("File Explorer Dialog Warning : An error occured while enumerating folder items\n");
-            }
-        }
-#endif
     }   /* View */
 
 }   /* Gammou */
