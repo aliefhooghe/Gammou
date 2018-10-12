@@ -120,7 +120,7 @@ namespace Gammou {
 
         bool abstract_gui_circuit::save_state(Sound::data_output_stream & data)
         {
-            Persistence::circuit_record_header record_header;
+            Persistence::circuit_state_header record_header;
 
             // component -> record_id association
             std::map<abstract_gui_component*, uint32_t> component_record_id;
@@ -189,7 +189,7 @@ namespace Gammou {
             reset_content();
 
             //---
-            Persistence::circuit_record_header record_header;
+            Persistence::circuit_state_header record_header;
 
             // Reading header
             data.read(&record_header, sizeof(record_header));
@@ -207,7 +207,7 @@ namespace Gammou {
 
             // Loading links
             for (unsigned int i = 0; i < record_header.link_count; ++i) {
-                Persistence::link_record link;
+                Persistence::link_state link;
 
                 DEBUG_PRINT("LOAD LINK\n");
 
@@ -247,7 +247,7 @@ namespace Gammou {
 
         void abstract_gui_circuit::save_component(Sound::data_output_stream& data, abstract_gui_component * component)
         {
-            Persistence::component_record_header record_header;
+            Persistence::component_state_header record_header;
             Persistence::buffer_stream sound_component_state;
 
             record_header.factory_id = component->get_sound_component_factory_id();
@@ -263,7 +263,7 @@ namespace Gammou {
 
         abstract_gui_component *abstract_gui_circuit::load_component(Sound::data_input_stream & data)
         {
-            Persistence::component_record_header record_header;
+            Persistence::component_state_header record_header;
 
             // Read header
             data.read(&record_header, sizeof(record_header));
@@ -323,7 +323,7 @@ namespace Gammou {
         void abstract_gui_circuit::save_link(Sound::data_output_stream& data, const unsigned int src_record_id,
             const unsigned int output_id, const unsigned int dst_record_id, const unsigned int input_id)
         {
-            Persistence::link_record link;
+            Persistence::link_state link;
 
             DEBUG_PRINT("LINK SAVE\n");
 

@@ -206,7 +206,7 @@ namespace Gammou {
 
 		bool synthesizer_gui::save_state(Sound::data_output_stream & data)
 		{
-			Persistence::synthesizer_record_header header;
+			Persistence::synthesizer_state_header header;
 
 			DEBUG_PRINT("SYN SAVE STATE\n");
 
@@ -247,7 +247,7 @@ namespace Gammou {
 			DEBUG_PRINT("SYN LOAD STATE :\n");
 
 			// Loading header
-			Persistence::synthesizer_record_header header;
+			Persistence::synthesizer_state_header header;
 			if (data.read(&header, sizeof(header)) != sizeof(header))
 				return false;
 
