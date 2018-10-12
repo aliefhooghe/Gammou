@@ -4,19 +4,15 @@ namespace Gammou {
 
 	namespace Sound {
 
-		namespace Builtin {
+		product_component::product_component(const unsigned int channel_count)
+			: sound_component("Product", 2, 1, channel_count)
+		{
+		}
 
-			product_component::product_component(const unsigned int channel_count)
-				: sound_component("Product", 2, 1, channel_count)
-			{
-			}
-
-			void product_component::process(const double input[])
-			{
-				m_output[0] = input[0] * input[1];
-			}
-			
-		} /* Builtin */
+		void product_component::process(const double input[])
+		{
+			m_output[0] = input[0] * input[1];
+		}
 
 	} /* Sound */
 

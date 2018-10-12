@@ -72,7 +72,7 @@ namespace Gammou {
 
 			try {
                 for (auto& p : std::filesystem::directory_iterator(m_root_path)) {
-					const std::string entry{p.path().filename()};
+					const std::string entry{p.path().filename().string()};
 
 					if (std::filesystem::is_directory(p)) {
                         auto dir =
@@ -81,7 +81,7 @@ namespace Gammou {
 					}
 					else {
                         if (entry[0] != '.')
-                            add_value(entry, p.path());
+                            add_value(entry, p.path().string());
 					}
 				}
 			}
