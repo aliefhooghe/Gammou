@@ -148,109 +148,138 @@ namespace Gammou {
 
         //---
 
-		buffer_stream::buffer_stream()
-            : m_cursor(0u),
-              m_buffer(0u)
-		{
-		}
+        buffer_output_stream::buffer_output_stream(
+            std::vector<uint8_t>& buffer,
+            const unsigned int start_cursor)
+        :   m_cursor(start_cursor),
+            m_buffer(buffer)
+        {
+            if (start_cursor > m_buffer.size())
+                throw std::range_error("Start Cursor cant be greater than buffer size");
+        }
 
-		buffer_stream::~buffer_stream()
-		{
-		}
+        buffer_output_stream::~buffer_output_stream()
+        {}
 
-		bool buffer_stream::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)
-		{
-			int new_cursor;
+        bool buffer_output_stream::seek(
+                const int offset,
+                Sound::abstract_data_stream::seek_mode mode)
+        {
+            int new_cursor;
 
-			switch (mode)
-			{
+            switch (mode)
+            {
 
-				case Gammou::Sound::abstract_data_stream::seek_mode::CURRENT:
-					new_cursor =
-						static_cast<int>(m_cursor) + offset;
-					break;
+                case Gammou::Sound::abstract_data_stream::seek_mode::CURRENT:
+                    new_cursor =
+                        static_cast<int>(m_cursor) + offset;
+                    break;
 
-				case Gammou::Sound::abstract_data_stream::seek_mode::SET:
-					new_cursor = static_cast<unsigned int>(offset);
-					break;
+                case Gammou::Sound::abstract_data_stream::seek_mode::SET:
+                    new_cursor = static_cast<int>(offset);
+                    break;
 
-				case Gammou::Sound::abstract_data_stream::seek_mode::END:
-					return false; // Doesn't make sense here ( TODO Sure ??? )
-					break;
-			}
+                case Gammou::Sound::abstract_data_stream::seek_mode::END:
+                    return false; // Doesn't make sense here ( TODO Sure ??? )
+                    break;
+            }
 
-			if (new_cursor < 0)
-				return false;
-			else
-				m_cursor = static_cast<unsigned int>(new_cursor);
+            if (new_cursor < 0)
+                return false;
+            else
+                m_cursor = static_cast<unsigned int>(new_cursor);
 
-			const unsigned int minimal_size = m_cursor + 1;
+            const unsigned int minimal_size = m_cursor + 1;
 
-			if (m_buffer.size() < minimal_size)
-				m_buffer.resize(minimal_size, 0u);
+            if (m_buffer.size() < minimal_size)
+                m_buffer.resize(minimal_size, 0u);
 
-			return true;
-		}
+            return true;
+        }
 
-		unsigned int buffer_stream::tell()
-		{
-			return m_cursor;
-		}
+        unsigned int buffer_output_stream::tell()
+        {
+            return m_cursor;
+        }
 
-		unsigned int buffer_stream::write(void * data, const unsigned int size)
-		{
-			const unsigned new_cursor = m_cursor + size;
-			const unsigned new_minimal_size = new_cursor + 1;
-
-			if (m_buffer.size() < new_minimal_size)
-				m_buffer.resize(new_minimal_size, 0u);
-
-			std::memcpy(m_buffer.data() + m_cursor, data, size);
-			m_cursor = new_cursor;
-
-			return size;
-		}
-
-        unsigned int buffer_stream::read(void *data, const unsigned int size)
+        unsigned int buffer_output_stream::write(void *data, const unsigned int size)
         {
             const unsigned new_cursor = m_cursor + size;
+            const unsigned new_minimal_size = new_cursor + 1;
 
-            if (new_cursor > m_buffer.size())
-                return 0;
+            if (m_buffer.size() < new_minimal_size)
+                m_buffer.resize(new_minimal_size, 0u);
 
-            std::memcpy(data, m_buffer.data() + m_cursor, size);
+            std::memcpy(m_buffer.data() + m_cursor, data, size);
             m_cursor = new_cursor;
 
             return size;
         }
 
-		void buffer_stream::flush_data()
-		{
-			m_buffer.resize(0);
-			m_cursor = 0;
-		}
+        //----------------
 
-		void buffer_stream::flush_data(Sound::data_output_stream & target)
-		{
-			// TODO more verif
-			if (m_buffer.size() > 1) {
-				const unsigned int size = static_cast<unsigned int>(m_buffer.size() - 1);
-				target.write(m_buffer.data(), size);
-			}
+        buffer_input_stream::buffer_input_stream(
+            const std::vector<uint8_t>& buffer,
+            const unsigned int start_cursor)
+        :   m_cursor(start_cursor),
+            m_buffer(buffer)
+        {
+            if (start_cursor > m_buffer.size())
+                throw std::range_error("Start Cursor cant be greater than buffer size");
+        }
 
-			m_buffer.resize(0);
-			m_cursor = 0;
-		}
+        buffer_input_stream::~buffer_input_stream()
+        {}
 
-		unsigned int buffer_stream::get_data_size()
-		{
-			return static_cast<unsigned int>(m_buffer.size() - 1);
-		}
+        bool buffer_input_stream::seek(
+                const int offset, Sound::abstract_data_stream::seek_mode mode)
+        {
+            int new_cursor;
+            const int buffer_size =
+                static_cast<int>(m_buffer.size());
 
-		const uint8_t *buffer_stream::get_data() const
-		{
-			return m_buffer.data();
-		}
+            switch (mode)
+            {
+
+                case Gammou::Sound::abstract_data_stream::seek_mode::CURRENT:
+                    new_cursor =
+                        static_cast<int>(m_cursor) + offset;
+                    break;
+
+                case Gammou::Sound::abstract_data_stream::seek_mode::SET:
+                    new_cursor = static_cast<int>(offset);
+                    break;
+
+                case Gammou::Sound::abstract_data_stream::seek_mode::END:
+                    new_cursor = buffer_size;
+                    break;
+            }
+
+            if (new_cursor < 0 ||
+                    new_cursor > buffer_size) {
+                return false;
+            }
+            else {
+                m_cursor = static_cast<unsigned int>(new_cursor);
+                return true;
+            }
+        }
+
+        unsigned int buffer_input_stream::tell()
+        {
+            return m_cursor;
+        }
+
+        unsigned int buffer_input_stream::read(void *data, const unsigned size)
+        {
+            const unsigned int buffer_size =
+                static_cast<unsigned int>(m_buffer.size());
+
+            if (size + m_cursor > buffer_size)
+                return 0;
+            std::memcpy(data, m_buffer.data() + m_cursor, size);
+            return size;
+        }
 
 		//----------------
 

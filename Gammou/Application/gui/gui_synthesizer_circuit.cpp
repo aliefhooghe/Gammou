@@ -118,32 +118,25 @@ namespace Gammou {
                 DEBUG_PRINT("Unregisterd Factory");
         }
 
-        bool abstract_gui_circuit::save_state(Sound::data_output_stream & data)
+        bool abstract_gui_circuit::save_state(Persistence::circuit_state& state)
         {
-            Persistence::circuit_state_header record_header;
-
             // component -> record_id association
             std::map<abstract_gui_component*, uint32_t> component_record_id;
 
             uint32_t component_counter = 0u;
             uint32_t link_counter = 0u;
 
-            DEBUG_PRINT("CIRCUIT SAVE STATE\n");
-
-            //	We skip header (it will be written after)
-            const unsigned int start_pos = data.tell();
-            data.seek(sizeof(record_header));
+            state.components.resize(0);
+            state.links.resize(0);
 
             // save components
-
             for (auto& component : m_widgets) {
-                // Save each component
                 abstract_gui_component *component_ptr =
-                    &(*component);
+                    component.get();
 
-                component_record_id[component_ptr] = component_counter;
-                save_component(data, component_ptr);
-                component_counter++;
+                component_record_id[component_ptr] = component_counter++;
+                state.components.push_back({});
+                save_component(state.components.back(), component_ptr);
             }
 
             // save links
@@ -164,59 +157,40 @@ namespace Gammou {
                     // something linked to input
                     if (src != nullptr) {
                         const uint32_t src_record_id = component_record_id[src];
-                        save_link(data, src_record_id, output_id, dst_record_id, input_id);
+
+                        state.links.emplace_back(
+                            Persistence::link_state{
+                                src_record_id, output_id,
+                                dst_record_id, input_id});
                         link_counter++;
                     }
                 }
             }
 
-            record_header.component_count = component_counter;
-            record_header.link_count = link_counter;
-
-            // save header
-            const unsigned int current_pos = data.tell();
-
-            data.seek(start_pos, Gammou::Sound::abstract_data_stream::seek_mode::SET);
-            data.write(&record_header, sizeof(record_header));
-            data.seek(current_pos, Gammou::Sound::abstract_data_stream::seek_mode::SET);
-
             return true;
         }
 
-        bool abstract_gui_circuit::load_state(Sound::data_input_stream & data)
+        bool abstract_gui_circuit::load_state(const Persistence::circuit_state& state)
         {
             //	Delete current content
             reset_content();
 
-            //---
-            Persistence::circuit_state_header record_header;
-
-            // Reading header
-            data.read(&record_header, sizeof(record_header));
-
-            DEBUG_PRINT("CIRCUIT LOAD STATE : \n");
-            DEBUG_PRINT("  -> %u components\n", record_header.component_count);
-            DEBUG_PRINT("  -> %u links\n", record_header.link_count);
+            const unsigned int component_count =
+                    static_cast<unsigned int>(state.components.size());
 
             // record_id -> component association
-            std::vector<abstract_gui_component*> loaded_gui_components(record_header.component_count);
+            std::vector<abstract_gui_component*> loaded_gui_components;
+            loaded_gui_components.reserve(component_count);
 
             // Loading components (This add them on circuit)
-            for (unsigned int i = 0; i < record_header.component_count; ++i)
-                loaded_gui_components[i] = load_component(data);
+            for (const auto& component_state : state.components)
+                loaded_gui_components.push_back(load_component(component_state));
 
             // Loading links
-            for (unsigned int i = 0; i < record_header.link_count; ++i) {
-                Persistence::link_state link;
-
-                DEBUG_PRINT("LOAD LINK\n");
-
-                // Read link
-                data.read(&link, sizeof(link));
-
+            for (const auto& link : state.links) {
                 // Check Record Id
-                if (link.src_record_id >= loaded_gui_components.size() ||
-                    link.dst_record_id >= loaded_gui_components.size())
+                if (link.src_record_id >= component_count ||
+                    link.dst_record_id >= component_count)
                     throw std::domain_error("Invalid Record Id\n");
 
                 // Get
@@ -245,62 +219,56 @@ namespace Gammou {
                 remove_widget(component);
         }
 
-        void abstract_gui_circuit::save_component(Sound::data_output_stream& data, abstract_gui_component * component)
+        void abstract_gui_circuit::save_component(
+            Persistence::component_state& state,
+            abstract_gui_component *component)
         {
-            Persistence::component_state_header record_header;
-            Persistence::buffer_stream sound_component_state;
+            state.factory_id = component->get_sound_component_factory_id();
+            state.x_pos = component->get_x();
+            state.y_pos = component->get_y();
 
-            record_header.factory_id = component->get_sound_component_factory_id();
-            record_header.gui_x_pos = component->get_x();
-            record_header.gui_y_pos = component->get_y();
-            record_header.data_size = component->save_sound_component_state(sound_component_state);
+            state.data.resize(0);
+            Persistence::buffer_output_stream buffer(state.data);
 
-            DEBUG_PRINT("COMPONENT SAVE STATE (factory id = %u)\n", record_header.factory_id);
-
-            data.write(&record_header, sizeof(record_header));	//	Write header
-            sound_component_state.flush_data(data);				//	Write Sound Component data
+            component->save_sound_component_state(buffer);
         }
 
-        abstract_gui_component *abstract_gui_circuit::load_component(Sound::data_input_stream & data)
+        abstract_gui_component *abstract_gui_circuit::load_component(const Persistence::component_state& state)
         {
-            Persistence::component_state_header record_header;
 
-            // Read header
-            data.read(&record_header, sizeof(record_header));
-
-            if (record_header.factory_id == Persistence::INTERNAL_FACTORY_ID) {
+            if (state.factory_id == Persistence::INTERNAL_FACTORY_ID) {
                 // Component is an internal component
 
-                // Check that ther is a 4-Byte data record (The internal Id)
-                if(record_header.data_size != sizeof(uint32_t))
+                // Check that there is a 4-Byte data record (The internal Id)
+                if(state.data.size() != sizeof(uint32_t))
                     throw std::domain_error("Invalid Internal Components data");
 
-                // Load the internal Id
+                // get the internal Id
                 uint32_t internal_id;
-                if( data.read(&internal_id, sizeof(uint32_t)) != sizeof(uint32_t))
-                    throw std::domain_error("Read Error");
+                std::memcpy(&internal_id, state.data.data(), sizeof(uint32_t));
 
                 // Get the component
-                abstract_gui_component *component = gui_component_by_internal_id(internal_id);
+                abstract_gui_component *component =
+                    gui_component_by_internal_id(internal_id);
 
                 // Set the Component position
                 component->set_pos(
-                    record_header.gui_x_pos,
-                    record_header.gui_y_pos
+                    state.x_pos,
+                    state.y_pos
                 );
 
-                // Return The guicomponent
+                // Return The gui component ptr
                 return component;
             }
-            else if(m_complete_component_factory.check_factory_presence(record_header.factory_id)){
-                Persistence::constrained_input_stream cdata(data, record_header.data_size);
+            else if(m_complete_component_factory.check_factory_presence(state.factory_id)){
+                Persistence::buffer_input_stream cdata(state.data);
 
                 // Build component from data
                 std::unique_ptr<gui_sound_component>
                     component = m_complete_component_factory.get_new_gui_component(
-                        record_header.factory_id,
-                        record_header.gui_x_pos,
-                        record_header.gui_y_pos,
+                        state.factory_id,
+                        state.x_pos,
+                        state.y_pos,
                         cdata,
                         m_components_channel_count);
 
@@ -318,21 +286,6 @@ namespace Gammou {
                 throw std::domain_error("Unknown factory !!!");
             }
 
-        }
-
-        void abstract_gui_circuit::save_link(Sound::data_output_stream& data, const unsigned int src_record_id,
-            const unsigned int output_id, const unsigned int dst_record_id, const unsigned int input_id)
-        {
-            Persistence::link_state link;
-
-            DEBUG_PRINT("LINK SAVE\n");
-
-            link.src_record_id = static_cast<uint32_t>(src_record_id);
-            link.output_id = static_cast<uint32_t>(output_id);
-            link.dst_record_id = static_cast<uint32_t>(dst_record_id);
-            link.input_id = static_cast<uint32_t>(input_id);
-
-            data.write(&link, sizeof(link));
         }
 
 		/*

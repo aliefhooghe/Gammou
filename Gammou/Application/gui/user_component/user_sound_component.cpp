@@ -163,7 +163,7 @@ namespace Gammou {
             data.write(&count, sizeof(count));
 
             //  Save circuit state
-            m_gui_circuit.save_state(data);
+            //m_gui_circuit.save_state(data);
             return data.tell() - start;
         }
 
@@ -194,7 +194,8 @@ namespace Gammou {
 
         bool user_sound_component::load_circuit_state(Sound::data_input_stream& data)
         {
-            return m_gui_circuit.load_state(data);
+            //return m_gui_circuit.load_state(data);
+            return false;
         }
 
         void user_sound_component::reset_content()

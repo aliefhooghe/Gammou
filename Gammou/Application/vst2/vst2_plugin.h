@@ -20,7 +20,6 @@
 #define GAMMOU_VST2_CHANNEL_COUNT 64
 #define GAMMOU_VST2_PARAMETER_COUNT 16
 
-
 namespace Gammou  {
     
     namespace VST2 {
@@ -91,7 +90,7 @@ namespace Gammou  {
 			    View::vst2_display m_display;
 
 				//	Using the same buffer several time avoid multiple reallocation
-				Persistence::buffer_stream m_chunk_buffer;
+                std::vector<uint8_t> m_chunk_buffer;
         };
 
 		class raw_data_source : public Sound::data_input_stream {

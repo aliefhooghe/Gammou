@@ -94,44 +94,40 @@ namespace Gammou  {
 		unsigned int plugin::save_state(void **data)
 		{
 			//	reset buffer
-			m_chunk_buffer.flush_data();
+            m_chunk_buffer.resize(0);
+
+            Persistence::gammou_state state;
 			
-			//	Save synth state in buffer
-			const bool ret = m_gui.save_state(m_chunk_buffer);
+            if (!m_gui.save_state(state))
+                return 0u;
 
-			//	if state saving was successful
-			if (ret) {
-				const unsigned int data_size = 
-					m_chunk_buffer.get_data_size();
+            //  Write state in chunk buffer
+            Persistence::buffer_output_stream stream(m_chunk_buffer);
+            Persistence::gammou_file<Persistence::gammou_state>::save(stream, state);
 
-				if ((*data = std::malloc(data_size)) == nullptr)
-					return 0u;
+            const unsigned int data_size =
+                static_cast<unsigned int>(m_chunk_buffer.size());
 
-				//	Copy data to chunk
-				std::memcpy(*data, m_chunk_buffer.get_data(), data_size);
+            if ((*data = std::malloc(data_size)) == nullptr)
+                return 0u;
 
-				DEBUG_PRINT("Saved %u bytes\n", data_size);
+            //	Copy chunk buffer data to allocated chunk
+            std::memcpy(*data, m_chunk_buffer.data(), data_size);
 
-				return data_size;
-			}
-			else {
-				return 0u;
-			}
-		}
+            return data_size;
+        }
 
 		unsigned int plugin::load_state(void *data, const unsigned int size)
 		{
 			raw_data_source source(data, size);
+            Persistence::gammou_state state;
 
-			DEBUG_PRINT("Loading %u bytes\n", size);
+            Persistence::gammou_file<Persistence::gammou_state>::load(source, state);
 
-			if (m_gui.load_state(source)) {
+            if (m_gui.load_state(state))
 				return size;
-			}
-			else {
-				DEBUG_PRINT("State Load failed\n");
+            else
 				return 0u;
-			}
 		}
 
         AEffect *plugin::create_AEffect_instance()
@@ -369,8 +365,7 @@ namespace Gammou  {
 			const unsigned int size)
 		{
 			const int new_cursor =
-				static_cast<int>(m_cursor) +
-				size;
+                static_cast<int>(m_cursor + size);
 
 			if (new_cursor <= static_cast<int>(m_size_limit)) {
 				std::memcpy(data, m_begin + m_cursor, size);
@@ -390,7 +385,7 @@ namespace Gammou  {
 
 extern "C" {
 
-    AEffect* VSTPluginMain(audioMasterCallback audioMaster)
+    AEffect* VSTPluginMain(audioMasterCallback)
     {
         return Gammou::VST2::plugin::create_AEffect_instance();
     }

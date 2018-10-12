@@ -35,8 +35,8 @@ namespace Gammou {
 
                 void select_component_creation_factory_id(const unsigned int factory_id);
 
-                bool save_state(Sound::data_output_stream& data);
-                bool load_state(Sound::data_input_stream& data);
+                bool save_state(Persistence::circuit_state& state);
+                bool load_state(const Persistence::circuit_state& state);
                 void reset_content();
 
             protected:
@@ -44,14 +44,8 @@ namespace Gammou {
                 virtual abstract_gui_component *gui_component_by_internal_id(const uint32_t id) = 0;
 
             private:
-                void save_component(Sound::data_output_stream& data, abstract_gui_component *component);
-                abstract_gui_component *load_component(Sound::data_input_stream& data); // Add the process_component on the frame
-                void save_link(
-                     Sound::data_output_stream& data,
-                     const unsigned int src_record_id,
-                     const unsigned int output_id,
-                     const unsigned int dst_record_id,
-                     const unsigned int input_id);
+                void save_component(Persistence::component_state& state, abstract_gui_component *component);
+                abstract_gui_component *load_component(const Persistence::component_state& state); // Add the process_component on the frame
 
                 gui_component_main_factory& m_complete_component_factory;
                 const unsigned int m_components_channel_count;

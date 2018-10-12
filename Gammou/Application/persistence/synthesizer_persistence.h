@@ -96,7 +96,7 @@ namespace Gammou {
                     state.load(source);
                 }
 
-                static void save(Sound::data_output_stream& dest, const content& state)
+                static void save(Sound::data_output_stream& dest, content& state)
                 {
                     //  Filling header
                     gammou_file_header header;
@@ -172,30 +172,44 @@ namespace Gammou {
 
 		//--------
 
-        class buffer_stream :
-                public Sound::data_stream {
+		class buffer_output_stream :
+				public Sound::data_output_stream {
 
 		public:
-            buffer_stream();
-            buffer_stream(buffer_stream&) = delete;
-            ~buffer_stream();
+			buffer_output_stream(
+				std::vector<uint8_t>& buffer,
+				const unsigned int start_cursor = 0u);
+			buffer_output_stream(buffer_output_stream&) = delete;
+			~buffer_output_stream();
 
 			bool seek(const int offset, Sound::abstract_data_stream::seek_mode mode) override;
 			unsigned int tell() override;
-
 			unsigned int write(void *data, const unsigned int size) override;
-            unsigned int read(void *data, const unsigned size) override;
-
-			void flush_data();
-			void flush_data(Sound::data_output_stream& target);
-
-			//	C Style Interface
-			unsigned int get_data_size();
-			const uint8_t *get_data() const;
 
 		private:
 			unsigned int m_cursor;
-			std::vector<uint8_t> m_buffer;
+			std::vector<uint8_t>& m_buffer;
+		};
+
+		//------
+
+		class buffer_input_stream :
+				public Sound::data_input_stream {
+
+			public:
+				buffer_input_stream(
+					const std::vector<uint8_t>& buffer,
+					const unsigned int start_cursor = 0u);
+				buffer_input_stream(buffer_input_stream&) = delete;
+				~buffer_input_stream();
+
+				bool seek(const int offset, Sound::abstract_data_stream::seek_mode mode) override;
+				unsigned int tell() override;
+				unsigned int read(void *data, const unsigned size) override;
+
+			private:
+				unsigned int m_cursor;
+                const std::vector<uint8_t>& m_buffer;
 		};
 
 		//------

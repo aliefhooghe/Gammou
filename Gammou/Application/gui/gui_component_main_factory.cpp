@@ -115,18 +115,21 @@ namespace Gammou {
                 const int gui_x, const int gui_y,
                 const unsigned int channel_count)
         {
+            std::vector<uint8_t> chunk_buffer;
+
+            Persistence::buffer_input_stream input(chunk_buffer);
+            Persistence::buffer_output_stream output(chunk_buffer);
+
             const unsigned int factory_id = component.get_sound_component_factory_id();
-            Persistence::buffer_stream chunk_buffer;
 
             //  Save the state ...
-            component.save_sound_component_state(chunk_buffer);
-            chunk_buffer.seek(0, Persistence::buffer_stream::seek_mode::SET);
+            component.save_sound_component_state(output);
 
             //  ... and restore it in a new component
             return get_new_gui_component(
                         factory_id,
                         gui_x, gui_y,
-                        chunk_buffer,
+                        input,
                         channel_count);
         }
 
