@@ -23,6 +23,11 @@
 
 #include <view.h>
 
+#define GAMMOU_VST3_INPUT_COUNT 2
+#define GAMMOU_VST3_OUTPUT_COUNT 2
+#define GAMMOU_VST3_CHANNEL_COUNT 64
+#define GAMMOU_VST3_PARAMETER_COUNT 16
+
 namespace Gammou {
 
 	namespace VST3 {

@@ -63,21 +63,19 @@ namespace Gammou {
             source.read(link_count);
 
             components.resize(0);
-            links.resize(0);
+			components.reserve(component_count);
 
-            components.reserve(component_count);
-            links.reserve(link_count);
+			links.resize(link_count);
 
             //  Load components
             for (unsigned int i = 0; i < component_count; ++i)
                 components.emplace_back(source);
 
-            //  Load links
-            for (unsigned int i = 0; i < link_count; ++i) {
-                link_state link;
-                source.read(&link, sizeof(link));
-                links.push_back(link);
-            }
+            //  Load links (trivail type)
+			const unsigned int links_size =
+				link_count * sizeof(link_state);
+			if (source.read(links.data(), links_size) != links_size)
+				throw std::runtime_error("Unable to read links");
         }
 
         void circuit_state::save(Sound::data_output_stream& dest)
@@ -93,8 +91,11 @@ namespace Gammou {
             for (auto& component : components)
                 component.save(dest);
 
-            for (auto& link : links)    //  link_state is a trivial type
-                dest.write(link);
+			//  link_state is a trivial type
+			const unsigned int links_size =
+				link_count * sizeof(link_state);
+			if (dest.write(links.data(), links_size) != links_size)
+				throw std::runtime_error("Unable to write links\n");
         }
 
         //--
@@ -133,9 +134,11 @@ namespace Gammou {
             // Write parameters
             uint32_t parameter_count =
                 static_cast<uint32_t>(parameters.size());
+			const unsigned int parameter_size =
+				parameter_count * sizeof(double);
             dest.write(parameter_count);
 
-            if (dest.write(parameters.data(), parameter_count) != parameter_count)
+            if (dest.write(parameters.data(), parameter_size) != parameter_size)
                 throw std::runtime_error("Cannot write parameters");
 
             //  Write MAster Volume
@@ -189,10 +192,8 @@ namespace Gammou {
             else
                 m_cursor = static_cast<unsigned int>(new_cursor);
 
-            const unsigned int minimal_size = m_cursor + 1;
-
-            if (m_buffer.size() < minimal_size)
-                m_buffer.resize(minimal_size, 0u);
+            if (m_buffer.size() < m_cursor)
+                m_buffer.resize(m_cursor, 0u);
 
             return true;
         }
@@ -205,10 +206,9 @@ namespace Gammou {
         unsigned int buffer_output_stream::write(void *data, const unsigned int size)
         {
             const unsigned new_cursor = m_cursor + size;
-            const unsigned new_minimal_size = new_cursor + 1;
 
-            if (m_buffer.size() < new_minimal_size)
-                m_buffer.resize(new_minimal_size, 0u);
+            if (m_buffer.size() < new_cursor)
+                m_buffer.resize(new_cursor, 0u);
 
             std::memcpy(m_buffer.data() + m_cursor, data, size);
             m_cursor = new_cursor;
@@ -275,10 +275,16 @@ namespace Gammou {
             const unsigned int buffer_size =
                 static_cast<unsigned int>(m_buffer.size());
 
-            if (size + m_cursor > buffer_size)
+			const unsigned int new_cursor =
+				m_cursor + size;
+
+            if (new_cursor > buffer_size)
                 return 0;
+
             std::memcpy(data, m_buffer.data() + m_cursor, size);
-            return size;
+			m_cursor = new_cursor;
+
+			return size;
         }
 
 		//----------------

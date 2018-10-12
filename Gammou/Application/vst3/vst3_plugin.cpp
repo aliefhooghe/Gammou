@@ -19,8 +19,10 @@ namespace Gammou {
 			m_synthesizer(
 				m_master_circuit_processor, 
 				m_polyphonic_circuit_processor, 
-				2, 2, GAMMOU_SYNTHESIZER_CHANNEL_COUNT,
-				GAMMOU_PARAMETER_INPUT_COUNT),
+				GAMMOU_VST3_INPUT_COUNT, 
+				GAMMOU_VST3_OUTPUT_COUNT, 
+				GAMMOU_VST3_CHANNEL_COUNT,
+				GAMMOU_VST3_PARAMETER_COUNT),
 			m_gui(&m_synthesizer, &m_synthesizer_mutex),
 			m_display(m_gui)
 		{
@@ -62,7 +64,9 @@ namespace Gammou {
 			addEventInput(USTRING("Midi Input"), 1); // 1 channel
 
 			// Create Parameter inputs
-			for (unsigned int i = 0; i < GAMMOU_PARAMETER_INPUT_COUNT; ++i) {
+			const auto parameter_count = 
+				m_synthesizer.get_parameter_input_count();
+			for (unsigned int i = 0; i < parameter_count; ++i) {
 				const std::string param_name = ("Parameter " + std::to_string(i));
 				parameters.addParameter(
 					new Steinberg::Vst::Parameter(USTRING(param_name.c_str()), i));
@@ -247,51 +251,59 @@ namespace Gammou {
 				return Steinberg::kResultOk;
 		}
 
-		Steinberg::tresult PLUGIN_API Plugin::setState(Steinberg::IBStream * state)
+		Steinberg::tresult PLUGIN_API Plugin::setState(Steinberg::IBStream * ibstream)
 		{
+			DEBUG_PRINT("Vst3 Load State Start...\n");
 			// Load State from data
 
-			if (state != nullptr) {
-				vst3_data_source data(state);
+			if (ibstream != nullptr) {
+				vst3_data_source stream(ibstream);
+				Persistence::gammou_state state;
 
 				try {
+					Persistence::gammou_file<Persistence::gammou_state>::load(stream, state);
+					m_gui.load_state(state);
 
-					if (m_gui.load_state(data)) {
-
-						//	Inform host of new parameters value
-						for (unsigned int i = 0; i < GAMMOU_PARAMETER_INPUT_COUNT; ++i) {
-							const double param_value =
-								m_synthesizer.get_parameter_value(i);
-							// To the host
-							setParamNormalized(i, param_value);
-						}
-						return Steinberg::kResultOk;
+					//	Inform host of new parameters value
+					const auto parameter_count =
+						m_synthesizer.get_parameter_input_count();
+					for (unsigned int i = 0; i < parameter_count; ++i) {
+						const double param_value =
+							m_synthesizer.get_parameter_value(i);
+						// To the host
+						setParamNormalized(i, param_value);
 					}
+
+					DEBUG_PRINT("Vst3 Load State Success\n");
+					return Steinberg::kResultOk;
 				}
-				catch (const std::exception& e) {
-					DEBUG_PRINT("Load State Exception : '%s'\n", e.what());
-				}
+				catch (...) {}
 			}
 
+			DEBUG_PRINT("Vst3 Load State Failed\n");
 			return Steinberg::kResultFalse;
 		}
 
-		Steinberg::tresult PLUGIN_API Plugin::getState(Steinberg::IBStream * state)
+		Steinberg::tresult PLUGIN_API Plugin::getState(Steinberg::IBStream *ibstream)
 		{
 			// Save State To data
 
-			if (state != nullptr) {
-				vst3_data_sink data(state);
+			DEBUG_PRINT("Vst3 Save State Success\n");
+
+			if (ibstream != nullptr) {
+				vst3_data_sink stream(ibstream);
+				Persistence::gammou_state state;
 
 				try {
-					if (m_gui.save_state(data))
-						return Steinberg::kResultOk;
+					m_gui.save_state(state);
+					Persistence::gammou_file<Persistence::gammou_state>::save(stream, state);
+					DEBUG_PRINT("VST3 Save state Success\n");
+					return Steinberg::kResultOk;
 				}
-				catch (const std::exception& e) {
-					DEBUG_PRINT("Save State Exception : '%s'\n", e.what());
-				}
+				catch (const std::exception& e) {}
 			}
 
+			DEBUG_PRINT("VST3 Save State Failed\n");
 			return Steinberg::kResultFalse;
 		}
 

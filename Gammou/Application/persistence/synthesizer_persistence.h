@@ -88,8 +88,7 @@ namespace Gammou {
                     gammou_file_header header;
                     source.read(header);
 
-                    if (!(check_header(header) &&
-                          header.content_type == content_type<content>::value))
+                    if (!(check_header(header) && header.content_type == content_type<content>::value))
                         throw std::runtime_error("Invalid gammou file header");
 
                     //  Loading content
@@ -114,7 +113,7 @@ namespace Gammou {
             private:
                 static bool check_header(const gammou_file_header& header){
                     return
-                        std::strcmp(header.magic, gammou_magic) == 0 &&
+                        std::strncmp(header.magic, gammou_magic, 6) == 0 &&
                         header.format_version_id == gammou_format_version_id;
                 }
         };

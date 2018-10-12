@@ -95,7 +95,6 @@ namespace Gammou  {
 		{
 			//	reset buffer
             m_chunk_buffer.resize(0);
-
             Persistence::gammou_state state;
 
             try {
