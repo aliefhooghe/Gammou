@@ -204,7 +204,7 @@ namespace Gammou {
             m_gui_polyphonic_circuit->reset_content();
         }
 
-        bool synthesizer_gui::save_state(Persistence::gammou_state& state)
+        void synthesizer_gui::save_state(Persistence::gammou_state& state)
 		{
             const unsigned int parameter_count =
                     m_synthesizer.get_parameter_input_count();
@@ -224,10 +224,9 @@ namespace Gammou {
 
 			// Save Polyphonic Circuit
             m_gui_polyphonic_circuit->save_state(state.polyphonic_circuit);
-			return true;
 		}
 
-        bool synthesizer_gui::load_state(const Persistence::gammou_state& state)
+        void synthesizer_gui::load_state(const Persistence::gammou_state& state)
         {
             const unsigned int state_parameter_count =
                     static_cast<unsigned int>(state.parameters.size());
@@ -255,7 +254,6 @@ namespace Gammou {
             m_gui_polyphonic_circuit->load_state(state.polyphonic_circuit);
 
 			DEBUG_PRINT("SYN STATE LOADED\n");
-			return true;
 		}
 
 		void synthesizer_gui::init_main_factory()

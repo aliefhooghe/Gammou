@@ -37,8 +37,8 @@ namespace Gammou {
 			~synthesizer_gui();
 			
 			// Persistence
-            bool save_state(Persistence::gammou_state& state);
-            bool load_state(const Persistence::gammou_state& state);
+            void save_state(Persistence::gammou_state& state);
+            void load_state(const Persistence::gammou_state& state);
 
 		private:
             void init_main_factory(); // Load all built-in and plugin component

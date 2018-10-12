@@ -97,24 +97,29 @@ namespace Gammou  {
             m_chunk_buffer.resize(0);
 
             Persistence::gammou_state state;
-			
-            if (!m_gui.save_state(state))
-                return 0u;
 
-            //  Write state in chunk buffer
-            Persistence::buffer_output_stream stream(m_chunk_buffer);
-            Persistence::gammou_file<Persistence::gammou_state>::save(stream, state);
+            try {
+                m_gui.save_state(state);
 
-            const unsigned int data_size =
-                static_cast<unsigned int>(m_chunk_buffer.size());
+                //  Write state in chunk buffer
+                Persistence::buffer_output_stream stream(m_chunk_buffer);
+                Persistence::gammou_file<Persistence::gammou_state>::save(stream, state);
 
-            if ((*data = std::malloc(data_size)) == nullptr)
-                return 0u;
+                const unsigned int data_size =
+                    static_cast<unsigned int>(m_chunk_buffer.size());
 
-            //	Copy chunk buffer data to allocated chunk
-            std::memcpy(*data, m_chunk_buffer.data(), data_size);
+                if ((*data = std::malloc(data_size)) == nullptr)
+                    return 0u;
 
-            return data_size;
+                //	Copy chunk buffer data to allocated chunk
+                std::memcpy(*data, m_chunk_buffer.data(), data_size);
+
+                return data_size;
+            }
+            catch(...)
+            {
+                return 0;
+            }
         }
 
 		unsigned int plugin::load_state(void *data, const unsigned int size)
@@ -122,12 +127,15 @@ namespace Gammou  {
 			raw_data_source source(data, size);
             Persistence::gammou_state state;
 
-            Persistence::gammou_file<Persistence::gammou_state>::load(source, state);
+            try {
+                Persistence::gammou_file<Persistence::gammou_state>::load(source, state);
+                m_gui.load_state(state);
+                return size;
+            }
+            catch(...) {
+                return 0;
+            }
 
-            if (m_gui.load_state(state))
-				return size;
-            else
-				return 0u;
 		}
 
         AEffect *plugin::create_AEffect_instance()

@@ -296,7 +296,7 @@ namespace Gammou {
 		}
 
 
-		Steinberg::IPlugView *Plugin::createView(const char* name)
+		Steinberg::IPlugView *Plugin::createView(const char*)
 		{
 			return m_display.create_vst3_view_instance();
 		}
