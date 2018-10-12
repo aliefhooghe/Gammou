@@ -28,7 +28,7 @@ namespace Gammou {
 
                 const double in = input[0];
 				const double omega0 = 6.28318530718 * constrain_in_range(input[1], 1.0, 16000.0);
-				const double Q = constrain_in_range(input[2], 0.1, 100.0);
+                const double Q = constrain_in_range(input[2], 0.2, 100.0);
 
 				const double y = m_output[0];
 				const double yd = m_previous_output_deriv;
