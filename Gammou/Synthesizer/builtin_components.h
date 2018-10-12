@@ -12,7 +12,7 @@
 	static constexpr auto category = c;					 \
 	static constexpr auto name = n;};
 
-#define MAKE_BUILTIN_COMPONENT(type)							\
+#define MAKE_BUILTIN_FACTORY(type)							\
 	std::make_unique<Sound::default_plugin_factory<type> >(		\
 		Sound::builtin_component_info<type>::name,				\
 		Sound::builtin_component_info<type>::category,			\

@@ -56,7 +56,7 @@ namespace Gammou {
             //  see ~synthesizer_gui
             gui_master_circuit *m_gui_master_circuit{};
             gui_polyphonic_circuit *m_gui_polyphonic_circuit{};
-            user_component_editor *m_user_component_editor{};
+            //user_component_editor *m_user_component_editor{};
 
             View::page_container* m_pages;
             View::knob *m_master_volume{};
