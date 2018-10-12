@@ -204,89 +204,56 @@ namespace Gammou {
             m_gui_polyphonic_circuit->reset_content();
         }
 
-		bool synthesizer_gui::save_state(Sound::data_output_stream & data)
+        void synthesizer_gui::save_state(Persistence::gammou_state& state)
 		{
-			Persistence::synthesizer_record_header header;
+            const unsigned int parameter_count =
+                    m_synthesizer.get_parameter_input_count();
 
-			DEBUG_PRINT("SYN SAVE STATE\n");
-
-			// Fill header
-			std::memcpy(header.magic, "GAMMOU", 6);
-			header.format_version_id = Persistence::gammou_format_version_id;
-			header.parameter_count = GAMMOU_PARAMETER_INPUT_COUNT;
-
-			// Save header
-			if (data.write(&header, sizeof(header)) != sizeof(header))
-				return false;
+            state.parameters.resize(parameter_count);
 
 			// Save Parameters
-			for (unsigned int i = 0; i < GAMMOU_PARAMETER_INPUT_COUNT; ++i) {
-				double param_value =
-					m_synthesizer.get_parameter_value(i);
-
-				if (data.write(&param_value, sizeof(double)) != sizeof(double))
-					return false;
-			}
+            for (unsigned int i = 0; i < parameter_count; ++i)
+                state.parameters[i] = m_synthesizer.get_parameter_value(i);
 
 			// Save Master Volume
-			double master_volume = m_master_volume->get_normalized_value();
-
-			if (data.write(&master_volume, sizeof(double)) != sizeof(double))
-				return false;
+            state.master_volume =
+                m_master_volume->get_normalized_value();
 
 			// Save Master Circuit
-			m_gui_master_circuit->save_state(data);
+            m_gui_master_circuit->save_state(state.master_circuit);
 
 			// Save Polyphonic Circuit
-			m_gui_polyphonic_circuit->save_state(data);
-			return true;
+            m_gui_polyphonic_circuit->save_state(state.polyphonic_circuit);
 		}
 
-		bool synthesizer_gui::load_state(Sound::data_input_stream & data)
-		{
-			DEBUG_PRINT("SYN LOAD STATE :\n");
+        void synthesizer_gui::load_state(const Persistence::gammou_state& state)
+        {
+            const unsigned int state_parameter_count =
+                    static_cast<unsigned int>(state.parameters.size());
+            const unsigned int syn_parameter_count =
+                    m_synthesizer.get_parameter_input_count();
 
-			// Loading header
-			Persistence::synthesizer_record_header header;
-			if (data.read(&header, sizeof(header)) != sizeof(header))
-				return false;
+            //  Load parameters
+            for (unsigned int i = 0; i < syn_parameter_count; ++i) {
+                double param_value = 0.0;
 
-			// Check magic Id
-			if (std::strncmp(header.magic, "GAMMOU", 6) != 0)
-				return false;
+                if (i < state_parameter_count)
+                   param_value = state.parameters[i];
 
-			// Check format version
-			if (header.format_version_id != Persistence::gammou_format_version_id)
-				return false;
-
-			// Load Parameters
-			if (header.parameter_count != GAMMOU_PARAMETER_INPUT_COUNT)
-				return false;
-
-			for (unsigned int i = 0; i < GAMMOU_PARAMETER_INPUT_COUNT; ++i) {
-				double param_value;
-
-				if (data.read(&param_value, sizeof(double)) != sizeof(double))
-					return false;
-
-				m_synthesizer.set_parameter_value(param_value, i);
+                m_synthesizer.set_parameter_value(param_value, i);
 			}
 
 			// Load Master Volume
-			double master_volume;
-			if (data.read(&master_volume, sizeof(double)) != sizeof(double))
-				return false;
-
-			m_master_volume->set_normalized_value(master_volume);
+            m_master_volume->set_normalized_value(
+                static_cast<float>(state.master_volume));
 			
 			// Load Master Circuit 
-			m_gui_master_circuit->load_state(data);
+            m_gui_master_circuit->load_state(state.master_circuit);
 
 			// Load Polyphonic Circuit
-			m_gui_polyphonic_circuit->load_state(data);
+            m_gui_polyphonic_circuit->load_state(state.polyphonic_circuit);
 
 			DEBUG_PRINT("SYN STATE LOADED\n");
-			return true;
 		}
 
 		void synthesizer_gui::init_main_factory()

@@ -2,7 +2,6 @@
 #ifndef GAMMOU_SYNTHESIZER_GUI_H_
 #define GAMMOU_SYNTHESIZER_GUI_H_
 
-
 #include <mutex>
 #include <view.h>
 
@@ -25,9 +24,6 @@
 #error "GAMMOU_PLUGINS_DIRECTORY_PATH must be defined"
 #endif
 
-#define GAMMOU_SYNTHESIZER_CHANNEL_COUNT 64u
-#define GAMMOU_PARAMETER_INPUT_COUNT 16u
-
 namespace Gammou {
 
 	namespace Gui {
@@ -41,8 +37,8 @@ namespace Gammou {
 			~synthesizer_gui();
 			
 			// Persistence
-			bool save_state(Sound::data_output_stream& data);
-			bool load_state(Sound::data_input_stream& data);
+            void save_state(Persistence::gammou_state& state);
+            void load_state(const Persistence::gammou_state& state);
 
 		private:
             void init_main_factory(); // Load all built-in and plugin component
