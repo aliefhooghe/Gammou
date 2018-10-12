@@ -53,12 +53,12 @@ namespace Gammou {
 		}
 
 		double user_sound_component_output::fetch_output(
-				const unsigned int output_id)
+				const unsigned int)
 		{
             return 0.0; // a stub
 		}
 
-		void user_sound_component_output::process(const double input[])
+		void user_sound_component_output::process(const double[])
 		{
 			//	a stub
 		}
@@ -86,7 +86,7 @@ namespace Gammou {
 			m_output_component(output_count),
             m_gui_circuit(
                 factory, *this,
-                0, GuiProperties::user_component_editor_toolbox_height,
+                0, 0,
                 GuiProperties::user_component_editor_circuit_width,
                 GuiProperties::user_component_editor_circuit_height)
         {

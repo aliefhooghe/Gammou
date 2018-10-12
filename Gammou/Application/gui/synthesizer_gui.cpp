@@ -292,12 +292,12 @@ namespace Gammou {
 		void synthesizer_gui::init_main_factory()
 		{
 			// Built In Components
-            m_component_selector->add_plugin_factory(std::make_unique<Sound::Builtin::sin_factory>());
-            m_component_selector->add_plugin_factory(std::make_unique<Sound::Builtin::sum_component_factory>());
-            m_component_selector->add_plugin_factory(std::make_unique<Sound::Builtin::product_factory>());
-            m_component_selector->add_plugin_factory(std::make_unique<Sound::Builtin::lp2_factory>());
-            m_component_selector->add_plugin_factory(std::make_unique<Sound::Builtin::adsr_env_factory>());
-            m_component_selector->add_plugin_factory(std::make_unique<Sound::Builtin::saw_factory>());
+            m_component_selector->add_plugin_factory(MAKE_BUILTIN_COMPONENT(Sound::sin_component));
+            m_component_selector->add_plugin_factory(MAKE_BUILTIN_COMPONENT(Sound::sum_component));
+            m_component_selector->add_plugin_factory(MAKE_BUILTIN_COMPONENT(Sound::product_component));
+            m_component_selector->add_plugin_factory(MAKE_BUILTIN_COMPONENT(Sound::lp2));
+            m_component_selector->add_plugin_factory(MAKE_BUILTIN_COMPONENT(Sound::adsr_env));
+            m_component_selector->add_plugin_factory(MAKE_BUILTIN_COMPONENT(Sound::saw));
 
             m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(cos));
             m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(exp));

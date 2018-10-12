@@ -14,10 +14,10 @@ set(CMAKE_CXX_STANDARD 17)
 add_subdirectory("../Process" Process)
  
 set(SYNTHESIZER_SRC
-  component_category.h
+  	component_category.h
 	sound_processing_helper.h
 	sound_processing_helper.cpp
-  synthesizer.h
+	synthesizer.h
 	synthesizer.cpp
 	jit_frame_processor/jit_frame_processor.h
 	jit_frame_processor/jit_frame_processor.cpp
@@ -35,6 +35,8 @@ set(SYNTHESIZER_BUILTIN_COMPONENTS_SRC
 	builtin_components/adsr_env.cpp
 	builtin_components/lp2.h
 	builtin_components/lp2.cpp
+	builtin_components/negate.h
+	builtin_components/negate.cpp
 	builtin_components/product_component.cpp
 	builtin_components/product_component.h
 	builtin_components/saw.h
