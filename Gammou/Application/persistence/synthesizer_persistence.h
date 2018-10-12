@@ -2,7 +2,10 @@
 #define GAMMOU_SYNTHESIZER_PERSISTENCE_H_
 
 #include <cstdint>
+#include <cstring>
+
 #include <vector>
+
 
 #include "../../Synthesizer/plugin_management/data_stream.h"
 
@@ -18,11 +21,14 @@ namespace Gammou {
 	namespace Persistence {
 
 		// Current Gammou Format
-		const uint32_t gammou_format_version_id = 1u;
+        constexpr uint32_t gammou_format_version_id = 1u;
+        constexpr auto gammou_magic = "GAMMOU";
+
+        //  Data structures
 
 		// Size = 16 Bytes
 		PACKED(
-		struct link_record
+        struct link_state
 		{
 			uint32_t src_record_id;
 			uint32_t output_id;
@@ -33,7 +39,7 @@ namespace Gammou {
 
 		// Size = 16 Bytes
 		PACKED(
-		struct component_record_header{
+        struct component_state_header{
 			uint32_t factory_id;
 			int32_t gui_x_pos;
 			int32_t gui_y_pos;
@@ -43,7 +49,7 @@ namespace Gammou {
 
 		// Size = 8 Bytes
 		PACKED(
-		struct circuit_record_header {
+        struct circuit_state_header {
 			uint32_t component_count;
 			uint32_t link_count;
 		}
@@ -51,12 +57,118 @@ namespace Gammou {
 
 		// Size = 12 Bytes
 		PACKED(
-		struct synthesizer_record_header {
+        struct synthesizer_state_header {
 			char magic[6];
 			uint32_t format_version_id;
 			uint32_t parameter_count;
 		}
 		);
+
+        PACKED(
+        struct gammou_file_header {
+            char magic[6];
+            uint16_t format_version_id;
+            uint16_t content_type;
+        }
+        );
+
+
+        //------
+
+        template<class content>
+        struct content_type {};
+
+        template<class content>
+        class gammou_file {
+
+            public:
+                static void load(Sound::data_input_stream& source, content& state)
+                {
+                    //  Reading header
+                    gammou_file_header header;
+                    source.read(header);
+
+                    if (!(check_header(header) &&
+                          header.content_type == content_type<content>::value))
+                        throw std::runtime_error("Invalid gammou file header");
+
+                    //  Loading content
+                    state.load(source);
+                }
+
+                static void save(Sound::data_output_stream& dest, const content& state)
+                {
+                    //  Filling header
+                    gammou_file_header header;
+                    std::memcpy(header.magic, gammou_magic, 6);
+                    header.format_version_id = gammou_format_version_id;
+                    header.content_type = content_type<content>::value;
+
+                    //  Writing header
+                    dest.write(header);
+
+                    // Writing Content
+                    state.save(dest);
+                }
+
+            private:
+                static bool check_header(const gammou_file_header& header){
+                    return
+                        std::strcmp(header.magic, gammou_magic) == 0 &&
+                        header.format_version_id == gammou_format_version_id;
+                }
+        };
+
+        //-------
+
+        class component_state {
+
+            public:
+                explicit component_state(Sound::data_input_stream& source);
+                component_state() = default;
+
+                uint32_t factory_id;
+                int32_t x_pos;
+                int32_t y_pos;
+                std::vector<uint8_t> data;
+
+                void load(Sound::data_input_stream& source);
+                void save(Sound::data_output_stream& dest);
+        };
+
+        class circuit_state {
+
+            public:
+                explicit circuit_state(Sound::data_input_stream& source);
+                circuit_state() = default;
+
+                std::vector<component_state> components;
+                std::vector<link_state> links;
+
+                void load(Sound::data_input_stream& source);
+                void save(Sound::data_output_stream& dest);
+        };
+
+        class gammou_state {
+
+            public:
+                explicit gammou_state(Sound::data_input_stream& source);
+                gammou_state() = default;
+
+                std::vector<double> parameters;
+                double master_volume;
+                bool polyphonic_keyboard;
+                circuit_state master_circuit;
+                circuit_state polyphonic_circuit;
+
+                void load(Sound::data_input_stream& source);
+                void save(Sound::data_output_stream& dest);
+        };
+
+        template<>
+        struct content_type<gammou_state> {
+            static const unsigned int value = 0;
+        };
 
 		//--------
 
@@ -109,6 +221,7 @@ namespace Gammou {
 		const unsigned int INTERNAL_FACTORY_ID = 0x00000000;
 
 	} /* Persistence */
+
 
 } /* Gammou */
 

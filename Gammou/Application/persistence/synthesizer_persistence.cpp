@@ -8,6 +8,146 @@ namespace Gammou {
 
 	namespace Persistence {
 
+
+        component_state::component_state(Sound::data_input_stream& source)
+        {
+            load(source);
+        }
+
+        void component_state::load(Sound::data_input_stream& source)
+        {
+            source.read(factory_id);
+            source.read(x_pos);
+            source.read(y_pos);
+
+            uint32_t data_size;
+            source.read(data_size);
+
+            if (data_size > 0) {
+                data.resize(data_size);
+
+                if (source.read(data.data(), data_size) != data_size)
+                    throw std::runtime_error("Cannot read component data");
+            }
+        }
+
+        void component_state::save(Sound::data_output_stream& dest)
+        {
+            dest.write(factory_id);
+            dest.write(x_pos);
+            dest.write(y_pos);
+
+            uint32_t data_size =
+                static_cast<uint32_t>(data.size());
+
+            dest.write(data_size);
+
+            if (data_size > 0) {
+                if (dest.write(data.data(), data_size) != data_size)
+                    throw std::runtime_error("Cannot write component data");
+            }
+        }
+
+        //--
+
+        circuit_state::circuit_state(Sound::data_input_stream& source)
+        {
+            load(source);
+        }
+
+        void circuit_state::load(Sound::data_input_stream& source)
+        {
+            uint32_t component_count, link_count;
+
+            source.read(component_count);
+            source.read(link_count);
+
+            components.resize(0);
+            links.resize(0);
+
+            components.reserve(component_count);
+            links.reserve(link_count);
+
+            //  Load components
+            for (unsigned int i = 0; i < component_count; ++i)
+                components.emplace_back(source);
+
+            //  Load links
+            for (unsigned int i = 0; i < link_count; ++i) {
+                link_state link;
+                source.read(&link, sizeof(link));
+                links.push_back(link);
+            }
+        }
+
+        void circuit_state::save(Sound::data_output_stream& dest)
+        {
+            uint32_t component_count =
+                static_cast<uint32_t>(components.size());
+            uint32_t link_count =
+                static_cast<uint32_t>(links.size());
+
+            dest.write(component_count);
+            dest.write(link_count);
+
+            for (auto& component : components)
+                component.save(dest);
+
+            for (auto& link : links)    //  link_state is a trivial type
+                dest.write(link);
+        }
+
+        //--
+
+        gammou_state::gammou_state(Sound::data_input_stream& source)
+        {
+            load(source);
+        }
+
+        void gammou_state::load(Sound::data_input_stream& source)
+        {
+            //  Read parameters
+            uint32_t parameter_count;
+            source.read(parameter_count);
+
+            const unsigned int parameters_size =
+                parameter_count * sizeof(double);
+
+            parameters.resize(parameter_count);
+            if (source.read(parameters.data(), parameters_size) != parameters_size)
+                throw std::runtime_error("Cannot read parameters");
+
+            //  Read Master Volume
+            source.read(&master_volume, sizeof(master_volume));
+
+            //  Set keyboard mode
+            polyphonic_keyboard = true;
+
+            //  Read Circuits
+            master_circuit.load(source);
+            polyphonic_circuit.load(source);
+        }
+
+        void gammou_state::save(Sound::data_output_stream& dest)
+        {
+            // Write parameters
+            uint32_t parameter_count =
+                static_cast<uint32_t>(parameters.size());
+            dest.write(parameter_count);
+
+            if (dest.write(parameters.data(), parameter_count) != parameter_count)
+                throw std::runtime_error("Cannot write parameters");
+
+            //  Write MAster Volume
+            dest.write(&master_volume, sizeof(double));
+
+            // Write Circuits
+            master_circuit.save(dest);
+            polyphonic_circuit.save(dest);
+        }
+
+        //---
+
 		buffer_stream::buffer_stream()
             : m_cursor(0u),
               m_buffer(0u)

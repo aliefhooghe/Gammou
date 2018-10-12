@@ -1,6 +1,9 @@
 #ifndef DATA_STREAM_H_
 #define DATA_STREAM_H_
 
+#include <stdexcept>
+#include <type_traits>
+
 namespace Gammou {
 
 	namespace Sound {
@@ -23,10 +26,12 @@ namespace Gammou {
 			virtual unsigned int read(void *data, const unsigned int size) =0;
 
 			template<class T>
-			unsigned int read(T& lvalue)
+            void read(T& lvalue)
 			{
-				static_assert(std::is_integral<T>::value);
-				return read(&lvalue, sizeof(T));
+                static_assert(std::is_trivial<T>::value);
+
+                if(read(&lvalue, sizeof(T)) != sizeof(T))
+                    throw std::runtime_error("Not enough data to read!");
 			}
 		};
 
@@ -34,6 +39,15 @@ namespace Gammou {
 		public:
             virtual ~data_output_stream() {}
 			virtual unsigned int write(void *data, const unsigned int size) =0;
+
+            template<class T>
+            void write(T& rvalue)
+            {
+                static_assert(std::is_trivial<T>::value);
+
+                if (write(&rvalue, sizeof(T)) != sizeof(T))
+                    throw std::runtime_error("Connot write data");
+            }
 		};
 
         class data_stream :
