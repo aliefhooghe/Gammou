@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include <cstdio>
 #include <vector>
 
 #include "../../Synthesizer/plugin_management/data_stream.h"
@@ -214,21 +215,34 @@ namespace Gammou {
 
 		//------
 		
-        class constrained_input_stream : public Sound::data_input_stream {
+        class file_input_stream : public Sound::data_input_stream {
 
 		public:
-            constrained_input_stream(Sound::data_input_stream& data, const unsigned int max_forward_offset);
+			file_input_stream(const std::string& path);
+			~file_input_stream();
 			
 			bool seek(const int offset, Sound::abstract_data_stream::seek_mode mode) override;
 			unsigned int tell() override;
 			unsigned int read(void *data, const unsigned int size) override;
 
 		private:
-			const unsigned int m_start_offset;
-			const unsigned int m_max_forward_offset;
-			Sound::data_input_stream& m_data;
+			std::FILE *m_handle{};
 		};
 
+		class file_output_stream : public Sound::data_output_stream {
+
+		public:
+			file_output_stream(const std::string& path);
+			~file_output_stream();
+
+			bool seek(const int offset, Sound::abstract_data_stream::seek_mode mode) override;
+			unsigned int tell() override;
+			unsigned int write(void *data, const unsigned int size) override;
+		
+		private:
+			std::FILE *m_handle{};
+		};
+		
 		//-----
 
 		// Dummy factory Id fo Internals Components

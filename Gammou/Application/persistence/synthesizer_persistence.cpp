@@ -5,7 +5,6 @@
 #include "synthesizer_persistence.h"
 
 
-
 namespace Gammou {
 
 	namespace Persistence {
@@ -302,59 +301,96 @@ namespace Gammou {
 
 		//----------------
 
-        constrained_input_stream::constrained_input_stream(Sound::data_input_stream & data,
-			const unsigned int max_forward_offset)
-			: m_start_offset(data.tell()),
-				m_max_forward_offset(max_forward_offset),
-				m_data(data)
+		static int seek_mode_to_std(const Sound::abstract_data_stream::seek_mode mode)
 		{
+			using seek_mode = 
+				Sound::abstract_data_stream::seek_mode;
 
-		}
-
-        bool constrained_input_stream::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)
-		{
-			int new_offset; 
-
-			switch (mode)
-			{
-			case Sound::abstract_data_stream::seek_mode::CURRENT:
-				new_offset = static_cast<int>(tell()) + offset;
-				break;
-
-			case Sound::abstract_data_stream::seek_mode::SET:
-				new_offset = offset;
-				break;
-
-			case Sound::abstract_data_stream::seek_mode::END:
-				new_offset = static_cast<int>(m_max_forward_offset) + offset;
-				break;
+			switch (mode) {
+				case seek_mode::CURRENT:
+					return SEEK_CUR;
+					break;
+				case seek_mode::END:
+					return SEEK_END;
+					break;
+				case seek_mode::SET:
+					return SEEK_SET;
+					break;
+				default:
+					return 0; // stub for compiler
 			}
-
-			if (new_offset >= 0) {
-				const unsigned int unsigned_new_offset = static_cast<unsigned int>(new_offset);
-				if(unsigned_new_offset <= m_max_forward_offset)
-					return m_data.seek(m_start_offset + new_offset, Sound::abstract_data_stream::seek_mode::SET);
-			}
-
-			return false;
 		}
 
-        unsigned int constrained_input_stream::tell()
+		// --
+
+		file_input_stream::file_input_stream(const std::string & path)
 		{
-			return m_data.tell() - m_start_offset;
+			m_handle = std::fopen(path.c_str(), "rb");
+
+			if (m_handle == nullptr)
+				throw std::runtime_error("Cannot open file");
 		}
 
-        unsigned int constrained_input_stream::read(void * data, const unsigned int size)
+		file_input_stream::~file_input_stream()
 		{
-			const unsigned int max_read_size = m_max_forward_offset - tell();
-			const unsigned int read_size = std::min(max_read_size, size);
-			return m_data.read(data, read_size);
+			std::fclose(m_handle);
 		}
 
+		bool file_input_stream::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)
+		{
+			return 
+				0 == std::fseek(
+					m_handle, offset,
+					seek_mode_to_std(mode));
+		}
 
-		//----------------
+		unsigned int file_input_stream::tell()
+		{
+			return std::ftell(m_handle);
+		}
+
+		unsigned int file_input_stream::read(void *data, const unsigned int size)
+		{
+			return std::fread(data, 1, size, m_handle);
+		}
+
+		//--
+
+		file_output_stream::file_output_stream(const std::string & path)
+		{
+			m_handle = std::fopen(path.c_str(), "wb+");
+
+			if (m_handle == nullptr)
+				throw std::runtime_error("Cannot open file");
+		}
+
+		file_output_stream::~file_output_stream()
+		{
+			if (std::fclose(m_handle) != 0)
+				throw std::runtime_error("Cannot write file cpontent on disk");
+		}
+
+		bool file_output_stream::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)
+		{
+			return
+				0 == std::fseek(
+					m_handle, offset,
+					seek_mode_to_std(mode));
+		}
+
+		unsigned int file_output_stream::tell()
+		{
+			return std::ftell(m_handle);
+		}
+
+		unsigned int file_output_stream::write(void *data, const unsigned int size)
+		{
+			return std::fwrite(data, 1, size, m_handle);
+		}
+
 
 	} /* Persistence */
 
 } /* Persistence */
+
 
