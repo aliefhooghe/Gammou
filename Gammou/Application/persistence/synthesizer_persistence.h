@@ -6,7 +6,6 @@
 
 #include <vector>
 
-
 #include "../../Synthesizer/plugin_management/data_stream.h"
 
 // Trick from gist.github.com/PhilCK/1534763
@@ -120,7 +119,7 @@ namespace Gammou {
 
         //-------
 
-        class component_state {
+        struct component_state {
 
             public:
                 explicit component_state(Sound::data_input_stream& source);
@@ -135,7 +134,7 @@ namespace Gammou {
                 void save(Sound::data_output_stream& dest);
         };
 
-        class circuit_state {
+        struct circuit_state {
 
             public:
                 explicit circuit_state(Sound::data_input_stream& source);
@@ -148,7 +147,7 @@ namespace Gammou {
                 void save(Sound::data_output_stream& dest);
         };
 
-        class gammou_state {
+        struct gammou_state {
 
             public:
                 explicit gammou_state(Sound::data_input_stream& source);
@@ -163,6 +162,8 @@ namespace Gammou {
                 void load(Sound::data_input_stream& source);
                 void save(Sound::data_output_stream& dest);
         };
+
+		constexpr auto gammou_state_reserved_size = 64u;
 
         template<>
         struct content_type<gammou_state> {

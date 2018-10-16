@@ -4,6 +4,8 @@
 
 #include "synthesizer_persistence.h"
 
+
+
 namespace Gammou {
 
 	namespace Persistence {
@@ -124,6 +126,10 @@ namespace Gammou {
             //  Set keyboard mode
             polyphonic_keyboard = true;
 
+			//	Skip reserved bytes
+			using seek_mode = Sound::data_input_stream::seek_mode;
+			source.seek(gammou_state_reserved_size, seek_mode::CURRENT);
+
             //  Read Circuits
             master_circuit.load(source);
             polyphonic_circuit.load(source);
@@ -141,8 +147,15 @@ namespace Gammou {
             if (dest.write(parameters.data(), parameter_size) != parameter_size)
                 throw std::runtime_error("Cannot write parameters");
 
-            //  Write MAster Volume
+            //  Write Master Volume
             dest.write(&master_volume, sizeof(double));
+
+			//	Zero on reserved bytes
+			uint8_t zero[gammou_state_reserved_size] = { 0 };
+
+			if (dest.write(zero, gammou_state_reserved_size) !=
+				gammou_state_reserved_size)
+				throw std::runtime_error("Cannot write gammou state reserved area");
 
             // Write Circuits
             master_circuit.save(dest);
