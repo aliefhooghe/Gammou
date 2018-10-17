@@ -265,11 +265,15 @@ namespace Gammou {
 					m_gui.load_state(state);
 
 					//	Inform host of new parameters value
-					const auto parameter_count =
-						m_synthesizer.get_parameter_input_count();
-					for (unsigned int i = 0; i < parameter_count; ++i) {
-						const double param_value =
-							m_synthesizer.get_parameter_value(i);
+					const auto state_param_count =
+						state.parameters.size();
+						
+					for (unsigned int i = 0; i < GAMMOU_VST3_PARAMETER_COUNT; ++i) {
+						double param_value = 0;
+						
+						if (i < state_param_count)
+							param_value = state.parameters[i];
+
 						// To the host
 						setParamNormalized(i, param_value);
 					}

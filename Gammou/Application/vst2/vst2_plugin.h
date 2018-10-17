@@ -27,14 +27,15 @@ namespace Gammou  {
         class plugin {
 
             public:
-                static AEffect *create_AEffect_instance();
+                static AEffect *create_AEffect_instance(audioMasterCallback master);
                 ~plugin();
 
             private:
-                plugin();
+                plugin(audioMasterCallback master);
 
                 AEffect *get_AEffect_instance();
 
+				void send_parameter_value(const unsigned int index, const float value);
 				void handle_event(VstEvent& ev);
 				void get_param_name(char *str, const unsigned int index);
 
@@ -73,7 +74,8 @@ namespace Gammou  {
 
 				//-------
 
-                AEffect *m_aeffect;
+				AEffect *m_aeffect{};
+				audioMasterCallback m_master{};
 				ERect m_window_rect;
 
                 std::mutex m_synthesizer_mutex;

@@ -6,8 +6,9 @@ namespace Gammou  {
     
     namespace VST2 {
 
-        plugin::plugin()
-        :   m_synthesizer_mutex(),
+        plugin::plugin(audioMasterCallback master)
+        :   m_master(master),
+			m_synthesizer_mutex(),
             m_master_circuit_processor(),
             m_polyphonic_circuit_processor(),
             m_synthesizer(
@@ -76,6 +77,14 @@ namespace Gammou  {
             return m_aeffect;
         }
 
+		void plugin::send_parameter_value(const unsigned int index, const float value)
+		{
+			m_master(
+				m_aeffect, 
+				audioMasterAutomate, 
+				index, 0, nullptr, value);
+		}
+
 		void plugin::handle_event(VstEvent & ev)
 		{
 			if (ev.type != kVstMidiType)
@@ -129,6 +138,20 @@ namespace Gammou  {
             try {
                 Persistence::gammou_file<Persistence::gammou_state>::load(source, state);
                 m_gui.load_state(state);
+
+				const auto state_param_count =
+					state.parameters.size();
+
+				//	Send parameters to the host
+				for (unsigned int i = 0; i < GAMMOU_VST2_PARAMETER_COUNT; ++i) {
+					float param_value = 0.0f;
+						
+					if (i < state_param_count)
+						param_value = static_cast<float>(state.parameters[i]);
+
+					send_parameter_value(i, param_value);
+				}
+
                 return size;
             }
             catch(...) {
@@ -137,9 +160,9 @@ namespace Gammou  {
 
 		}
 
-        AEffect *plugin::create_AEffect_instance()
+        AEffect *plugin::create_AEffect_instance(audioMasterCallback master)
         {
-            plugin *p = new plugin;
+			plugin *p = new plugin{master};
             return p->get_AEffect_instance();
         }
 
@@ -392,9 +415,9 @@ namespace Gammou  {
 
 extern "C" {
 
-    AEffect* VSTPluginMain(audioMasterCallback)
+    AEffect* VSTPluginMain(audioMasterCallback master)
     {
-        return Gammou::VST2::plugin::create_AEffect_instance();
+        return Gammou::VST2::plugin::create_AEffect_instance(master);
     }
 
 }
