@@ -165,7 +165,54 @@ namespace Gammou {
 			tool_box->add_widget(
 				std::move(keyboard_mode_selector));
 
-			//---
+			//	LOad/Sazve preset buttons
+			
+			auto load_preset_button =
+				std::make_unique<View::push_button>(
+					[this](View::push_button*)
+					{
+						using mode = View::file_explorer_dialog::mode;
+						
+						View::file_explorer_dialog dialog{ "", mode::OPEN };
+						std::string path;
+
+						dialog.show("Load Preset");
+
+						if (dialog.get_filename(path)) {
+							Persistence::gammou_state state;
+							Persistence::file_input_stream stream{path};
+							Persistence::gammou_file<Persistence::gammou_state>::load(stream, state);
+							load_state(state);
+						}
+					},
+					"Load Preset",
+					GuiProperties::main_gui_size_unit * 9, 15);
+
+			auto save_preset_button =
+				std::make_unique<View::push_button>(
+					[this](View::push_button*)
+					{
+						using mode = View::file_explorer_dialog::mode;
+
+						View::file_explorer_dialog dialog{ "", mode::SAVE };
+						std::string path;
+
+						dialog.show("Save Preset");
+
+						if (dialog.get_filename(path)) {
+							Persistence::gammou_state state;
+							Persistence::file_output_stream stream{ path };
+							save_state(state);
+							Persistence::gammou_file<Persistence::gammou_state>::save(stream, state);
+						}
+					},
+					"Save Preset",
+					GuiProperties::main_gui_size_unit * 12, 15);
+
+			tool_box->add_widget(std::move(load_preset_button));
+			tool_box->add_widget(std::move(save_preset_button));
+
+			//	Master Volume Knob
 			//	TODO : mieux
 			const unsigned int offset = (GuiProperties::main_gui_size_unit - 50) / 2;
 
@@ -183,10 +230,13 @@ namespace Gammou {
 					GuiProperties::knob_off_color
 				);
 
+
 			m_master_volume = master_volume.get();
 			
 			master_volume->set_normalized_value(1.0); // coherence with synthesizer initial value
 			tool_box->add_widget(std::move(master_volume));
+
+			//--
 			add_widget(std::move(tool_box));
 
 

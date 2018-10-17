@@ -36,11 +36,12 @@ namespace Gammou {
         
         file_explorer_dialog::file_explorer_dialog(
             const std::string& root_path,
-            const color background)
-			:
+            const mode mode)
+		:
 #ifndef _WIN32
-			dialog(300, 400, background),
-            m_path_was_set(false)
+			dialog(300, 400),
+            m_path_was_set(false),
+			m_mode(mode)
         {
             auto dir_view =
                 std::make_unique<View::file_system_view>(
@@ -62,7 +63,8 @@ namespace Gammou {
             add_widget(std::move(dir_view));
             
 #else
-			m_path_was_set(false)
+			m_path_was_set(false),
+			m_mode(mode)
 		{
 #endif
         }
@@ -108,18 +110,24 @@ namespace Gammou {
 
 			dialog.lStructSize = sizeof(dialog);
 			dialog.hwndOwner = nullptr;
-			dialog.hInstance = nullptr; //
+			dialog.hInstance = nullptr;
 			dialog.lpstrFilter = filter;
 			dialog.lpstrFile = cpath;
 			dialog.nMaxFile = 256;
 			dialog.lpstrTitle = window_title.c_str();
 			dialog.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
-			if (GetOpenFileNameA(&dialog)) {
+			bool ret;
+
+			if (m_mode == mode::OPEN)
+				ret = GetOpenFileNameA(&dialog);
+			else
+				ret = GetSaveFileNameA(&dialog);
+			
+			if (ret) {
 				m_path = std::string(cpath);
 				m_path_was_set = true;
 			}
-
 		}
 #endif
 
