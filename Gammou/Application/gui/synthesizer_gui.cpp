@@ -173,16 +173,19 @@ namespace Gammou {
 					{
 						using mode = View::file_explorer_dialog::mode;
 						
-						View::file_explorer_dialog dialog{ "", mode::OPEN };
+						View::file_explorer_dialog dialog{GAMMOU_PRESETS_DIRECTORY_PATH, mode::OPEN};
 						std::string path;
 
 						dialog.show("Load Preset");
 
 						if (dialog.get_filename(path)) {
 							Persistence::gammou_state state;
-							Persistence::file_input_stream stream{path};
-							Persistence::gammou_file<Persistence::gammou_state>::load(stream, state);
-							load_state(state);
+
+							try {
+								Persistence::file_input_stream stream{ path };
+								Persistence::gammou_file<Persistence::gammou_state>::load(stream, state);
+								load_state(state);
+							}catch(...){}
 						}
 					},
 					"Load Preset",
@@ -198,16 +201,19 @@ namespace Gammou {
 					{
 						using mode = View::file_explorer_dialog::mode;
 
-						View::file_explorer_dialog dialog{ "", mode::SAVE };
+						View::file_explorer_dialog dialog{ GAMMOU_PRESETS_DIRECTORY_PATH, mode::SAVE };
 						std::string path;
 
 						dialog.show("Save Preset");
 
 						if (dialog.get_filename(path)) {
 							Persistence::gammou_state state;
-							Persistence::file_output_stream stream{ path };
-							save_state(state);
-							Persistence::gammou_file<Persistence::gammou_state>::save(stream, state);
+
+							try {
+								Persistence::file_output_stream stream{ path };
+								save_state(state);
+								Persistence::gammou_file<Persistence::gammou_state>::save(stream, state);
+							}catch(...){}
 						}
 					},
 					"Save Preset",

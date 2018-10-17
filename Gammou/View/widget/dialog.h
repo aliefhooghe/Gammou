@@ -47,6 +47,9 @@ namespace Gammou {
             bool m_path_was_set;
             std::string m_path;
 			const mode m_mode;
+#ifdef _WIN32
+			const std::string m_root_path;
+#endif
 		};
 
 

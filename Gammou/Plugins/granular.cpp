@@ -140,7 +140,7 @@ class granular_factory : public plugin_factory {
 
 	public:
 		granular_factory()
-			: plugin_factory("granular", "", granular_id)
+			: plugin_factory("granular", "Experimental", granular_id)
 		{}
 		~granular_factory() {}
 
