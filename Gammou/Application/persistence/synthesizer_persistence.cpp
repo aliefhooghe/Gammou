@@ -366,8 +366,7 @@ namespace Gammou {
 
 		file_output_stream::~file_output_stream()
 		{
-			if (std::fclose(m_handle) != 0)
-				throw std::runtime_error("Cannot write file cpontent on disk");
+		    std::fclose(m_handle);
 		}
 
 		bool file_output_stream::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)

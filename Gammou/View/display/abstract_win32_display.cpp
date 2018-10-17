@@ -24,8 +24,7 @@ namespace Gammou {
 			m_window_handle(nullptr),
 			m_has_focus(false)
 		{
-			//m_parent_window_handle =
-			//	(HWND)get_sys_window_handle();
+
 		}
 
 		abstract_win32_display::~abstract_win32_display()
@@ -127,7 +126,7 @@ namespace Gammou {
 			}
 		}
 
-		void* abstract_win32_display::get_sys_window_handle()
+		HWND abstract_win32_display::get_window_handle()
 		{
 			return m_window_handle;
 		}

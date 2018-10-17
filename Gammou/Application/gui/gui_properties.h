@@ -81,7 +81,7 @@ namespace Gammou {
 			// Main gui : width*height = 24*12 (unit)
 
             constexpr unsigned int main_gui_size_unit = 60;
-            constexpr unsigned int main_gui_width = 24 * main_gui_size_unit; //16 * main_gui_size_unit;
+            constexpr unsigned int main_gui_width = 24 * main_gui_size_unit;
             constexpr unsigned int main_gui_height = 12 * main_gui_size_unit;
 
             constexpr unsigned int main_gui_toolbox_height = 1 * main_gui_size_unit;

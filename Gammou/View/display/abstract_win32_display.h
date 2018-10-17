@@ -32,8 +32,9 @@ namespace Gammou {
 
 			void sys_redraw_rect(const rectangle& rect);
 
-			void *get_sys_window_handle() override;
+			HWND get_window_handle();
 			void register_window_class();
+
 			static LRESULT CALLBACK windowProc(
 				HWND window,
 				UINT msg,

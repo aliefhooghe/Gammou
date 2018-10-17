@@ -60,17 +60,15 @@ namespace Gammou {
 			// TODO handle parent and title
 			DEBUG_PRINT("Create Window ..\n");
 			self->create_window(nullptr, "");
-			DEBUG_PRINT("Ok\n");	
 
-			SetFocus((HWND)self->get_sys_window_handle());
+			HWND handle = self->get_window_handle();
+			SetFocus(handle);
 
-			//	Event loop
-			DEBUG_PRINT("Entering Win Event Loop\n");
-			
+			//	Event loop			
 			while (self->is_open()) {
 				MSG msg;
 
-				if (GetMessage(&msg, (HWND)self->get_sys_window_handle(), 0, 0) > 0) {
+				if (GetMessage(&msg, handle, 0, 0) > 0) {
 					TranslateMessage(&msg);
 					DispatchMessage(&msg);
 				}
