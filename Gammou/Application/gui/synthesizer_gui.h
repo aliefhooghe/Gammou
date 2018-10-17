@@ -20,6 +20,8 @@
 #include "user_component/user_component_editor.h"
 #include "component_selector.h"
 
+#include "../audio_backend/abstract_audio_backend.h"
+
 #ifndef GAMMOU_PLUGINS_DIRECTORY_PATH
 #error "GAMMOU_PLUGINS_DIRECTORY_PATH must be defined"
 #endif
@@ -33,7 +35,8 @@ namespace Gammou {
 		public:
 			synthesizer_gui(
 				Sound::synthesizer *synthesizer, 
-				std::mutex *synthesizer_mutex);
+				std::mutex *synthesizer_mutex,
+				AudioBackend::abstract_audio_backend& backend);
 			~synthesizer_gui();
 			
 			// Persistence
@@ -45,6 +48,7 @@ namespace Gammou {
 
 			//
 			Sound::synthesizer& m_synthesizer;
+			AudioBackend::abstract_audio_backend& m_backend;
 
             //	UI Widgets are All freed by their panels
 

@@ -123,10 +123,16 @@ set(USER_COMPONENT_SRC
 	Application/gui/user_component/user_sound_component.h
 )
 
+set(AUDIO_BACKEND_SRC
+	Application/audio_backend/abstract_audio_backend.h
+	Application/audio_backend/abstract_audio_backend.cpp
+)
+	
 set(GAMMOU_COMMON_SRC
 	${GUI_SRC}
 	${PERSISTENCE_SRC}
 	${USER_COMPONENT_SRC}
+	${AUDIO_BACKEND_SRC}
 )
 
 
@@ -153,7 +159,7 @@ if(GAMMOU_STANDALONE_BUILD)
 	)
 
   add_executable(gammou_standalone
-    Application/standalone/main.cpp
+		Application/standalone/main.cpp
 		${GAMMOU_COMMON_SRC}
 		"${RTAUDIO_DIR}/RtAudio.cpp"
 		"${RTMIDI_DIR}/RtMidi.cpp"
@@ -218,11 +224,6 @@ if(GAMMOU_STANDALONE_BUILD)
     else()
         message( FATAL_ERROR "Cant Build gammou standalone on this OS")
     endif()
-		
-		
-	
-
-
 	
 endif()
 

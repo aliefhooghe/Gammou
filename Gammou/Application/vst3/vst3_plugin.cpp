@@ -23,7 +23,7 @@ namespace Gammou {
 				GAMMOU_VST3_OUTPUT_COUNT, 
 				GAMMOU_VST3_CHANNEL_COUNT,
 				GAMMOU_VST3_PARAMETER_COUNT),
-			m_gui(&m_synthesizer, &m_synthesizer_mutex),
+			m_gui(&m_synthesizer, &m_synthesizer_mutex, *this),
 			m_display(m_gui)
 		{
 			DEBUG_PRINT("Gammou Vst3 Plugin CTOR\n");
@@ -315,6 +315,27 @@ namespace Gammou {
 		Steinberg::IPlugView *Plugin::createView(const char*)
 		{
 			return m_display.create_vst3_view_instance();
+		}
+
+		double Plugin::get_parameter_value(const unsigned int index)
+		{
+			if (index < GAMMOU_VST3_PARAMETER_COUNT)
+				getParamNormalized(index);
+			else
+				throw std::range_error("Invalid backend parameter index");
+		}
+
+		void Plugin::set_parameter_value(const unsigned int index, const double value)
+		{
+			if (index < GAMMOU_VST3_PARAMETER_COUNT)
+				setParamNormalized(index, value);
+			else
+				throw std::range_error("Invalid backend parameter index");
+		}
+
+		unsigned int Plugin::get_parameter_count()
+		{
+			return GAMMOU_VST3_PARAMETER_COUNT;
 		}
 
 		/*

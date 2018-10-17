@@ -11,7 +11,7 @@
 #include "synthesizer.h"
 #include "midi_driver/midi_driver.h"
 
-#include "jit_frame_processor/jit_frame_processor.h"
+#include "../audio_backend/abstract_audio_backend.h"
 
 #include <view.h>
 
@@ -24,18 +24,26 @@ namespace Gammou  {
     
     namespace VST2 {
 
-        class plugin {
+        class plugin : public AudioBackend::abstract_audio_backend {
 
             public:
                 static AEffect *create_AEffect_instance(audioMasterCallback master);
                 ~plugin();
+
+				//	Audio Backend override
+				double get_parameter_value(
+					const unsigned int index) override;
+
+				void set_parameter_value(
+					const unsigned int index, const double value) override;
+
+				unsigned int get_parameter_count() override;
 
             private:
                 plugin(audioMasterCallback master);
 
                 AEffect *get_AEffect_instance();
 
-				void send_parameter_value(const unsigned int index, const float value);
 				void handle_event(VstEvent& ev);
 				void get_param_name(char *str, const unsigned int index);
 
@@ -118,4 +126,6 @@ namespace Gammou  {
     }   /*  vst2 */
 
 }   /* Gammou */
+
 #endif
+

@@ -21,6 +21,8 @@
 #include "synthesizer.h"
 #include "jit_frame_processor/jit_frame_processor.h"
 
+#include "../audio_backend/abstract_audio_backend.h"
+
 #include <view.h>
 
 #define GAMMOU_VST3_INPUT_COUNT 2
@@ -32,7 +34,9 @@ namespace Gammou {
 
 	namespace VST3 {
 
-		class Plugin : public Steinberg::Vst::SingleComponentEffect {
+		class Plugin : 
+			public Steinberg::Vst::SingleComponentEffect,
+			public AudioBackend::abstract_audio_backend {
 
 		public:
 			Plugin();
@@ -55,6 +59,15 @@ namespace Gammou {
 
 			//	Editor override
 			Steinberg::IPlugView *PLUGIN_API createView(const char* name) override;
+
+			//	Audio Backend override
+			double get_parameter_value(
+				const unsigned int index) override;
+
+			void set_parameter_value(
+				const unsigned int index, const double value) override;
+
+			unsigned int get_parameter_count() override;
 
 		private:
 			inline void lock_synthesizer();

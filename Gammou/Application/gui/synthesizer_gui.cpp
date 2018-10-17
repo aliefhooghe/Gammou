@@ -20,12 +20,14 @@ namespace Gammou {
 
 		synthesizer_gui::synthesizer_gui(
 			Sound::synthesizer * synthesizer, 
-			std::mutex * synthesizer_mutex)
+			std::mutex * synthesizer_mutex,
+			AudioBackend::abstract_audio_backend& backend)
 		:	View::window_widget(
 				GuiProperties::main_gui_width, 
 				GuiProperties::main_gui_height,
 				View::cl_chartreuse), // for gui debuging
-			m_synthesizer(*synthesizer)
+			m_synthesizer(*synthesizer),
+			m_backend(backend)
 		{
 			DEBUG_PRINT("SYN GUI CTOR\n");
 
@@ -217,7 +219,7 @@ namespace Gammou {
 						}
 					},
 					"Save Preset",
-					GuiProperties::main_gui_size_unit * 12, 15, 95, 27,
+					GuiProperties::main_gui_size_unit * 11, 15, 95, 27,
 					10,	// font size
 					GuiProperties::main_gui_list_box_hovered_item_color,
 					GuiProperties::main_gui_list_box_selected_item_color,
@@ -305,6 +307,7 @@ namespace Gammou {
                    param_value = state.parameters[i];
 
                 m_synthesizer.set_parameter_value(param_value, i);
+				m_backend.set_parameter_value(i, param_value);
 			}
 
 			// Load Master Volume

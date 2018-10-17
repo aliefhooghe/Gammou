@@ -19,7 +19,7 @@ namespace Gammou  {
                 GAMMOU_VST2_CHANNEL_COUNT,
                 GAMMOU_VST2_PARAMETER_COUNT),
             m_midi_driver(m_synthesizer),
-            m_gui(&m_synthesizer, &m_synthesizer_mutex),
+            m_gui(&m_synthesizer, &m_synthesizer_mutex, *this),
             m_display(m_gui)
         {
             DEBUG_PRINT("Gammou Vst2 Plugin CTOR\n");
@@ -72,18 +72,35 @@ namespace Gammou  {
 
         }
 
+		double plugin::get_parameter_value(const unsigned int index)
+		{
+			if (index < GAMMOU_VST2_PARAMETER_COUNT)
+				;	//	Todo
+			else
+				throw std::range_error("Invalid backend parameter index");
+		}
+
+		void plugin::set_parameter_value(const unsigned int index, const double value)
+		{
+			if (index < GAMMOU_VST2_PARAMETER_COUNT)
+				m_master(
+					m_aeffect,
+					audioMasterAutomate,
+					index, 0, nullptr, static_cast<float>(value));
+			else
+				throw std::range_error("Invalid backend parameter index");
+		}
+
+		unsigned int plugin::get_parameter_count()
+		{
+			return GAMMOU_VST2_PARAMETER_COUNT;
+		}
+
         AEffect *plugin::get_AEffect_instance()
         {
             return m_aeffect;
         }
 
-		void plugin::send_parameter_value(const unsigned int index, const float value)
-		{
-			m_master(
-				m_aeffect, 
-				audioMasterAutomate, 
-				index, 0, nullptr, value);
-		}
 
 		void plugin::handle_event(VstEvent & ev)
 		{
@@ -138,20 +155,6 @@ namespace Gammou  {
             try {
                 Persistence::gammou_file<Persistence::gammou_state>::load(source, state);
                 m_gui.load_state(state);
-
-				const auto state_param_count =
-					state.parameters.size();
-
-				//	Send parameters to the host
-				for (unsigned int i = 0; i < GAMMOU_VST2_PARAMETER_COUNT; ++i) {
-					float param_value = 0.0f;
-						
-					if (i < state_param_count)
-						param_value = static_cast<float>(state.parameters[i]);
-
-					send_parameter_value(i, param_value);
-				}
-
                 return size;
             }
             catch(...) {
