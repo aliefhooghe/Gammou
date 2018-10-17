@@ -122,8 +122,8 @@ namespace Gammou {
 
 		Steinberg::tresult PLUGIN_API abstract_vst3_view::onWheel(float distance)
 		{
-			DEBUG_PRINT("Vst3 mouse wheel event\n");
-			return m_display->sys_mouse_wheel(distance);
+			//	Handled by backend (display)
+			return Steinberg::kResultTrue; 
 		}
 
 		Steinberg::tresult PLUGIN_API abstract_vst3_view::onKeyDown(Steinberg::char16 key, Steinberg::int16 keyMsg, Steinberg::int16 modifiers)

@@ -91,7 +91,6 @@ namespace Gammou {
 					x, y, real_width, real_height,
 					parent_window, nullptr, nullptr,
 					this);
-
 		}
 
 		void abstract_win32_display::destroy_window()
@@ -231,10 +230,13 @@ namespace Gammou {
 				return 0;
 				break;
 
-			case WM_MOUSEHWHEEL:
+			case WM_MOUSEWHEEL:
 			{
 				const auto delta = GET_WHEEL_DELTA_WPARAM(w_param);
-				DEBUG_PRINT("Win32 mouse wheel %u\n", delta);
+				if (delta < 0)
+					display->sys_mouse_wheel(-1.0);
+				else
+					display->sys_mouse_wheel(1.0);
 				return 0;
 			}
 				break;
@@ -271,7 +273,9 @@ namespace Gammou {
 				break;
 
 			default:
+			{
 				return DefWindowProc(window, msg, w_param, l_param);
+			}
 				break;
 			}
 
