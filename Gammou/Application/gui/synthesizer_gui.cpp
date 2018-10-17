@@ -186,7 +186,11 @@ namespace Gammou {
 						}
 					},
 					"Load Preset",
-					GuiProperties::main_gui_size_unit * 9, 15);
+					GuiProperties::main_gui_size_unit * 9, 15, 95, 27,
+					10,	// font size
+					GuiProperties::main_gui_list_box_hovered_item_color,
+					GuiProperties::main_gui_list_box_selected_item_color,
+					GuiProperties::component_font_color);
 
 			auto save_preset_button =
 				std::make_unique<View::push_button>(
@@ -207,7 +211,11 @@ namespace Gammou {
 						}
 					},
 					"Save Preset",
-					GuiProperties::main_gui_size_unit * 12, 15);
+					GuiProperties::main_gui_size_unit * 12, 15, 95, 27,
+					10,	// font size
+					GuiProperties::main_gui_list_box_hovered_item_color,
+					GuiProperties::main_gui_list_box_selected_item_color,
+					GuiProperties::component_font_color);
 
 			tool_box->add_widget(std::move(load_preset_button));
 			tool_box->add_widget(std::move(save_preset_button));
