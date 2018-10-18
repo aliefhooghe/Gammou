@@ -22,6 +22,7 @@ namespace Gammou
 
         application::~application()
         {
+            stop_audio();
         }
 
         void application::run()

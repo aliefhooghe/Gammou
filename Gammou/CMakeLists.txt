@@ -221,8 +221,8 @@ if(GAMMOU_STANDALONE_BUILD)
             target_compile_definitions(gammou_standalone PRIVATE __MACOSX_CORE__)
         else()                  # Only Linux
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-            target_link_libraries(gammou_standalone PRIVATE m stdc++fs pulse-simple pulse asound) # jack 
-            target_compile_definitions(gammou_standalone PRIVATE __LINUX_PULSE__ __LINUX_ALSA__)#    __LINUX_PULSE__ __UNIX_JACK__
+            target_link_libraries(gammou_standalone PRIVATE m stdc++fs pulse-simple pulse asound jack)
+            target_compile_definitions(gammou_standalone PRIVATE __LINUX_PULSE__ __UNIX_JACK__)
         endif()
         
     else()

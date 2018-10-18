@@ -75,7 +75,7 @@ namespace Gammou  {
 		double plugin::get_parameter_value(const unsigned int index)
 		{
 			if (index < GAMMOU_VST2_PARAMETER_COUNT)
-				;	//	Todo
+				return m_synthesizer.get_parameter_value(index);	//	Todo
 			else
 				throw std::range_error("Invalid backend parameter index");
 		}
