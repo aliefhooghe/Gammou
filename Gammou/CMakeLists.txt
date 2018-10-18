@@ -160,6 +160,10 @@ if(GAMMOU_STANDALONE_BUILD)
 
   add_executable(gammou_standalone
 		Application/standalone/main.cpp
+		Application/standalone/application.h
+		Application/standalone/application.cpp
+		Application/standalone/setting_widget.h
+		Application/standalone/setting_widget.cpp
 		${GAMMOU_COMMON_SRC}
 		"${RTAUDIO_DIR}/RtAudio.cpp"
 		"${RTMIDI_DIR}/RtMidi.cpp"
