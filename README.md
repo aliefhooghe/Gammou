@@ -3,4 +3,4 @@
 Real Time Midi Controled Polyphonic Modular Sound Synthesizer
 
 
-<img src="Doc/images/gammou.gif" width="1440" height="720" />
+<img src="Doc/images/gammou.gif" width="720" height="360" />
