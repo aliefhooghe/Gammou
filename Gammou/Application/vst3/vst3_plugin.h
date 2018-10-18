@@ -27,7 +27,7 @@
 
 #define GAMMOU_VST3_INPUT_COUNT 2
 #define GAMMOU_VST3_OUTPUT_COUNT 2
-#define GAMMOU_VST3_CHANNEL_COUNT 64
+#define GAMMOU_VST3_CHANNEL_COUNT 128
 #define GAMMOU_VST3_PARAMETER_COUNT 16
 
 namespace Gammou {
@@ -51,7 +51,8 @@ namespace Gammou {
 			Steinberg::tresult PLUGIN_API setupProcessing(Steinberg::Vst::ProcessSetup& newSetup) override;
 			Steinberg::tresult PLUGIN_API process(Steinberg::Vst::ProcessData& data) override;
 
-			Steinberg::tresult PLUGIN_API setBusArrangements(Steinberg::Vst::SpeakerArrangement* inputs, Steinberg::int32 numIns,
+			Steinberg::tresult PLUGIN_API setBusArrangements(
+				Steinberg::Vst::SpeakerArrangement* inputs, Steinberg::int32 numIns,
 				Steinberg::Vst::SpeakerArrangement* outputs, Steinberg::int32 numOuts) override;
 
 			Steinberg::tresult PLUGIN_API setState(Steinberg::IBStream* state) override;

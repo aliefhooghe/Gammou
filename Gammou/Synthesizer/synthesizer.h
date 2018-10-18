@@ -16,13 +16,6 @@ namespace Gammou {
 
 		class synthesizer{
 
-			/*
-			*			pour chaque cannal :
-			*				-> lifetime : uint
-			*				-> Midi note : uchar
-			*				->
-			*/
-
 		enum { INVALID_CHANNEL = 0xFFFFFF , INFINITE_LIFETIME = 0xFFFFFFFF, NO_NOTE = 0xFF};
 
 		public:
@@ -39,7 +32,7 @@ namespace Gammou {
 				const unsigned int master_to_polyphonic_count = 2,
 				const unsigned int polyphonic_to_master_count = 2,
 				const unsigned int sample_rate = 44100,
-                const float zero_lifetime = 0.1f);
+                const float zero_lifetime = 0.001f);
 
 			~synthesizer();
 
