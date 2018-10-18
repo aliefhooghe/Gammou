@@ -60,6 +60,7 @@ namespace Gammou {
                 throw std::domain_error("This Component is not on this frame");
 
             m_output_components.push_back(component);
+			notify_circuit_change();
         }
 
         template<class T>
