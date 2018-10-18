@@ -32,7 +32,7 @@ namespace Gammou {
 				const unsigned int master_to_polyphonic_count = 2,
 				const unsigned int polyphonic_to_master_count = 2,
 				const unsigned int sample_rate = 44100,
-                const float zero_lifetime = 0.001f);
+                const float zero_lifetime = 0.1f);
 
 			~synthesizer();
 

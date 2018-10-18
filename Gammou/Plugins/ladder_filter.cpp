@@ -36,7 +36,8 @@ void ladder_component::initialize_process()
 void ladder_component::process(const double input[])
 {
 	const double x = input[0];
-	const double k = input[2];
+	const double k = 
+		constrain_in_range<double>(input[2], 0.0, 3.95);
 	const double T = get_sample_duration();
 
 	const double f = 3.14 * T * input[1];

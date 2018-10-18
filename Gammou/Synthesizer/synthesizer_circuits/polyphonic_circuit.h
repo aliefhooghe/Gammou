@@ -7,7 +7,7 @@
 #include "../sound_component/sound_component.h"
 #include "master_circuit.h"
 
-constexpr auto SOUND_EPSILON = 0.0003;	//( ~= 0.1 / (2^15));
+constexpr auto SOUND_EPSILON = 0.0003;	//( ~= 10 / (2^15));
 
 namespace Gammou {
 
