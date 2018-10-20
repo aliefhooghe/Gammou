@@ -59,6 +59,11 @@ namespace Gammou {
             return m_display_height;
 		}
 
+		bool abstract_display::get_key_state(const keycode key) const
+		{
+			return m_key_state[key];
+		}
+
 		abstract_display *abstract_display::get_display() 
 		{
 			return this;
@@ -174,11 +179,13 @@ namespace Gammou {
 
 		bool abstract_display::sys_key_down(const keycode key)
 		{
+			m_key_state[key] = true;
 			return m_root_widget.on_key_down(key);
 		}
 
 		bool abstract_display::sys_key_up(const keycode key)
 		{
+			m_key_state[key] = false;
 			return m_root_widget.on_key_up(key);
 		}
 

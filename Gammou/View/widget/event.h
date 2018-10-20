@@ -141,7 +141,9 @@ namespace Gammou {
 			key_back_slash,
 			key_close_braket,
 			key_single_quote,
-			key_unknown
+			key_unknown,
+
+			keycode_count
 		};
 
 

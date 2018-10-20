@@ -68,8 +68,9 @@ namespace Gammou {
 		protected:
 			void redraw_parent();
 			abstract_panel *get_parent();
-			const rectangle get_relative_rect() const;	//	self coordinate system
-			
+			rectangle get_relative_rect() const;	//	self coordinate system
+			bool get_key_state(const keycode key);
+
 		private:
 			abstract_panel *m_parent;
 			rectangle m_absolute_rect;		//	Parent coordinate system

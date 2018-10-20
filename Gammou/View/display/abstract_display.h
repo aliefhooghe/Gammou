@@ -2,6 +2,7 @@
 #define ABSTRACT_DISPLAY_H_
 
 #include <memory>
+#include <array>
 #include "widget/panel.h"
 
 namespace Gammou {
@@ -19,6 +20,8 @@ namespace Gammou {
 
 			unsigned int get_display_width() const;
 			unsigned int get_display_height() const;
+
+			bool get_key_state(const keycode key) const;
 
 			virtual bool is_open() = 0;
 			virtual void close() = 0;
@@ -57,6 +60,8 @@ namespace Gammou {
 			bool m_is_draging;
 			mouse_button m_draging_button;
 			unsigned int m_pressed_mouse_button_count;
+
+			std::array<bool, keycode_count> m_key_state{false};
 		};
 
 	} /* View */

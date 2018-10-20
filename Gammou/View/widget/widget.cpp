@@ -1,6 +1,7 @@
 
 #include "widget.h"
 #include "panel.h"
+#include "display/abstract_display.h"
 #include "../../debug.h"
 
 namespace Gammou {
@@ -158,9 +159,19 @@ namespace Gammou {
 			return m_parent;
 		}
 
-		const rectangle widget::get_relative_rect() const
+		rectangle widget::get_relative_rect() const
 		{
 			return rectangle(0, 0, get_width(), get_height());
+		}
+
+		bool widget::get_key_state(const keycode key)
+		{
+			const auto *display = get_display();
+
+			if (display == nullptr)
+				return false;
+			else
+				return display->get_key_state(key);
 		}
 
 		void widget::redraw()
