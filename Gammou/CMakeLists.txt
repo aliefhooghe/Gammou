@@ -82,6 +82,7 @@ set(GUI_SRC
 	Application/gui/gui_polyphonic_circuit.h
 	Application/gui/gui_polyphonic_circuit.cpp
 	Application/gui/gui_properties.h
+	Application/gui/gui_properties.cpp
 	Application/gui/gui_sound_component.h
 	Application/gui/gui_sound_component.cpp
 	Application/gui/gui_synthesizer_circuit.h

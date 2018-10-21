@@ -3,6 +3,8 @@
 
 #include <string>
 #include <functional>
+#include <array>
+
 #include "widget.h"
 #include "panel.h"
 #include "cairo_helper.h"
@@ -117,8 +119,6 @@ namespace Gammou {
 		public:
 			knob(std::function<void(knob *)> change_action, 
 				const int x, const int y, 
-				const color on_color = cl_blueviolet, 
-				const color off_color = cl_lightgrey, 
 				const unsigned int size = 50);
 
 			virtual ~knob() {}
@@ -128,21 +128,29 @@ namespace Gammou {
 				const mouse_button button, 
 				const int x, const int y,
 				const int dx, const int dy) override;
+
 			virtual bool on_mouse_wheel(const float distance) override;
+			virtual bool on_mouse_exit() override;
 
 			void set_normalized_value(const float normalized_value);
 			float get_normalized_value() const;
 
+			void set_on_color(const color c);
+			void set_off_color(const color c);
+			
 		private:
 			void on_change(const float angle_change);
 
 			std::function<void(knob *kn)> m_change_action;
-			float m_angle;
-			float m_normalized_value;
-			
-			const color m_on_color;
-			const color m_off_color;
+			float m_angle{0.0f};
+			float m_normalized_value{0.0f};
 
+			color m_on_color{cl_blueviolet};
+			color m_off_color{cl_lightgrey};
+
+			unsigned int m_on_width{0u};
+
+			static const float m_on_widths[4];
 			static const float theta;
 			static const float angle_max;
 		};

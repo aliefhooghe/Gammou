@@ -241,12 +241,10 @@ namespace Gammou {
 						synthesizer->set_master_volume(volume); 
 					},
 					offset + GuiProperties::main_gui_width - GuiProperties::main_gui_size_unit,
-					offset,
-					GuiProperties::knob_on_color,
-					GuiProperties::knob_off_color
+					offset
 				);
 
-
+			GuiProperties::apply(*master_volume);
 			m_master_volume = master_volume.get();
 			
 			master_volume->set_normalized_value(1.0); // coherence with synthesizer initial value

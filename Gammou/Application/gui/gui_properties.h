@@ -10,56 +10,59 @@ namespace Gammou {
 
 		namespace GuiProperties {
 
+
+        void apply(View::knob& k);
+        // TODO
+
 			/*
 			 *		Colors
 			 */
 
 			// Component maps
-            constexpr View::color background = 0x272829ff;
-            constexpr View::color linking_color = 0xe89131ff;
-            constexpr View::color link_color = 0x17d563ff;
-            constexpr View::color highlight_socket_color = linking_color;
+        constexpr View::color background = 0x272829ff;
+        constexpr View::color linking_color = 0xe89131ff;
+        constexpr View::color link_color = 0x17d563ff;
+        constexpr View::color highlight_socket_color = linking_color;
 
-			// Components
-            constexpr View::color component_border = 0x20cae5ff;
-            constexpr View::color component_background = 0x313234ff;
-            constexpr View::color moving_component_background = component_background;
+        // Components
+        constexpr View::color component_border = 0x20cae5ff;
+        constexpr View::color component_background = 0x313234ff;
+        constexpr View::color moving_component_background = component_background;
 
-            constexpr View::color component_input_socket_color = link_color;
-            constexpr View::color component_linked_input_socket_color = link_color;
-            constexpr View::color component_output_socket_color = component_linked_input_socket_color;
-            constexpr View::color focused_component_output_socket_color = linking_color;
+        constexpr View::color component_input_socket_color = link_color;
+        constexpr View::color component_linked_input_socket_color = link_color;
+        constexpr View::color component_output_socket_color = component_linked_input_socket_color;
+        constexpr View::color focused_component_output_socket_color = linking_color;
 
-            constexpr View::color component_font_color = 0xbec7e6ff;
+        constexpr View::color component_font_color = 0xbec7e6ff;
 
-            constexpr View::color knob_off_color = component_font_color;
-            constexpr View::color knob_on_color = 0xbd63c5ff;
+        constexpr View::color knob_off_color = component_font_color;
+        constexpr View::color knob_on_color = 0xbd63c5ff;
 
-            constexpr View::color slider_on_color = knob_on_color;
-            constexpr View::color slider_off_color = knob_off_color;
+        constexpr View::color slider_on_color = knob_on_color;
+        constexpr View::color slider_off_color = knob_off_color;
 
-			/* Main Gui */
+        /* Main Gui */
 
-			// Listboxs
-            constexpr View::color main_gui_list_box_background = component_background;
-            constexpr View::color main_gui_list_box_selected_item_color = 0x4a4d50ff;
-            constexpr View::color main_gui_list_box_hovered_item_color = 0x54575aff;
-            constexpr View::color main_gui_list_box_font_color = component_font_color;
+        // Listboxs
+        constexpr View::color main_gui_list_box_background = component_background;
+        constexpr View::color main_gui_list_box_selected_item_color = 0x4a4d50ff;
+        constexpr View::color main_gui_list_box_hovered_item_color = 0x54575aff;
+        constexpr View::color main_gui_list_box_font_color = component_font_color;
 
-			// ToolBox
-            constexpr View::color main_gui_tool_box_background = component_background;	// todo
+        // ToolBox
+        constexpr View::color main_gui_tool_box_background = component_background; // todo
 
-            // User Component Editor
+        // User Component Editor
 
-            constexpr View::color user_component_editor_background = component_background;
+        constexpr View::color user_component_editor_background = component_background;
 
-
-			/*
+        /*
 			 *		Dimension
 			 */
 
-			// Components
-            constexpr float component_width = 90;
+        // Components
+        constexpr float component_width = 90;
 
 #ifdef _WIN32
             constexpr float component_font_size = 11.0;

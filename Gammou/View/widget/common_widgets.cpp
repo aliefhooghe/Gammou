@@ -224,25 +224,24 @@ namespace Gammou {
 			return m_pushed;
 		}
 
+
+		//**************************
+
+
 		/*
 		*	Knob
 		*/
 
 		const float knob::theta = 0.2f;
 		const float knob::angle_max = 2.0f * (3.14f - knob::theta);
+		const float knob::m_on_widths[4] = {3.0, 2.0, 1.333333f, 0.8888888f};
 
 		knob::knob(
-				std::function<void(knob *kn)> change_action, 
-				const int x, const int y, 
-				const color on_color, 
-				const color off_color,
-				const unsigned int size)
-			: control(x, y, size, size), 
-				m_change_action(change_action),
-				m_angle(0.0f),
-				m_normalized_value(0.0f),
-				m_on_color(on_color), 
-				m_off_color(off_color)
+			std::function<void(knob *kn)> change_action,
+			const int x, const int y,
+			const unsigned int size)
+			: control(x, y, size, size),
+			  m_change_action(change_action)
 		{
 		}
 
@@ -257,7 +256,7 @@ namespace Gammou {
 			const float cur_angle = start_angle + m_angle; 
 			
 			//	Off part
-			cairo_set_line_width(cr, 3.0f);
+			cairo_set_line_width(cr, m_on_widths[m_on_width]);
 
 			cairo_helper::set_source_color(cr, m_off_color);
 			cairo_new_path(cr);	//	should not be needed, to check
@@ -274,7 +273,6 @@ namespace Gammou {
 			const float cur_cx = offset + cur_dist * std::cos(cur_angle);
 			const float cur_cy = offset + cur_dist * std::sin(cur_angle);
 
-			cairo_helper::set_source_color(cr, m_on_color);
 			cairo_helper::circle(cr, cur_cx, cur_cy, 3.5f);
 			cairo_fill(cr);
 		}
@@ -304,6 +302,13 @@ namespace Gammou {
 			}
 		}
 
+		bool knob::on_mouse_exit()
+		{
+			m_on_width = 0;
+			redraw();
+			return true;
+		}
+
 		void knob::set_normalized_value(const float normalized_value)
 		{
 			m_normalized_value = normalized_value;
@@ -317,18 +322,50 @@ namespace Gammou {
 			return m_normalized_value;
 		}
 
+		void knob::set_on_color(const color c)
+		{
+			m_on_color = c;
+		}
+
+		void knob::set_off_color(const color c)
+		{
+			m_off_color = c;
+		}
+
 		void knob::on_change(const float angle_change)
 		{
-			m_angle -= angle_change;
+			float change_factor;
+			
+			const bool ctrl = get_key_state(key_ctrl_left);				
+			const bool alt = get_key_state(key_alt_left);	
 
-			if (m_angle < 0.0f)
-				m_angle = 0.0f;
-			else if (m_angle > angle_max)
-				m_angle = angle_max;
+			if (ctrl && alt) {
+				change_factor = 1.0f / 4096.0f;
+				m_on_width = 3;
+			}
+			else if (alt) {
+				change_factor = 1.0f / 64.0f;
+				m_on_width = 2;
+			}
+			else if (ctrl) {
+				change_factor = 1.0f / 8.0f;
+				m_on_width = 1;
+			}
+			else {
+				change_factor = 1.0f;
+				m_on_width = 0;
+			}
 
-			m_normalized_value = m_angle / angle_max;
-			m_change_action(this);
-			redraw();
+			m_angle -= change_factor * angle_change;
+
+				if (m_angle < 0.0f)
+					m_angle = 0.0f;
+				else if (m_angle > angle_max)
+					m_angle = angle_max;
+
+				m_normalized_value = m_angle / angle_max;
+				m_change_action(this);
+				redraw();
 		}
 
 		
