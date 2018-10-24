@@ -30,7 +30,7 @@ namespace Gammou {
 
         add_widget(
             std::make_unique<View::push_button>(
-                [](View::push_button *button)
+                [](View::push_button *)
                 {
                     std::cout << "Button pushed !" << std::endl;
                 },
@@ -86,7 +86,7 @@ namespace Gammou {
 
         add_widget(
             std::make_unique<View::push_button>(
-                [&list_box](View::push_button *button)
+                [&list_box](View::push_button *)
                 {
                     const unsigned int item_count = 
                         list_box.get_item_count();
@@ -97,7 +97,7 @@ namespace Gammou {
         
         add_widget(
             std::make_unique<View::push_button>(
-                [&list_box](View::push_button *button)
+                [&list_box](View::push_button*)
                 {
                     list_box.clear();
                 },
@@ -112,7 +112,7 @@ namespace Gammou {
 
         add_widget(
             std::make_unique<View::push_button>(
-                [](View::push_button *p)
+                [](View::push_button *)
                 {
                     std::string path;
                     
@@ -122,7 +122,7 @@ namespace Gammou {
                         std::cout << "Ouverture annulée" << std::endl;
                 },
                 "Open Explorer",
-                400, 400));
+                400, 70));
 
         ///////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////
@@ -130,7 +130,7 @@ namespace Gammou {
 
 		add_widget(
 			std::make_unique<View::push_button>(
-				[this](View::push_button *p)
+                [this](View::push_button *)
 				{
 					std::cout << "Non blocking close\n";
 					get_display()->close();
@@ -144,7 +144,7 @@ namespace Gammou {
 
 		add_widget(
 			std::make_unique<View::push_button>(
-				[this](View::push_button *p)
+                [](View::push_button*)
 				{
 					test_dialog dialog;
 					dialog.show("Dialog Title");
@@ -166,6 +166,51 @@ namespace Gammou {
         });
 
         add_widget(std::move(dir_view));
+
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
+        //  Edit Panel test
+
+        auto edit_panel =
+            std::make_unique<View::edit_panel<> >
+                (300, 400, 350, 350);
+
+        edit_panel->add_widget(std::make_unique<View::edit_widget>(0, 0, 25, 25));
+        edit_panel->add_widget(std::make_unique<View::edit_widget>(30, 0, 25, 25));
+        edit_panel->add_widget(std::make_unique<View::edit_widget>(60, 10, 25, 25));
+
+        using ctl_mode = View::edit_panel<>::control_mode;
+        auto *edit_panel_ptr = edit_panel.get();
+
+        add_widget(
+            std::make_unique<View::push_button>(
+                [edit_panel_ptr](View::push_button *)
+                {
+                    edit_panel_ptr->set_control_mode(ctl_mode::DEFAULT);
+                },
+                "Default",
+                700, 600));
+
+        add_widget(
+            std::make_unique<View::push_button>(
+                [edit_panel_ptr](View::push_button *)
+                {
+                    edit_panel_ptr->set_control_mode(ctl_mode::SELECT);
+                },
+                "Select",
+                700, 650));
+
+        add_widget(
+            std::make_unique<View::push_button>(
+                [edit_panel_ptr](View::push_button *)
+                {
+                    edit_panel_ptr->set_control_mode(ctl_mode::MOVE);
+                },
+                "Move",
+                700, 700));
+
+
+        add_widget(std::move(edit_panel));
     }
 
     bool test_window::on_mouse_dbl_click(const int x, const int y)
@@ -190,7 +235,7 @@ namespace Gammou {
 	{
 		add_widget(
 			std::make_unique<View::push_button>(
-				[this](View::push_button *self)
+                [this](View::push_button *)
 				{
 					get_display()->close();
 				},

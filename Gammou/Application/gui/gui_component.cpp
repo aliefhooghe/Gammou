@@ -366,7 +366,7 @@ namespace Gammou {
 			m_highlighted_socket_x(0.0),
 			m_highlighted_socket_y(0.0)
 		{
-			set_sroll_method(View::scrollable_panel<abstract_gui_component>::scroll_method::DRAG_SCROLL);
+			set_scroll_method(View::scrollable_panel<abstract_gui_component>::scroll_method::DRAG_SCROLL);
 		}
 
 		abstract_gui_component_map::abstract_gui_component_map(
@@ -382,7 +382,7 @@ namespace Gammou {
 			m_highlighted_socket_x(0.0),
 			m_highlighted_socket_y(0.0)
 		{
-			set_sroll_method(View::scrollable_panel<abstract_gui_component>::scroll_method::DRAG_SCROLL);
+			set_scroll_method(View::scrollable_panel<abstract_gui_component>::scroll_method::DRAG_SCROLL);
 		}
 
 		void abstract_gui_component_map::add_gui_component(std::unique_ptr<abstract_gui_component> && component)

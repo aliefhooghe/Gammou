@@ -39,14 +39,12 @@ namespace Gammou {
             virtual void draw(cairo_t *cr) override;
 			void redraw_rect(const rectangle& rect) override;
 
-			using panel<widget_type>::add_widget; // For test only
-
 		protected:
+            void set_scrollable(const bool scrolable = true);
+            void set_scroll_method(const scroll_method method);
 			virtual void draw_content(cairo_t *cr);
 
 			void scroll(const int dx, const int dy);
-			void set_scrollable(const bool scrolable = true);
-			void set_sroll_method(const scroll_method method);
 
             int convert_x(const unsigned int x);    //  Convert from widget coord. to childS coord.
 			int convert_y(const unsigned int y);
@@ -151,7 +149,7 @@ namespace Gammou {
 		{
 			panel<widget_type>::draw_background(cr); // Do cliping
 			cairo_save(cr);
-			cairo_translate(cr, -static_cast<int>(m_x_origin), -static_cast<int>(m_y_origin));
+            cairo_translate(cr, -m_x_origin, -m_y_origin);
 			draw_content(cr);
 			cairo_restore(cr);
 		}
@@ -196,7 +194,7 @@ namespace Gammou {
 		 }
 
 		 template<class widget_type>
-		 void scrollable_panel<widget_type>::set_sroll_method(const scroll_method method)
+         void scrollable_panel<widget_type>::set_scroll_method(const scroll_method method)
 		 {
 			 m_scroll_method = method;
 		 }

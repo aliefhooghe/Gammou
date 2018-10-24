@@ -12,7 +12,7 @@ namespace Gammou {
 		{
 		}
 
-		rectangle::rectangle(const int px, const int py, const int width, const int height)
+        rectangle::rectangle(const int px, const int py, const unsigned int width, const unsigned int height)
 			: x(px), y(py), width(width), height(height)
 		{
 		}
@@ -24,26 +24,26 @@ namespace Gammou {
 
 		bool rectangle::contains(const int px, const int py) const
 		{
-			return (px >= x && px < (x + (int)width))
-				&& (py >= y && py < (y + (int)height));
+            return (px >= x && px < (x + static_cast<int>(width)))
+                && (py >= y && py < (y + static_cast<int>(height)));
 		}
 
 		bool rectangle::contains(const rectangle & rect) const
 		{
-			return contains(rect.x, rect.y)
-				&& contains(rect.x, rect.y + rect.height - 1)
-				&& contains(rect.x + rect.width - 1, rect.y + rect.height - 1)
-				&& contains(rect.x + rect.width - 1, rect.y);
-		}
+            const auto right = rect.x + static_cast<int>(rect.width);
+            const auto bottom = rect.y + static_cast<int>(rect.height);
 
+			return contains(rect.x, rect.y)
+                && contains(rect.x, bottom)
+                && contains(right, rect.y)
+                && contains(right, bottom);
+		}
+/*      TODO
         bool rectangle::overlap(const rectangle &rect) const
         {
-            return contains(rect.x, rect.y)
-                || contains(rect.x, rect.y + rect.height - 1)
-                || contains(rect.x + rect.width - 1, rect.y + rect.height - 1)
-                || contains(rect.x + rect.width - 1, rect.y);
-        }
 
+        }
+*/
 		//////////////////////////////////////////////////////////////////////////////////////
 
 		namespace cairo_helper {
