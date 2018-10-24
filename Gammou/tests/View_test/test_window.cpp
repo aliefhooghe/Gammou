@@ -175,39 +175,29 @@ namespace Gammou {
             std::make_unique<View::edit_panel<> >
                 (300, 400, 350, 350);
 
-        edit_panel->add_widget(std::make_unique<View::edit_widget>(0, 0, 25, 25));
-        edit_panel->add_widget(std::make_unique<View::edit_widget>(30, 0, 25, 25));
-        edit_panel->add_widget(std::make_unique<View::edit_widget>(60, 10, 25, 25));
+        for (unsigned int i = 0; i < 30; i++)
+            edit_panel->add_widget(std::make_unique<View::edit_widget>(i * 30, i, 25, 25));
 
-        using ctl_mode = View::edit_panel<>::control_mode;
+        using ctl_mode = View::edit_panel<>::mode;
         auto *edit_panel_ptr = edit_panel.get();
 
         add_widget(
             std::make_unique<View::push_button>(
                 [edit_panel_ptr](View::push_button *)
                 {
-                    edit_panel_ptr->set_control_mode(ctl_mode::DEFAULT);
+                    edit_panel_ptr->set_mode(ctl_mode::SCROLL_MODE);
                 },
-                "Default",
+                "Scroll",
                 700, 600));
 
         add_widget(
             std::make_unique<View::push_button>(
                 [edit_panel_ptr](View::push_button *)
                 {
-                    edit_panel_ptr->set_control_mode(ctl_mode::SELECT);
+                    edit_panel_ptr->set_mode(ctl_mode::EDIT_MODE);
                 },
-                "Select",
+                "Edit",
                 700, 650));
-
-        add_widget(
-            std::make_unique<View::push_button>(
-                [edit_panel_ptr](View::push_button *)
-                {
-                    edit_panel_ptr->set_control_mode(ctl_mode::MOVE);
-                },
-                "Move",
-                700, 700));
 
 
         add_widget(std::move(edit_panel));

@@ -19,7 +19,7 @@ namespace Gammou {
 			rectangle translate(const int px, const int py) const;
 			bool contains(const int px, const int py) const;
 			bool contains(const rectangle& rect) const;
-            //TODO : bool overlap(const rectangle& rect) const;
+            bool overlap(const rectangle& rect) const;
 
 			int x;
 			int y;

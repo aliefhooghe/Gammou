@@ -38,12 +38,24 @@ namespace Gammou {
                 && contains(right, rect.y)
                 && contains(right, bottom);
 		}
-/*      TODO
+
         bool rectangle::overlap(const rectangle &rect) const
         {
+            const int left = std::max(x, rect.x);
+            const int right = std::min(
+                    x + static_cast<int>(width),
+                    rect.x + static_cast<int>(rect.width));
 
+            const int top = std::max(y, rect.y);
+            const int bottom = std::min(
+                    y + static_cast<int>(height),
+                    rect.y + static_cast<int>(rect.height));
+
+            return
+                (right - left) > 0 &&
+                (bottom - top) > 0;
         }
-*/
+
 		//////////////////////////////////////////////////////////////////////////////////////
 
 		namespace cairo_helper {
