@@ -6,8 +6,9 @@ namespace Gammou  {
     
     namespace VST2 {
 
-        plugin::plugin()
-        :   m_synthesizer_mutex(),
+        plugin::plugin(audioMasterCallback master)
+        :   m_master(master),
+			m_synthesizer_mutex(),
             m_master_circuit_processor(),
             m_polyphonic_circuit_processor(),
             m_synthesizer(
@@ -18,7 +19,7 @@ namespace Gammou  {
                 GAMMOU_VST2_CHANNEL_COUNT,
                 GAMMOU_VST2_PARAMETER_COUNT),
             m_midi_driver(m_synthesizer),
-            m_gui(&m_synthesizer, &m_synthesizer_mutex),
+            m_gui(&m_synthesizer, &m_synthesizer_mutex, *this),
             m_display(m_gui)
         {
             DEBUG_PRINT("Gammou Vst2 Plugin CTOR\n");
@@ -71,10 +72,35 @@ namespace Gammou  {
 
         }
 
+		double plugin::get_parameter_value(const unsigned int index)
+		{
+			if (index < GAMMOU_VST2_PARAMETER_COUNT)
+				return m_synthesizer.get_parameter_value(index);	//	Todo
+			else
+				throw std::range_error("Invalid backend parameter index");
+		}
+
+		void plugin::set_parameter_value(const unsigned int index, const double value)
+		{
+			if (index < GAMMOU_VST2_PARAMETER_COUNT)
+				m_master(
+					m_aeffect,
+					audioMasterAutomate,
+					index, 0, nullptr, static_cast<float>(value));
+			else
+				throw std::range_error("Invalid backend parameter index");
+		}
+
+		unsigned int plugin::get_parameter_count()
+		{
+			return GAMMOU_VST2_PARAMETER_COUNT;
+		}
+
         AEffect *plugin::get_AEffect_instance()
         {
             return m_aeffect;
         }
+
 
 		void plugin::handle_event(VstEvent & ev)
 		{
@@ -95,7 +121,6 @@ namespace Gammou  {
 		{
 			//	reset buffer
             m_chunk_buffer.resize(0);
-
             Persistence::gammou_state state;
 
             try {
@@ -138,9 +163,9 @@ namespace Gammou  {
 
 		}
 
-        AEffect *plugin::create_AEffect_instance()
+        AEffect *plugin::create_AEffect_instance(audioMasterCallback master)
         {
-            plugin *p = new plugin;
+			plugin *p = new plugin{master};
             return p->get_AEffect_instance();
         }
 
@@ -393,9 +418,9 @@ namespace Gammou  {
 
 extern "C" {
 
-    AEffect* VSTPluginMain(audioMasterCallback)
+    AEffect* VSTPluginMain(audioMasterCallback master)
     {
-        return Gammou::VST2::plugin::create_AEffect_instance();
+        return Gammou::VST2::plugin::create_AEffect_instance(master);
     }
 
 }

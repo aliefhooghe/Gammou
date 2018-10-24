@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <cstring>
 
+#include <cstdio>
 #include <vector>
-
 
 #include "../../Synthesizer/plugin_management/data_stream.h"
 
@@ -88,8 +88,7 @@ namespace Gammou {
                     gammou_file_header header;
                     source.read(header);
 
-                    if (!(check_header(header) &&
-                          header.content_type == content_type<content>::value))
+                    if (!(check_header(header) && header.content_type == content_type<content>::value))
                         throw std::runtime_error("Invalid gammou file header");
 
                     //  Loading content
@@ -114,14 +113,14 @@ namespace Gammou {
             private:
                 static bool check_header(const gammou_file_header& header){
                     return
-                        std::strcmp(header.magic, gammou_magic) == 0 &&
+                        std::strncmp(header.magic, gammou_magic, 6) == 0 &&
                         header.format_version_id == gammou_format_version_id;
                 }
         };
 
         //-------
 
-        class component_state {
+        struct component_state {
 
             public:
                 explicit component_state(Sound::data_input_stream& source);
@@ -136,7 +135,7 @@ namespace Gammou {
                 void save(Sound::data_output_stream& dest);
         };
 
-        class circuit_state {
+        struct circuit_state {
 
             public:
                 explicit circuit_state(Sound::data_input_stream& source);
@@ -149,7 +148,7 @@ namespace Gammou {
                 void save(Sound::data_output_stream& dest);
         };
 
-        class gammou_state {
+        struct gammou_state {
 
             public:
                 explicit gammou_state(Sound::data_input_stream& source);
@@ -164,6 +163,8 @@ namespace Gammou {
                 void load(Sound::data_input_stream& source);
                 void save(Sound::data_output_stream& dest);
         };
+
+		constexpr auto gammou_state_reserved_size = 64u;
 
         template<>
         struct content_type<gammou_state> {
@@ -214,21 +215,34 @@ namespace Gammou {
 
 		//------
 		
-        class constrained_input_stream : public Sound::data_input_stream {
+        class file_input_stream : public Sound::data_input_stream {
 
 		public:
-            constrained_input_stream(Sound::data_input_stream& data, const unsigned int max_forward_offset);
+			file_input_stream(const std::string& path);
+			~file_input_stream();
 			
 			bool seek(const int offset, Sound::abstract_data_stream::seek_mode mode) override;
 			unsigned int tell() override;
 			unsigned int read(void *data, const unsigned int size) override;
 
 		private:
-			const unsigned int m_start_offset;
-			const unsigned int m_max_forward_offset;
-			Sound::data_input_stream& m_data;
+			std::FILE *m_handle{};
 		};
 
+		class file_output_stream : public Sound::data_output_stream {
+
+		public:
+			file_output_stream(const std::string& path);
+			~file_output_stream();
+
+			bool seek(const int offset, Sound::abstract_data_stream::seek_mode mode) override;
+			unsigned int tell() override;
+			unsigned int write(void *data, const unsigned int size) override;
+		
+		private:
+			std::FILE *m_handle{};
+		};
+		
 		//-----
 
 		// Dummy factory Id fo Internals Components

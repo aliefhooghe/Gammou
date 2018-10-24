@@ -4,6 +4,7 @@
 
 #include "synthesizer_persistence.h"
 
+
 namespace Gammou {
 
 	namespace Persistence {
@@ -63,21 +64,19 @@ namespace Gammou {
             source.read(link_count);
 
             components.resize(0);
-            links.resize(0);
+			components.reserve(component_count);
 
-            components.reserve(component_count);
-            links.reserve(link_count);
+			links.resize(link_count);
 
             //  Load components
             for (unsigned int i = 0; i < component_count; ++i)
                 components.emplace_back(source);
 
-            //  Load links
-            for (unsigned int i = 0; i < link_count; ++i) {
-                link_state link;
-                source.read(&link, sizeof(link));
-                links.push_back(link);
-            }
+            //  Load links (trivail type)
+			const unsigned int links_size =
+				link_count * sizeof(link_state);
+			if (source.read(links.data(), links_size) != links_size)
+				throw std::runtime_error("Unable to read links");
         }
 
         void circuit_state::save(Sound::data_output_stream& dest)
@@ -93,8 +92,11 @@ namespace Gammou {
             for (auto& component : components)
                 component.save(dest);
 
-            for (auto& link : links)    //  link_state is a trivial type
-                dest.write(link);
+			//  link_state is a trivial type
+			const unsigned int links_size =
+				link_count * sizeof(link_state);
+			if (dest.write(links.data(), links_size) != links_size)
+				throw std::runtime_error("Unable to write links\n");
         }
 
         //--
@@ -123,6 +125,10 @@ namespace Gammou {
             //  Set keyboard mode
             polyphonic_keyboard = true;
 
+			//	Skip reserved bytes
+			using seek_mode = Sound::data_input_stream::seek_mode;
+			source.seek(gammou_state_reserved_size, seek_mode::CURRENT);
+
             //  Read Circuits
             master_circuit.load(source);
             polyphonic_circuit.load(source);
@@ -133,13 +139,22 @@ namespace Gammou {
             // Write parameters
             uint32_t parameter_count =
                 static_cast<uint32_t>(parameters.size());
+			const unsigned int parameter_size =
+				parameter_count * sizeof(double);
             dest.write(parameter_count);
 
-            if (dest.write(parameters.data(), parameter_count) != parameter_count)
+            if (dest.write(parameters.data(), parameter_size) != parameter_size)
                 throw std::runtime_error("Cannot write parameters");
 
-            //  Write MAster Volume
+            //  Write Master Volume
             dest.write(&master_volume, sizeof(double));
+
+			//	Zero on reserved bytes
+			uint8_t zero[gammou_state_reserved_size] = { 0 };
+
+			if (dest.write(zero, gammou_state_reserved_size) !=
+				gammou_state_reserved_size)
+				throw std::runtime_error("Cannot write gammou state reserved area");
 
             // Write Circuits
             master_circuit.save(dest);
@@ -189,10 +204,8 @@ namespace Gammou {
             else
                 m_cursor = static_cast<unsigned int>(new_cursor);
 
-            const unsigned int minimal_size = m_cursor + 1;
-
-            if (m_buffer.size() < minimal_size)
-                m_buffer.resize(minimal_size, 0u);
+            if (m_buffer.size() < m_cursor)
+                m_buffer.resize(m_cursor, 0u);
 
             return true;
         }
@@ -205,10 +218,9 @@ namespace Gammou {
         unsigned int buffer_output_stream::write(void *data, const unsigned int size)
         {
             const unsigned new_cursor = m_cursor + size;
-            const unsigned new_minimal_size = new_cursor + 1;
 
-            if (m_buffer.size() < new_minimal_size)
-                m_buffer.resize(new_minimal_size, 0u);
+            if (m_buffer.size() < new_cursor)
+                m_buffer.resize(new_cursor, 0u);
 
             std::memcpy(m_buffer.data() + m_cursor, data, size);
             m_cursor = new_cursor;
@@ -275,67 +287,109 @@ namespace Gammou {
             const unsigned int buffer_size =
                 static_cast<unsigned int>(m_buffer.size());
 
-            if (size + m_cursor > buffer_size)
+			const unsigned int new_cursor =
+				m_cursor + size;
+
+            if (new_cursor > buffer_size)
                 return 0;
+
             std::memcpy(data, m_buffer.data() + m_cursor, size);
-            return size;
+			m_cursor = new_cursor;
+
+			return size;
         }
 
 		//----------------
 
-        constrained_input_stream::constrained_input_stream(Sound::data_input_stream & data,
-			const unsigned int max_forward_offset)
-			: m_start_offset(data.tell()),
-				m_max_forward_offset(max_forward_offset),
-				m_data(data)
+		static int seek_mode_to_std(const Sound::abstract_data_stream::seek_mode mode)
 		{
+			using seek_mode = 
+				Sound::abstract_data_stream::seek_mode;
 
-		}
-
-        bool constrained_input_stream::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)
-		{
-			int new_offset; 
-
-			switch (mode)
-			{
-			case Sound::abstract_data_stream::seek_mode::CURRENT:
-				new_offset = static_cast<int>(tell()) + offset;
-				break;
-
-			case Sound::abstract_data_stream::seek_mode::SET:
-				new_offset = offset;
-				break;
-
-			case Sound::abstract_data_stream::seek_mode::END:
-				new_offset = static_cast<int>(m_max_forward_offset) + offset;
-				break;
+			switch (mode) {
+				case seek_mode::CURRENT:
+					return SEEK_CUR;
+					break;
+				case seek_mode::END:
+					return SEEK_END;
+					break;
+				case seek_mode::SET:
+					return SEEK_SET;
+					break;
+				default:
+					return 0; // stub for compiler
 			}
-
-			if (new_offset >= 0) {
-				const unsigned int unsigned_new_offset = static_cast<unsigned int>(new_offset);
-				if(unsigned_new_offset <= m_max_forward_offset)
-					return m_data.seek(m_start_offset + new_offset, Sound::abstract_data_stream::seek_mode::SET);
-			}
-
-			return false;
 		}
 
-        unsigned int constrained_input_stream::tell()
+		// --
+
+		file_input_stream::file_input_stream(const std::string & path)
 		{
-			return m_data.tell() - m_start_offset;
+			m_handle = std::fopen(path.c_str(), "rb");
+
+			if (m_handle == nullptr)
+				throw std::runtime_error("Cannot open file");
 		}
 
-        unsigned int constrained_input_stream::read(void * data, const unsigned int size)
+		file_input_stream::~file_input_stream()
 		{
-			const unsigned int max_read_size = m_max_forward_offset - tell();
-			const unsigned int read_size = std::min(max_read_size, size);
-			return m_data.read(data, read_size);
+			std::fclose(m_handle);
 		}
 
+		bool file_input_stream::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)
+		{
+			return 
+				0 == std::fseek(
+					m_handle, offset,
+					seek_mode_to_std(mode));
+		}
 
-		//----------------
+		unsigned int file_input_stream::tell()
+		{
+			return std::ftell(m_handle);
+		}
+
+		unsigned int file_input_stream::read(void *data, const unsigned int size)
+		{
+			return std::fread(data, 1, size, m_handle);
+		}
+
+		//--
+
+		file_output_stream::file_output_stream(const std::string & path)
+		{
+			m_handle = std::fopen(path.c_str(), "wb+");
+
+			if (m_handle == nullptr)
+				throw std::runtime_error("Cannot open file");
+		}
+
+		file_output_stream::~file_output_stream()
+		{
+		    std::fclose(m_handle);
+		}
+
+		bool file_output_stream::seek(const int offset, Sound::abstract_data_stream::seek_mode mode)
+		{
+			return
+				0 == std::fseek(
+					m_handle, offset,
+					seek_mode_to_std(mode));
+		}
+
+		unsigned int file_output_stream::tell()
+		{
+			return std::ftell(m_handle);
+		}
+
+		unsigned int file_output_stream::write(void *data, const unsigned int size)
+		{
+			return std::fwrite(data, 1, size, m_handle);
+		}
+
 
 	} /* Persistence */
 
 } /* Persistence */
+
 

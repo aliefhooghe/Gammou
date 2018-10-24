@@ -11,27 +11,36 @@
 #include "synthesizer.h"
 #include "midi_driver/midi_driver.h"
 
-#include "jit_frame_processor/jit_frame_processor.h"
+#include "../audio_backend/abstract_audio_backend.h"
 
 #include <view.h>
 
 #define GAMMOU_VST2_INPUT_COUNT 2
 #define GAMMOU_VST2_OUTPUT_COUNT 2
-#define GAMMOU_VST2_CHANNEL_COUNT 64
+#define GAMMOU_VST2_CHANNEL_COUNT 128
 #define GAMMOU_VST2_PARAMETER_COUNT 16
 
 namespace Gammou  {
     
     namespace VST2 {
 
-        class plugin {
+        class plugin : public AudioBackend::abstract_audio_backend {
 
             public:
-                static AEffect *create_AEffect_instance();
+                static AEffect *create_AEffect_instance(audioMasterCallback master);
                 ~plugin();
 
+				//	Audio Backend override
+				double get_parameter_value(
+					const unsigned int index) override;
+
+				void set_parameter_value(
+					const unsigned int index, const double value) override;
+
+				unsigned int get_parameter_count() override;
+
             private:
-                plugin();
+                plugin(audioMasterCallback master);
 
                 AEffect *get_AEffect_instance();
 
@@ -73,7 +82,8 @@ namespace Gammou  {
 
 				//-------
 
-                AEffect *m_aeffect;
+				AEffect *m_aeffect{};
+				audioMasterCallback m_master{};
 				ERect m_window_rect;
 
                 std::mutex m_synthesizer_mutex;
@@ -116,4 +126,6 @@ namespace Gammou  {
     }   /*  vst2 */
 
 }   /* Gammou */
+
 #endif
+

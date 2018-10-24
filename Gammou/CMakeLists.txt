@@ -24,9 +24,9 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Set output build paths (install path are in cmake/default_path.cmake)
 
-set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE PATH "")                              # View, synthesizer, vstsdk, ....
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin" CACHE PATH "")                           # Vst2-3 plugins, standalone, ....
-set(GAMMOU_PLUGINS_OUTPUT_PATH "${CMAKE_BINARY_DIR}/GammouPlugins" CACHE PATH "")       # Gammou Plugins
+set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib" CACHE PATH "")                            # View, synthesizer, vstsdk, ....
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin" CACHE PATH "")                         # Vst2-3 plugins, standalone, ....
+set(GAMMOU_PLUGINS_OUTPUT_PATH "${CMAKE_BINARY_DIR}/GammouPlugins" CACHE PATH "")       	# Gammou Plugins
 
 # Set Install path
 
@@ -43,12 +43,26 @@ elseif(UNIX)
   endif()
 endif()
 
-# 
+# Set GAMMOU_PRESETS_DIRECTORY_PATH
+
+set(GAMMOU_PRESETS_PATH $ENV{HOME}/.Gammou/Presets CACHE PATH "")
+
+# To detect debug build
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
     $<$<CONFIG:Debug>:_DEBUG>
     $<$<CONFIG:Release>:NDEBUG>
 )
+
+# Build Plugins (Provide the GAMMOU_PLUGINS_INSTALL_PATH variable)
+add_subdirectory(Plugins tmp/Plugins)
+
+# We need an absolute path
+if (IS_ABSOLUTE "${GAMMOU_PLUGINS_INSTALL_PATH}")
+	set(GAMMOU_PLUGINS_PATH "${GAMMOU_PLUGINS_INSTALL_PATH}")
+else()
+	set(GAMMOU_PLUGINS_PATH "${CMAKE_INSTALL_PREFIX}/${GAMMOU_PLUGINS_INSTALL_PATH}")
+endif()
 
 #################################################
 
@@ -68,6 +82,7 @@ set(GUI_SRC
 	Application/gui/gui_polyphonic_circuit.h
 	Application/gui/gui_polyphonic_circuit.cpp
 	Application/gui/gui_properties.h
+	Application/gui/gui_properties.cpp
 	Application/gui/gui_sound_component.h
 	Application/gui/gui_sound_component.cpp
 	Application/gui/gui_synthesizer_circuit.h
@@ -94,14 +109,14 @@ set(GUI_SRC
 )
 
 set(PERSISTENCE_SRC
-  Application/persistence/synthesizer_persistence.h
+	Application/persistence/synthesizer_persistence.h
 	Application/persistence/synthesizer_persistence.cpp
 )
 
 set(USER_COMPONENT_SRC
-  Application/gui/user_component/user_component_editor.cpp
+	Application/gui/user_component/user_component_editor.cpp
 	Application/gui/user_component/user_component_editor.h
-  Application/gui/user_component/user_component_gui_circuit.cpp
+	Application/gui/user_component/user_component_gui_circuit.cpp
 	Application/gui/user_component/user_component_gui_circuit.h
 	Application/gui/user_component/user_gui_component.cpp
 	Application/gui/user_component/user_gui_component.h
@@ -109,21 +124,18 @@ set(USER_COMPONENT_SRC
 	Application/gui/user_component/user_sound_component.h
 )
 
+set(AUDIO_BACKEND_SRC
+	Application/audio_backend/abstract_audio_backend.h
+	Application/audio_backend/abstract_audio_backend.cpp
+)
+	
 set(GAMMOU_COMMON_SRC
 	${GUI_SRC}
 	${PERSISTENCE_SRC}
 	${USER_COMPONENT_SRC}
+	${AUDIO_BACKEND_SRC}
 )
 
-# Build Plugins (Provide the GAMMOU_PLUGINS_INSTALL_PATH variable)
-add_subdirectory(Plugins tmp/Plugins)
-
-# We need an absolute path
-if (IS_ABSOLUTE "${GAMMOU_PLUGINS_INSTALL_PATH}")
-	set(GAMMOU_PLUGINS_PATH "${GAMMOU_PLUGINS_INSTALL_PATH}")
-else()
-	set(GAMMOU_PLUGINS_PATH "${CMAKE_INSTALL_PREFIX}/${GAMMOU_PLUGINS_INSTALL_PATH}")
-endif()
 
 ################################################
 #                                              #
@@ -148,7 +160,11 @@ if(GAMMOU_STANDALONE_BUILD)
 	)
 
   add_executable(gammou_standalone
-    Application/standalone/main.cpp
+		Application/standalone/main.cpp
+		Application/standalone/application.h
+		Application/standalone/application.cpp
+		Application/standalone/setting_widget.h
+		Application/standalone/setting_widget.cpp
 		${GAMMOU_COMMON_SRC}
 		"${RTAUDIO_DIR}/RtAudio.cpp"
 		"${RTMIDI_DIR}/RtMidi.cpp"
@@ -168,6 +184,7 @@ if(GAMMOU_STANDALONE_BUILD)
 	target_compile_definitions(gammou_standalone PRIVATE 
 	    GAMMOU_VIEW_APP
 	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_PATH}"
+		GAMMOU_PRESETS_DIRECTORY_PATH="${GAMMOU_PRESETS_PATH}"
 	)
 	
 	# OSSIA binding
@@ -205,18 +222,13 @@ if(GAMMOU_STANDALONE_BUILD)
             target_compile_definitions(gammou_standalone PRIVATE __MACOSX_CORE__)
         else()                  # Only Linux
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-            target_link_libraries(gammou_standalone PRIVATE m stdc++fs pulse-simple pulse asound) # jack 
-            target_compile_definitions(gammou_standalone PRIVATE __LINUX_PULSE__ __LINUX_ALSA__)#    __LINUX_PULSE__ __UNIX_JACK__
+            target_link_libraries(gammou_standalone PRIVATE m stdc++fs pulse-simple pulse asound jack)
+            target_compile_definitions(gammou_standalone PRIVATE __LINUX_PULSE__ __UNIX_JACK__)
         endif()
         
     else()
         message( FATAL_ERROR "Cant Build gammou standalone on this OS")
     endif()
-		
-		
-	
-
-
 	
 endif()
 
@@ -268,6 +280,7 @@ if(GAMMOU_VST3_BUILD)
 	target_compile_definitions(gammou PRIVATE 
 	    GAMMOU_VIEW_VST3
 	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_PATH}"
+		GAMMOU_PRESETS_DIRECTORY_PATH="${GAMMOU_PRESETS_PATH}"
 	)
 	
 	set_target_properties(gammou PROPERTIES 
@@ -322,6 +335,7 @@ if(GAMMOU_VST2_BUILD)
   target_compile_definitions(gammou-vst2 PRIVATE 
 	    GAMMOU_VIEW_VST2
 	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_PATH}"
+		GAMMOU_PRESETS_DIRECTORY_PATH="${GAMMOU_PRESETS_PATH}"
 	)
 
   set_target_properties(gammou-vst2 PROPERTIES 

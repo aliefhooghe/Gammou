@@ -21,7 +21,10 @@ namespace Gammou {
 			bool on_mouse_dbl_click(const int x, const int y) override;
 
 		private:
+			void update_label();
+
 			integer_sound_component * const m_integer;
+			View::label *m_label;
 			View::push_button *m_dec;
 			View::push_button *m_inc;
 		};

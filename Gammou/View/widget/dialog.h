@@ -27,9 +27,11 @@ namespace Gammou {
 		{
 
         public:
-            file_explorer_dialog(
+			enum class mode { OPEN, SAVE };
+
+			file_explorer_dialog(
                 const std::string& initial_path, 
-                const color background = cl_lightgrey);
+				const mode mode = mode::OPEN);
             virtual ~file_explorer_dialog();
 
             bool get_filename(std::string& name);
@@ -44,7 +46,14 @@ namespace Gammou {
         private:
             bool m_path_was_set;
             std::string m_path;
+			const mode m_mode;
+#ifdef _WIN32
+			const std::string m_root_path;
+#endif
 		};
+
+
+
 
     } /* View */
 

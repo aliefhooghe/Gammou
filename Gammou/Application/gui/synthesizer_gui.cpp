@@ -20,12 +20,14 @@ namespace Gammou {
 
 		synthesizer_gui::synthesizer_gui(
 			Sound::synthesizer * synthesizer, 
-			std::mutex * synthesizer_mutex)
+			std::mutex * synthesizer_mutex,
+			AudioBackend::abstract_audio_backend& backend)
 		:	View::window_widget(
 				GuiProperties::main_gui_width, 
 				GuiProperties::main_gui_height,
 				View::cl_chartreuse), // for gui debuging
-			m_synthesizer(*synthesizer)
+			m_synthesizer(*synthesizer),
+			m_backend(backend)
 		{
 			DEBUG_PRINT("SYN GUI CTOR\n");
 
@@ -165,7 +167,68 @@ namespace Gammou {
 			tool_box->add_widget(
 				std::move(keyboard_mode_selector));
 
-			//---
+			//	LOad/Sazve preset buttons
+			
+			auto load_preset_button =
+				std::make_unique<View::push_button>(
+					[this](View::push_button*)
+					{
+						using mode = View::file_explorer_dialog::mode;
+						
+						View::file_explorer_dialog dialog{GAMMOU_PRESETS_DIRECTORY_PATH, mode::OPEN};
+						std::string path;
+
+						dialog.show("Load Preset");
+
+						if (dialog.get_filename(path)) {
+							Persistence::gammou_state state;
+
+							try {
+								Persistence::file_input_stream stream{ path };
+								Persistence::gammou_file<Persistence::gammou_state>::load(stream, state);
+								load_state(state);
+							}catch(...){}
+						}
+					},
+					"Load Preset",
+					GuiProperties::main_gui_size_unit * 9, 15, 95, 27,
+					10,	// font size
+					GuiProperties::main_gui_list_box_hovered_item_color,
+					GuiProperties::main_gui_list_box_selected_item_color,
+					GuiProperties::component_font_color);
+
+			auto save_preset_button =
+				std::make_unique<View::push_button>(
+					[this](View::push_button*)
+					{
+						using mode = View::file_explorer_dialog::mode;
+
+						View::file_explorer_dialog dialog{ GAMMOU_PRESETS_DIRECTORY_PATH, mode::SAVE };
+						std::string path;
+
+						dialog.show("Save Preset");
+
+						if (dialog.get_filename(path)) {
+							Persistence::gammou_state state;
+
+							try {
+								Persistence::file_output_stream stream{ path };
+								save_state(state);
+								Persistence::gammou_file<Persistence::gammou_state>::save(stream, state);
+							}catch(...){}
+						}
+					},
+					"Save Preset",
+					GuiProperties::main_gui_size_unit * 11, 15, 95, 27,
+					10,	// font size
+					GuiProperties::main_gui_list_box_hovered_item_color,
+					GuiProperties::main_gui_list_box_selected_item_color,
+					GuiProperties::component_font_color);
+
+			tool_box->add_widget(std::move(load_preset_button));
+			tool_box->add_widget(std::move(save_preset_button));
+
+			//	Master Volume Knob
 			//	TODO : mieux
 			const unsigned int offset = (GuiProperties::main_gui_size_unit - 50) / 2;
 
@@ -178,15 +241,16 @@ namespace Gammou {
 						synthesizer->set_master_volume(volume); 
 					},
 					offset + GuiProperties::main_gui_width - GuiProperties::main_gui_size_unit,
-					offset,
-					GuiProperties::knob_on_color,
-					GuiProperties::knob_off_color
+					offset
 				);
 
+			GuiProperties::apply(*master_volume);
 			m_master_volume = master_volume.get();
 			
 			master_volume->set_normalized_value(1.0); // coherence with synthesizer initial value
 			tool_box->add_widget(std::move(master_volume));
+
+			//--
 			add_widget(std::move(tool_box));
 
 
@@ -241,6 +305,7 @@ namespace Gammou {
                    param_value = state.parameters[i];
 
                 m_synthesizer.set_parameter_value(param_value, i);
+				m_backend.set_parameter_value(i, param_value);
 			}
 
 			// Load Master Volume

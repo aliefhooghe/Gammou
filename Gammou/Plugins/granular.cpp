@@ -1,5 +1,5 @@
 
-#include <cstdlib>
+#include <random>
 #include <cstring>
 
 #include "plugin_helper.h"
@@ -40,8 +40,7 @@ private:
 		const double seed,
 		const double width)
 	{
-		const double r = ((double)(rand() % 65536)) / 65535.0;
-		return seed + width * (2.0 * r - 1.0);
+		return seed + width * m_distribution(m_engine);
 	}
 
 	wav_t * m_sample;
@@ -51,20 +50,26 @@ private:
 
 	multi_channel_variable<double> m_time;
 	multi_channel_variable<double> m_first_grain_time;
+
+	static std::default_random_engine m_engine;
+	std::uniform_real_distribution<double> m_distribution;
 };
+
+std::default_random_engine granular_component::m_engine{};
 
 granular_component::granular_component(
 	wav_t *sample,
 	const std::string& sample_path,
 	const unsigned int grain_count,
 	const unsigned int channel_count)
-	: sound_component("Granular", 5, 1, channel_count),
-		m_sample(sample),
-		m_sample_path(sample_path),
-		m_grain_count(grain_count),
-		m_grain(this, grain_count),
-		m_time(this),
-		m_first_grain_time(this)
+:	sound_component("Granular", 5, 1, channel_count),
+	m_sample(sample),
+	m_sample_path(sample_path),
+	m_grain_count(grain_count),
+	m_grain(this, grain_count),
+	m_time(this),
+	m_first_grain_time(this),
+	m_distribution(-1.0, 1.0)
 {
 	set_input_name("Seed", 0);
 	set_input_name("Width", 1);
@@ -140,7 +145,7 @@ class granular_factory : public plugin_factory {
 
 	public:
 		granular_factory()
-			: plugin_factory("granular", "", granular_id)
+			: plugin_factory("granular", "Experimental", granular_id)
 		{}
 		~granular_factory() {}
 

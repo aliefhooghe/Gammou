@@ -8,8 +8,7 @@ namespace Gammou {
 			integer_sound_component * integer, 
 			const unsigned int x, 
 			const unsigned int y)
-			: 
-			gui_sound_component(
+		: gui_sound_component(
 				std::unique_ptr<Sound::abstract_sound_component>
 				(integer), x, y),
 			m_integer(integer)
@@ -22,19 +21,20 @@ namespace Gammou {
 
 			auto label =
 				std::make_unique<View::label>(
-				std::to_string(integer->get_value()),
+				"",
 				2 * unit, 2 * unit,
 				6 * unit, 2 * unit,
 				GuiProperties::component_font_color
 			);
-			View::label *label_ptr = label.get();
+			m_label = label.get();
+			update_label();
 
 			auto dec =
 				std::make_unique<View::push_button>(
-				[this, label_ptr](View::push_button *self) 
+				[this](View::push_button *self) 
 				{ 
 					m_integer->shift_value(-1); 
-					label_ptr->set_text(std::to_string(m_integer->get_value()));
+					update_label();
 				},
 				"-",
 				1.5 * unit, 5 * unit, // x, y
@@ -48,10 +48,10 @@ namespace Gammou {
 
 			auto inc =
 				std::make_unique<View::push_button>(
-				[this, label_ptr](View::push_button *self) 
+				[this](View::push_button *self) 
 				{ 
 					m_integer->shift_value(1); 
-					label_ptr->set_text(std::to_string(m_integer->get_value()));
+					update_label();
 				},
 				"+",
 				5.5 * unit, 5 * unit, // x, y
@@ -73,6 +73,21 @@ namespace Gammou {
 			View::widget *w = get_focused_widget();
 			return ((w == m_dec) || (w == m_inc));
 		}
+
+		void integer_gui_component::update_label()
+		{
+			const auto value =
+				m_integer->get_value();
+
+			if (value >= 0)
+				m_label->set_text(std::to_string(value));
+			else {
+				std::string text =
+					"1/" + std::to_string(-value);
+				m_label->set_text(text);
+			}
+		}
+
 
 		/* Value Integer Factory */
 

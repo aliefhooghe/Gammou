@@ -65,7 +65,6 @@ namespace Gammou {
 					if( (--(m_channels_lifetime[current_channel])) == 0u){
 						// no more lifetime
 						free_channel(it);
-						DEBUG_PRINT("freed channel %d\n", current_channel);
 						continue;
 					}
 
@@ -93,28 +92,27 @@ namespace Gammou {
 
 			if (m_keyboard_mode == keyboard_mode::POLYPHONIC ||
 				get_running_channel_count() == 0) {
-				channel = get_new_channel();
+				
+				//	No free channels anymore
+				if ((channel = get_new_channel()) == INVALID_CHANNEL)
+					return;
+
 				m_polyphonic_circuit.initialize_channel(channel);
 			}
 			else {
 				channel = m_channels[0];
 			}
 
-            if( channel != INVALID_CHANNEL ){
+			m_channels_midi_note[channel] = midi_note;
+			
+			m_polyphonic_circuit.set_channel_pitch(channel, m_note_frequencies[midi_note]);
+			m_polyphonic_circuit.set_channel_attack_velocity(channel, velocity);
+			m_polyphonic_circuit.set_channel_gate_state(channel, true);
 
-                DEBUG_PRINT("on : channel = %d, note = %d, fr = %f)\n", channel, midi_note, m_note_frequencies[midi_note]);
+			// default reelase value (avoid undetermined component behavior)
+			m_polyphonic_circuit.set_channel_release_velocity(channel, 0.5);
 
-                m_channels_midi_note[channel] = midi_note;
-              
-                m_polyphonic_circuit.set_channel_pitch(channel, m_note_frequencies[midi_note]);
-                m_polyphonic_circuit.set_channel_attack_velocity(channel, velocity);
-                m_polyphonic_circuit.set_channel_gate_state(channel, true);
-
-                // default reelase value (avoid undetermined component behavior)
-                m_polyphonic_circuit.set_channel_release_velocity(channel, 0.5);
-
-                m_channels_lifetime[channel] = m_channel_zero_sample_count;
-            }
+			m_channels_lifetime[channel] = m_channel_zero_sample_count;   
 		}
 
 		void synthesizer::send_note_off(const unsigned int midi_note, const double velocity)
@@ -131,8 +129,6 @@ namespace Gammou {
 					return;
 				}
 			}
-
-			DEBUG_PRINT("off Inaplicable : (n = %d)\n", midi_note);
 		}
 
         void synthesizer::set_keyboard_mode(const keyboard_mode mode)
@@ -171,7 +167,8 @@ namespace Gammou {
 		void synthesizer::set_sample_rate(const double sample_rate)
 		{
 			DEBUG_PRINT("Synthesizer Set Sample Rate %lf\n", sample_rate);
-			m_channel_zero_sample_count = (static_cast<unsigned int>(sample_rate * m_channel_zero_lifetime));
+			m_channel_zero_sample_count = 
+				(static_cast<unsigned int>(sample_rate * m_channel_zero_lifetime));
 			m_master_circuit.set_sample_rate(sample_rate);
 			m_polyphonic_circuit.set_sample_rate(sample_rate);
 		}
@@ -248,10 +245,12 @@ namespace Gammou {
 
 		unsigned int synthesizer::get_new_channel()
 		{
-			if( m_running_channels_end != m_channels.end())
+			if (m_running_channels_end != m_channels.end())
 				return *(m_running_channels_end++);
-			else
+			else {
+				DEBUG_PRINT("There is no more free Channel\n");
 				return INVALID_CHANNEL;
+			}
 		}
 
         unsigned int synthesizer::get_running_channel_count()

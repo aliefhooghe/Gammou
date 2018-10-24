@@ -43,7 +43,8 @@ namespace Gammou {
 			}
 
 			void process(const T input[]) {
-				const unsigned int ic = abstract_component < T > ::get_input_count();
+				const unsigned int ic = 
+					abstract_component<T>::get_input_count();
 
 				for (unsigned int i = 0; i < ic; ++i)
 					m_output_pointer[i] = input[i];

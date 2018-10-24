@@ -203,11 +203,6 @@ namespace Gammou {
                 m_event_loop_thread.join();
         }
 
-		void *abstract_x11_display::get_sys_window_handle()
-		{
-			return m_display;
-		}
-
         void abstract_x11_display::handle_event(
             abstract_x11_display* self,
             XEvent& event)

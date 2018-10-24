@@ -215,8 +215,10 @@ namespace Gammou {
                 }
             }
 
+            lock_circuit();
             for (auto component : to_remove)
                 remove_widget(component);
+            unlock_circuit();
         }
 
         void abstract_gui_circuit::save_component(

@@ -29,9 +29,8 @@ namespace Gammou {
 						m_control->set_normalized_value(
                             static_cast<double>(self->get_normalized_value()));
 					},
-					pos, pos,
-					GuiProperties::knob_on_color,
-					GuiProperties::knob_off_color);
+					pos, pos);
+			GuiProperties::apply(*knob_control);
 
             knob_control->set_normalized_value(
                 static_cast<float>(control->get_normalized_value()));

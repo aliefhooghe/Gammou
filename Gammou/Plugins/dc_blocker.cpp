@@ -46,6 +46,6 @@ void dc_blocker_component::process(const double input[])
 EXPORT_DEFAULT_FACTORY(
 	dc_blocker_component,		//		Classe
 	"DCblocker",				//		Nom
-	"Exemple",					//		Categorie
+	ComponentCategory::Filter,	//		Categorie
 	dc_blocker_id				//		Factory Id
 )

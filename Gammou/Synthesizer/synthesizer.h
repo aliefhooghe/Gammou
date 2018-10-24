@@ -16,13 +16,6 @@ namespace Gammou {
 
 		class synthesizer{
 
-			/*
-			*			pour chaque cannal :
-			*				-> lifetime : uint
-			*				-> Midi note : uchar
-			*				->
-			*/
-
 		enum { INVALID_CHANNEL = 0xFFFFFF , INFINITE_LIFETIME = 0xFFFFFFFF, NO_NOTE = 0xFF};
 
 		public:

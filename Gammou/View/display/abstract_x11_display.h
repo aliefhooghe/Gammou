@@ -31,8 +31,6 @@ namespace Gammou {
 			void sys_redraw_rect(const rectangle& rect) override;
 			void draw_display();
 			void wait_window_thread();
-
-			void *get_sys_window_handle() override;
 			
 		private:
             static void x_event_loop(abstract_x11_display *self);

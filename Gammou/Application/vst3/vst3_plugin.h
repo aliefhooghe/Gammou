@@ -21,13 +21,22 @@
 #include "synthesizer.h"
 #include "jit_frame_processor/jit_frame_processor.h"
 
+#include "../audio_backend/abstract_audio_backend.h"
+
 #include <view.h>
+
+#define GAMMOU_VST3_INPUT_COUNT 2
+#define GAMMOU_VST3_OUTPUT_COUNT 2
+#define GAMMOU_VST3_CHANNEL_COUNT 128
+#define GAMMOU_VST3_PARAMETER_COUNT 16
 
 namespace Gammou {
 
 	namespace VST3 {
 
-		class Plugin : public Steinberg::Vst::SingleComponentEffect {
+		class Plugin : 
+			public Steinberg::Vst::SingleComponentEffect,
+			public AudioBackend::abstract_audio_backend {
 
 		public:
 			Plugin();
@@ -42,7 +51,8 @@ namespace Gammou {
 			Steinberg::tresult PLUGIN_API setupProcessing(Steinberg::Vst::ProcessSetup& newSetup) override;
 			Steinberg::tresult PLUGIN_API process(Steinberg::Vst::ProcessData& data) override;
 
-			Steinberg::tresult PLUGIN_API setBusArrangements(Steinberg::Vst::SpeakerArrangement* inputs, Steinberg::int32 numIns,
+			Steinberg::tresult PLUGIN_API setBusArrangements(
+				Steinberg::Vst::SpeakerArrangement* inputs, Steinberg::int32 numIns,
 				Steinberg::Vst::SpeakerArrangement* outputs, Steinberg::int32 numOuts) override;
 
 			Steinberg::tresult PLUGIN_API setState(Steinberg::IBStream* state) override;
@@ -50,6 +60,15 @@ namespace Gammou {
 
 			//	Editor override
 			Steinberg::IPlugView *PLUGIN_API createView(const char* name) override;
+
+			//	Audio Backend override
+			double get_parameter_value(
+				const unsigned int index) override;
+
+			void set_parameter_value(
+				const unsigned int index, const double value) override;
+
+			unsigned int get_parameter_count() override;
 
 		private:
 			inline void lock_synthesizer();

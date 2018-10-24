@@ -33,39 +33,46 @@ namespace Gammou {
         }
 
         //--------
-        
-        file_explorer_dialog::file_explorer_dialog(
-            const std::string& root_path,
-            const color background)
-			:
+       
 #ifndef _WIN32
-			dialog(300, 400, background),
-            m_path_was_set(false)
-        {
-            auto dir_view =
-                std::make_unique<View::file_system_view>(
-                    root_path,
-                    0, 0, 
-                    get_width(), get_height(),
-                    15);
-
-            dir_view->set_value_open_event(
-            [this](View::directory_view<std::string>&, const std::string&, const std::string& p)
-            {
-                m_path = p;
-                m_path_was_set = true;
-                auto * dpy = get_display();
-                if (dpy != nullptr)
-                    dpy->close();
-            });
-                
-            add_widget(std::move(dir_view));
-            
-#else
-			m_path_was_set(false)
+		file_explorer_dialog::file_explorer_dialog(
+			const std::string& root_path,
+			const mode mode)
+			:
+			dialog(300, 400),
+			m_path_was_set(false),
+			m_mode(mode)
 		{
-#endif
+			auto dir_view =
+				std::make_unique<View::file_system_view>(
+					root_path,
+					0, 0,
+					get_width(), get_height(),
+					15);
+
+			dir_view->set_value_open_event(
+				[this](View::directory_view<std::string>&, const std::string&, const std::string& p)
+			{
+				m_path = p;
+				m_path_was_set = true;
+				auto * dpy = get_display();
+				if (dpy != nullptr)
+					dpy->close();
+			});
+
+			add_widget(std::move(dir_view));
+		}      
+#else
+		file_explorer_dialog::file_explorer_dialog(
+			const std::string& root_path,
+			const mode mode)
+		:	m_path_was_set(false),
+			m_mode(mode),
+			m_root_path(root_path)
+		{
+
         }
+#endif
 
         file_explorer_dialog::~file_explorer_dialog()
         {
@@ -84,15 +91,14 @@ namespace Gammou {
 #ifdef _WIN32	
 		void file_explorer_dialog::show(const std::string& window_title)
 		{
-			const std::string ext = "";	// will be used as parameter
-			OPENFILENAMEA dialog;
+			//const std::string ext = "";	// will be used as parameter
+			//const char *cext = ext.c_str();
+			//const unsigned int ext_len = 
+			//	static_cast<unsigned int>(ext.size());
+			//char filter[256];
 
-			const char *cext = ext.c_str();
-			const unsigned int ext_len = static_cast<unsigned int>(ext.size());
-			char cpath[256] = ""; // ..[0] = '\0'
-			char filter[256];
-
-			// 
+			//	Prepare Extension filter	:	TODO
+			/*
 			for (unsigned int i = 0; i < ext_len; ++i) {
 				filter[i] = cext[i];
 				filter[i + ext_len + 3] = cext[i];
@@ -103,23 +109,35 @@ namespace Gammou {
 			filter[ext_len + 2] = '.';
 			filter[(2 * ext_len) + 3] = '\0';
 			filter[(2 * ext_len) + 4] = '\0';
+			*/
+			//
+
+			OPENFILENAMEA dialog;
+			char cpath[256] = "";
 
 			std::memset(&dialog, 0, sizeof(dialog));
 
 			dialog.lStructSize = sizeof(dialog);
 			dialog.hwndOwner = nullptr;
-			dialog.hInstance = nullptr; //
-			dialog.lpstrFilter = filter;
+			dialog.hInstance = nullptr;
+			dialog.lpstrFilter = nullptr;
 			dialog.lpstrFile = cpath;
+			dialog.lpstrInitialDir = m_root_path.c_str();
 			dialog.nMaxFile = 256;
 			dialog.lpstrTitle = window_title.c_str();
 			dialog.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
-			if (GetOpenFileNameA(&dialog)) {
+			bool ret;
+
+			if (m_mode == mode::OPEN)
+				ret = GetOpenFileNameA(&dialog);
+			else
+				ret = GetSaveFileNameA(&dialog);
+			
+			if (ret) {
 				m_path = std::string(cpath);
 				m_path_was_set = true;
 			}
-
 		}
 #endif
 
