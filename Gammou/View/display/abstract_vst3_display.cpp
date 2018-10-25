@@ -10,11 +10,12 @@ namespace Gammou {
 
 		static keycode vst3_keycode_to_gammou_keycode(Steinberg::char16 key, Steinberg::int16 keyMsg)
 		{
-			if (keyMsg >= 'A' + 80 && keyMsg <= 'Z' + 80) {
-				return (keycode)((unsigned int)key_A + (keyMsg - 'A' - 80));
+
+			if (keyMsg >= 'A' && keyMsg <= 'Z') {
+				return (keycode)((unsigned int)key_A + (keyMsg - 'A'));
 			}
-			else if (keyMsg >= '0' + 80 && keyMsg <= '9' + 80) {
-				return (keycode)((unsigned int)key_0 + (keyMsg - '0' - 80));
+			else if (key != 0 && keyMsg >= '0' && keyMsg <= '9') {
+				return (keycode)((unsigned int)key_0 + (keyMsg - '0'));
 			}
 			else
 			{

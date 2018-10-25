@@ -113,9 +113,9 @@ namespace Gammou {
             virtual void lock_circuit() = 0;
             virtual void unlock_circuit() = 0;
 
-			unsigned int get_input_count(const std::unique_ptr<abstract_gui_component> &component);
+			unsigned int get_input_count(const abstract_gui_component& component);
 			abstract_gui_component *get_input_src(
-				const std::unique_ptr<abstract_gui_component> &component, 
+				const abstract_gui_component &component, 
 				const unsigned int input_id, 
 				unsigned int& src_output_id);
 

@@ -61,6 +61,7 @@ namespace Gammou {
                 virtual void remove_widget(widget_type *w) override;
                 const std::vector<widget_type*> get_selection() const;
 
+				void set_dash_color(const color c);
              private:
                enum class state
                {
@@ -84,6 +85,7 @@ namespace Gammou {
                 std::vector<widget_type*> m_selection{};
 
                 state m_state;
+				color m_dash_color{cl_lightgrey};
         };
 
         /*
@@ -129,7 +131,7 @@ namespace Gammou {
                 cairo_set_dash (cr, &dash_width, 1, 0);
 
                 cairo_set_line_width(cr, 1.0);
-                cairo_helper::set_source_color(cr, cl_gray);
+                cairo_helper::set_source_color(cr, m_dash_color);
                 cairo_helper::simple_rectangle(cr, m_selected_area);
                 cairo_stroke(cr);
             }
@@ -138,7 +140,6 @@ namespace Gammou {
         template<class widget_type>
         void edit_panel<widget_type>::remove_widget(widget_type *w)
         {
-			DEBUG_PRINT("Remove widget (selected = %s)\n", w->is_selected() ? "true" : "false");
             if (w->is_selected())
                 m_selection.erase(
                     std::remove(
@@ -152,6 +153,12 @@ namespace Gammou {
         {
             return m_selection;
         }
+
+		template<class widget_type>
+		inline void edit_panel<widget_type>::set_dash_color(const color c)
+		{
+			m_dash_color = c;
+		}
 
         template<class widget_type>
         bool edit_panel<widget_type>::on_mouse_button_up(

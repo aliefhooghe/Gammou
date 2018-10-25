@@ -345,11 +345,11 @@ namespace Gammou {
 			// Draw links
 
 			for (auto& gui_component : m_widgets){
-				const unsigned int ic = get_input_count(gui_component);
+				const unsigned int ic = get_input_count(*gui_component);
 
 				for (unsigned int i = 0; i < ic; ++i) {
 					unsigned int output_id;
-					abstract_gui_component *src = get_input_src(gui_component, i, output_id);
+					abstract_gui_component *src = get_input_src(*gui_component, i, output_id);
 					
 					if (src != nullptr) {
 						float x1, y1, x2, y2;
@@ -543,9 +543,9 @@ namespace Gammou {
 			edit_panel<abstract_gui_component>::remove_widget(component);
 		}
 
-		unsigned int abstract_gui_component_map::get_input_count(const std::unique_ptr<abstract_gui_component> &component)
+		unsigned int abstract_gui_component_map::get_input_count(const abstract_gui_component &component)
 		{
-			Process::abstract_component<double> *cpmt = component->get_component();
+			Process::abstract_component<double> *cpmt = component.get_component();
 			
 			if (cpmt != nullptr)
 				return cpmt->get_input_count();
@@ -554,11 +554,11 @@ namespace Gammou {
 		}
 
 		abstract_gui_component * abstract_gui_component_map::get_input_src(
-				const std::unique_ptr<abstract_gui_component> &component, 
+				const abstract_gui_component& component, 
 				const unsigned int input_id, 
 				unsigned int& src_output_id)
 		{
-			Process::abstract_component<double> *cmpt = component->get_component();
+			Process::abstract_component<double> *cmpt = component.get_component();
 
 			if (cmpt != nullptr) {
 				Process::abstract_component<double> *src = cmpt->get_input_src(input_id, src_output_id);
