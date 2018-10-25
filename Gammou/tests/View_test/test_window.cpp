@@ -178,28 +178,6 @@ namespace Gammou {
         for (unsigned int i = 0; i < 30; i++)
             edit_panel->add_widget(std::make_unique<View::edit_widget>(i * 30, i, 25, 25));
 
-        using ctl_mode = View::edit_panel<>::mode;
-        auto *edit_panel_ptr = edit_panel.get();
-
-        add_widget(
-            std::make_unique<View::push_button>(
-                [edit_panel_ptr](View::push_button *)
-                {
-                    edit_panel_ptr->set_mode(ctl_mode::SCROLL_MODE);
-                },
-                "Scroll",
-                700, 600));
-
-        add_widget(
-            std::make_unique<View::push_button>(
-                [edit_panel_ptr](View::push_button *)
-                {
-                    edit_panel_ptr->set_mode(ctl_mode::EDIT_MODE);
-                },
-                "Edit",
-                700, 650));
-
-
         add_widget(std::move(edit_panel));
     }
 
@@ -211,9 +189,6 @@ namespace Gammou {
 
     bool test_window::on_key_down(const View::keycode key)
     {
-        if (key == View::key_A)
-            DEBUG_PRINT("AAA\n");
-
         DEBUG_PRINT("Keyboard Key Down keycode = %u %s !\n", 
             key, key == View::key_unknown ? "(unknown)" : "");
 

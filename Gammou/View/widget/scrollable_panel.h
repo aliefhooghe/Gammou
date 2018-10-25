@@ -111,10 +111,12 @@ namespace Gammou {
 		{
 			const bool ret = panel<widget_type>::on_mouse_wheel(distance);
 
-			if (m_scrolable && !ret &&
-				m_scroll_method == scroll_method::WHEEL_SCROLL) {
-				scroll(0, -20 * static_cast<int>(distance));
-			}
+            if (!ret) {
+                if (m_scrolable && m_scroll_method == scroll_method::WHEEL_SCROLL)
+                    scroll(0, -20 * static_cast<int>(distance));
+                else
+                    return false;
+            }
 
 			return true;
 		}
@@ -122,20 +124,23 @@ namespace Gammou {
 		template<class widget_type>
 		bool scrollable_panel<widget_type>::on_mouse_drag_start(const mouse_button button, const int x, const int y)
 		{
-			return panel<widget_type>::on_mouse_drag_start(button, convert_x(x), convert_y(y));
-		}
+            panel<widget_type>::on_mouse_drag_start(button, convert_x(x), convert_y(y));
+            return m_scrolable;
+        }
 
 		template<class widget_type>
 		 bool scrollable_panel<widget_type>::on_mouse_drag(const mouse_button button, const int x, const int y, const int dx, const int dy)
 		{
 			bool ret = panel<widget_type>::on_mouse_drag(button, convert_x(x), convert_y(y), dx, dy);
 
-			if (m_scrolable && !ret &&
-				m_scroll_method == scroll_method::DRAG_SCROLL) {
-				scroll(-dx, -dy);
-			}
+            if (!ret) {
+                if (m_scrolable && m_scroll_method == scroll_method::DRAG_SCROLL)
+                    scroll(-dx, -dy);
+                else
+                    return false;
+            }
 
-			return true;
+            return true;
 		}
 
 		template<class widget_type>
