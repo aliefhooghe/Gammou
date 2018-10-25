@@ -12,12 +12,12 @@ namespace Gammou {
          */
 
         edit_widget::edit_widget(const int x, const int y, const unsigned int width, const unsigned int height)
-        :   widget (x, y, width, height)
+        :   panel<> (x, y, width, height)
         {
         }
 
         edit_widget::edit_widget(const rectangle& rect)
-        :   widget(rect)
+        :   panel<> (rect)
         {
         }
 

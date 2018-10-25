@@ -8,7 +8,7 @@ namespace Gammou {
 
     namespace View {
 
-        class edit_widget : public widget {
+        class edit_widget : public panel<> {
 
                 template<class w>
                 friend class edit_panel;

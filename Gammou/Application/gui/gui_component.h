@@ -14,16 +14,11 @@ namespace Gammou {
 
 	namespace Gui {
 
-		void draw_link(cairo_t *cr, const float x_input, const float y_input,
-			const float x_output, const float y_output, const View::color color);
-
 		/*
 		
 		*/
 
-		class abstract_gui_component : public View::panel<> {
-
-			friend class abstract_gui_component_map;
+        class abstract_gui_component : public View::edit_widget {
 
 		public:
 			abstract_gui_component(
@@ -44,30 +39,21 @@ namespace Gammou {
 
 			virtual Process::abstract_component<double> *get_component() const = 0;
 
-			//	Self coordinate system
-			virtual bool on_mouse_drag(const View::mouse_button button, const int x, const int y, const int dx, const int dy) override;
-			virtual bool on_mouse_drag_start(const View::mouse_button, const int x, const int y) override;
-			virtual bool on_mouse_drag_end(const View::mouse_button, const int x, const int y) override;
-			virtual bool on_mouse_move(const int x, const int y) override;
+            //virtual bool on_mouse_move(const int x, const int y) override;
 			virtual bool on_mouse_exit() override;
 
 			virtual void draw(cairo_t *cr) override;
 
+            void update_size();
 		protected:
 			void set_autosize(const bool state = true);
 
-			bool is_linking();
-			void set_linking(const bool state = true);
-
 		private:
-			void update_size();
 			static unsigned int component_height_by_socket_count(const unsigned int socket_count);
 
-			bool m_is_linking;
-			bool m_is_moving;
-			bool m_autosize;
+            bool m_autosize{true};
 
-			int m_focused_output_id; // -1 if nothing 
+            int m_focused_output_id{-1}; // -1 if nothing
 
 			// cf schema
 			float m_l1;
@@ -80,7 +66,7 @@ namespace Gammou {
 		*/
 
 		class abstract_gui_component_map : 
-			public View::scrollable_panel<abstract_gui_component> {
+            public View::edit_panel<abstract_gui_component> {
 
 		public:
 			abstract_gui_component_map(
@@ -98,12 +84,23 @@ namespace Gammou {
 
 			virtual void add_gui_component(std::unique_ptr<abstract_gui_component> && component);
 
-			virtual bool on_mouse_drag(const View::mouse_button button, const int x, const int y,
-				const int dx, const int dy) override;
-			virtual bool on_mouse_drag_start(const View::mouse_button button, const int x, const int y) override;
-			virtual bool on_mouse_drag_end(const View::mouse_button button, const int x, const int y) override;
+            /*
+            virtual bool on_mouse_drag_start(
+                const View::mouse_button button,
+                const int x, const int y) override;
 
-			virtual bool on_mouse_button_down(const View::mouse_button button, const int x, const int y) override;
+            virtual bool on_mouse_drag(
+                const View::mouse_button button,
+                const int x, const int y,
+				const int dx, const int dy) override;
+
+            virtual bool on_mouse_drag_end(
+                const View::mouse_button button,
+                const int x, const int y) override;
+            */
+            virtual bool on_mouse_button_down(
+                const View::mouse_button button,
+                const int x, const int y) override;
 
 			virtual void remove_widget(abstract_gui_component *component) override;
 
@@ -132,7 +129,7 @@ namespace Gammou {
 			float m_linking_x;
 			float m_linking_y;
 
-			bool m_socket_highlighting;
+            bool m_socket_highlighting;
 			float m_highlighted_socket_x;
 			float m_highlighted_socket_y;
 		};
