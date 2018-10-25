@@ -39,7 +39,7 @@ namespace Gammou {
 
 			virtual Process::abstract_component<double> *get_component() const = 0;
 
-            //virtual bool on_mouse_move(const int x, const int y) override;
+            virtual bool on_mouse_move(const int x, const int y) override;
 			virtual bool on_mouse_exit() override;
 
 			virtual void draw(cairo_t *cr) override;
@@ -84,7 +84,6 @@ namespace Gammou {
 
 			virtual void add_gui_component(std::unique_ptr<abstract_gui_component> && component);
 
-            /*
             virtual bool on_mouse_drag_start(
                 const View::mouse_button button,
                 const int x, const int y) override;
@@ -97,7 +96,7 @@ namespace Gammou {
             virtual bool on_mouse_drag_end(
                 const View::mouse_button button,
                 const int x, const int y) override;
-            */
+
             virtual bool on_mouse_button_down(
                 const View::mouse_button button,
                 const int x, const int y) override;

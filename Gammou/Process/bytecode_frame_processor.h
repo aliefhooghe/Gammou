@@ -151,7 +151,6 @@ namespace Gammou {
         template<class T>
         void bytecode_frame_processor<T>::compile_component(abstract_component<T>* component)
         {
-			DEBUG_PRINT("Bytecode COmpilation\n");
             if( component->update_process_cyle(abstract_frame_processor<T>::get_process_cycle()) ){
 				const unsigned int ic = component->get_input_count();
 

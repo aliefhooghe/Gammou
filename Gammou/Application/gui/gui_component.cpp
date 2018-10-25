@@ -264,7 +264,7 @@ namespace Gammou {
 		{
 			return GuiProperties::component_font_size + 15 * socket_count;
 		}
-/*
+
 		bool abstract_gui_component::on_mouse_move(const int x, const int y)
 		{
 			if (!View::panel<>::on_mouse_move(x, y)) {
@@ -278,7 +278,7 @@ namespace Gammou {
 
 			return true;
 		}
-*/
+
 		bool abstract_gui_component::on_mouse_exit()
 		{
 			View::panel<>::on_mouse_exit();
@@ -421,7 +421,7 @@ namespace Gammou {
 				component->update_size();
 			}
 		}
-/*
+
 		bool abstract_gui_component_map::on_mouse_drag_start(const View::mouse_button button, const int x, const int y)
 		{
 			abstract_gui_component *focused_component = get_focused_widget();
@@ -441,8 +441,10 @@ namespace Gammou {
 
 					//set_scrollable(false); // prevent drag from scrolling the map
 					//focused_component->set_linking(); // prenvent from moving while being linked
+					return true;
 				}
 			}
+
 			return View::edit_panel<abstract_gui_component>::on_mouse_drag_start(button, x, y);
 		}
 
@@ -472,10 +474,14 @@ namespace Gammou {
 				m_linking_x = map_x;
 				m_linking_y = map_y;
 				redraw();
-			}
 
-			View::edit_panel<abstract_gui_component>::on_mouse_drag(button, x, y, dx, dy);
-			return true;
+				//	In order to update focused widget
+				View::edit_panel<abstract_gui_component>::on_mouse_move(x, y);
+				return true;
+			}
+			else {
+				return View::edit_panel<abstract_gui_component>::on_mouse_drag(button, x, y, dx, dy);
+			}
 		}
 
 		bool abstract_gui_component_map::on_mouse_drag_end(const View::mouse_button button, const int x, const int y)
@@ -501,11 +507,13 @@ namespace Gammou {
 				//m_linking_component->set_linking(false);
 				set_scrollable(true);
 				redraw();
+				return true;
 			}
-
-			return View::edit_panel<abstract_gui_component>::on_mouse_drag_end(button, x, y);
+			else {
+				return View::edit_panel<abstract_gui_component>::on_mouse_drag_end(button, x, y);
+			}
 		}
-*/
+
 		bool abstract_gui_component_map::on_mouse_button_down(const View::mouse_button button, const int x, const int y)
 		{
 
