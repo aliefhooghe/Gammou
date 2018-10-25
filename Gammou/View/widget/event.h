@@ -16,12 +16,9 @@ namespace Gammou {
 			key_backspace,
 			key_tab,
 			key_enter,
-			key_shift_left,
-			key_shift_right,
-			key_ctrl_left,
-			key_ctrl_right,
-			key_alt_left,
-			key_alt_right,
+			key_shift,
+			key_ctrl,
+			key_alt,
 			key_pause_break,
 			key_caps_lock,
 			key_escape,
@@ -143,6 +140,7 @@ namespace Gammou {
 			key_single_quote,
 			key_unknown,
 
+			//------------
 			keycode_count
 		};
 

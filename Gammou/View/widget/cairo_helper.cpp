@@ -1,6 +1,6 @@
 #define  _USE_MATH_DEFINES
 #include <cmath>
-
+#include <algorithm>
 #include "cairo_helper.h"
 
 namespace Gammou {

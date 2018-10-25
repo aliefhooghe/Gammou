@@ -532,7 +532,7 @@ namespace Gammou {
 		void abstract_gui_component_map::remove_widget(abstract_gui_component * component)
 		{
 			m_component_association.erase(component->get_component());
-			panel<abstract_gui_component>::remove_widget(component);
+			edit_panel<abstract_gui_component>::remove_widget(component);
 		}
 
 		unsigned int abstract_gui_component_map::get_input_count(const std::unique_ptr<abstract_gui_component> &component)

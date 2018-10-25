@@ -28,7 +28,7 @@ namespace Gammou {
                 bool m_is_selected{false};
         };
 
-        template<class widget_type = edit_widget>    //  MAybe special widgets ? (with set_selected, ...) OUI mais plus tard
+        template<class widget_type = edit_widget>
         class edit_panel : public scrollable_panel<widget_type> {
 
             public:
@@ -138,6 +138,7 @@ namespace Gammou {
         template<class widget_type>
         void edit_panel<widget_type>::remove_widget(widget_type *w)
         {
+			DEBUG_PRINT("Remove widget (selected = %s)\n", w->is_selected() ? "true" : "false");
             if (w->is_selected())
                 m_selection.erase(
                     std::remove(
@@ -172,7 +173,7 @@ namespace Gammou {
         bool edit_panel<widget_type>::on_mouse_drag_start(
             const mouse_button button, const int x, const int y)
         {
-            if (widget::get_key_state(key_ctrl_left)) {
+            if (widget::get_key_state(key_ctrl)) {
                 start_select(x, y);
             }
             else if (auto w = scrollable_panel<widget_type>::get_focused_widget()) {
