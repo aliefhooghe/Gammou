@@ -58,6 +58,9 @@ namespace Gammou {
 
                 virtual void draw(cairo_t *cr) override;
 
+                virtual void remove_widget(widget_type *w) override;
+                const std::vector<widget_type*> get_selection() const;
+
              private:
                enum class state
                {
@@ -78,7 +81,7 @@ namespace Gammou {
                 int m_selection_start_x;
                 int m_selection_start_y;
                 rectangle m_selected_area;
-                std::vector<widget_type*> m_selection;
+                std::vector<widget_type*> m_selection{};
 
                 state m_state;
         };
@@ -130,7 +133,23 @@ namespace Gammou {
                 cairo_helper::simple_rectangle(cr, m_selected_area);
                 cairo_stroke(cr);
             }
+        }
 
+        template<class widget_type>
+        void edit_panel<widget_type>::remove_widget(widget_type *w)
+        {
+            if (w->is_selected())
+                m_selection.erase(
+                    std::remove(
+                        m_selection.begin(), m_selection.end(), w),
+                        m_selection.end());
+            scrollable_panel<widget_type>::remove_widget(w);
+        }
+
+        template<class widget_type>
+        const std::vector<widget_type*> edit_panel<widget_type>::get_selection() const
+        {
+            return m_selection;
         }
 
         template<class widget_type>
