@@ -75,9 +75,9 @@ namespace Gammou {
 					TRANSLATE_KEY(KEY_NUMLOCK, key_num_lock);
 					TRANSLATE_KEY(KEY_SCROLL, key_scroll_lock);
 
-					TRANSLATE_KEY(KEY_SHIFT, key_shift_left);
-					TRANSLATE_KEY(KEY_CONTROL, key_ctrl_left);
-					TRANSLATE_KEY(KEY_ALT, key_alt_left);
+					TRANSLATE_KEY(KEY_SHIFT, key_shift);
+					TRANSLATE_KEY(KEY_CONTROL, key_ctrl);
+					TRANSLATE_KEY(KEY_ALT, key_alt);
 
 				default:
 					return key_unknown;
@@ -128,7 +128,7 @@ namespace Gammou {
 
 		Steinberg::tresult PLUGIN_API abstract_vst3_view::onKeyDown(Steinberg::char16 key, Steinberg::int16 keyMsg, Steinberg::int16 modifiers)
 		{
-			//DEBUG_PRINT("KEY\n");
+			DEBUG_PRINT("VST3 KEY DOWN\n");
 			const keycode k = vst3_keycode_to_gammou_keycode(key, keyMsg);
 			return m_display->sys_key_down(k) ? Steinberg::kResultTrue : Steinberg::kResultFalse;
 		}

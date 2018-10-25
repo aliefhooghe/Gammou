@@ -1,10 +1,10 @@
 #ifndef ABSTRACT_WIN32_DISPLAY_H_
 #define ABSTRACT_WIN32_DISPLAY_H_
 
+#define NOMINMAX
 #include <Windows.h>
 #include <windowsx.h>
-#undef min
-#undef max
+
 
 #include "cairo_definition.h"
 #include "abstract_display.h"
@@ -40,6 +40,8 @@ namespace Gammou {
 				UINT msg,
 				WPARAM w_param,
 				LPARAM l_param);
+
+			static keycode convert_key(const WPARAM p);
 
 			bool m_is_open;
 		private:
