@@ -221,6 +221,57 @@ namespace Gammou {
             unlock_circuit();
         }
 
+		bool abstract_gui_circuit::on_key_down(const View::keycode key)
+		{
+			if (get_key_state(View::key_ctrl)) {
+
+				if (key == View::key_C) {			//	COPY
+					save_components(get_selection(), m_clipboard);
+					return true;
+				}
+				else if (key == View::key_V) {		//	PASTE
+					//	translate
+					for (auto& component : m_clipboard.components) {
+						component.x_pos += 100;	//	TODO : make component appear near cursor
+						component.y_pos += 100;
+					}
+					insert_components(m_clipboard);
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		void abstract_gui_circuit::insert_components(const Persistence::circuit_state & state)
+		{
+			const unsigned int component_count =
+				static_cast<unsigned int>(state.components.size());
+
+			// record_id -> component association
+			std::vector<abstract_gui_component*> loaded_gui_components;
+			loaded_gui_components.reserve(component_count);
+
+			// Loading components (This add them on circuit)
+			for (const auto& component_state : state.components)
+				loaded_gui_components.push_back(load_component(component_state));
+
+			// Loading links
+			for (const auto& link : state.links) {
+				// Check Record Id
+				if (link.src_record_id >= component_count ||
+					link.dst_record_id >= component_count)
+					throw std::domain_error("Invalid Record Id\n");
+
+				// Get
+				abstract_gui_component *src = loaded_gui_components[link.src_record_id];
+				abstract_gui_component *dst = loaded_gui_components[link.dst_record_id];
+
+				// connect function manage the lock and input-output id checking
+				connect(src, link.output_id, dst, link.input_id);
+			}
+		}
+
         void abstract_gui_circuit::save_component(
             Persistence::component_state& state,
             abstract_gui_component *component)

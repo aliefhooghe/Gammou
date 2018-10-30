@@ -116,8 +116,62 @@ namespace Gammou {
 			Process::abstract_component<double> *const m_component;
 		};
 
+		/*
 
+		*/
 
+		template<class container>
+		void abstract_gui_circuit::save_components(container & gui_components, Persistence::circuit_state & state)
+		{
+			// component -> record_id association
+			std::map<abstract_gui_component*, uint32_t> component_record_id;
+
+			uint32_t component_counter = 0u;
+			uint32_t link_counter = 0u;
+
+			state.components.resize(0);
+			state.links.resize(0);
+
+			// save components
+			for (auto component : gui_components) {
+				component_record_id[component] = component_counter++;
+				state.components.push_back({});
+				save_component(state.components.back(), component);
+			}
+
+			// save links
+
+			for (auto component : gui_components) {
+				// component is dst
+
+				const unsigned int ic = component->get_component()->get_input_count();
+
+				//	Getting component record_id
+				const uint32_t dst_record_id = component_record_id[component];
+
+				for (unsigned int input_id = 0; input_id < ic; ++input_id) {
+					// for each dst input
+					unsigned int output_id;
+					abstract_gui_component *src = get_input_src(*component, input_id, output_id);
+
+					// something linked to input
+					if (src != nullptr) {
+						auto it = component_record_id.find(src);
+
+						//	src is in list
+						if (it != component_record_id.end()) {
+							const uint32_t src_record_id = it->second;
+
+							state.links.emplace_back(
+								Persistence::link_state{
+									src_record_id, output_id,
+									dst_record_id, input_id });
+							link_counter++;
+						}
+					}
+				}
+			}
+		}
 	} /* Gui */
 
 } /* Gammou */
