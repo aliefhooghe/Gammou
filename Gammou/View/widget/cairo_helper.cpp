@@ -1,6 +1,6 @@
 #define  _USE_MATH_DEFINES
 #include <cmath>
-
+#include <algorithm>
 #include "cairo_helper.h"
 
 namespace Gammou {
@@ -12,7 +12,7 @@ namespace Gammou {
 		{
 		}
 
-		rectangle::rectangle(const int px, const int py, const int width, const int height)
+        rectangle::rectangle(const int px, const int py, const unsigned int width, const unsigned int height)
 			: x(px), y(py), width(width), height(height)
 		{
 		}
@@ -24,24 +24,36 @@ namespace Gammou {
 
 		bool rectangle::contains(const int px, const int py) const
 		{
-			return (px >= x && px < (x + (int)width))
-				&& (py >= y && py < (y + (int)height));
+            return (px >= x && px < (x + static_cast<int>(width)))
+                && (py >= y && py < (y + static_cast<int>(height)));
 		}
 
 		bool rectangle::contains(const rectangle & rect) const
 		{
+            const auto right = rect.x + static_cast<int>(rect.width);
+            const auto bottom = rect.y + static_cast<int>(rect.height);
+
 			return contains(rect.x, rect.y)
-				&& contains(rect.x, rect.y + rect.height - 1)
-				&& contains(rect.x + rect.width - 1, rect.y + rect.height - 1)
-				&& contains(rect.x + rect.width - 1, rect.y);
+                && contains(rect.x, bottom)
+                && contains(right, rect.y)
+                && contains(right, bottom);
 		}
 
         bool rectangle::overlap(const rectangle &rect) const
         {
-            return contains(rect.x, rect.y)
-                || contains(rect.x, rect.y + rect.height - 1)
-                || contains(rect.x + rect.width - 1, rect.y + rect.height - 1)
-                || contains(rect.x + rect.width - 1, rect.y);
+            const int left = std::max(x, rect.x);
+            const int right = std::min(
+                    x + static_cast<int>(width),
+                    rect.x + static_cast<int>(rect.width));
+
+            const int top = std::max(y, rect.y);
+            const int bottom = std::min(
+                    y + static_cast<int>(height),
+                    rect.y + static_cast<int>(rect.height));
+
+            return
+                (right - left) > 0 &&
+                (bottom - top) > 0;
         }
 
 		//////////////////////////////////////////////////////////////////////////////////////

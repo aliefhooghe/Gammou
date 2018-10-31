@@ -39,14 +39,12 @@ namespace Gammou {
             virtual void draw(cairo_t *cr) override;
 			void redraw_rect(const rectangle& rect) override;
 
-			using panel<widget_type>::add_widget; // For test only
-
 		protected:
+            void set_scrollable(const bool scrolable = true);
+            void set_scroll_method(const scroll_method method);
 			virtual void draw_content(cairo_t *cr);
 
 			void scroll(const int dx, const int dy);
-			void set_scrollable(const bool scrolable = true);
-			void set_sroll_method(const scroll_method method);
 
             int convert_x(const unsigned int x);    //  Convert from widget coord. to childS coord.
 			int convert_y(const unsigned int y);
@@ -113,10 +111,12 @@ namespace Gammou {
 		{
 			const bool ret = panel<widget_type>::on_mouse_wheel(distance);
 
-			if (m_scrolable && !ret &&
-				m_scroll_method == scroll_method::WHEEL_SCROLL) {
-				scroll(0, -20 * static_cast<int>(distance));
-			}
+            if (!ret) {
+                if (m_scrolable && m_scroll_method == scroll_method::WHEEL_SCROLL)
+                    scroll(0, -20 * static_cast<int>(distance));
+                else
+                    return false;
+            }
 
 			return true;
 		}
@@ -124,20 +124,23 @@ namespace Gammou {
 		template<class widget_type>
 		bool scrollable_panel<widget_type>::on_mouse_drag_start(const mouse_button button, const int x, const int y)
 		{
-			return panel<widget_type>::on_mouse_drag_start(button, convert_x(x), convert_y(y));
-		}
+            panel<widget_type>::on_mouse_drag_start(button, convert_x(x), convert_y(y));
+            return m_scrolable;
+        }
 
 		template<class widget_type>
 		 bool scrollable_panel<widget_type>::on_mouse_drag(const mouse_button button, const int x, const int y, const int dx, const int dy)
 		{
 			bool ret = panel<widget_type>::on_mouse_drag(button, convert_x(x), convert_y(y), dx, dy);
 
-			if (m_scrolable && !ret &&
-				m_scroll_method == scroll_method::DRAG_SCROLL) {
-				scroll(-dx, -dy);
-			}
+            if (!ret) {
+                if (m_scrolable && m_scroll_method == scroll_method::DRAG_SCROLL)
+                    scroll(-dx, -dy);
+                else
+                    return false;
+            }
 
-			return true;
+            return true;
 		}
 
 		template<class widget_type>
@@ -151,7 +154,7 @@ namespace Gammou {
 		{
 			panel<widget_type>::draw_background(cr); // Do cliping
 			cairo_save(cr);
-			cairo_translate(cr, -static_cast<int>(m_x_origin), -static_cast<int>(m_y_origin));
+            cairo_translate(cr, -m_x_origin, -m_y_origin);
 			draw_content(cr);
 			cairo_restore(cr);
 		}
@@ -196,7 +199,7 @@ namespace Gammou {
 		 }
 
 		 template<class widget_type>
-		 void scrollable_panel<widget_type>::set_sroll_method(const scroll_method method)
+         void scrollable_panel<widget_type>::set_scroll_method(const scroll_method method)
 		 {
 			 m_scroll_method = method;
 		 }

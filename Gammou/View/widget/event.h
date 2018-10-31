@@ -141,6 +141,7 @@ namespace Gammou {
 			key_single_quote,
 			key_unknown,
 
+			//------------
 			keycode_count
 		};
 

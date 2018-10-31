@@ -16,7 +16,7 @@
 #include "widget/proxy_widget.h"
 #include "widget/directory_view.h"
 #include "widget/file_system_view.h"
-//#include "widget/edit_panel.h"
+#include "widget/edit_panel.h"
 
 //----------------------------------------------------------------------
 #ifdef __linux__

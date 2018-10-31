@@ -336,8 +336,8 @@ namespace Gammou {
 		{
 			float change_factor;
 			
-			const bool ctrl = get_key_state(key_ctrl_left);				
-			const bool alt = get_key_state(key_alt_left);	
+			const bool ctrl = get_key_state(key_ctrl);				
+			const bool alt = get_key_state(key_alt);	
 
 			if (ctrl && alt) {
 				change_factor = 1.0f / 4096.0f;

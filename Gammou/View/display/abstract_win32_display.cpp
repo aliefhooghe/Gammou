@@ -103,8 +103,6 @@ namespace Gammou {
 		void abstract_win32_display::sys_redraw_rect(
 			const rectangle & rect)
 		{
-			DEBUG_PRINT("WIN 32 DISPLAY redraw rect\n");
-
 			if (m_window_handle != nullptr) {
 				rectangle to_draw;
 
@@ -272,6 +270,28 @@ namespace Gammou {
 				return 0;
 				break;
 
+			case WM_KEYDOWN:
+				DEBUG_PRINT("WIN32 keydown\n");
+				display->sys_key_down(convert_key(w_param));
+				return 0;
+				break;
+
+			case WM_KEYUP:
+				display->sys_key_up(convert_key(w_param));
+				return 0;
+				break;
+
+			case WM_SYSKEYDOWN:
+				DEBUG_PRINT("WIN32 keydown\n");
+				display->sys_key_down(convert_key(w_param));
+				return 0;
+				break;
+
+			case WM_SYSKEYUP:
+				display->sys_key_up(convert_key(w_param));
+				return 0;
+				break;
+
 			default:
 			{
 				return DefWindowProc(window, msg, w_param, l_param);
@@ -281,6 +301,51 @@ namespace Gammou {
 
 		}
 
+		#define TRANSLATE_KEY(xk, k) \
+            case xk: \
+                return k;
+
+		keycode abstract_win32_display::convert_key(const WPARAM p)
+		{
+			if (p >= 'A' && p <= 'Z') {
+				return static_cast<keycode>(
+					static_cast<unsigned int>(key_A) + (p - 'A'));
+			}
+			else if (p >= 0x30 && p <= 0x39) {
+				return static_cast<keycode>(
+					static_cast<unsigned int>(key_0) + (p - 0x30));
+			}
+			else if (p >= 0x60 && p <= 0x69) {
+				return static_cast<keycode>(
+					static_cast<unsigned int>(key_numpad_0) + (p - 0x60));
+			}
+			else {
+
+				switch (p) {
+					TRANSLATE_KEY(VK_BACK, key_backspace)
+					TRANSLATE_KEY(VK_TAB, key_tab)
+					TRANSLATE_KEY(VK_RETURN, key_enter)
+					TRANSLATE_KEY(VK_SHIFT, key_shift)
+					TRANSLATE_KEY(VK_CONTROL, key_ctrl)
+					TRANSLATE_KEY(VK_MENU, key_alt)
+					TRANSLATE_KEY(VK_PAUSE, key_pause_break)
+					TRANSLATE_KEY(VK_CAPITAL, key_caps_lock)
+					TRANSLATE_KEY(VK_ESCAPE, key_escape)
+					TRANSLATE_KEY(VK_SPACE, key_space)
+					TRANSLATE_KEY(VK_PRIOR, key_page_up)
+					TRANSLATE_KEY(VK_NEXT, key_page_down)
+					TRANSLATE_KEY(VK_END, key_end)
+					TRANSLATE_KEY(VK_LEFT, key_left_arrow)
+					TRANSLATE_KEY(VK_UP, key_up_arrow)
+					TRANSLATE_KEY(VK_RIGHT, key_right_arrow)
+					TRANSLATE_KEY(VK_DOWN, key_down_arrow)
+
+				default:
+					return key_unknown;
+
+				}
+			}
+		}
 
 	} /* View */
 

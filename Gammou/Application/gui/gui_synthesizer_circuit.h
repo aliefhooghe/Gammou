@@ -39,7 +39,12 @@ namespace Gammou {
                 bool load_state(const Persistence::circuit_state& state);
                 void reset_content();
 
+				bool on_key_down(const View::keycode key) override;
             protected:
+				template<class container>
+				void save_components(container& gui_components, Persistence::circuit_state& state);
+				void insert_components(const Persistence::circuit_state& state);
+
                 virtual void add_sound_component_to_frame(Sound::abstract_sound_component *sound_component) = 0;
                 virtual abstract_gui_component *gui_component_by_internal_id(const uint32_t id) = 0;
 
@@ -50,8 +55,9 @@ namespace Gammou {
                 gui_component_main_factory& m_complete_component_factory;
                 const unsigned int m_components_channel_count;
                 unsigned int m_creation_factory_id;
-        };
 
+				Persistence::circuit_state m_clipboard{};
+        };
 
         class abstract_gui_synthesizer_circuit : public abstract_gui_circuit {
 
@@ -156,23 +162,19 @@ namespace Gammou {
 
 					// something linked to input
 					if (src != nullptr) {
-						auto it = component_record_id.find(src);
+						const uint32_t src_record_id = component_record_id[src];
 
-						//	src is in list
-						if (it != component_record_id.end()) {
-							const uint32_t src_record_id = it->second;
-
-							state.links.emplace_back(
-								Persistence::link_state{
-									src_record_id, output_id,
-									dst_record_id, input_id });
-							link_counter++;
-						}
+						state.links.emplace_back(
+							Persistence::link_state{
+								src_record_id, output_id,
+								dst_record_id, input_id });
+						link_counter++;
 					}
 				}
 			}
 		}
-	} /* Gui */
+
+} /* Gui */
 
 } /* Gammou */
 

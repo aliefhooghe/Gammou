@@ -360,8 +360,10 @@ namespace Gammou {
             cairo_helper::set_source_color(cr, m_font_color);
 
             const rectangle
-                rect{left, top, width,
-                    static_cast<int>(m_cell_height)};
+                rect{
+                    left, top,
+                    static_cast<unsigned int>(width),
+                    static_cast<unsigned int>(m_cell_height)};
             cairo_helper::show_left_aligned_text(cr, rect, text, text_offset);
 
             //  Update

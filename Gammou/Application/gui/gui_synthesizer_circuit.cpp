@@ -120,87 +120,20 @@ namespace Gammou {
 
         bool abstract_gui_circuit::save_state(Persistence::circuit_state& state)
         {
-            // component -> record_id association
-            std::map<abstract_gui_component*, uint32_t> component_record_id;
+			std::vector<abstract_gui_component*> tmp;
+			tmp.reserve(m_widgets.size());
 
-            uint32_t component_counter = 0u;
-            uint32_t link_counter = 0u;
+			for (auto& w : m_widgets)
+				tmp.push_back(w.get());
 
-            state.components.resize(0);
-            state.links.resize(0);
-
-            // save components
-            for (auto& component : m_widgets) {
-                abstract_gui_component *component_ptr =
-                    component.get();
-
-                component_record_id[component_ptr] = component_counter++;
-                state.components.push_back({});
-                save_component(state.components.back(), component_ptr);
-            }
-
-            // save links
-
-            for (auto& component : m_widgets) {
-                // component is dst
-
-                const unsigned int ic = component->get_component()->get_input_count();
-
-                //	Getting component record_id
-                const uint32_t dst_record_id = component_record_id[&(*component)];
-
-                for (unsigned int input_id = 0; input_id < ic; ++input_id) {
-                    // for each dst input
-                    unsigned int output_id;
-                    abstract_gui_component *src = get_input_src(component, input_id, output_id);
-
-                    // something linked to input
-                    if (src != nullptr) {
-                        const uint32_t src_record_id = component_record_id[src];
-
-                        state.links.emplace_back(
-                            Persistence::link_state{
-                                src_record_id, output_id,
-                                dst_record_id, input_id});
-                        link_counter++;
-                    }
-                }
-            }
-
+			save_components(tmp, state);
             return true;
         }
 
         bool abstract_gui_circuit::load_state(const Persistence::circuit_state& state)
         {
-            //	Delete current content
             reset_content();
-
-            const unsigned int component_count =
-                    static_cast<unsigned int>(state.components.size());
-
-            // record_id -> component association
-            std::vector<abstract_gui_component*> loaded_gui_components;
-            loaded_gui_components.reserve(component_count);
-
-            // Loading components (This add them on circuit)
-            for (const auto& component_state : state.components)
-                loaded_gui_components.push_back(load_component(component_state));
-
-            // Loading links
-            for (const auto& link : state.links) {
-                // Check Record Id
-                if (link.src_record_id >= component_count ||
-                    link.dst_record_id >= component_count)
-                    throw std::domain_error("Invalid Record Id\n");
-
-                // Get
-                abstract_gui_component *src = loaded_gui_components[link.src_record_id];
-                abstract_gui_component *dst = loaded_gui_components[link.dst_record_id];
-
-                // connect function manage the lock and input-output id checking
-                connect(src, link.output_id, dst, link.input_id);
-            }
-
+			insert_components(state);
             return true;
         }
 

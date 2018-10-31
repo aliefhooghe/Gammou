@@ -33,8 +33,8 @@ set(WIDGET_SRC
 	widget/file_system_directory_model.cpp
 	widget/file_system_view.h
 	widget/file_system_view.cpp
-	#widget/edit_panel.h
-	#widget/edit_panel.cpp
+	widget/edit_panel.h
+	widget/edit_panel.cpp
 	widget/event.h
 	widget/list_box.h
 	widget/list_box.cpp
