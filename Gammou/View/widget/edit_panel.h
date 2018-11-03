@@ -1,45 +1,43 @@
 #ifndef EDIT_PANEL_H_
 #define EDIT_PANEL_H_
 
-#include <list>
+#include <vector>
 #include "scrollable_panel.h"
 
 namespace Gammou {
 
     namespace View {
 
-        class item_widget : public widget {
+        class edit_widget : public panel<> {
+
+                template<class w>
+                friend class edit_panel;
 
             public:
+                edit_widget(const int x, const int y, const unsigned int width, const unsigned int height);
+                edit_widget(const rectangle& rect);
+                virtual ~edit_widget() {}
+
+                virtual void draw(cairo_t *cr) override;
+
                 virtual void on_select() {}
                 virtual void on_unselect() {}
+                bool is_selected() const;
 
-                virtual void on_move_start() {}
-                virtual void on_move() {}
-                virtual void on_move_end() {}
+            private:
+                bool m_is_selected{false};
         };
 
-        template<class widget_type = item_widget>    //  MAybe special widgets ? (with set_selected, ...) OUI mais plus tard
+        template<class widget_type = edit_widget>
         class edit_panel : public scrollable_panel<widget_type> {
 
             public:
-                enum class control_mode {DEFAULT, SELECT, MOVE};
-
                 edit_panel(const int x, const int y,
                            const unsigned int width,
                            const unsigned int height,
                            const color background = cl_white);
                 edit_panel(const rectangle& rect, const color background = cl_white);
                 virtual ~edit_panel();
-
-            /*
-             *
-             *      Mouse Usages:
-             *          -   default     :   scrolable_panel<> methods
-             *          -   select      :   call on_select_event
-             *          -   Move        :   move the selection
-             *
-             */
 
                 virtual bool on_mouse_button_up(
                         const mouse_button button,
@@ -60,20 +58,34 @@ namespace Gammou {
 
                 virtual void draw(cairo_t *cr) override;
 
+                virtual void remove_widget(widget_type *w) override;
+                const std::vector<widget_type*> get_selection() const;
+
+				void set_dash_color(const color c);
              private:
+               enum class state
+               {
+                   SCROLL,
+                   SELECTING,
+                   MOVING
+               };
+               void set_state(const state s);
 
                 //  Selecting
-                void update_selection();
+                void start_select(const int x, const int y);
+                void finnish_select();
+                void update_selection(const int x, const int y);
+
+                void select(widget_type *w);
+                void unselect_all();
 
                 int m_selection_start_x;
                 int m_selection_start_y;
-                int m_selection_end_x;
-                int m_selection_end_y;
-                bool m_is_selecting{false};
-                std::list<widget_type*> m_selection;
-                //---
+                rectangle m_selected_area;
+                std::vector<widget_type*> m_selection{};
 
-                control_mode m_control_mode{control_mode::DEFAULT};
+                state m_state;
+				color m_dash_color{cl_lightgrey};
         };
 
         /*
@@ -92,7 +104,9 @@ namespace Gammou {
                 x, y, width,
                 height, background)
         {
-            m_control_mode = control_mode::SELECT;
+            scrollable_panel<widget_type>::set_scroll_method
+                    (scrollable_panel<widget_type>::scroll_method::DRAG_SCROLL);
+            set_state(state::SCROLL);
         }
 
         template<class widget_type>
@@ -112,48 +126,53 @@ namespace Gammou {
         {
             scrollable_panel<widget_type>::draw(cr);
 
-            if (m_control_mode == control_mode::SELECT &&
-                    m_is_selecting) {
-                double dash_width = 5.0;
+            if (m_state == state::SELECTING) {
+                double dash_width = 1.0;
                 cairo_set_dash (cr, &dash_width, 1, 0);
 
                 cairo_set_line_width(cr, 1.0);
-                cairo_helper::set_source_color(cr, cl_gray);
-                cairo_rectangle(
-                    cr, m_selection_start_x, m_selection_start_y,
-                    m_selection_end_x - m_selection_start_x,
-                    m_selection_end_y - m_selection_start_y);
+                cairo_helper::set_source_color(cr, m_dash_color);
+                cairo_helper::simple_rectangle(cr, m_selected_area);
                 cairo_stroke(cr);
             }
-
         }
+
+        template<class widget_type>
+        void edit_panel<widget_type>::remove_widget(widget_type *w)
+        {
+            if (w->is_selected())
+                m_selection.erase(
+                    std::remove(
+                        m_selection.begin(), m_selection.end(), w),
+                        m_selection.end());
+            scrollable_panel<widget_type>::remove_widget(w);
+        }
+
+        template<class widget_type>
+        const std::vector<widget_type*> edit_panel<widget_type>::get_selection() const
+        {
+            return m_selection;
+        }
+
+		template<class widget_type>
+		inline void edit_panel<widget_type>::set_dash_color(const color c)
+		{
+			m_dash_color = c;
+		}
 
         template<class widget_type>
         bool edit_panel<widget_type>::on_mouse_button_up(
                 const mouse_button button,
                 const int x, const int y)
         {
-            switch (m_control_mode) {
+            if (m_state == state::SELECTING)
+                finnish_select();
+            else if (m_state == state::MOVING)
+                set_state(state::SCROLL);
+            else if (scrollable_panel<widget_type>::get_focused_widget() == nullptr)
+                unselect_all();
 
-                case control_mode::SELECT:
-                    if (m_is_selecting) {
-                        m_is_selecting = false;
-                        m_selection.clear();
-                        scrollable_panel<widget_type>::redraw();
-                    }
-                    return true;
-                    break;
-
-                case control_mode::MOVE:
-                    return false;
-                    break;
-
-                case control_mode::DEFAULT:
-                    return scrollable_panel<widget_type>::on_mouse_button_up(button, x, y);
-                    break;
-
-            }
-
+            scrollable_panel<widget_type>::on_mouse_button_up(button, x, y);
             return true;
         }
 
@@ -161,36 +180,18 @@ namespace Gammou {
         bool edit_panel<widget_type>::on_mouse_drag_start(
             const mouse_button button, const int x, const int y)
         {
-            switch (m_control_mode) {
-
-                case control_mode::DEFAULT:
-                    return scrollable_panel<widget_type>::on_mouse_drag_start(button, x, y);
-                    break;
-
-                case control_mode::MOVE:
-                {
-                    widget_type *w = panel<widget_type>::get_focused_widget();
-                    if (w != nullptr) {
-                        w->set_pos(x, y);
-                        w->on_move_start();
-                    }
-                    return true;
+            if (widget::get_key_state(key_ctrl)) {
+                start_select(x, y);
+            }
+            else if (auto w = scrollable_panel<widget_type>::get_focused_widget()) {
+                if (!w->is_selected()) {
+                    unselect_all();
+                    select(w);
                 }
-                    break;
-
-                case control_mode::SELECT:
-                    m_selection.clear();
-                    m_selection_start_x = x;
-                    m_selection_start_y = y;
-                    m_selection_end_x = x;
-                    m_selection_end_y = y;
-                    m_is_selecting = true;
-                    scrollable_panel<widget_type>::redraw();
-                    return true;
-                    break;
-
+                set_state(state::MOVING);
             }
 
+            scrollable_panel<widget_type>::on_mouse_drag_start(button, x, y);
             return true;
         }
 
@@ -200,37 +201,19 @@ namespace Gammou {
             const int x, const int y,
             const int dx, const int dy)
         {
+            const bool ret =
+                scrollable_panel<widget_type>::on_mouse_drag(button, x, y, dx, dy);
 
-            switch (m_control_mode) {
-
-                case control_mode::DEFAULT:
-                    return scrollable_panel<widget_type>::on_mouse_drag(button, x, y, dx, dy);
-                    break;
-
-                case control_mode::MOVE:
-                {
-                    widget_type *w = panel<widget_type>::get_focused_widget();
-                    if (w != nullptr) {
-                        w->set_pos(x, y);
-                        w->on_move();
-                    }
-                    return true;
-                }
-                    break;
-
-                case control_mode::SELECT:
-                {
-                    m_selection_end_x = x;
-                    m_selection_end_y = y;
-                    update_selection();
-                    scrollable_panel<widget_type>::redraw();
-                    return true;
-                }
-                    break;
-
+            //  event have not been used
+            if (m_state == state::MOVING && !ret) {
+                //  Move selection
+                for (auto& select_w : m_selection)
+                    select_w->set_rect(select_w->get_absolute_rect().translate(dx, dy));
+            }
+            else if (m_state == state::SELECTING) {
+                update_selection(x, y);
             }
 
-            edit_panel<widget_type>::redraw();
             return true;
         }
 
@@ -239,52 +222,83 @@ namespace Gammou {
             const mouse_button button,
             const int x, const int y)
         {
-            switch (m_control_mode) {
+            if (m_state == state::SELECTING)
+                finnish_select();
+            else if (m_state == state::MOVING)
+                set_state(state::SCROLL);
 
-                case control_mode::DEFAULT:
-                    return scrollable_panel<widget_type>::on_mouse_drag_end(button, x, y);
-                    break;
-
-                case control_mode::MOVE:
-                {
-                    widget_type *w = panel<widget_type>::get_focused_widget();
-                    if (w != nullptr) {
-                        w->set_pos(x, y);
-                        w->on_move_end();
-                    }
-                    return true;
-                }
-                    break;
-
-                case control_mode::SELECT:
-                    //  TODO
-                    return true;
-                    break;
-
-            }
-
-            return true; // for compiler
+            scrollable_panel<widget_type>::on_mouse_drag_end(button, x, y);
+            return true;
         }
 
         template<class widget_type>
-        void edit_panel<widget_type>::update_selection()
-        {/*
-            const rectangle select_area =
-            {
-                .x = std::min(m_selection_start_x, m_selection_end_x),
-                .y = std::min(m_selection_start_y, m_selection_end_y),
-                .width = abs(m_selection_start_x - m_selection_end_x),
-                .height = abs(m_selection_start_y - m_selection_end_y),
-            };
-
-            m_selection.clear();
-
-            for (auto& w : panel<widget_type>::m_widgets) {
-                if (select_area.overlap(w->get_absolute_rect()))
-                    m_selection.push_back(w.get());
-            }*/
+        void edit_panel<widget_type>::set_state(const state s)
+        {
+            m_state = s;
+            scrollable_panel<widget_type>::set_scrollable(s == state::SCROLL);
         }
 
+        template<class widget_type>
+        void edit_panel<widget_type>::start_select(const int x, const int y)
+        {
+            m_selection_start_x = x;
+            m_selection_start_y = y;
+            set_state(state::SELECTING);
+        }
+
+        template<class widget_type>
+        void edit_panel<widget_type>::finnish_select()
+        {
+            set_state(state::SCROLL);
+            scrollable_panel<widget_type>::redraw();
+        }
+
+        template<class widget_type>
+        void edit_panel<widget_type>::update_selection(const int x, const int y)
+        {
+            m_selected_area.x = std::min(m_selection_start_x, x);
+            m_selected_area.y = std::min(m_selection_start_y, y);
+            m_selected_area.width = std::abs(m_selection_start_x - x);
+            m_selected_area.height = std::abs(m_selection_start_y - y);
+
+            rectangle child_area
+            {
+                scrollable_panel<widget_type>::convert_x(m_selected_area.x),
+                scrollable_panel<widget_type>::convert_y(m_selected_area.y),
+                m_selected_area.width,
+                m_selected_area.height
+            };
+
+            //  Really suboptimal algo, TODO mieux
+            unselect_all();
+
+            for (auto& w : scrollable_panel<widget_type>::m_widgets)
+                if (child_area.overlap(w->get_absolute_rect()))
+                    select(w.get());
+
+            scrollable_panel<widget_type>::redraw();
+        }
+
+        template<class widget_type>
+        void edit_panel<widget_type>::select(widget_type *w)
+        {
+            if (!w->is_selected()) {
+                w->m_is_selected = true;
+                w->on_select();
+                m_selection.push_back(w);
+            }
+        }
+
+        template<class widget_type>
+        void edit_panel<widget_type>::unselect_all()
+        {
+            for (auto w : m_selection) {
+                w->m_is_selected = false;
+                w->on_unselect();
+            }
+            m_selection.clear();
+            scrollable_panel<widget_type>::redraw();
+        }
 
     } /* View */
 

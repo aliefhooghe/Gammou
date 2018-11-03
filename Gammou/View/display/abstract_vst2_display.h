@@ -14,6 +14,12 @@ namespace Gammou {
                 virtual ~abstract_vst2_display();
 
                 virtual void open(void *host_parent_window) = 0;
+
+				int on_effEditKeyUp(const int32_t index, const int64_t value);
+				int on_effEditKeyDown(const int32_t index, const int64_t value);
+			
+			private:
+				static keycode convert_key(const int32_t index, const int64_t value);
         };
 
     }   /*  View */

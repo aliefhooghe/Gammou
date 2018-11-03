@@ -13,7 +13,7 @@ namespace Gammou {
 
 			// copy ctor by compiler is ok !
 			rectangle();
-			rectangle(const int px, const int py, const int width, const int height);
+            rectangle(const int px, const int py, const unsigned int width, const unsigned int height);
             ~rectangle() {}
 
 			rectangle translate(const int px, const int py) const;

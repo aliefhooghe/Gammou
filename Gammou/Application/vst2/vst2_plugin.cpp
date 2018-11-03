@@ -182,20 +182,20 @@ namespace Gammou  {
             switch (opcode) {
 
                 case effOpen:
-                    DEBUG_PRINT("Effect Open\n");
+                    DEBUG_PRINT("effOpen\n");
                     break;
 
                 case effClose:
-                    DEBUG_PRINT("Effect CLose\n");
+                    DEBUG_PRINT("effClose\n");
 					delete self;
                     break;
 
                 case effGetParamLabel:
-                    DEBUG_PRINT("GetParamLabel\n");
+                    DEBUG_PRINT("effGetParamLabel\n");
                     break;
 
                 case effGetParamDisplay:
-                    DEBUG_PRINT("GetParamDisplay\n");
+                    DEBUG_PRINT("effGetParamDisplay\n");
                     break;
 
                 case effGetParamName:
@@ -210,17 +210,17 @@ namespace Gammou  {
                 {
 					ERect **rect_ref = (ERect**)ptr;
 					*rect_ref = &(self->m_window_rect);
-                    DEBUG_PRINT("Edit Get Rect\n");
+                    DEBUG_PRINT("effEditGetRect\n");
                 }
                     break;
 
                 case effEditOpen:
-                    DEBUG_PRINT("Edit Open\n");
+                    DEBUG_PRINT("effEditOpen\n");
                     self->m_display.open(ptr);
                     break;
 
                 case effEditClose:
-                    DEBUG_PRINT("Edit Close\n");
+                    DEBUG_PRINT("effEditClose\n");
                     self->m_display.close();
                     break;
 
@@ -258,13 +258,29 @@ namespace Gammou  {
                     break;
 
                 case effCanDo:
-                    DEBUG_PRINT("Got Cando '%s' ?\n", (char*)ptr);
+                    DEBUG_PRINT("effCanDo '%s' ?\n", (char*)ptr);
+					return 1;
                     break;
                 
                 case effGetNumMidiInputChannels:
                     DEBUG_PRINT("effGetNumMidiInputChannels received\n");
                     return 1;
                     break;
+
+				case effEditKeyDown:
+					DEBUG_PRINT("effEditKeyDown\n");
+					return self->m_display.on_effEditKeyDown(index, value);
+					break;
+
+				case effEditKeyUp:
+					DEBUG_PRINT("effEditKeyUp\n");
+					return self->m_display.on_effEditKeyUp(index, value);
+					break;
+
+				case effEditKey:
+					DEBUG_PRINT("effEditKey\n");
+					return 1;
+					break;
 
                 default:
                    // DEBUG_PRINT("Unknown VST opcode : %u\n", opcode);

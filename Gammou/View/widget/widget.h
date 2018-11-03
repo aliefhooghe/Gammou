@@ -31,6 +31,9 @@ namespace Gammou {
 			int get_y(void) const;
 			unsigned int get_width(void) const;
 			unsigned int get_height(void) const;
+            virtual void set_pos(const int x, const int y);
+            virtual void resize(const unsigned int width, const unsigned int height);
+            virtual void set_rect(const rectangle& rect);
 			const rectangle& get_absolute_rect() const;
 
 			virtual void redraw();
@@ -59,9 +62,6 @@ namespace Gammou {
 
 			virtual void draw(cairo_t *cr) = 0;
 
-			virtual void set_pos(const int x, const int y);
-			virtual void resize(const unsigned int width, const unsigned int height);
-			virtual void set_rect(const rectangle& rect);
 
 			virtual abstract_display *get_display();
 			

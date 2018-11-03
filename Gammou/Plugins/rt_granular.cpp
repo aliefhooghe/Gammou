@@ -41,6 +41,7 @@ private:
 
 	inline double queue_get_value(const double t)
 	{
+		const double sign = (t > 0.0) ? 1.0 : -1.0;
 		const double sample_count = 
 		get_sample_rate() * std::abs(t);
 
@@ -53,7 +54,7 @@ private:
 			sample_count - static_cast<double>(index);
 
 		return 
-			(1.0 - coef) * a + coef * b;
+			sign * ((1.0 - coef) * a + coef * b);
 	}
 
 	const unsigned int m_grain_count;

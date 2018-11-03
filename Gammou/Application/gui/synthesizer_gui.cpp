@@ -171,10 +171,12 @@ namespace Gammou {
 			
 			auto load_preset_button =
 				std::make_unique<View::push_button>(
-					[this](View::push_button*)
+					[this](View::push_button* self)
 					{
 						using mode = View::file_explorer_dialog::mode;
-						
+					
+						self->set_enabled(false);
+
 						View::file_explorer_dialog dialog{GAMMOU_PRESETS_DIRECTORY_PATH, mode::OPEN};
 						std::string path;
 
@@ -189,6 +191,8 @@ namespace Gammou {
 								load_state(state);
 							}catch(...){}
 						}
+
+						self->set_enabled(true);
 					},
 					"Load Preset",
 					GuiProperties::main_gui_size_unit * 9, 15, 95, 27,
@@ -199,9 +203,10 @@ namespace Gammou {
 
 			auto save_preset_button =
 				std::make_unique<View::push_button>(
-					[this](View::push_button*)
+					[this](View::push_button* self)
 					{
 						using mode = View::file_explorer_dialog::mode;
+						self->set_enabled(false);
 
 						View::file_explorer_dialog dialog{ GAMMOU_PRESETS_DIRECTORY_PATH, mode::SAVE };
 						std::string path;
@@ -217,6 +222,8 @@ namespace Gammou {
 								Persistence::gammou_file<Persistence::gammou_state>::save(stream, state);
 							}catch(...){}
 						}
+
+						self->set_enabled(true);
 					},
 					"Save Preset",
 					GuiProperties::main_gui_size_unit * 11, 15, 95, 27,

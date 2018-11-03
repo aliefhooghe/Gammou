@@ -79,7 +79,6 @@ namespace Gammou  {
                     double **outputs,
                     int32_t sample_count);
 
-
 				//-------
 
 				AEffect *m_aeffect{};

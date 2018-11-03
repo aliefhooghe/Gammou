@@ -309,7 +309,7 @@ namespace Gammou {
                                 x - m_focused_widget->get_x(),
                                 y - m_focused_widget->get_y())) {
 
-                        ret |= m_focused_widget->on_mouse_exit();
+                        m_focused_widget->on_mouse_exit();
                         widget_type *w = get_widget_at_position(x, y);
 
                         if (w != nullptr) {

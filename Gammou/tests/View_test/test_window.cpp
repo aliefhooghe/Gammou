@@ -30,7 +30,7 @@ namespace Gammou {
 
         add_widget(
             std::make_unique<View::push_button>(
-                [](View::push_button *button)
+                [](View::push_button *)
                 {
                     std::cout << "Button pushed !" << std::endl;
                 },
@@ -86,7 +86,7 @@ namespace Gammou {
 
         add_widget(
             std::make_unique<View::push_button>(
-                [&list_box](View::push_button *button)
+                [&list_box](View::push_button *)
                 {
                     const unsigned int item_count = 
                         list_box.get_item_count();
@@ -97,7 +97,7 @@ namespace Gammou {
         
         add_widget(
             std::make_unique<View::push_button>(
-                [&list_box](View::push_button *button)
+                [&list_box](View::push_button*)
                 {
                     list_box.clear();
                 },
@@ -112,7 +112,7 @@ namespace Gammou {
 
         add_widget(
             std::make_unique<View::push_button>(
-                [](View::push_button *p)
+                [](View::push_button *)
                 {
                     std::string path;
                     
@@ -122,7 +122,7 @@ namespace Gammou {
                         std::cout << "Ouverture annulée" << std::endl;
                 },
                 "Open Explorer",
-                400, 400));
+                400, 70));
 
         ///////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////
@@ -130,7 +130,7 @@ namespace Gammou {
 
 		add_widget(
 			std::make_unique<View::push_button>(
-				[this](View::push_button *p)
+                [this](View::push_button *)
 				{
 					std::cout << "Non blocking close\n";
 					get_display()->close();
@@ -144,7 +144,7 @@ namespace Gammou {
 
 		add_widget(
 			std::make_unique<View::push_button>(
-				[this](View::push_button *p)
+                [](View::push_button*)
 				{
 					test_dialog dialog;
 					dialog.show("Dialog Title");
@@ -166,6 +166,19 @@ namespace Gammou {
         });
 
         add_widget(std::move(dir_view));
+
+        ///////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////
+        //  Edit Panel test
+
+        auto edit_panel =
+            std::make_unique<View::edit_panel<> >
+                (300, 400, 350, 350);
+
+        for (unsigned int i = 0; i < 30; i++)
+            edit_panel->add_widget(std::make_unique<View::edit_widget>(i * 30, i, 25, 25));
+
+        add_widget(std::move(edit_panel));
     }
 
     bool test_window::on_mouse_dbl_click(const int x, const int y)
@@ -176,9 +189,6 @@ namespace Gammou {
 
     bool test_window::on_key_down(const View::keycode key)
     {
-        if (key == View::key_A)
-            DEBUG_PRINT("AAA\n");
-
         DEBUG_PRINT("Keyboard Key Down keycode = %u %s !\n", 
             key, key == View::key_unknown ? "(unknown)" : "");
 
@@ -190,7 +200,7 @@ namespace Gammou {
 	{
 		add_widget(
 			std::make_unique<View::push_button>(
-				[this](View::push_button *self)
+                [this](View::push_button *)
 				{
 					get_display()->close();
 				},
