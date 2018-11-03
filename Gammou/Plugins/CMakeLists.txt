@@ -96,6 +96,7 @@ add_gammou_plugin(Delay delay.cpp)
 add_gammou_plugin(DCBlocker dc_blocker.cpp)
 add_gammou_plugin(LadderFilter ladder_filter.cpp)
 add_gammou_plugin(Lp2 lp2.cpp)
+add_gammou_plugin(Notch notch_filter.cpp)
 
 ############ 	Joystick Plugin
 
