@@ -433,14 +433,13 @@ namespace Gammou {
 				int output_id = focused_component->get_output_id_by_pos(map_x, map_y);
 
 				if (output_id != -1) {
+					m_linking_x = x;
+					m_linking_y = y;
 					m_is_linking = true;
 					m_linking_output_id = output_id;
 					m_linking_component = focused_component;
 
 					DEBUG_PRINT("Start linking from output_id = %d\n", output_id);
-
-					//set_scrollable(false); // prevent drag from scrolling the map
-					//focused_component->set_linking(); // prenvent from moving while being linked
 					return true;
 				}
 			}
