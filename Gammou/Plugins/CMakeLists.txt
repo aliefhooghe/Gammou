@@ -74,6 +74,12 @@ endmacro()
 add_library(wav STATIC wav.h wav.c)
 set_target_properties(wav PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
+## Lib granular base
+
+add_library(granular_base granular_base.h granular_base.cpp)
+set_target_properties(granular_base PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(granular_base PUBLIC synthesizer)
+
 ###############################################
 ###############################################
 ###############################################
@@ -88,7 +94,10 @@ add_gammou_plugin(Granular granular.cpp)
 target_link_libraries(Granular PRIVATE 	wav)
 
 add_gammou_plugin(RTGranular rt_granular.cpp)
-target_link_libraries(RTGranular PRIVATE wav)
+
+add_gammou_plugin(OscGranular osc_granular.cpp)
+target_link_libraries(OscGranular PRIVATE granular_base)
+
 
 add_gammou_plugin(BitCrusher bit_crusher.cpp)
 add_gammou_plugin(Noise noise.cpp)

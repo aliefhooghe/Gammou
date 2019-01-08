@@ -3,23 +3,14 @@
 #include <cstring>
 
 #include "plugin_helper.h"
+#include "granular_base.h"
 #include "wav.h"
 
 using namespace Gammou::Sound;
 
-struct grain {
-	double signal_time;
-	double output_time;
-};
-
-static double grain_env(
-	const double t,
-	const double dev)
-{
-	return exp(-t*t / (2.0 * dev * dev));
-}
-
-class granular_component : public sound_component {
+class granular_component : 
+	public sound_component,
+	public granular_base {
 
 public:
 	granular_component(
@@ -35,27 +26,14 @@ public:
 
 	unsigned int save_state(data_output_stream& data) override;
 
-private:
-	inline const double random_grain_pos(
-		const double seed,
-		const double width)
-	{
-		return seed + width * m_distribution(m_engine);
-	}
+protected:
+	double grain_value(const double phase) override;
 
+private:
 	wav_t * m_sample;
 	std::string m_sample_path;
-	const unsigned int m_grain_count;
-	multi_channel_array<grain> m_grain;
-
-	multi_channel_variable<double> m_time;
-	multi_channel_variable<double> m_first_grain_time;
-
-	static std::default_random_engine m_engine;
-	std::uniform_real_distribution<double> m_distribution;
 };
 
-std::default_random_engine granular_component::m_engine{};
 
 granular_component::granular_component(
 	wav_t *sample,
@@ -63,13 +41,9 @@ granular_component::granular_component(
 	const unsigned int grain_count,
 	const unsigned int channel_count)
 :	sound_component("Granular", 5, 1, channel_count),
+	granular_base(this, grain_count),
 	m_sample(sample),
-	m_sample_path(sample_path),
-	m_grain_count(grain_count),
-	m_grain(this, grain_count),
-	m_time(this),
-	m_first_grain_time(this),
-	m_distribution(-1.0, 1.0)
+	m_sample_path(sample_path)
 {
 	set_input_name("Seed", 0);
 	set_input_name("Width", 1);
@@ -86,14 +60,7 @@ granular_component::~granular_component()
 
 void granular_component::initialize_process()
 {
-	for (unsigned int i = 0; i < m_grain_count; i++) {
-		auto& grain = m_grain[i];
-		grain.output_time = -10.0;
-		grain.signal_time = 0.0;
-	}
-
-	m_time = 0.0;
-	m_first_grain_time = 0.0;
+	granular_base::init();
 }
 
 void granular_component::process(const double input[])
@@ -104,27 +71,15 @@ void granular_component::process(const double input[])
 	const double width = input[1];
 	const double radius = 0.01 * input[2];
 	const double dev = 0.01 * input[3];
+	const double pitch = input[4];
 
-	double out = 0.0;
+	m_output[0] = 
+		granular_base::compute_step(seed, width, radius, dev, dev, pitch, dt);
+}
 
-	for (unsigned int i = 0; i < m_grain_count; i++) {
-		auto& gr = m_grain[i];
-
-		const double cursor = m_time - gr.output_time;
-		out += 
-			wav_get_value(m_sample, cursor + gr.signal_time, 0) *
-				grain_env(cursor, dev);
-
-		if (cursor > ((double)m_grain_count * radius * 0.5)) {
-			//	Respawn the grain
-			m_first_grain_time += radius;
-			gr.output_time = m_first_grain_time;
-			gr.signal_time = random_grain_pos(seed, width);
-		}
-	}
-
-	m_time += dt * input[4];
-	m_output[0] = out;
+double granular_component::grain_value(const double phase)
+{
+	return	wav_get_value(m_sample, phase, 0);
 }
 
 unsigned int granular_component::save_state(data_output_stream & data)

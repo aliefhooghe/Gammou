@@ -15,7 +15,8 @@ namespace Gammou {
 			ladder_filter_id,
 			noise_id,
 			rt_granular_id,
-			sampler_id
+			sampler_id,
+			osc_granular_id
 		};
 	}
 }
