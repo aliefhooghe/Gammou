@@ -40,6 +40,7 @@ namespace Gammou {
             std::thread m_event_loop_thread;
 
 			bool m_running;
+			bool m_display_need_redraw{false};
 
             Display *m_display{};
             Window m_window{};

@@ -309,7 +309,7 @@ namespace Gammou {
                         break;
 
                     case Expose:
-                        self->draw_display();
+                        self->m_display_need_redraw = true;
                         break;
 
                     case EnterNotify:
@@ -388,6 +388,9 @@ namespace Gammou {
                         XNextEvent(self->m_display, &event);
                         handle_event(self, event);
                     }
+
+                    if (self->m_display_need_redraw)
+                        self->draw_display();
                 }
             }
 
