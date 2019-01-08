@@ -46,7 +46,7 @@ void notch_filter::process(const double input[])
 {   
     const double x = input[0];
     const double T = get_sample_duration();
-    const double w = 6.28318530718 * input[1];
+    const double w = atan(6.28318530718 * input[1] * T * 0.5) * 2.0 / T;
     const double damping = input[2];
 
     const double w2 = w*w;
@@ -68,8 +68,9 @@ void notch_filter::process(const double input[])
     const double a11 = -12.0*damping*T4*w + 4.0*T3 + 5.0*T5*w2;
     const double a12 = -4.0*w*T4*damping + 4.0*T3 + T5*w2;
 
+
     const double out =
-        (1.0 / a7) * (
+       (1.0 / a7) * (
             (a6 * m_x[4] + a5 * m_x[3] + a4 * m_x[2] + a3 * m_x[1] + a2 * m_x[0] + a1 * x) - 
             (a12 * m_y[3] + a11 * m_y[2] + a10 * m_y[1] + a9 * m_y[0] + a8 * m_output[0]));
 
@@ -80,7 +81,7 @@ void notch_filter::process(const double input[])
         m_y[i] = m_y[i-1]; 
     m_y[0] = m_output[0];
 
-    m_output[0] = out;
+    m_output[0] = out;    
 }
 
 EXPORT_DEFAULT_FACTORY(
