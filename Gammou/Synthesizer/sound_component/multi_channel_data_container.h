@@ -192,14 +192,19 @@ namespace Gammou {
 			const unsigned int channel = 
 				multi_channel_data::get_current_working_channel();
 			const unsigned int base = m_capacity * channel;
-			auto index = m_index[channel];
 
-			if (offset >= m_capacity) {
+			const auto& index = m_index[channel];
+			const unsigned int size =
+				(index.first < index.second) ?
+				(index.second - index.first - 1)
+				: ((m_capacity + index.second) - index.first - 1);
+									
+			if (offset >= size) {
 				return T();
 			}
 			else {
 				const int pos = 
-					static_cast<int>(m_index[channel].second) - 
+					static_cast<int>(index.second) - 
 						(static_cast<int>(offset) + 1);
 				
 				return m_data[base + (pos + m_capacity) % m_capacity];
