@@ -92,12 +92,13 @@ target_link_libraries(Sampler PRIVATE 	wav)
 
 add_gammou_plugin(Granular granular.cpp)
 target_link_libraries(Granular PRIVATE 	wav)
+target_link_libraries(Granular PRIVATE 	granular_base)
 
 add_gammou_plugin(RTGranular rt_granular.cpp)
+target_link_libraries(RTGranular PRIVATE 	granular_base)
 
-add_gammou_plugin(OscGranular osc_granular.cpp)
-target_link_libraries(OscGranular PRIVATE granular_base)
-
+#add_gammou_plugin(OscGranular osc_granular.cpp)
+#target_link_libraries(OscGranular PRIVATE granular_base)
 
 add_gammou_plugin(BitCrusher bit_crusher.cpp)
 add_gammou_plugin(Noise noise.cpp)
@@ -105,7 +106,7 @@ add_gammou_plugin(Delay delay.cpp)
 add_gammou_plugin(DCBlocker dc_blocker.cpp)
 add_gammou_plugin(LadderFilter ladder_filter.cpp)
 add_gammou_plugin(Lp2 lp2.cpp)
-add_gammou_plugin(Lp1 lp1.cpp)
+#add_gammou_plugin(Lp1 lp1.cpp)
 add_gammou_plugin(Notch notch_filter.cpp)
 
 

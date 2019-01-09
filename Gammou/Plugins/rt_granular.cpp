@@ -3,23 +3,15 @@
 #include <cstring>
 
 #include "plugin_helper.h"
+#include "granular_base.h"
 #include "wav.h"
 
 using namespace Gammou::Sound;
 
-struct grain {
-	double signal_time;
-	double output_time;
-};
 
-static double grain_env(
-	const double t,
-	const double dev)
-{
-	return exp(-t*t / (2.0 * dev * dev));
-}
-
-class rt_granular_component : public sound_component {
+class rt_granular_component : 
+	public sound_component,
+	private granular_base {
 
 public:
 	rt_granular_component(
@@ -30,57 +22,20 @@ public:
 
 	void initialize_process() override;
 	void process(const double input[]) override;
-		
+	
+protected:
+	double grain_value(const double phase) override;
+
 private:
-	inline const double random_grain_pos(
-		const double seed,
-		const double width)
-	{
-		return seed + width * m_distribution(m_engine);
-	}
-
-	inline double queue_get_value(const double t)
-	{
-		const double sign = (t > 0.0) ? 1.0 : -1.0;
-		const double sample_count = 
-		get_sample_rate() * std::abs(t);
-
-		const unsigned int index = 
-			static_cast<unsigned int>(sample_count);
-
-		const double a = m_queue[index];
-		const double b = m_queue[index + 1];
-		const double coef = 
-			sample_count - static_cast<double>(index);
-
-		return 
-			sign * ((1.0 - coef) * a + coef * b);
-	}
-
-	const unsigned int m_grain_count;
-	multi_channel_array<grain> m_grain;
-
 	multi_channel_queue<double> m_queue;
-
-	multi_channel_variable<double> m_time;
-	multi_channel_variable<double> m_first_grain_time;
-
-	static std::default_random_engine m_engine;
-	std::uniform_real_distribution<double> m_distribution;
 };
-
-std::default_random_engine rt_granular_component::m_engine{};
 
 rt_granular_component::rt_granular_component(
 	const unsigned int grain_count,
 	const unsigned int channel_count)
-	: sound_component("RTGranular", 6, 1, channel_count),
-		m_grain_count(grain_count),
-		m_grain(this, grain_count),
-		m_queue(this, 44100 * 10),
-		m_time(this),
-		m_first_grain_time(this),
-		m_distribution(-1.0, 1.0)
+	:	sound_component("RTGranular", 6, 1, channel_count),
+		granular_base(this, grain_count),
+		m_queue(this, 44100 * 10)
 {
 	set_input_name("In", 0);
 	set_input_name("Delay", 1);
@@ -97,14 +52,7 @@ rt_granular_component::~rt_granular_component()
 
 void rt_granular_component::initialize_process()
 {
-	for (unsigned int i = 0; i < m_grain_count; i++) {
-		auto& grain = m_grain[i];
-		grain.output_time = -10.0;
-		grain.signal_time = 0.0;
-	}
-
-	m_time = 0.0;
-	m_first_grain_time = 0.0;
+	granular_base::init();
 	m_queue.reset();
 }
 
@@ -112,35 +60,33 @@ void rt_granular_component::process(const double input[])
 {
 	const double dt = get_sample_duration();
 
-	const double seed = input[1];
+	const double seed = -input[1];
 	const double width = input[2];
 	const double radius = 0.01 * input[3];
 	const double dev = 0.01 * input[4];
-
-	double out = 0.0;
+	const double pitch = input[5];
 
 	m_queue << input[0];
+	m_output[0] =												//	-1.0 compensate delay tape movement
+		granular_base::compute_step(seed, width, radius, dev, dev, pitch - 1.0, dt);
+}
 
-	for (unsigned int i = 0; i < m_grain_count; i++) {
-		auto& gr = m_grain[i];
+double rt_granular_component::grain_value(const double phase)
+{
+	const double sign = (phase > 0.0) ? -1.0 : 1.0;
+	const double sample_count =
+		get_sample_rate() * std::abs(phase);
 
-		const double cursor = m_time - gr.output_time;
-		out += 
-			queue_get_value(cursor + gr.signal_time) *
-				grain_env(cursor, dev);
+	const unsigned int index =
+		static_cast<unsigned int>(sample_count);
 
-		gr.signal_time += dt;
+	const double a = m_queue[index];
+	const double b = m_queue[index + 1];
+	const double coef =
+		sample_count - static_cast<double>(index);
 
-		if (cursor > ((double)m_grain_count * radius * 0.5)) {
-			//	Respawn the grain
-			m_first_grain_time += radius;
-			gr.output_time = m_first_grain_time;
-			gr.signal_time = random_grain_pos(seed, width);
-		}
-	}
-
-	m_time += dt * input[5];
-	m_output[0] = out;
+	return
+		sign * ((1.0 - coef) * a + coef * b);
 }
 
 
@@ -160,7 +106,7 @@ class rt_granular_factory : public plugin_factory {
 		{
 			return new
 				rt_granular_component(
-					32,
+					80,
 					channel_count);
 		}
 
@@ -170,7 +116,7 @@ class rt_granular_factory : public plugin_factory {
 		{
 			return new 
 				rt_granular_component(
-					32, 
+					80, 
 					channel_count);
 		}
 };

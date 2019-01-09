@@ -50,6 +50,8 @@ granular_component::granular_component(
 	set_input_name("Radius", 2);
 	set_input_name("Dev", 3);
 	set_input_name("Speed", 4);
+
+	set_output_name("", 0);
 }
 
 granular_component::~granular_component()
@@ -133,7 +135,7 @@ class granular_factory : public plugin_factory {
 				granular_component(
 					sample,
 					str_path,
-					32,
+					24,
 					channel_count);
 		}
 
@@ -155,7 +157,7 @@ class granular_factory : public plugin_factory {
 				granular_component(
 					sample,
 					path,
-					32, 
+					24, 
 					channel_count);
 		}
 };
