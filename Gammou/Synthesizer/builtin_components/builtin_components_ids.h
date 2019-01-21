@@ -29,7 +29,9 @@ namespace Gammou {
 			lp2_component_id,
 			product_component_id,
 			saw_component_id,				
-			negate_component_id
+			negate_component_id,
+			bp2_component_id,
+			hp2_component_id
 		};
 
 	

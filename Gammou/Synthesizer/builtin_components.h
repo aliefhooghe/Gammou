@@ -29,7 +29,7 @@ namespace Gammou {
 #include "builtin_components/sin_component.h"
 #include "builtin_components/sum_component.h"
 #include "builtin_components/product_component.h"
-#include "builtin_components/lp2.h"
+#include "builtin_components/filter_order2.h"
 #include "builtin_components/adsr_env.h"
 #include "builtin_components/saw.h"
 

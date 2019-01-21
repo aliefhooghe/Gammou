@@ -335,7 +335,9 @@ namespace Gammou {
             m_component_selector->add_plugin_factory(MAKE_BUILTIN_FACTORY(Sound::sum_component));
             m_component_selector->add_plugin_factory(MAKE_BUILTIN_FACTORY(Sound::product_component));
             m_component_selector->add_plugin_factory(MAKE_BUILTIN_FACTORY(Sound::lp2));
-            m_component_selector->add_plugin_factory(MAKE_BUILTIN_FACTORY(Sound::adsr_env));
+			m_component_selector->add_plugin_factory(MAKE_BUILTIN_FACTORY(Sound::bp2));
+			m_component_selector->add_plugin_factory(MAKE_BUILTIN_FACTORY(Sound::hp2));
+			m_component_selector->add_plugin_factory(MAKE_BUILTIN_FACTORY(Sound::adsr_env));
             m_component_selector->add_plugin_factory(MAKE_BUILTIN_FACTORY(Sound::saw));
 
             m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(cos));
