@@ -32,6 +32,8 @@ namespace Gammou {
 #include "builtin_components/lp2.h"
 #include "builtin_components/adsr_env.h"
 #include "builtin_components/saw.h"
+#include "builtin_components/negate.h"
+#include "builtin_components/invert.h"
 
 #include "builtin_components/function_component.h"
 
