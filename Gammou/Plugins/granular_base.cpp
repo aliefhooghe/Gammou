@@ -37,6 +37,8 @@ namespace Gammou
             const double pitch,
             const double dt)
         {
+			const double max_env_cursor = 
+				radius * 0.5 * static_cast<double>(m_grain.size());
             double out = 0.0;
 
             for (unsigned int i = 0; i < m_grain.size(); i++)
@@ -49,14 +51,13 @@ namespace Gammou
                 out += grain_value(gr.phase) * grain_env(env_cursor, env_attack, env_release);
                 gr.phase += pitch * dt;
 
-                if (env_cursor > ((double)m_grain.size() * radius * 0.5))
+                if (env_cursor > max_env_cursor)
                 {
                     m_first_grain_time += radius;
                     gr.output_signal_position = m_first_grain_time;
 
                     const double phase_org = gen_grain_phase(phase_seed, phase_width);
-                    gr.phase = phase_org + (m_time - gr.output_signal_position) * pitch;
-                    //  pb : les grains sont moin locaux quand le pitch augmente
+					gr.phase =  phase_org + (m_time - gr.output_signal_position) * pitch;
                 }
             }
 

@@ -108,7 +108,7 @@ add_gammou_plugin(LadderFilter ladder_filter.cpp)
 add_gammou_plugin(Lp2 lp2.cpp)
 #add_gammou_plugin(Lp1 lp1.cpp)
 add_gammou_plugin(Notch notch_filter.cpp)
-
+add_gammou_plugin(Ramp ramp.cpp)
 
 ############ 	Joystick Plugin
 

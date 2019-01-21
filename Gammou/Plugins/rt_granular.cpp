@@ -62,8 +62,8 @@ void rt_granular_component::process(const double input[])
 
 	const double seed = -input[1];
 	const double width = input[2];
-	const double radius = 0.01 * input[3];
-	const double dev = 0.01 * input[4];
+	const double radius = 0.01 * std::abs(input[3]);
+	const double dev = 0.01 * std::abs(input[4]);
 	const double pitch = input[5];
 
 	m_queue << input[0];
@@ -106,7 +106,7 @@ class rt_granular_factory : public plugin_factory {
 		{
 			return new
 				rt_granular_component(
-					80,
+					12,
 					channel_count);
 		}
 
@@ -116,7 +116,7 @@ class rt_granular_factory : public plugin_factory {
 		{
 			return new 
 				rt_granular_component(
-					80, 
+					12, 
 					channel_count);
 		}
 };

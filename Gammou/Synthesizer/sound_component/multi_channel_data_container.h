@@ -197,7 +197,7 @@ namespace Gammou {
 			const unsigned int size =
 				(index.first < index.second) ?
 				(index.second - index.first - 1)
-				: ((m_capacity + index.second) - index.first - 1);
+				: (m_capacity + index.second - index.first - 1);
 									
 			if (offset >= size) {
 				return T();
