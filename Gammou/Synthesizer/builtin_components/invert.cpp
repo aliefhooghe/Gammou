@@ -1,4 +1,5 @@
 
+#include <float.h>
 #include "invert.h"
 
 namespace Gammou {
