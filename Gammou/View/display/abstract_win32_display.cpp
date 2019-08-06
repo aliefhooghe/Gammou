@@ -271,7 +271,7 @@ namespace Gammou {
 				break;
 
 			case WM_KEYDOWN:
-				DEBUG_PRINT("WIN32 keydown\n");
+				DEBUG_PRINT("WIN32 keydown %llu\n", w_param);
 				display->sys_key_down(convert_key(w_param));
 				return 0;
 				break;
