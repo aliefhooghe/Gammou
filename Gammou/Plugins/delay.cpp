@@ -20,7 +20,7 @@ private:
 
 delay_component::delay_component(const unsigned int channel_count)
 	: sound_component("delay", 2, 1, channel_count),
-	m_queue(this, 100000)	
+	m_queue(this, 41000 * 4)	
 {
 	set_input_name("In", 0);
 	set_input_name("Time", 1);
