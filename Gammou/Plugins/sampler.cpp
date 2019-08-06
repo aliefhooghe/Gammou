@@ -12,6 +12,7 @@ public:
 
 	sampler_component(
 		wav_t *sample,
+		const std::string& sample_path,
 		const unsigned int channel_count);
 
 	~sampler_component();
@@ -19,15 +20,19 @@ public:
 	void process(const double input[]) override;
 	void initialize_process() override;
 
+	unsigned int save_state(data_output_stream & data) override;
 private:
+	std::string m_sample_path;
 	multi_channel_variable<double> m_current_pos;
 	wav_t * m_sample;
 };
 
 sampler_component::sampler_component(
 	wav_t *sample,
+	const std::string& sample_path,
 	const unsigned int channel_count)
 	: sound_component("sampler", 2, 1, channel_count),
+		m_sample_path(sample_path),
 		m_current_pos(this),
 		m_sample(sample)
 {
@@ -43,6 +48,19 @@ sampler_component::~sampler_component()
 void sampler_component::initialize_process()
 {
 	m_current_pos = 0.0;
+}
+
+unsigned int sampler_component::save_state(data_output_stream & data)
+{
+	unsigned int path_len = m_sample_path.size();
+	char path[256];
+
+	std::memcpy(path, m_sample_path.c_str(), path_len);
+
+	data.write(&path_len, sizeof(unsigned int));
+	data.write(path, path_len);
+
+	return sizeof(unsigned int) + path_len;
 }
 
 void sampler_component::process(const double input[])
@@ -74,7 +92,27 @@ class sampler_factory : public plugin_factory {
 			data_input_stream& source, 
 			const unsigned int channel_count) override
 		{
-			return nullptr; // todo
+			char path[256];
+			unsigned int path_len;
+
+			if (source.read(&path_len, sizeof(unsigned int)) != sizeof(unsigned int) ||
+				path_len == 0 ||
+				source.read(path, path_len) != path_len)
+				throw std::runtime_error("Unable to load sample name from preset");
+
+			path[path_len] = 0;	//	null terminated string
+
+			std::string str_path(path);
+
+			wav_t *sample = wav_load(path);
+			if (sample == nullptr)
+				throw std::runtime_error("Unable to load " + str_path);
+
+			return new
+				sampler_component(
+					sample,
+					str_path,
+					channel_count);
 		}
 
 		abstract_sound_component *create_sound_component(
@@ -91,7 +129,7 @@ class sampler_factory : public plugin_factory {
 			if (sample == nullptr)
 				throw std::runtime_error("Unable to load " + path);
 
-			return new sampler_component(sample, channel_count);
+			return new sampler_component(sample, path, channel_count);
 		}
 };
 
