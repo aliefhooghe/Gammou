@@ -223,6 +223,25 @@ wav_t *wav_load(const char *path)
 	return wav;
 }
 
+wav_t * wav_zero(
+	const unsigned int channel_count, 
+	const unsigned int sample_count, 
+	const unsigned int sample_rate)
+{
+	wav_t *wav = (wav_t*)malloc(sizeof(wav_t));
+	wav->channel_count = channel_count;
+	wav->sample_count = sample_count;
+	wav->sample_rate = sample_rate;
+	wav_alloc(wav);
+	memset(
+		wav->data[0],
+		0,
+		sample_count *
+		channel_count *
+		sizeof(double));
+	return wav;
+}
+
 
 unsigned int wav_get_sample_count(const wav_t *wav)
 {

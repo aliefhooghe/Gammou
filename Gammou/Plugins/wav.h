@@ -9,8 +9,13 @@ typedef struct wav_t wav_t;
 
 wav_t *wav_copy(const wav_t *src);
 int wav_save(wav_t *wav, const char *path, const unsigned bit_depth);
-
 wav_t *wav_load(const char *path);
+wav_t *wav_zero(
+	const unsigned int channel_count,
+	const unsigned int sample_count,
+	const unsigned int sample_rate);
+
+
 int wav_free(wav_t *wav);
 
 unsigned int wav_get_sample_count(const wav_t *wav);
