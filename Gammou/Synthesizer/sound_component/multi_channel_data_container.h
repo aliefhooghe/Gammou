@@ -90,6 +90,12 @@ namespace Gammou {
 				const unsigned int size);
 			virtual ~multi_channel_array() {}
 
+			inline auto begin() noexcept;
+			inline auto end() noexcept;
+
+			inline auto begin() const noexcept;
+			inline auto end() const noexcept;
+
 			inline T& operator [](const unsigned int index);
 			inline unsigned int size() { return m_size;  }
 		private:
@@ -111,6 +117,34 @@ namespace Gammou {
 			// Verif ou perf -> Perf !! 
 			const unsigned int base = m_size * multi_channel_data::get_current_working_channel();
 			return m_data[base + index];
+		}
+
+		template <typename T>
+		inline auto multi_channel_array<T>::begin() noexcept
+		{
+			const unsigned int base = m_size * multi_channel_data::get_current_working_channel();
+			return m_data.data() + base;
+		}
+
+		template <typename T>
+		inline auto multi_channel_array<T>::end() noexcept
+		{
+			const unsigned int base = m_size * multi_channel_data::get_current_working_channel();
+			return m_data.data() + base + m_size;
+		}
+
+		template <typename T>
+		inline auto multi_channel_array<T>::begin() const noexcept
+		{
+			const unsigned int base = m_size * multi_channel_data::get_current_working_channel();
+			return m_data.data() + base;
+		}
+
+		template <typename T>
+		inline auto multi_channel_array<T>::end() const noexcept
+		{
+			const unsigned int base = m_size * multi_channel_data::get_current_working_channel();
+			return m_data.data() + base + m_size;
 		}
 
 		/*

@@ -110,6 +110,9 @@ add_gammou_plugin(Lp2 lp2.cpp)
 add_gammou_plugin(Notch notch_filter.cpp)
 add_gammou_plugin(Ramp ramp.cpp)
 
+add_gammou_plugin(Granular2 granular2.cpp)
+target_link_libraries(Granular2 PRIVATE 	wav)
+
 ############ 	Joystick Plugin
 
 #find_package(SDL2 REQUIRED)
