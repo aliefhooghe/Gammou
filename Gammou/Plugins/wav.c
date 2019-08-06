@@ -3,9 +3,18 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <stdint.h>
 
 #include "wav.h"
 
+// Trick from gist.github.com/PhilCK/1534763
+#ifdef __GNUC__
+#define PACKED(struct_decl) struct_decl __attribute__((__packed__))
+#else
+#define PACKED(struct_decl) __pragma(pack(push, 1)) struct_decl __pragma(pack(pop))
+#endif
+
+//	Implementation of abstract datatype 
 struct wav_t {
   unsigned short int channel_count;
   unsigned int sample_count;
@@ -13,28 +22,35 @@ struct wav_t {
   double** data;
 };
 
-// Trick from gist.github.com/PhilCK/1534763
-#ifdef __GNUC__
-#define PACKED(struct_decl) struct_decl __attribute__((__packed__))
-#else
-#define PACKED(struct_decl) __pragma( pack(push, 1) ) struct_decl __pragma( pack(pop) )
-#endif
+// WAVE file format
+PACKED(
+struct WAVE_file_header
+{
+	uint8_t RIFF[4];
+	uint32_t file_size_m8;
+	uint8_t WAVE[4];
+});
 
 PACKED(
-struct wav_file_header {                // Wav file header
-  char RIFF[4];							//	==	"RIFF"
-  unsigned int taille_m8;				
-  char WAVEfmt[8];
-  unsigned int nb_octet_block_format;
-  unsigned short int format;			//	PCM = 1
-  unsigned short int nb_ch;
-  unsigned int sample_rate;
-  unsigned int octet_par_sec;
-  unsigned short int byte_per_block;
-  unsigned short int bit_depth;
-  char data_magic[4];
-  unsigned int data_size;
+struct WAVE_format_block
+{
+	uint8_t format_block_id[4]; // "fmt "
+	uint32_t block_size_m16;
+	uint16_t format_id;
+	uint16_t channel_count;
+	uint32_t sample_rate;
+	uint32_t byte_per_sec;
+	uint16_t byte_per_block;
+	uint16_t bit_per_sample;
 });
+
+PACKED(
+struct WAVE_generic_block_header
+{
+	uint8_t block_id[4];
+	uint32_t block_size;
+});
+
 
 static void wav_alloc(wav_t *wav)
 {
@@ -87,45 +103,57 @@ int wav_save(
 	const char *path,
 	const unsigned bit_depth)
 {
-	struct wav_file_header hdr;
+	struct WAVE_file_header file_header;
+	struct WAVE_format_block format_block;
+	struct WAVE_generic_block_header data_block_header;
 
-	hdr.RIFF[0] = 'R';
-	hdr.RIFF[1] = 'I';
-	hdr.RIFF[2] = 'F';
-	hdr.RIFF[3] = 'F';
+	file_header.RIFF[0] = 'R';
+	file_header.RIFF[1] = 'I';
+	file_header.RIFF[2] = 'F';
+	file_header.RIFF[3] = 'F';
 
-	hdr.WAVEfmt[0] = 'W';
-	hdr.WAVEfmt[1] = 'A';
-	hdr.WAVEfmt[2] = 'V';
-	hdr.WAVEfmt[3] = 'E';
-	hdr.WAVEfmt[4] = 'f';
-	hdr.WAVEfmt[5] = 'm';
-	hdr.WAVEfmt[6] = 't';
-	hdr.WAVEfmt[7] = ' ';
+	file_header.WAVE[0] = 'W';
+	file_header.WAVE[1] = 'A';
+	file_header.WAVE[2] = 'V';
+	file_header.WAVE[3] = 'E';
 
-	hdr.data_magic[0] = 'd';
-	hdr.data_magic[1] = 'a';
-	hdr.data_magic[2] = 't';
-	hdr.data_magic[3] = 'a';
+	// --
 
-	hdr.nb_octet_block_format = 16;
-	hdr.format = 1;
-	hdr.sample_rate = wav->sample_rate;
-	hdr.bit_depth = bit_depth;
-	hdr.nb_ch = wav->channel_count;
-	hdr.byte_per_block = (bit_depth/8) * wav->channel_count;
-	hdr.data_size = hdr.byte_per_block * wav->channel_count;
-	hdr.octet_par_sec = hdr.byte_per_block * wav->sample_rate;
-	hdr.taille_m8 = hdr.data_size + 36;
+	format_block.format_block_id[0] = 'f';
+	format_block.format_block_id[1] = 'm';
+	format_block.format_block_id[2] = 't';
+	format_block.format_block_id[3] = ' ';
 
+	format_block.block_size_m16 = 16;
+	format_block.format_id = 1; // pcm
+	format_block.channel_count = wav->channel_count;
+	format_block.sample_rate = wav->sample_rate;
+	format_block.byte_per_sec = (bit_depth / 8) * wav->channel_count * wav->sample_rate;
+	format_block.byte_per_block = (bit_depth / 8) * wav->channel_count;
+	format_block.bit_per_sample = bit_depth;
 
-	unsigned char *data = (unsigned char *)malloc(hdr.data_size);
+	//
+	data_block_header.block_id[0] = 'd';
+	data_block_header.block_id[1] = 'a';
+	data_block_header.block_id[2] = 't';
+	data_block_header.block_id[3] = 'a';
+
+	data_block_header.block_size = 
+		format_block.byte_per_block * wav->sample_count;
+
+	file_header.file_size_m8 =
+		data_block_header.block_size + 
+		sizeof(data_block_header) + 
+		sizeof(format_block) + 
+		sizeof(file_header) - 8;
+
+	//
+	uint8_t *data = (uint8_t *)malloc(data_block_header.block_size);
 	FILE *fd = fopen(path,"w+");
 
 	// double -> data
-	const int block_max = 
-		(1u << (hdr.bit_depth - 1)) - 1;
-	const unsigned int nb_octet = hdr.bit_depth / 8;
+	const int block_max = (1u << (bit_depth - 1)) - 1;
+	const unsigned int byte_per_sample = bit_depth / 8;
 	
 
 	for(unsigned int i = 0 ; i < wav->channel_count; i++){
@@ -133,84 +161,59 @@ int wav_save(
 
 			int block;
 
-			if(wav->data[j][i] < -1)
+			if(wav->data[j][i] < -1.)
 				block = -block_max;
-			else if(wav->data[j][i] > 1)
+			else if(wav->data[j][i] > 1.)
 				block = block_max;
 			else
 				block = wav->data[j][i] * (double)block_max;
 
-			for(unsigned int k=0 ; k < nb_octet ; k++)
-				data[nb_octet*(i*wav->channel_count + j) + k] = 0xFF & (block >> (k*8));
+			for(unsigned int k=0 ; k < byte_per_sample ; k++)
+				data[byte_per_sample*(i*wav->channel_count + j) + k] = 0xFF & (block >> (k*8));
 		}
 	}
 
-
-	fwrite(&hdr, sizeof(struct wav_file_header), 1, fd);
-	fwrite(data, hdr.data_size, 1, fd);
+	fwrite(&file_header, sizeof(file_header), 1, fd);
+	fwrite(&format_block, sizeof(format_block), 1, fd);
+	fwrite(&data_block_header, sizeof(data_block_header), 1, fd);
+	fwrite(data, data_block_header.block_size, 1, fd);
 	fclose(fd);
 	free(data);
 
 	return 0;
 }
 
-wav_t *wav_load(const char *path)
+static wav_t *wav_from_raw_data(
+	const unsigned int sample_count,
+	const unsigned int sample_rate,
+	const unsigned int channel_count,
+	const unsigned int bit_depth,
+	const uint8_t *data)
 {
-	FILE* fd;
-	struct wav_file_header hdr;
+	wav_t *wav = (wav_t *)malloc(sizeof(wav_t));
 
-	if((fd = fopen(path, "rb")) == NULL) {
-		printf("Unable to open %s\n", path);
-		return NULL;
-	}
-
-	if(fread(&hdr , 1 , sizeof(struct wav_file_header) , fd) 
-		!= sizeof(struct wav_file_header)) {
-		printf("Unable to read header\n");
-		return NULL;
-	}
-
-	if(	strncmp("RIFF",hdr.RIFF, 4) != 0  		|| 
-		strncmp("WAVEfmt ",hdr.WAVEfmt, 8) != 0 	||
-		strncmp("data",hdr.data_magic, 4) != 0  	|| 
-		hdr.format != 1 						|| 
-		hdr.nb_octet_block_format != 16) {
-		printf("Unrecognized header format\n");
-		return NULL;
-	}
-
-	wav_t *wav = (wav_t*)malloc(sizeof(wav_t));
-
-	wav->sample_rate = hdr.sample_rate;
-	wav->sample_count = hdr.data_size / hdr.byte_per_block;
-	wav->channel_count = hdr.nb_ch;
+	wav->channel_count = channel_count;
+	wav->sample_count = sample_count;
+	wav->sample_rate = sample_rate;
 
 	wav_alloc(wav);
 
-	unsigned char *data = (unsigned char*)malloc(hdr.data_size);
-	if(fread(data, 1 , hdr.data_size , fd) != hdr.data_size) {
-		printf("Unable to read data\n");
-		return NULL;
-	}
-
-	fclose(fd);
-
-	//---
-
-	const unsigned nb_octet = hdr.bit_depth / 8;
-	const unsigned int block_max = 
-		(1u << (hdr.bit_depth - 1)) - 1;
+	const unsigned nb_octet = bit_depth / 8;
+	const unsigned int block_max = (1u << (bit_depth - 1)) - 1;
 	int block;
 
-	for(unsigned i=0 ; i < wav->sample_count ; i++){
-		for(unsigned j = 0 ; j < wav->channel_count ; j++){
+	for (unsigned int i = 0; i < wav->sample_count; i++)
+	{
+		for (unsigned int j = 0; j < wav->channel_count; j++)
+		{
 			block = 0;
 
-			for(unsigned int k=0 ; k < nb_octet ; k++)
-				block |= data[nb_octet*(i*wav->channel_count + j) + k] << (k * 8);
+			for (unsigned int k = 0; k < nb_octet; k++)
+				block |= data[nb_octet * (i * wav->channel_count + j) + k] << (k * 8);
 
-			if( (data[nb_octet*(i*wav->channel_count + j) + nb_octet - 1] & 0x80) != 0){// Le block est negatif
-				for(unsigned int k=nb_octet ; k < 4 ; k++)
+			if ((data[nb_octet * (i * wav->channel_count + j) + nb_octet - 1] & 0x80) != 0)
+			{ // Le block est negatif
+				for (unsigned int k = nb_octet; k < 4; k++)
 					block |= 0xFF << (k * 8);
 			}
 
@@ -218,9 +221,100 @@ wav_t *wav_load(const char *path)
 		}
 	}
 
-	free(data);
-	
 	return wav;
+}
+
+wav_t *wav_load(const char *path)
+{
+	FILE* fd;
+	uint8_t *file_data;
+
+	//	Open file
+	if((fd = fopen(path, "rb")) == NULL) {
+		printf("Unable to open %s\n", path);
+		return NULL;
+	}
+
+	//	Get data size
+	fseek(fd, 0u, SEEK_END);
+	const size_t file_data_size = ftell(fd);
+	rewind(fd);
+
+	// Read file data
+	file_data = (uint8_t*)malloc(file_data_size);
+	fread(file_data, file_data_size, 1u, fd);
+	fclose(fd);
+
+	//////////////
+
+	uint8_t *cursor = file_data;
+	struct WAVE_file_header *file_header = 
+		(struct WAVE_file_header*)cursor;
+
+	// Check file header
+
+	if (strncmp(file_header->RIFF, "RIFF", 4) != 0 || strncmp(file_header->WAVE, "WAVE", 4) != 0) {
+		free(file_data);
+		return NULL;
+	}
+
+	cursor += sizeof(*file_header);
+
+	//
+	int got_format_block = 0;
+	int bit_depth, channel_count, sample_rate, byte_per_block;
+
+	while (cursor < file_data + file_data_size) {
+		
+		// format block
+		if (strncmp(cursor, "fmt ", 4) == 0) {
+			
+			if (got_format_block) {
+				//	There shouldnt be 2 format block
+				return NULL;
+			}
+			else {
+				struct WAVE_format_block *fmt =
+					(struct WAVE_format_block *)cursor;
+				got_format_block = 1;
+
+				//	Get format info
+				channel_count = fmt->channel_count;
+				sample_rate = fmt->sample_rate;
+				bit_depth = fmt->bit_per_sample;
+				byte_per_block = fmt->byte_per_block;
+
+				cursor += (sizeof(*fmt));
+			}
+		}
+		// data block : if format block have been read, then read data
+		else if (strncmp(cursor, "data", 4) == 0) {
+			
+			if (got_format_block) {
+				struct WAVE_generic_block_header *data =
+					(struct WAVE_generic_block_header *)cursor;
+
+				return wav_from_raw_data(
+					data->block_size / byte_per_block,
+					sample_rate,
+					channel_count,
+					bit_depth,
+					cursor + sizeof(*data));
+			}
+			
+		}
+		// If block if is not known, just skip it
+		else {
+			struct WAVE_generic_block_header *block =
+				(struct WAVE_generic_block_header *)cursor;
+			//skip bext block
+			cursor +=
+				(sizeof(*block) + block->block_size);
+		}
+	}
+
+	// end of file have been reached without reading audio data !
+	return NULL;
 }
 
 wav_t * wav_zero(
@@ -302,7 +396,5 @@ double wav_get_value(
 		return 0.0;
 	}
 }
-
-
 
 /////
