@@ -7,6 +7,9 @@
 
 #include "wav.h"
 
+#define WAVE_FORMAT_PCM 0x0001u
+#define WAVE_FORMAT_IEEE_FLOAT 0x0003u
+
 // Trick from gist.github.com/PhilCK/1534763
 #ifdef __GNUC__
 #define PACKED(struct_decl) struct_decl __attribute__((__packed__))
@@ -32,23 +35,22 @@ struct WAVE_file_header
 });
 
 PACKED(
+struct WAVE_generic_block_header
+{
+	uint8_t block_id[4];
+	uint32_t block_size;
+});
+
+PACKED(
 struct WAVE_format_block
 {
-	uint8_t format_block_id[4]; // "fmt "
-	uint32_t block_size_m16;
+	struct WAVE_generic_block_header header;
 	uint16_t format_id;
 	uint16_t channel_count;
 	uint32_t sample_rate;
 	uint32_t byte_per_sec;
 	uint16_t byte_per_block;
 	uint16_t bit_per_sample;
-});
-
-PACKED(
-struct WAVE_generic_block_header
-{
-	uint8_t block_id[4];
-	uint32_t block_size;
 });
 
 
@@ -119,13 +121,13 @@ int wav_save(
 
 	// --
 
-	format_block.format_block_id[0] = 'f';
-	format_block.format_block_id[1] = 'm';
-	format_block.format_block_id[2] = 't';
-	format_block.format_block_id[3] = ' ';
+	format_block.header.block_id[0] = 'f';
+	format_block.header.block_id[1] = 'm';
+	format_block.header.block_id[2] = 't';
+	format_block.header.block_id[3] = ' ';
 
-	format_block.block_size_m16 = 16;
-	format_block.format_id = 1; // pcm
+	format_block.header.block_size = 16;
+	format_block.format_id = WAVE_FORMAT_PCM;
 	format_block.channel_count = wav->channel_count;
 	format_block.sample_rate = wav->sample_rate;
 	format_block.byte_per_sec = (bit_depth / 8) * wav->channel_count * wav->sample_rate;
@@ -188,7 +190,8 @@ static wav_t *wav_from_raw_data(
 	const unsigned int sample_rate,
 	const unsigned int channel_count,
 	const unsigned int bit_depth,
-	const uint8_t *data)
+	const uint16_t wav_format,
+	const void *raw_data)
 {
 	wav_t *wav = (wav_t *)malloc(sizeof(wav_t));
 
@@ -198,26 +201,46 @@ static wav_t *wav_from_raw_data(
 
 	wav_alloc(wav);
 
-	const unsigned nb_octet = bit_depth / 8;
-	const unsigned int block_max = (1u << (bit_depth - 1)) - 1;
-	int block;
+	if (wav_format == WAVE_FORMAT_PCM) {
+		const uint8_t *data = (uint8_t*)raw_data;
+		const unsigned nb_octet = bit_depth / 8;
+		const unsigned int block_max = (1u << (bit_depth - 1)) - 1;
+		int block;
 
-	for (unsigned int i = 0; i < wav->sample_count; i++)
-	{
-		for (unsigned int j = 0; j < wav->channel_count; j++)
-		{
-			block = 0;
+		for (unsigned int i = 0; i < wav->sample_count; i++) {
+			for (unsigned int j = 0; j < wav->channel_count; j++) {
+				block = 0;
 
-			for (unsigned int k = 0; k < nb_octet; k++)
-				block |= data[nb_octet * (i * wav->channel_count + j) + k] << (k * 8);
+				for (unsigned int k = 0; k < nb_octet; k++)
+					block |= data[nb_octet * (i * wav->channel_count + j) + k] << (k * 8);
 
-			if ((data[nb_octet * (i * wav->channel_count + j) + nb_octet - 1] & 0x80) != 0)
-			{ // Le block est negatif
-				for (unsigned int k = nb_octet; k < 4; k++)
-					block |= 0xFF << (k * 8);
+				if ((data[nb_octet * (i * wav->channel_count + j) + nb_octet - 1] & 0x80) != 0) { // Le block est negatif
+					for (unsigned int k = nb_octet; k < 4; k++)
+						block |= 0xFF << (k * 8);
+				}
+
+				wav->data[j][i] = (double)block / (double)block_max;
 			}
+		}
+	}
+	else if (wav_format == WAVE_FORMAT_IEEE_FLOAT) {
+		const float *data = (float*)raw_data;
 
-			wav->data[j][i] = (double)block / (double)block_max;
+		if (bit_depth == 32) { // 32 bit floating point number : float
+			const float *data = (float*)raw_data;
+			for (unsigned int i = 0; i < wav->sample_count; i++) {
+				for (unsigned int j = 0; j < wav->channel_count; j++) {
+					wav->data[j][i] = (double)(data[j + i * wav->channel_count]);
+				}
+			}
+		}
+		else if (bit_depth == 64) { // 64 bit floating point number : double
+			const double *data = (double*)raw_data;
+			for (unsigned int i = 0; i < wav->sample_count; i++) {
+				for (unsigned int j = 0; j < wav->channel_count; j++) {
+					wav->data[j][i] = data[j + i * wav->channel_count];
+				}
+			}
 		}
 	}
 
@@ -262,7 +285,7 @@ wav_t *wav_load(const char *path)
 
 	//
 	int got_format_block = 0;
-	int bit_depth, channel_count, sample_rate, byte_per_block;
+	int bit_depth, channel_count, sample_rate, byte_per_block, format_id;
 
 	while (cursor < file_data + file_data_size) {
 		
@@ -271,49 +294,60 @@ wav_t *wav_load(const char *path)
 			
 			if (got_format_block) {
 				//	There shouldnt be 2 format block
-				return NULL;
+				break;
 			}
 			else {
 				struct WAVE_format_block *fmt =
 					(struct WAVE_format_block *)cursor;
 				got_format_block = 1;
 
-				//	Get format info
+				//	check and get format info
+				
+				if (fmt->format_id != WAVE_FORMAT_PCM && 
+					fmt->format_id != WAVE_FORMAT_IEEE_FLOAT)
+					break;	//	Format not handled
+				
+				format_id = fmt->format_id;
 				channel_count = fmt->channel_count;
 				sample_rate = fmt->sample_rate;
 				bit_depth = fmt->bit_per_sample;
 				byte_per_block = fmt->byte_per_block;
 
-				cursor += (sizeof(*fmt));
+				cursor += (sizeof(fmt->header) + fmt->header.block_size);
 			}
 		}
 		// data block : if format block have been read, then read data
 		else if (strncmp(cursor, "data", 4) == 0) {
 			
 			if (got_format_block) {
-				struct WAVE_generic_block_header *data =
+				struct WAVE_generic_block_header *data_header =
 					(struct WAVE_generic_block_header *)cursor;
 
-				return wav_from_raw_data(
-					data->block_size / byte_per_block,
+				wav_t *wav = wav_from_raw_data(
+					data_header->block_size / byte_per_block,
 					sample_rate,
 					channel_count,
 					bit_depth,
-					cursor + sizeof(*data));
+					format_id,
+					cursor + sizeof(*data_header));
+
+				free(file_data);
+				return wav;
 			}
 			
 		}
 		// If block if is not known, just skip it
 		else {
-			struct WAVE_generic_block_header *block =
+			struct WAVE_generic_block_header *block_header =
 				(struct WAVE_generic_block_header *)cursor;
 			//skip bext block
 			cursor +=
-				(sizeof(*block) + block->block_size);
+				(sizeof(*block_header) + block_header->block_size);
 		}
 	}
 
 	// end of file have been reached without reading audio data !
+	free(file_data);
 	return NULL;
 }
 
