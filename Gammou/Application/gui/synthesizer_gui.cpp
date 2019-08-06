@@ -189,7 +189,14 @@ namespace Gammou {
 								Persistence::file_input_stream stream{ path };
 								Persistence::gammou_file<Persistence::gammou_state>::load(stream, state);
 								load_state(state);
-							}catch(...){}
+							}
+							catch (std::exception& e) {
+								DEBUG_PRINT("Failed to load preset '%s' : %s\n", path.c_str(), e.what());
+							}
+							catch(...)
+							{
+								DEBUG_PRINT("Failed to load preset '%s' : Unknown Exception\n");
+							}
 						}
 
 						self->set_enabled(true);
