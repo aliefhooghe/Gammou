@@ -31,7 +31,7 @@ sampler_component::sampler_component(
 	wav_t *sample,
 	const std::string& sample_path,
 	const unsigned int channel_count)
-	: sound_component("sampler", 2, 1, channel_count),
+	: sound_component("sampler", 2, wav_get_channel_count(sample), channel_count),
 		m_sample_path(sample_path),
 		m_current_pos(this),
 		m_sample(sample)
@@ -68,7 +68,10 @@ void sampler_component::process(const double input[])
 	const double pos = 
 		m_current_pos + input[1];
 
-	m_output[0] = wav_get_value(m_sample, pos, 0);
+	const auto channel_count = wav_get_channel_count(m_sample);
+	for (auto channel = 0u; channel < channel_count; ++channel)
+		m_output[channel] = wav_get_value(m_sample, pos, channel);
+
 	m_current_pos += input[0] * get_sample_duration();
 }
 
