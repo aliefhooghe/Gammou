@@ -33,8 +33,6 @@ set(SYNTHESIZER_BUILTIN_COMPONENTS_SRC
 	builtin_components/builtin_components_ids.h
 	builtin_components/adsr_env.h
 	builtin_components/adsr_env.cpp
-	builtin_components/lp2.h
-	builtin_components/lp2.cpp
 	builtin_components/invert.h
 	builtin_components/invert.cpp
 	builtin_components/filter_order2.h
