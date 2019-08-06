@@ -12,6 +12,7 @@ namespace Gammou {
             constexpr auto Function     = "Function";
             constexpr auto Noise        = "Noise";
             constexpr auto Oscillator   = "Oscillator";
+			constexpr auto Physical		= "Physical";
         }
 
     } /* Sound */
