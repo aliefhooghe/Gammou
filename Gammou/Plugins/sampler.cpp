@@ -1,5 +1,5 @@
 
-
+#include <cstring> // memcpy
 #include "plugin_helper.h"
 #include "wav.h"
 
