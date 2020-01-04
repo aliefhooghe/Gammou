@@ -13,16 +13,18 @@ namespace Gammou {
 
 		polyphonic_circuit_midi_input::polyphonic_circuit_midi_input(const unsigned int channel_count)
 			: polyphonic_sound_component("Midi In", 0, Input::COUNT, channel_count),
-			m_gate_state(channel_count),
-			m_pitch(channel_count),
-			m_attack_velocity(channel_count),
-			m_release_velocity(channel_count)
+			m_gate_state(channel_count, 0.),
+			m_pitch(channel_count, 0.),
+			m_attack_velocity(channel_count, 0.),
+			m_release_velocity(channel_count, 0.),
+			m_aftertouch_presure(channel_count, 0.)
 		{
 			// Naming
 			set_output_name("Gate", 0);
 			set_output_name("Pitch", 1);
 			set_output_name("Attack", 2);
 			set_output_name("Release", 3);
+			set_output_name("Aftertouch", 4);
 		}
 
 		polyphonic_circuit_midi_input::~polyphonic_circuit_midi_input()
@@ -50,6 +52,10 @@ namespace Gammou {
 			case Input::RELEASE_VELOCITY:
 				return m_release_velocity[channel];
 				break;
+
+			case Input::AFTERTOUCH_PRESURE:
+				return m_aftertouch_presure[channel];
+				break;
 			}
 
 			return 0.0; // pour le compilo
@@ -75,7 +81,10 @@ namespace Gammou {
 			m_release_velocity[channel] = velocity;
 		}
 
-
+		void polyphonic_circuit_midi_input::set_aftertouch_presure(const unsigned int channel, const double presure)
+		{
+			m_aftertouch_presure[channel] = presure;
+		}
 
 
 		/*
@@ -83,7 +92,7 @@ namespace Gammou {
 		*/
 
 		polyphonic_circuit_output::polyphonic_circuit_output(std::vector<double>& output_buffer)
-			: 
+			:
 			abstract_sound_component("Master In", static_cast<unsigned int>(output_buffer.size()), 0),
 			m_buffer_ptr(output_buffer.data()),
 			m_last_out_was_zero(false)
@@ -183,6 +192,11 @@ namespace Gammou {
 		void polyphonic_circuit::set_channel_release_velocity(const unsigned int channel, const double velocity)
 		{
 			m_midi_input.set_channel_release_velocity(channel, velocity);
+		}
+
+		void polyphonic_circuit::set_aftertouch_presure(const unsigned int channel, const double presure)
+		{
+			m_midi_input.set_aftertouch_presure(channel, presure);
 		}
 
 

@@ -39,9 +39,10 @@ namespace Gammou {
 			void process(const double input[], double output[]);
 			void set_master_volume(const double volume_order); // smoothing is applied by master circuit
 
-			// Midi note : 
+			// Midi events :
 			void send_note_on(const unsigned int midi_note, const double velocity);
 			void send_note_off(const unsigned int midi_note, const double velocity);
+			void send_aftertouch(const unsigned int midi_note, const double presure);
 
             //  Keyboard Mode
             void set_keyboard_mode(const keyboard_mode mode);
@@ -80,12 +81,14 @@ namespace Gammou {
 		private:
 			unsigned int get_new_channel();
             unsigned int get_running_channel_count();
+			unsigned int get_channel_by_note(const unsigned int midi_note);
+
 			void free_channel(const std::vector<unsigned int>::iterator& it);
 
 			// Circuits
 			master_circuit m_master_circuit;
 			polyphonic_circuit m_polyphonic_circuit;
-			
+
 			// Channels allocation
 			std::vector<unsigned int> m_channels;
 			std::vector<unsigned int>::iterator m_running_channels_end;

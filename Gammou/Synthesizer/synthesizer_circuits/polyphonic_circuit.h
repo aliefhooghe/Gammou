@@ -15,7 +15,13 @@ namespace Gammou {
 
 		class polyphonic_circuit_midi_input : public polyphonic_sound_component {
 
-			enum Input : unsigned int {GATE = 0, PITCH = 1, ATTACK_VELOCITY = 2, RELEASE_VELOCITY = 3, COUNT = 4};
+			enum Input : unsigned int {
+				GATE = 0,
+				PITCH,
+				ATTACK_VELOCITY,
+				RELEASE_VELOCITY,
+				AFTERTOUCH_PRESURE,
+				COUNT};
 
 		public:
 			polyphonic_circuit_midi_input(const unsigned int channel_count);
@@ -28,15 +34,17 @@ namespace Gammou {
 			void set_channel_pitch(const unsigned int channel, const double pitch);
 			void set_channel_attack_velocity(const unsigned int channel, const double velocity);
 			void set_channel_release_velocity(const unsigned int channel, const double velocity);
+			void set_aftertouch_presure(const unsigned int channel, const double presure);
 
 		private:
 			std::vector<bool> m_gate_state;
 			std::vector<double> m_pitch;
 			std::vector<double> m_attack_velocity;
 			std::vector<double> m_release_velocity;
+			std::vector<double> m_aftertouch_presure;
 		};
 
-		
+
 		class polyphonic_circuit_output : public abstract_sound_component {
 
 		public:
@@ -45,7 +53,7 @@ namespace Gammou {
 
 			void process(const double input[]) override;
 			double fetch_output(const unsigned int output_id) override {return 0.0;}  // a stub
-			
+
 			inline void reset_zero_flag() { m_last_out_was_zero = true;  }
 			bool last_out_was_zero() const;
 
@@ -80,6 +88,7 @@ namespace Gammou {
 			void set_channel_pitch(const unsigned int channel, const double pitch);
 			void set_channel_attack_velocity(const unsigned int channel, const double velocity);
 			void set_channel_release_velocity(const unsigned int channel, const double velocity);
+			void set_aftertouch_presure(const unsigned int channel, const double presure);
 
 		private:
 			polyphonic_circuit_midi_input m_midi_input;

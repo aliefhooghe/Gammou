@@ -31,7 +31,7 @@ namespace Gammou {
 				polyphonic_to_master_count,
 				master_circuit_processor),
 			m_polyphonic_circuit(
-				&m_master_circuit, 
+				&m_master_circuit,
 				channel_count,
 				polyphonic_circuit_processor),
 			m_channels(channel_count),
@@ -92,7 +92,7 @@ namespace Gammou {
 
 			if (m_keyboard_mode == keyboard_mode::POLYPHONIC ||
 				get_running_channel_count() == 0) {
-				
+
 				//	No free channels anymore
 				if ((channel = get_new_channel()) == INVALID_CHANNEL)
 					return;
@@ -104,30 +104,36 @@ namespace Gammou {
 			}
 
 			m_channels_midi_note[channel] = midi_note;
-			
+
 			m_polyphonic_circuit.set_channel_pitch(channel, m_note_frequencies[midi_note]);
 			m_polyphonic_circuit.set_channel_attack_velocity(channel, velocity);
 			m_polyphonic_circuit.set_channel_gate_state(channel, true);
 
 			// default reelase value (avoid undetermined component behavior)
+			m_polyphonic_circuit.set_channel_release_velocity(channel, 0.0);
 			m_polyphonic_circuit.set_channel_release_velocity(channel, 0.5);
 
-			m_channels_lifetime[channel] = m_channel_zero_sample_count;   
+			m_channels_lifetime[channel] = m_channel_zero_sample_count;
 		}
 
 		void synthesizer::send_note_off(const unsigned int midi_note, const double velocity)
 		{
-            //  TODO use map
-			for(auto it = m_channels.begin(); it != m_running_channels_end; ++it){
-				const unsigned int channel = *it;
+			auto channel = get_channel_by_note(midi_note);
 
-				if( m_channels_midi_note[channel] == midi_note ) {
-					//DEBUG_PRINT("off: %d\n", channel);
-					m_channels_midi_note[channel] = NO_NOTE;
-					m_polyphonic_circuit.set_channel_release_velocity(channel, velocity);
-					m_polyphonic_circuit.set_channel_gate_state(channel, false);
-					return;
-				}
+			if (channel != INVALID_CHANNEL) {
+				//DEBUG_PRINT("off: %d\n", channel);
+				m_channels_midi_note[channel] = NO_NOTE;
+				m_polyphonic_circuit.set_channel_release_velocity(channel, velocity);
+				m_polyphonic_circuit.set_channel_gate_state(channel, false);
+			}
+		}
+
+		void synthesizer::send_aftertouch(const unsigned int midi_note, const double presure)
+		{
+			auto channel = get_channel_by_note(midi_note);
+
+			if (channel != INVALID_CHANNEL) {
+				m_polyphonic_circuit.set_aftertouch_presure(channel, presure);
 			}
 		}
 
@@ -161,13 +167,13 @@ namespace Gammou {
 			}
 
 			//	--
-			m_polyphonic_circuit.add_sound_component(component);		
+			m_polyphonic_circuit.add_sound_component(component);
 		}
 
 		void synthesizer::set_sample_rate(const double sample_rate)
 		{
 			DEBUG_PRINT("Synthesizer Set Sample Rate %lf\n", sample_rate);
-			m_channel_zero_sample_count = 
+			m_channel_zero_sample_count =
 				(static_cast<unsigned int>(sample_rate * m_channel_zero_lifetime));
 			m_master_circuit.set_sample_rate(sample_rate);
 			m_polyphonic_circuit.set_sample_rate(sample_rate);
@@ -259,6 +265,18 @@ namespace Gammou {
                 static_cast<unsigned int>(
                         m_running_channels_end - m_channels.begin());
         }
+
+		unsigned int synthesizer::get_channel_by_note(const unsigned int midi_note)
+		{
+			for(auto it = m_channels.begin(); it != m_running_channels_end; ++it){
+				const unsigned int channel = *it;
+
+				if( m_channels_midi_note[channel] == midi_note)
+					return channel;
+			}
+
+			return INVALID_CHANNEL;
+		}
 
 		void synthesizer::free_channel(const std::vector<unsigned int>::iterator& it)
 		{
