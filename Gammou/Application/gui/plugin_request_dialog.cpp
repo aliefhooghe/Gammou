@@ -7,26 +7,26 @@ namespace Gammou {
 
         request_widget::request_widget(
             const Sound::request& request,
-            const int x, const int y, 
+            const int x, const int y,
             const unsigned int width,
             const unsigned int height)
         :   View::panel<>(x, y, width, height, View::cl_lightgrey)
         {
             add_widget(
                 std::make_unique<View::label>
-                    (request.name, 
-                        0, 0, 
+                    (request.name,
+                        0, 0,
                         width / 2,
                         height));
         }
 
         range_request_widget::range_request_widget(
             const Sound::request& request,
-            const int x, const int y, 
+            const int x, const int y,
             const unsigned int width)
         :   request_widget(request, x, y, width, 30)
         {
-            //const Sound::range_request& req = 
+            //const Sound::range_request& req =
             //    std::get<range_request>(request.req);
         }
 
@@ -37,16 +37,16 @@ namespace Gammou {
 
         choice_request_widget::choice_request_widget(
             const Sound::request& request,
-            const int x, const int y, 
+            const int x, const int y,
             const unsigned int width)
         :   request_widget(request, x, y, width, 30)
         {
-            const Sound::choice_request& req = 
+            const Sound::choice_request& req =
                 std::get<Sound::choice_request>(request.req);
-            const unsigned int choice_count = 
+            const unsigned int choice_count =
                 req.choices.size();
 
-            auto listbox = 
+            auto listbox =
                 std::make_unique<View::list_box>(
                     width / 2, 0,
                     width / 2, choice_count * 20,
@@ -64,7 +64,7 @@ namespace Gammou {
 
         Sound::answer choice_request_widget::get_answer()
         {
-            const int ret = 
+            const int ret =
                 m_listbox->get_selected_item();
 
             if (ret < 0)
@@ -75,12 +75,12 @@ namespace Gammou {
 
         path_request_widget::path_request_widget(
             const Sound::request& request,
-            const int x, const int y, 
+            const int x, const int y,
             const unsigned int width)
         :   request_widget(request, x, y, width, 30),
-                m_dialog("/home/liefhooghe/Musique")
+                m_dialog("/home/aliefhooghe/Musique")
         {
-            //const Sound::path_request& req = 
+            //const Sound::path_request& req =
             //    std::get<path_request>(request.req);
 
             add_widget(
@@ -119,31 +119,31 @@ namespace Gammou {
                 std::unique_ptr<request_widget> widget;
 
                 if (std::holds_alternative<Sound::range_request>(request.req)) {
-                    widget = 
+                    widget =
                         std::make_unique<range_request_widget>(
                             request,
                                 0, y,
                                 get_width());
                 }
                 else if (std::holds_alternative<Sound::choice_request>(request.req)) {
-                    widget = 
+                    widget =
                         std::make_unique<choice_request_widget>(
                             request,
                             0, y,
                             get_width());
                 }
-                else { // path 
-                    widget = 
+                else { // path
+                    widget =
                         std::make_unique<path_request_widget>(
                             request,
-                            0, y, 
+                            0, y,
                             get_width());
                 }
 
                 y += widget->get_height();
                 m_requests.push_back(widget.get());
                 add_widget(std::move(widget));
-            } 
+            }
 
             //  Add Validation button
 
@@ -157,20 +157,20 @@ namespace Gammou {
                     0, y + 2,
                     get_width(),
                     30));
-            
+
             resize(get_width(), y + 30 + 3);
         }
 
         std::unique_ptr<Sound::answer_form> plugin_request_dialog::get_answer_form()
         {
-            auto form = 
+            auto form =
                 std::make_unique<Sound::answer_form>
                     (Sound::answer_list{});
             auto& l = std::get<Sound::answer_list>(*form);
 
             for(auto request : m_requests)
                 l.push_back(request->get_answer());
-        
+
             return std::move(form);
         }
 

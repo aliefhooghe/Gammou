@@ -77,7 +77,7 @@ namespace Gammou {
 
             constexpr float component_socket_radius = 3.0;
             constexpr float focused_component_socket_radius = 4.0;
-			
+
             constexpr float link_width = 2.5;
 
 			/* Main Gui */
@@ -92,7 +92,7 @@ namespace Gammou {
 
             constexpr unsigned int main_gui_component_choice_box_width = 2 * main_gui_size_unit;
             constexpr unsigned int main_gui_component_choice_box_height = main_gui_height - main_gui_toolbox_height;
-			
+
 #ifdef _WIN32
             constexpr unsigned int main_gui_component_choice_box_font_size = 12;
 #else

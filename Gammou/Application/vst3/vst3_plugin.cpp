@@ -17,10 +17,10 @@ namespace Gammou {
 			m_master_circuit_processor(),
 			m_polyphonic_circuit_processor(),
 			m_synthesizer(
-				m_master_circuit_processor, 
-				m_polyphonic_circuit_processor, 
-				GAMMOU_VST3_INPUT_COUNT, 
-				GAMMOU_VST3_OUTPUT_COUNT, 
+				m_master_circuit_processor,
+				m_polyphonic_circuit_processor,
+				GAMMOU_VST3_INPUT_COUNT,
+				GAMMOU_VST3_OUTPUT_COUNT,
 				GAMMOU_VST3_CHANNEL_COUNT,
 				GAMMOU_VST3_PARAMETER_COUNT),
 			m_gui(&m_synthesizer, &m_synthesizer_mutex, *this),
@@ -48,7 +48,7 @@ namespace Gammou {
 
 		Steinberg::tresult PLUGIN_API Plugin::initialize(FUnknown * context)
 		{
-			const Steinberg::tresult result = 
+			const Steinberg::tresult result =
 				SingleComponentEffect::initialize(context);
 
 			if (result != Steinberg::kResultOk)
@@ -64,7 +64,7 @@ namespace Gammou {
 			addEventInput(USTRING("Midi Input"), 1); // 1 channel
 
 			// Create Parameter inputs
-			const auto parameter_count = 
+			const auto parameter_count =
 				m_synthesizer.get_parameter_input_count();
 			for (unsigned int i = 0; i < parameter_count; ++i) {
 				const std::string param_name = ("Parameter " + std::to_string(i));
@@ -89,7 +89,7 @@ namespace Gammou {
 
 		Steinberg::tresult PLUGIN_API Plugin::canProcessSampleSize(Steinberg::int32 symbolicSampleSize)
 		{
-			return 
+			return
 			(	symbolicSampleSize == Steinberg::Vst::kSample64 ||
 				symbolicSampleSize == Steinberg::Vst::kSample32) ?
 				Steinberg::kResultTrue : Steinberg::kResultFalse;
@@ -117,7 +117,7 @@ namespace Gammou {
 
 			if (param_changes != nullptr) {
 				const unsigned int changed_param_count = param_changes->getParameterCount();
-				
+
 				for (unsigned int i = 0; i < changed_param_count; ++i) {
 					Steinberg::Vst::IParamValueQueue *const param_data = param_changes->getParameterData(i);
 
@@ -127,7 +127,7 @@ namespace Gammou {
 						Steinberg::int32 sample_offset;
 						double value;
 						// For le moment, only the last point
-						
+
 						DEBUG_PRINT("Parameter data : id = %u, %u values : \n", param_id, data_count);
 
 						for (unsigned int i = 0; i < data_count; ++i) {
@@ -138,7 +138,7 @@ namespace Gammou {
 						}
 
 
-						if (Steinberg::kResultTrue == 
+						if (Steinberg::kResultTrue ==
 							param_data->getPoint(data_count - 1, sample_offset, value))
 							m_synthesizer.set_parameter_value(value, param_id);
 					}
@@ -155,7 +155,7 @@ namespace Gammou {
 					Steinberg::Vst::Event event;
 
 					if (Steinberg::kResultOk == event_list->getEvent(i, event)) {
-						
+
 						//	TODO
 						//	event.sampleOffset
 
@@ -187,7 +187,7 @@ namespace Gammou {
 
 			double input[2];
 			double output[2];
-				
+
 			if (processSetup.symbolicSampleSize == Steinberg::Vst::kSample32) { // 32 bits
 				float *output_buffer_left = data.outputs[0].channelBuffers32[0];
 				float *output_buffer_right = data.outputs[0].channelBuffers32[1];
@@ -195,14 +195,14 @@ namespace Gammou {
 				float *input_buffer_left = data.inputs[0].channelBuffers32[0];
 				float *input_buffer_right = data.inputs[0].channelBuffers32[1];
 
-				for (unsigned int i = 0; i < nb_samples; 
+				for (unsigned int i = 0; i < nb_samples;
 					++i, ++output_buffer_left, ++output_buffer_right, ++input_buffer_left, ++input_buffer_right) {
 
 					input[0] = static_cast<double>(*input_buffer_left);
 					input[1] = static_cast<double>(*input_buffer_right);
 
 					m_synthesizer.process(input, output);
-					
+
 					*output_buffer_left = static_cast<float>(output[0]);
 					*output_buffer_right = static_cast<float>(output[1]);
 				}
@@ -215,7 +215,7 @@ namespace Gammou {
 				double *input_buffer_left = data.inputs[0].channelBuffers64[0];
 				double *input_buffer_right = data.inputs[0].channelBuffers64[1];
 
-				for (unsigned int i = 0; i < nb_samples; 
+				for (unsigned int i = 0; i < nb_samples;
 					++i, ++output_buffer_left, ++output_buffer_right, ++input_buffer_left, ++input_buffer_right) {
 
 					input[0] = *input_buffer_left;
@@ -265,10 +265,10 @@ namespace Gammou {
 					//	Inform host of new parameters value
 					const auto state_param_count =
 						state.parameters.size();
-						
+
 					for (unsigned int i = 0; i < GAMMOU_VST3_PARAMETER_COUNT; ++i) {
 						double param_value = 0;
-						
+
 						if (i < state_param_count)
 							param_value = state.parameters[i];
 
@@ -318,7 +318,7 @@ namespace Gammou {
 		double Plugin::get_parameter_value(const unsigned int index)
 		{
 			if (index < GAMMOU_VST3_PARAMETER_COUNT)
-				getParamNormalized(index);
+				return getParamNormalized(index);
 			else
 				throw std::range_error("Invalid backend parameter index");
 		}

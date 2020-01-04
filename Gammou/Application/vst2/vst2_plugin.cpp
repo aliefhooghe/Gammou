@@ -3,7 +3,7 @@
 
 
 namespace Gammou  {
-    
+
     namespace VST2 {
 
         plugin::plugin(audioMasterCallback master)
@@ -40,7 +40,7 @@ namespace Gammou  {
             m_aeffect->numInputs = GAMMOU_VST2_INPUT_COUNT;
             m_aeffect->numOutputs = GAMMOU_VST2_OUTPUT_COUNT;
 
-            m_aeffect->flags = 
+            m_aeffect->flags =
                 effFlagsHasEditor         |
                 effFlagsCanReplacing      |
                 effFlagsProgramChunks     |
@@ -59,7 +59,7 @@ namespace Gammou  {
 			m_aeffect->version = kVstVersion;
             m_aeffect->processReplacing = process_replacing_proc;
             m_aeffect->processDoubleReplacing = process_double_replacing_proc;
-        
+
 			//	Initialize window rect
 			m_window_rect.left = 0;
 			m_window_rect.right = m_display.get_display_width();
@@ -170,11 +170,11 @@ namespace Gammou  {
         }
 
         intptr_t plugin::dispatcher_proc(
-            AEffect *fx, 
-            int32_t opcode, 
-            int32_t index, 
-            intptr_t value, 
-            void *ptr, 
+            AEffect *fx,
+            int32_t opcode,
+            int32_t index,
+            intptr_t value,
+            void *ptr,
             float opt)
         {
             plugin *self = (plugin*)(fx->user);
@@ -244,7 +244,7 @@ namespace Gammou  {
 					VstEvent **events =
 						list->events;
 
-					for (unsigned int i = 0; i < event_count; ++i) 
+					for (unsigned int i = 0; i < event_count; ++i)
 						self->handle_event(*(events[i]));
 				}
                     break;
@@ -261,7 +261,7 @@ namespace Gammou  {
                     DEBUG_PRINT("effCanDo '%s' ?\n", (char*)ptr);
 					return 1;
                     break;
-                
+
                 case effGetNumMidiInputChannels:
                     DEBUG_PRINT("effGetNumMidiInputChannels received\n");
                     return 1;
@@ -277,21 +277,26 @@ namespace Gammou  {
 					return self->m_display.on_effEditKeyUp(index, value);
 					break;
 
+                case effEditMouse:
+                    DEBUG_PRINT("effEditMouse\n");
+                    return 1;
+                    break;
+
 				case effEditKey:
 					DEBUG_PRINT("effEditKey\n");
 					return 1;
 					break;
 
                 default:
-                   // DEBUG_PRINT("Unknown VST opcode : %u\n", opcode);
-                   break;
+                    DEBUG_PRINT("Unknown VST opcode : %u\n", opcode);
+                    break;
             }
 
             return 0u;
         }
 
         void plugin::set_parameter_proc(
-            AEffect *fx, 
+            AEffect *fx,
             int32_t index,
             float value)
         {
@@ -354,26 +359,26 @@ namespace Gammou  {
 		//	Raw data source implementation
 
 		raw_data_source::raw_data_source(
-			const void *raw_data, 
+			const void *raw_data,
 			const unsigned int size_limit)
 			:	m_begin((uint8_t*)raw_data),
 				m_size_limit(size_limit),
 				m_cursor(0)
 		{
 		}
-		
+
 		raw_data_source::~raw_data_source()
 		{
 		}
 
 		bool raw_data_source::seek(
-			const int offset, 
+			const int offset,
 			Sound::abstract_data_stream::seek_mode mode)
 		{
 			using seek_mode = Sound::data_input_stream::seek_mode;
 
 			int new_cursor;
-			
+
 			switch (mode) {
 
 				case seek_mode::CURRENT:
@@ -387,8 +392,8 @@ namespace Gammou  {
 					break;
 
 				case seek_mode::END:
-					new_cursor = 
-						static_cast<int>(m_size_limit) + 
+					new_cursor =
+						static_cast<int>(m_size_limit) +
 						offset;
 					break;
 
@@ -403,14 +408,14 @@ namespace Gammou  {
 				return false;
 			}
 		}
-		
+
 		unsigned int raw_data_source::tell()
 		{
 			return m_cursor;
 		}
 
 		unsigned int raw_data_source::read(
-			void *data, 
+			void *data,
 			const unsigned int size)
 		{
 			const int new_cursor =

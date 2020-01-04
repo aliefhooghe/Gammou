@@ -45,15 +45,15 @@ namespace Gammou {
 
 		public:
 			label(
-				const std::string& text, 
-				const int x, const int y, 
-				const unsigned int width, 
+				const std::string& text,
+				const int x, const int y,
+				const unsigned int width,
 				const unsigned int height,
 				const color color = cl_black,
 				const unsigned int font_size = 10);
 
 			label(
-				const std::string& text, 
+				const std::string& text,
 				const rectangle& rect,
 				const color color = cl_black,
 				const unsigned int font_size = 10);
@@ -76,13 +76,13 @@ namespace Gammou {
 		// Todo : Rien de control utilis� (Enabled)
 		class push_button : public control {
 
-		public: 
+		public:
 			push_button(
-				std::function<void(push_button*)> push_action, 
-				const std::string& text, 
-				const int x, const int y, 
-				const unsigned int width = 95, 
-				const unsigned int height = 27, 
+				std::function<void(push_button*)> push_action,
+				const std::string& text,
+				const int x, const int y,
+				const unsigned int width = 95,
+				const unsigned int height = 27,
 				const unsigned int font_size = 10,
 				const color pushed_color = cl_darkgray,
 				const color backgound_color = cl_darkblue,
@@ -97,7 +97,7 @@ namespace Gammou {
 			virtual bool on_mouse_exit(void) override;
 
 			void set_text(const std::string& text);
-		
+
 		protected:
 			virtual void draw(cairo_t *cr) override;
 			bool is_pushed(void) const;
@@ -117,15 +117,15 @@ namespace Gammou {
 		class knob : public control {
 
 		public:
-			knob(std::function<void(knob *)> change_action, 
-				const int x, const int y, 
+			knob(std::function<void(knob *)> change_action,
+				const int x, const int y,
 				const unsigned int size = 50);
 
 			virtual ~knob() {}
 
 			virtual void draw(cairo_t *cr) override;
 			virtual bool on_mouse_drag(
-				const mouse_button button, 
+				const mouse_button button,
 				const int x, const int y,
 				const int dx, const int dy) override;
 
@@ -137,7 +137,7 @@ namespace Gammou {
 
 			void set_on_color(const color c);
 			void set_off_color(const color c);
-			
+
 		private:
 			void on_change(const float angle_change);
 
@@ -162,7 +162,7 @@ namespace Gammou {
 					std::function<void(slider&)> change_action,
 					const int x, const int y,
 					const unsigned int width,
-					const color on_color = cl_blueviolet, 
+					const color on_color = cl_blueviolet,
 					const color off_color = cl_lightgrey);
 
 				slider(slider&) = delete;
@@ -171,21 +171,21 @@ namespace Gammou {
 
 				virtual void draw(cairo_t *cr) override;
 				virtual bool on_mouse_drag(
-					const mouse_button button, 
+					const mouse_button button,
 					const int x, const int y,
 					const int dx, const int dy) override;
 
 				virtual bool on_mouse_drag_start(
-					const mouse_button button, 
+					const mouse_button button,
 					const int x, const int y) override;
 				virtual bool on_mouse_drag_end(
-					const mouse_button button, 
+					const mouse_button button,
 					const int x, const int y) override;
 				virtual bool on_mouse_button_down(
-					const mouse_button button, 
+					const mouse_button button,
 					const int x, const int y) override;
 				virtual bool on_mouse_button_up(
-					const mouse_button button, 
+					const mouse_button button,
 					const int x, const int y) override;
 
 				virtual bool on_mouse_wheel(const float distance) override;
@@ -197,7 +197,7 @@ namespace Gammou {
 				void change_cursor_value(const int new_value);
 
 				std::function<void(slider&)> m_change_action;
-				
+
 				unsigned int m_cursor;
 				unsigned int m_cursor_max;
 

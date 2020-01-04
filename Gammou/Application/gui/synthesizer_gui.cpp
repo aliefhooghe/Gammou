@@ -19,11 +19,11 @@ namespace Gammou {
 	namespace Gui {
 
 		synthesizer_gui::synthesizer_gui(
-			Sound::synthesizer * synthesizer, 
+			Sound::synthesizer * synthesizer,
 			std::mutex * synthesizer_mutex,
 			AudioBackend::abstract_audio_backend& backend)
 		:	View::window_widget(
-				GuiProperties::main_gui_width, 
+				GuiProperties::main_gui_width,
 				GuiProperties::main_gui_height,
 				View::cl_chartreuse), // for gui debuging
 			m_synthesizer(*synthesizer),
@@ -33,13 +33,13 @@ namespace Gammou {
 
 			//  Synthesizer Circuits
 
-			auto master_circuit = 
+			auto master_circuit =
 				std::make_unique<gui_master_circuit>(
                     m_gui_component_factory, synthesizer, synthesizer_mutex,
 					0, 0, GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height);
             m_gui_master_circuit = master_circuit.get();
 
-			auto polyphonic_circuit = 
+			auto polyphonic_circuit =
 				std::make_unique<gui_polyphonic_circuit>(
                     m_gui_component_factory, synthesizer, synthesizer_mutex,
 					0, 0, GuiProperties::main_gui_circuit_width, GuiProperties::main_gui_circuit_height);
@@ -82,9 +82,9 @@ namespace Gammou {
 
             auto selector =
                 std::make_unique<component_selector>(
-					0, GuiProperties::main_gui_toolbox_height - 2, 
-					GuiProperties::main_gui_component_choice_box_width, 
-					GuiProperties::main_gui_component_choice_box_height + 2, 
+					0, GuiProperties::main_gui_toolbox_height - 2,
+					GuiProperties::main_gui_component_choice_box_width,
+					GuiProperties::main_gui_component_choice_box_height + 2,
                     GuiProperties::main_gui_component_choice_box_item_count,
                     m_gui_component_factory);
 
@@ -98,27 +98,27 @@ namespace Gammou {
 
             m_component_selector = selector.get();
             add_widget(std::move(selector));
-						
+
 			//// ToolBox
 
 			auto tool_box =
 				std::make_unique<View::panel<> >(
 					0, 0,
-					GuiProperties::main_gui_toolbox_width, 
+					GuiProperties::main_gui_toolbox_width,
 					GuiProperties::main_gui_toolbox_height,
 					GuiProperties::main_gui_tool_box_background);
 
 			//	Circuit Selector
 
-			auto circuit_selector = 
+			auto circuit_selector =
 				std::make_unique<View::list_box>(
-					GuiProperties::main_gui_size_unit * 2, 0, 
-					GuiProperties::main_gui_size_unit * 3, GuiProperties::main_gui_size_unit, 
+					GuiProperties::main_gui_size_unit * 2, 0,
+					GuiProperties::main_gui_size_unit * 3, GuiProperties::main_gui_size_unit,
 					2,
-					GuiProperties::main_gui_list_box_selected_item_color, 
+					GuiProperties::main_gui_list_box_selected_item_color,
 					GuiProperties::main_gui_list_box_hovered_item_color,
-					GuiProperties::main_gui_list_box_background, 
-					GuiProperties::main_gui_list_box_font_color, 
+					GuiProperties::main_gui_list_box_background,
+					GuiProperties::main_gui_list_box_font_color,
 					GuiProperties::main_gui_component_choice_box_font_size);
 
 			circuit_selector->add_item("Master Circuit");
@@ -135,18 +135,18 @@ namespace Gammou {
 
 			tool_box->add_widget(
 				std::move(circuit_selector));
-			
+
 			//	Legato - Polyphonic selector
 
-			auto keyboard_mode_selector = 
+			auto keyboard_mode_selector =
 				std::make_unique<View::list_box>(
-					GuiProperties::main_gui_size_unit * 5, 0, 
-					GuiProperties::main_gui_size_unit * 3, GuiProperties::main_gui_size_unit, 
+					GuiProperties::main_gui_size_unit * 5, 0,
+					GuiProperties::main_gui_size_unit * 3, GuiProperties::main_gui_size_unit,
 					2,
-					GuiProperties::main_gui_list_box_selected_item_color, 
+					GuiProperties::main_gui_list_box_selected_item_color,
 					GuiProperties::main_gui_list_box_hovered_item_color,
-					GuiProperties::main_gui_list_box_background, 
-					GuiProperties::main_gui_list_box_font_color, 
+					GuiProperties::main_gui_list_box_background,
+					GuiProperties::main_gui_list_box_font_color,
 					GuiProperties::main_gui_component_choice_box_font_size);
 
 			keyboard_mode_selector->add_item("Polyphonic Keyboard");
@@ -168,13 +168,13 @@ namespace Gammou {
 				std::move(keyboard_mode_selector));
 
 			//	LOad/Sazve preset buttons
-			
+
 			auto load_preset_button =
 				std::make_unique<View::push_button>(
 					[this](View::push_button* self)
 					{
 						using mode = View::file_explorer_dialog::mode;
-					
+
 						self->set_enabled(false);
 
 						View::file_explorer_dialog dialog{GAMMOU_PRESETS_DIRECTORY_PATH, mode::OPEN};
@@ -195,7 +195,7 @@ namespace Gammou {
 							}
 							catch(...)
 							{
-								DEBUG_PRINT("Failed to load preset '%s' : Unknown Exception\n");
+								DEBUG_PRINT("Failed to load preset '%s' : Unknown Exception\n", path.c_str());
 							}
 						}
 
@@ -246,13 +246,13 @@ namespace Gammou {
 			//	TODO : mieux
 			const unsigned int offset = (GuiProperties::main_gui_size_unit - 50) / 2;
 
-			auto master_volume = 
+			auto master_volume =
 				std::make_unique<View::knob>(
-					[synthesizer](View::knob *kn) 
-					{ 
+					[synthesizer](View::knob *kn)
+					{
                         const float norm = kn->get_normalized_value();
                         const double volume = (expf(5.0f * norm) - 1.0) / (expf(5.0f) - 1.0);
-						synthesizer->set_master_volume(volume); 
+						synthesizer->set_master_volume(volume);
 					},
 					offset + GuiProperties::main_gui_width - GuiProperties::main_gui_size_unit,
 					offset
@@ -260,7 +260,7 @@ namespace Gammou {
 
 			GuiProperties::apply(*master_volume);
 			m_master_volume = master_volume.get();
-			
+
 			master_volume->set_normalized_value(1.0); // coherence with synthesizer initial value
 			tool_box->add_widget(std::move(master_volume));
 
@@ -325,8 +325,8 @@ namespace Gammou {
 			// Load Master Volume
             m_master_volume->set_normalized_value(
                 static_cast<float>(state.master_volume));
-			
-			// Load Master Circuit 
+
+			// Load Master Circuit
             m_gui_master_circuit->load_state(state.master_circuit);
 
 			// Load Polyphonic Circuit
@@ -375,7 +375,7 @@ namespace Gammou {
 
 			// Plugins Components
 			const std::string plugin_dir_path(GAMMOU_PLUGINS_DIRECTORY_PATH);
-			
+
 			try {
 				for (auto & p : std::experimental::filesystem::directory_iterator(plugin_dir_path)) {
 					try {
@@ -391,7 +391,7 @@ namespace Gammou {
 			}
 			catch(std::exception& e){
                 DEBUG_PRINT(
-					"Error while listing plugin in directory '%s' : %s\n", 
+					"Error while listing plugin in directory '%s' : %s\n",
 					GAMMOU_PLUGINS_DIRECTORY_PATH, e.what());
 			}
 		}

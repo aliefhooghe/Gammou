@@ -31,9 +31,9 @@ namespace Gammou {
 
 				virtual void draw(cairo_t *cr) override;
 
-				virtual void set_pos(const int x, const int y);
-				virtual void resize(const unsigned int width, const unsigned int height);
-				virtual void set_rect(const rectangle& rect);
+				virtual void set_pos(const int x, const int y) override;
+				virtual void resize(const unsigned int width, const unsigned int height) override;
+				virtual void set_rect(const rectangle& rect) override;
 
 			private:
 				widget& m_widget;
