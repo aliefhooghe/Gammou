@@ -3,6 +3,7 @@
 
 #include <mutex>
 #include <synthesizer.h>
+#include <midi_driver/midi_driver.h>    // synthesizer midi controler
 #include <synthesizer_gui.h>
 
 #include <RtAudio.h>
@@ -21,7 +22,7 @@ namespace Gammou {
     namespace Standalone {
 
 
-        class application : 
+        class application :
             public AudioBackend::abstract_audio_backend {
 
             friend class setting_widget;
@@ -43,14 +44,15 @@ namespace Gammou {
                 unsigned int get_parameter_count() override;
 
             private:
+                //  Audio management
                 void start_audio(
                     const RtAudio::Api api,
                     const unsigned int device_index,
                     const unsigned int sample_rate);
 
                 void stop_audio();
-                
-                static int snd_callback(
+
+                static int audio_callback(
                     void *output_buffer,
                     void *input_buffer,
                     unsigned int sample_count,
@@ -58,13 +60,24 @@ namespace Gammou {
                     RtAudioStreamStatus status,
                     void *user_data);
 
+                //  Midi management
+                void start_midi(const unsigned int device_index);
+                void stop_midi();
+
+                static void midi_callback(
+                    double timestamp,
+                    std::vector<unsigned char> *message,
+                    void *user_data);
+
                 std::unique_ptr<RtAudio> m_audio{};
+                RtMidiIn m_midi{};
+
+                Process::bytecode_frame_processor<double> m_master_circuit_processor;
+                Process::bytecode_frame_processor<double> m_polyphonic_circuit_processor;
+
                 std::mutex m_synthesizer_mutex;
-                Process::bytecode_frame_processor<double>
-                    m_master_circuit_processor;
-                Process::bytecode_frame_processor<double>
-                    m_polyphonic_circuit_processor;
                 Sound::synthesizer m_synthesizer;
+                Sound::midi_driver m_midi_driver;
         };
 
     }   /*  Standalone */

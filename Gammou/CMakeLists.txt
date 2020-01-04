@@ -14,10 +14,10 @@ option(GAMMOU_VST3_BUILD "Build a VST3 Plugin" OFF)
 option(GAMMOU_VST2_BUILD "Build a VST2 Plugin" OFF)
 
 # Hide View Option
-mark_as_advanced(FORCE 
+mark_as_advanced(FORCE
 	VIEW_APP
 	VIEW_VST
-)	
+)
 
 # Enable cmake FOLDER propertie
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -128,7 +128,7 @@ set(AUDIO_BACKEND_SRC
 	Application/audio_backend/abstract_audio_backend.h
 	Application/audio_backend/abstract_audio_backend.cpp
 )
-	
+
 set(GAMMOU_COMMON_SRC
 	${GUI_SRC}
 	${PERSISTENCE_SRC}
@@ -145,15 +145,15 @@ set(GAMMOU_COMMON_SRC
 
 
 if(GAMMOU_STANDALONE_BUILD)
-  set_option(VIEW_APP ON) 						# Enable Application Display in View 
-	
+  set_option(VIEW_APP ON) 						# Enable Application Display in View
+
 	# RtAudio and RtMidi
 
 	set(
     RTAUDIO_DIR "${CMAKE_SOURCE_DIR}/../3rdparty/rtaudio"
-    CACHE PATH ""  
+    CACHE PATH ""
   )
-	
+
 	set(
 		RTMIDI_DIR "${CMAKE_SOURCE_DIR}/../3rdparty/rtmidi"
 		CACHE PATH ""
@@ -169,34 +169,34 @@ if(GAMMOU_STANDALONE_BUILD)
 		"${RTAUDIO_DIR}/RtAudio.cpp"
 		"${RTMIDI_DIR}/RtMidi.cpp"
 	)
-	
-	target_include_directories(gammou_standalone PRIVATE 
-		${GUI_INCLUDE_DIR} 
+
+	target_include_directories(gammou_standalone PRIVATE
+		${GUI_INCLUDE_DIR}
 		${RTAUDIO_DIR}
 		${RTMIDI_DIR}
 	)
-	
-	target_link_libraries(gammou_standalone PRIVATE 
-		view 
+
+	target_link_libraries(gammou_standalone PRIVATE
+		view
 		synthesizer
 	)
-	
-	target_compile_definitions(gammou_standalone PRIVATE 
+
+	target_compile_definitions(gammou_standalone PRIVATE
 	    GAMMOU_VIEW_APP
 	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_PATH}"
 		GAMMOU_PRESETS_DIRECTORY_PATH="${GAMMOU_PRESETS_PATH}"
 	)
-	
+
 	# OSSIA binding
 
 	option(GAMMOU_STANDALONE_LIBOSSIA "Enable ossia oscquery in standalone app" OFF)
 
 	if (GAMMOU_STANDALONE_LIBOSSIA)
   	set(LIBOSSIA_DIR
-  		"${CMAKE_SOURCE_DIR}/../3rdparty/libossia/" 
+  		"${CMAKE_SOURCE_DIR}/../3rdparty/libossia/"
 		  CACHE PATH "Choose libossia path"
   	)
-  	
+
   	add_subdirectory(${LIBOSSIA_DIR} tmp/OSSIA EXCLUDE_FROM_ALL)
   	target_link_libraries(gammou_standalone PRIVATE ossia)
   	target_compile_definitions(gammou_standalone PRIVATE OSSIA_BINDING)
@@ -207,14 +207,14 @@ if(GAMMOU_STANDALONE_BUILD)
   		Application/standalone/ossia_binding/synthesizer_protocol.cpp
   	)
   endif()
-	
+
 	# Os specific addition
-	
+
     if(WIN32)                   # MICROSOFT WINDOWS
-			target_compile_definitions(gammou_standalone PRIVATE __WINDOWS_WASAPI__)	
+			target_compile_definitions(gammou_standalone PRIVATE __WINDOWS_WASAPI__)
     elseif(UNIX)                	 # LINUX and OSX
-        
-        # For Rtaudio
+
+        # For Rtaudio/RtMidi
         if(APPLE)               # Only OSX
             find_library(COREAUDIO_LIB CoreAudio)
             find_library(COREFOUNDATION_LIB CoreFoundation)
@@ -223,13 +223,13 @@ if(GAMMOU_STANDALONE_BUILD)
         else()                  # Only Linux
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
             target_link_libraries(gammou_standalone PRIVATE m stdc++fs pulse-simple pulse asound jack)
-            target_compile_definitions(gammou_standalone PRIVATE __LINUX_PULSE__ __UNIX_JACK__)
+            target_compile_definitions(gammou_standalone PRIVATE __LINUX_PULSE__ __LINUX_ALSA__ __UNIX_JACK__)
         endif()
-        
+
     else()
         message( FATAL_ERROR "Cant Build gammou standalone on this OS")
     endif()
-	
+
 endif()
 
 ################################################
@@ -240,14 +240,14 @@ endif()
 
 if(GAMMOU_VST3_BUILD)
   set_option(VIEW_VST3 ON)   # Enable VST3 Window in View
-	
-	set(VST3_SDK_DIR 
-		"${CMAKE_SOURCE_DIR}/../3rdparty/vst3sdk" 
+
+	set(VST3_SDK_DIR
+		"${CMAKE_SOURCE_DIR}/../3rdparty/vst3sdk"
 		CACHE PATH "Choose VST3 SDK path"
-	)	
+	)
 
 	# Hide VST3 sdk options
-	mark_as_advanced(FORCE 
+	mark_as_advanced(FORCE
 		SMTG_ADD_VST3_HOSTING_SAMPLES
 		SMTG_ADD_VST3_PLUGINS_SAMPLES
 		SMTG_ADD_VSTGUI
@@ -260,32 +260,32 @@ if(GAMMOU_VST3_BUILD)
 		SMTG_VST3_TARGET_PATH
 		SMTG_RUN_VST_VALIDATOR
 	)
-	
+
 	add_subdirectory(${VST3_SDK_DIR} tmp/VST3_SDK EXCLUDE_FROM_ALL)	# only need base and sdk targets
-	
-	add_library(gammou MODULE 
+
+	add_library(gammou MODULE
 		${VST3_SDK_DIR}/public.sdk/source/vst/vstsinglecomponenteffect.cpp
 		Application/vst3/factory.cpp
 		Application/vst3/vst3_plugin.h
 		Application/vst3/vst3_plugin.cpp
 		${GAMMOU_COMMON_SRC}
 	)
-	
-	target_include_directories(gammou PRIVATE 
-		${VST3_SDK_DIR} 
+
+	target_include_directories(gammou PRIVATE
+		${VST3_SDK_DIR}
 		${GUI_INCLUDE_DIR}
 	)
-	
+
 	target_link_libraries(gammou PRIVATE view synthesizer base sdk)	# base and sdk from VST3_SDK
-	target_compile_definitions(gammou PRIVATE 
+	target_compile_definitions(gammou PRIVATE
 	    GAMMOU_VIEW_VST3
 	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_PATH}"
 		GAMMOU_PRESETS_DIRECTORY_PATH="${GAMMOU_PRESETS_PATH}"
 	)
-	
-	set_target_properties(gammou PROPERTIES 
+
+	set_target_properties(gammou PROPERTIES
 	    LIBRARY_OUTPUT_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}"
-	    POSITION_INDEPENDENT_CODE ON    
+	    POSITION_INDEPENDENT_CODE ON
 	)
 
   # Install
@@ -299,15 +299,15 @@ if(GAMMOU_VST3_BUILD)
     target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/dllmain.cpp")
 	set_target_properties(gammou PROPERTIES SUFFIX ".vst3")
 	set_target_properties(gammou PROPERTIES LINK_FLAGS "/EXPORT:GetPluginFactory")
-  elseif(UNIX AND NOT APPLE)  # LINUX		
+  elseif(UNIX AND NOT APPLE)  # LINUX
    target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/linuxmain.cpp")
   elseif(APPLE)               # Apple OSX
    target_sources(gammou PRIVATE "${VST3_SDK_DIR}/public.sdk/source/main/macmain.cpp")
   else()
     message( FATAL_ERROR "Cant Build a VST3 Plugin on this OS")
   endif()
-  
-	
+
+
 endif()
 
 ################################################
@@ -326,25 +326,25 @@ if(GAMMOU_VST2_BUILD)
 		${GAMMOU_COMMON_SRC}
 	)
 
-  target_include_directories(gammou-vst2 PRIVATE 
+  target_include_directories(gammou-vst2 PRIVATE
 		  ${GUI_INCLUDE_DIR}
 	)
 
   target_link_libraries(gammou-vst2 PRIVATE view synthesizer)
 
-  target_compile_definitions(gammou-vst2 PRIVATE 
+  target_compile_definitions(gammou-vst2 PRIVATE
 	    GAMMOU_VIEW_VST2
 	    GAMMOU_PLUGINS_DIRECTORY_PATH="${GAMMOU_PLUGINS_PATH}"
 		GAMMOU_PRESETS_DIRECTORY_PATH="${GAMMOU_PRESETS_PATH}"
 	)
 
-  set_target_properties(gammou-vst2 PROPERTIES 
+  set_target_properties(gammou-vst2 PROPERTIES
 	    LIBRARY_OUTPUT_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}"
-	    POSITION_INDEPENDENT_CODE ON    
+	    POSITION_INDEPENDENT_CODE ON
 	)
 
   # Install
-  
+
   install(
     TARGETS gammou-vst2
     DESTINATION "${VST2_INSTALL_PATH}")
@@ -376,7 +376,7 @@ add_executable(view_test
 target_link_libraries(view_test view)
 target_compile_definitions(view_test PRIVATE GAMMOU_VIEW_APP)
 
-## 
+##
 
 
 #################################################
@@ -387,7 +387,7 @@ target_compile_definitions(view_test PRIVATE GAMMOU_VIEW_APP)
 
 # Include Gammou View and Synthesizer libs
 
-mark_as_advanced(FORCE 
+mark_as_advanced(FORCE
 	VIEW_APP
 	VIEW_VST3
 )
@@ -403,7 +403,3 @@ add_subdirectory(Synthesizer tmp/Synthesizer)
 ###################################################################################################################################################
 ###################################################################################################################################################
 ###################################################################################################################################################
-
-
-
-

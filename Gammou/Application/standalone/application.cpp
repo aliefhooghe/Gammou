@@ -16,7 +16,8 @@ namespace Gammou
                 GAMMOU_STANDALONE_INPUT_COUNT,
                 GAMMOU_STANDALONE_OUTPUT_COUNT,
                 GAMMOU_STANDALONE_CHANNEL_COUNT,
-                GAMMOU_STANDALONE_PARAMETER_COUNT)
+                GAMMOU_STANDALONE_PARAMETER_COUNT),
+            m_midi_driver{m_synthesizer}
         {
         }
 
@@ -71,7 +72,7 @@ namespace Gammou
             stop_audio();
 
             RtAudio::StreamParameters param;
-            unsigned int buffer_size = 
+            unsigned int buffer_size =
                 AUDIO_BUFFER_SIZE;
 
             param.deviceId = device_index;
@@ -87,7 +88,7 @@ namespace Gammou
                     RTAUDIO_FLOAT64,
                     sample_rate,
                     &buffer_size,
-                    snd_callback,
+                    audio_callback,
                     this);
 
                 m_synthesizer.set_sample_rate(
@@ -102,12 +103,13 @@ namespace Gammou
             if (m_audio) {
                 try {
                     m_audio->stopStream();
+                    m_audio.reset();
                 }
                 catch(...) {}
             }
         }
 
-        int application::snd_callback(
+        int application::audio_callback(
             void *output_buffer,
             void *input_buffer,
             unsigned int sample_count,
@@ -115,7 +117,7 @@ namespace Gammou
             RtAudioStreamStatus status,
             void *user_data)
         {
-            application& self = 
+            application& self =
                 *(reinterpret_cast<application*>(user_data));
 
             double input[2] = {0.0, 0.0}; // a stubb
@@ -127,6 +129,38 @@ namespace Gammou
             self.m_synthesizer_mutex.unlock();
 
             return 0;
+        }
+
+        void application::start_midi(const unsigned int device_index)
+        {
+            stop_midi();
+
+            try {
+                m_midi.openPort(device_index, "Gammou MIDI-in");
+                m_midi.setCallback(midi_callback, this);
+            }
+            catch(...) {}
+        }
+
+        void application::stop_midi()
+        {
+            if (m_midi.isPortOpen()) {
+                m_midi.cancelCallback();
+                m_midi.closePort();
+            }
+        }
+
+        void application::midi_callback(
+            double timestamp,
+            std::vector<unsigned char> *message,
+            void *user_data)
+        {
+            application& self =
+                *(reinterpret_cast<application*>(user_data));
+
+            self.m_synthesizer_mutex.lock();
+            self.m_midi_driver.handle_midi_event(*message);
+            self.m_synthesizer_mutex.unlock();
         }
 
     } /* Standalone */
