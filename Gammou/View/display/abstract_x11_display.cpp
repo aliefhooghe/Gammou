@@ -317,7 +317,7 @@ namespace Gammou {
                         break;
                     
                     case LeaveNotify:
-                        self->sys_mouse_exit();
+                        DEBUG_PRINT("[X11 Display] LeaveNotify : ignoring\n");
                         break;
 
                     case ClientMessage:
