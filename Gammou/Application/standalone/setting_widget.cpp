@@ -33,7 +33,7 @@ namespace Gammou
         :   View::window_widget(
                 SETTING_WIDGET_WIDTH,
                 2 * LABEL_HEIGHT + AUDIO_DEVICE_LIST_HEIGHT + MIDI_DEVICE_LIST_HEIGHT,
-                Gui::GuiProperties::main_gui_list_box_background),
+                Gui::GuiProperties::background),
             m_app(app)
         {
 
