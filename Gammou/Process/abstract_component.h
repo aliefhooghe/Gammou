@@ -26,10 +26,7 @@ namespace Gammou {
 		public:
 			component_link(abstract_component<T> *owner);
 			component_link(const component_link& other) noexcept;
-			~component_link()
-			{
-				//DEBUG_PRINT("Component Link DTOR\n");
-			}
+			~component_link() override = default;
 
 			void set_src_output_id(const unsigned int output_id);
 			unsigned int get_src_output_id() const;
@@ -50,7 +47,7 @@ namespace Gammou {
 
 		public:
 			frame_observer(abstract_component<T> *owner);
-			~frame_observer() {}
+			~frame_observer() override = default;
 
 		private:
 			void on_subject_destruction() override;
@@ -92,7 +89,7 @@ namespace Gammou {
 			virtual void process(const T input[]) =0;
             virtual void initialize_process() {}
 
-			// Link 
+			// Link
 			abstract_component<T> *get_input_src(const unsigned int input_id,
 				unsigned int& output_id);
 			abstract_component<T> *get_input_src(const unsigned int input_id);
@@ -100,7 +97,7 @@ namespace Gammou {
 
 			static const std::string default_input_name(const unsigned int input_id);
 			static const std::string default_output_name(const unsigned int output_id);
-			
+
 			bool update_process_cyle(const unsigned int cycle) noexcept;
 		protected:
 			void set_input_name(const std::string& name, const unsigned int input_id);
@@ -119,7 +116,7 @@ namespace Gammou {
 
 		private:
 			subject<abstract_component<T> > m_component_subject;	//	for components that are plugged to this component's inputs
-			std::vector<component_link<T> > m_input;		
+			std::vector<component_link<T> > m_input;
 
 			std::vector<std::string> m_input_name;
 			std::vector<std::string> m_output_name;
@@ -136,7 +133,7 @@ namespace Gammou {
 
 		template<class T>
 		component_link<T>::component_link(abstract_component<T> *owner)
-			: observer<abstract_component<T> >(), 
+			: observer<abstract_component<T> >(),
 				m_src_output_id(0),
 				m_owner(owner)
 		{
@@ -144,7 +141,7 @@ namespace Gammou {
 
 		template<class T>
 		component_link<T>::component_link(const component_link & other) noexcept
-			: observer<abstract_component<T> >(other), 
+			: observer<abstract_component<T> >(other),
 				m_src_output_id(other.m_src_output_id),
 				m_owner(other.m_owner)
 		{
@@ -172,22 +169,20 @@ namespace Gammou {
 				abstract_frame<T> *frame = m_owner->get_frame();
 				if (frame != nullptr)
 					frame->notify_circuit_change();
-
-				// No call to on disconect, Input now doesnt exist
 			}
 		}
 
 		template<class T>
 		void component_link<T>::on_subject_destruction()
 		{
-			abstract_frame<T> *frame = m_owner->get_frame();
+			// abstract_frame<T> *frame = m_owner->get_frame();
 
 			DEBUG_PRINT("Link subject Destruction : %s \n",
 				(observer<abstract_component<T> >::get_subject_resource() == nullptr) ? "Ok" : "Resource not null");
 
-			//TODO : m_owner->on_input_deconnection() Pb : Input ID
-			if (frame != nullptr)
-				frame->notify_circuit_change();
+			// //TODO : m_owner->on_input_deconnection() Pb : Input ID
+			// if (frame != nullptr)
+			// 	frame->notify_circuit_change();
 		}
 
 		/*
@@ -236,14 +231,12 @@ namespace Gammou {
 		template<class T>
 		abstract_component<T>::~abstract_component()
 		{
-			//abstract_frame<T> *const frame = get_frame();
 			const std::string name = get_name();
 
-			DEBUG_PRINT("Component DTOR : '%s'\n", name.c_str());
+			DEBUG_PRINT("Component DTOR : %p '%s' \n", this, name.c_str());
 
-			// TODO : Problem : Component not already destroyed here ?
-			//if( frame != nullptr )
-			//	frame->notify_circuit_change();
+			if (auto *frame = get_frame())
+				frame->notify_circuit_change();
 		}
 
 		template<class T>
@@ -287,7 +280,7 @@ namespace Gammou {
 
 			if (frame == nullptr || frame != dst->get_frame())
 				throw std::domain_error("Component are not on the same frame");
-			
+
 			if (output_id >= get_output_count() )
 				throw std::out_of_range("Invalid output id");
 			if (dst_input_id >= dst->get_input_count() )
