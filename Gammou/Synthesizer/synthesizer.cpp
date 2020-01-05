@@ -137,6 +137,11 @@ namespace Gammou {
 			}
 		}
 
+		void synthesizer::send_pitch_bend(const double value)
+		{
+			m_master_circuit.set_pitch_bend(value);
+		}
+
         void synthesizer::set_keyboard_mode(const keyboard_mode mode)
         {
             m_keyboard_mode = mode;

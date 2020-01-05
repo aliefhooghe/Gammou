@@ -37,6 +37,8 @@ namespace Gammou {
 			void process(const double input[], double output[]);
 			void set_volume(const double volume_order);
 
+			void set_pitch_bend(const double value) { m_parameter_buffer[0] = value; }
+
 		private:
 			double m_volume_order;
 			double m_volume;

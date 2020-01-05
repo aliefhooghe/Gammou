@@ -19,6 +19,7 @@ namespace Gammou
                 GAMMOU_STANDALONE_PARAMETER_COUNT),
             m_midi_driver{m_synthesizer}
         {
+            m_midi.setCallback(midi_callback, this);
         }
 
         application::~application()
@@ -38,8 +39,8 @@ namespace Gammou
             View::application_display setting_display{setting};
             View::application_display main_gui_display{main_gui};
 
-            setting_display.open("Audio Devices");
             main_gui_display.open("Gammou");
+            setting_display.open("Devices");
 
             main_gui_display.wait();
             setting_display.close();
@@ -137,7 +138,6 @@ namespace Gammou
 
             try {
                 m_midi.openPort(device_index, "Gammou MIDI-in");
-                m_midi.setCallback(midi_callback, this);
             }
             catch(...) {}
         }
@@ -145,7 +145,6 @@ namespace Gammou
         void application::stop_midi()
         {
             if (m_midi.isPortOpen()) {
-                m_midi.cancelCallback();
                 m_midi.closePort();
             }
         }

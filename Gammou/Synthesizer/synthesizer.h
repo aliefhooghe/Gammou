@@ -43,6 +43,7 @@ namespace Gammou {
 			void send_note_on(const unsigned int midi_note, const double velocity);
 			void send_note_off(const unsigned int midi_note, const double velocity);
 			void send_aftertouch(const unsigned int midi_note, const double presure);
+			void send_pitch_bend(const double value);
 
             //  Keyboard Mode
             void set_keyboard_mode(const keyboard_mode mode);
