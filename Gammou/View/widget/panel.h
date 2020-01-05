@@ -184,36 +184,34 @@ namespace Gammou {
 		template<class widget_type>
 		bool panel<widget_type>::on_mouse_move(const int x, const int y)
 		{
-            if (m_focused_widget != nullptr) {
-                const int x2 = x - m_focused_widget->get_x();
-                const int y2 = y - m_focused_widget->get_y();
+            if (m_focused_widget) {
+				auto *child = get_widget_at_position(x, y);
 
-                if (m_focused_widget->contains(x2, y2)) {
-                    return m_focused_widget->on_mouse_move(x2, y2);
-                }
-                else {
-                    widget_type *const w = get_widget_at_position(x, y);
-                    bool ret = m_focused_widget->on_mouse_exit();
+				if (child == m_focused_widget) {
+					const auto x_rel = x - m_focused_widget->get_x();
+					const auto y_rel = y - m_focused_widget->get_y();
+					return m_focused_widget->on_mouse_move(x_rel, y_rel);
+				}
+				else {
+					bool used_event =
+						m_focused_widget->on_mouse_exit();
 
-                    if (w != nullptr)
-                        ret |= w->on_mouse_enter();
+					if (child)
+						used_event |= child->on_mouse_enter();
 
-                    m_focused_widget = w;
-
-                    return ret;
-                }
-            }
-            else {
-                widget_type *const w = get_widget_at_position(x, y);
-
-                if (w != nullptr) {
-                    m_focused_widget = w;
-                    return w->on_mouse_enter();
-                }
-                else {
-                    return false;
-                }
-            }
+					m_focused_widget = child;
+					return used_event;
+				}
+			}
+			else {
+				if (auto *child = get_widget_at_position(x, y)) {
+					m_focused_widget = child;
+					return child->on_mouse_enter();
+				}
+				else {
+					return false;
+				}
+			}
 		}
 
 		template<class widget_type>
