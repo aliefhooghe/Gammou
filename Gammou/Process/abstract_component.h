@@ -16,12 +16,16 @@ namespace Gammou {
 		template<class T> class abstract_frame;
 		template<class T> class abstract_component;
 
+		//
+		enum class source_notification {
+			disconnect
+		};
 
 		/*! \class component_link
 		*  \brief Describe a component input as a link to another component output
 		*/
 		template<class T> // todo rename to component input
-		class component_link: public observer<abstract_component<T> > {
+		class component_link: public observer<abstract_component<T>, source_notification> {
 
 		public:
 			component_link(abstract_component<T> *owner);
@@ -31,8 +35,7 @@ namespace Gammou {
 			void set_src_output_id(const unsigned int output_id);
 			unsigned int get_src_output_id() const;
 
-			void on_notify(const unsigned int popped_output_id) override;
-			void on_subject_destruction() override;
+			void on_notify(const source_notification) override;
 
 		private:
 			abstract_component<T> *const m_owner;
@@ -43,7 +46,7 @@ namespace Gammou {
 		* 	\brief Describe the component's link to his frame
 		*/
 		template<class T>
-		class frame_observer: public observer<abstract_frame<T> >{
+		class frame_observer: public observer<abstract_frame<T>>{
 
 		public:
 			frame_observer(abstract_component<T> *owner);
@@ -115,8 +118,8 @@ namespace Gammou {
 			virtual void on_input_deconnection(const unsigned int input_id) {};
 
 		private:
-			subject<abstract_component<T> > m_component_subject;	//	for components that are plugged to this component's inputs
-			std::vector<component_link<T> > m_input;
+			subject<abstract_component<T>, source_notification> m_component_subject;	//	for components that are plugged to this component's inputs
+			std::vector<component_link<T>> m_input;
 
 			std::vector<std::string> m_input_name;
 			std::vector<std::string> m_output_name;
@@ -133,7 +136,7 @@ namespace Gammou {
 
 		template<class T>
 		component_link<T>::component_link(abstract_component<T> *owner)
-			: observer<abstract_component<T> >(),
+			: observer<abstract_component<T>, source_notification>(),
 				m_src_output_id(0),
 				m_owner(owner)
 		{
@@ -141,7 +144,7 @@ namespace Gammou {
 
 		template<class T>
 		component_link<T>::component_link(const component_link & other) noexcept
-			: observer<abstract_component<T> >(other),
+			: observer<abstract_component<T>, source_notification>(other),
 				m_src_output_id(other.m_src_output_id),
 				m_owner(other.m_owner)
 		{
@@ -160,29 +163,9 @@ namespace Gammou {
 		}
 
 		template<class T>
-		void component_link<T>::on_notify(const unsigned int popped_output_id)
+		void component_link<T>::on_notify(const source_notification /*notif = disconect*/)
 		{
-			if (popped_output_id == m_src_output_id) {
-
-				observer<abstract_component<T> >::disconnect();
-
-				abstract_frame<T> *frame = m_owner->get_frame();
-				if (frame != nullptr)
-					frame->notify_circuit_change();
-			}
-		}
-
-		template<class T>
-		void component_link<T>::on_subject_destruction()
-		{
-			// abstract_frame<T> *frame = m_owner->get_frame();
-
-			DEBUG_PRINT("Link subject Destruction : %s \n",
-				(observer<abstract_component<T> >::get_subject_resource() == nullptr) ? "Ok" : "Resource not null");
-
-			// //TODO : m_owner->on_input_deconnection() Pb : Input ID
-			// if (frame != nullptr)
-			// 	frame->notify_circuit_change();
+			observer<abstract_component<T>, source_notification>::disconnect();
 		}
 
 		/*
@@ -233,10 +216,15 @@ namespace Gammou {
 		{
 			const std::string name = get_name();
 
-			DEBUG_PRINT("Component DTOR : %p '%s' \n", this, name.c_str());
+			DEBUG_PRINT("Component DTOR : this = %p name = '%s' \n", this, name.c_str());
 
+			//	Notify all component connected to this component that they must disconnect
+			m_component_subject.notify_observers(source_notification::disconnect);
+
+			// Notify circuit_change
 			if (auto *frame = get_frame())
 				frame->notify_circuit_change();
+
 		}
 
 		template<class T>
@@ -414,14 +402,7 @@ namespace Gammou {
 		template<class T>
 		void abstract_component<T>::pop_output()
 		{
-			if( get_output_count() == 0 )
-				throw std::domain_error("No output to pop");
-			
-			m_output_name.pop_back();
-
-			// Notify the componets using the output that it has been deleted
-
-			m_component_subject.notify_observers(get_output_count());
+			throw std::runtime_error("abstrct component : pop output not implemented");
 		}
 
 		// private

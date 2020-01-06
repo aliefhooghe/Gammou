@@ -35,7 +35,10 @@ namespace Gammou {
         abstract_process_frame<T>::abstract_process_frame(abstract_frame_processor<T>& processor)
             : m_processor(processor),
                 m_output_components()  //  avoid reallocation in most cases
-        {}
+        {
+            //  Make sure we start with a valid state
+            notify_circuit_change();
+        }
 
         template<class T>
         void abstract_process_frame<T>::notify_circuit_change()
