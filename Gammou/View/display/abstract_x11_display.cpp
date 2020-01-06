@@ -345,6 +345,7 @@ namespace Gammou {
 */
 
                     default:
+                        DEBUG_PRINT("[X11 Display] unknown event type : %u\n", event.type);
                         break;
 
                 }

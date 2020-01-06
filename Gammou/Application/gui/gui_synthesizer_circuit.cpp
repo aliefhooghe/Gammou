@@ -58,7 +58,7 @@ namespace Gammou {
                     lock_circuit();
                     remove_widget(focused_component);
                     unlock_circuit();
-                    DEBUG_PRINT("OK\n");
+                    DEBUG_PRINT("Delete component OK\n");
                 }
                 else if (m_creation_factory_id != Sound::NO_FACTORY) {
 
