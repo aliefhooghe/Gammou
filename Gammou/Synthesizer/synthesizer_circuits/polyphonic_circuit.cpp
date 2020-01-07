@@ -146,6 +146,7 @@ namespace Gammou {
 
 		polyphonic_circuit::~polyphonic_circuit()
 		{
+			clear_output_list();
 		}
 
 		void polyphonic_circuit::add_sound_component(abstract_sound_component *component)

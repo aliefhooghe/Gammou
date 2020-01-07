@@ -59,6 +59,7 @@ namespace Gammou {
 
 		master_circuit::~master_circuit()
 		{
+			clear_output_list();
 			DEBUG_PRINT("Master DTOR\n");
 		}
 
