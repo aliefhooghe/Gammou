@@ -135,7 +135,7 @@ namespace Gammou {
 
             // to be sure that windows is mapped
             DEBUG_PRINT("Waiting map notify event...\n");
-            for(XEvent e; e.type != MapNotify; XNextEvent(m_display, &e));
+            for(XEvent e{}; e.type != MapNotify; XNextEvent(m_display, &e));
             DEBUG_PRINT("Map Notify event received\n");
 
             //  Set Window Name
