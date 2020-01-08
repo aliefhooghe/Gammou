@@ -56,7 +56,6 @@ namespace Gammou {
 			//	For event handling
 			Time m_last_click_time{};
 			unsigned int m_last_button{};
-			unsigned int m_motion_notify_count{};
 		};
 
 	} /* View */

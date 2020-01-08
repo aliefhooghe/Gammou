@@ -293,18 +293,12 @@ namespace Gammou {
 
                     case MotionNotify:
                     {
-                        //  Decrease cpu usage by decreasing mouse_move event rate
+                        self->sys_mouse_move(
 
-                        const int interval = 4;
                         
-                        if (self->m_motion_notify_count % interval == 0) {
-                          self->sys_mouse_move(
                             static_cast<unsigned int>(event.xmotion.x),
                             static_cast<unsigned int>(event.xmotion.y)
-                          );
-                        }
-
-                        self->m_motion_notify_count++;
+                        );
                     }
                         break;
 
