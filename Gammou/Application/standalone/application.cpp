@@ -33,6 +33,7 @@ namespace Gammou
 
             Gui::synthesizer_gui main_gui{
                 &m_synthesizer,
+                m_midi_driver,
                 &m_synthesizer_mutex,
                 *this};
 

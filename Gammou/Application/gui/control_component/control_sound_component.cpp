@@ -40,10 +40,17 @@ namespace Gammou {
 		{
 			return m_normalized_value;
 		}
-		
+
+		void midi_learn(Sound::midi_driver& driver, control_sound_component& component)
+		{
+			driver.learn_CC(
+				[&component](double val)
+				{
+					component.set_normalized_value(val);
+				}
+			);
+		}
 
 	} /* Gui */
 
 } /* Gammou */
-
-

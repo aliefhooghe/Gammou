@@ -19,7 +19,7 @@ namespace Gammou  {
                 GAMMOU_VST2_CHANNEL_COUNT,
                 GAMMOU_VST2_PARAMETER_COUNT),
             m_midi_driver(m_synthesizer),
-            m_gui(&m_synthesizer, &m_synthesizer_mutex, *this),
+            m_gui(&m_synthesizer, m_midi_driver,&m_synthesizer_mutex, *this),
             m_display(m_gui)
         {
             DEBUG_PRINT("Gammou Vst2 Plugin CTOR\n");

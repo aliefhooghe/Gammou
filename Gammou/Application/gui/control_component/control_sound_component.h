@@ -2,6 +2,7 @@
 #define GAMMOU_CONTROL_COMPONENT_H_
 
 #include "sound_component/sound_component.h"
+#include "midi_driver/midi_driver.h"
 
 namespace Gammou {
 
@@ -33,6 +34,8 @@ namespace Gammou {
 			const double m_amplitude;
 			const double m_shape;
 		};
+
+		void midi_learn(Sound::midi_driver& driver, control_sound_component& component);
 
 	}
 

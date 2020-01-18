@@ -16,12 +16,14 @@ namespace Gammou {
 
 		public:
 			knob_gui_component(
-				control_sound_component *control, 
+				Sound::midi_driver& driver,
+				control_sound_component *control,
 				const unsigned int x, const unsigned int y);
 			~knob_gui_component() {}
 
 		private:
 			control_sound_component * const m_control;
+			Sound::midi_driver& m_midi_driver;
 		};
 
 
@@ -30,12 +32,15 @@ namespace Gammou {
 		class value_knob_gui_component_factory : public abstract_gui_component_factory {
 
 		public:
-			value_knob_gui_component_factory();
+			value_knob_gui_component_factory(Sound::midi_driver& driver);
 
 			std::unique_ptr<gui_sound_component> create_gui_component(
 				const int x, const int y, Sound::data_input_stream& source, const unsigned int channel_count) override;
 			std::unique_ptr<gui_sound_component> create_gui_component(
 				const int x, const int y, const Sound::answer_form& answer_form, const unsigned int channel_count) override;
+
+		private:
+			Sound::midi_driver& m_midi_driver;
 		};
 
 
@@ -44,12 +49,15 @@ namespace Gammou {
 		class gain_knob_gui_component_factory : public abstract_gui_component_factory {
 
 		public:
-			gain_knob_gui_component_factory();
+			gain_knob_gui_component_factory(Sound::midi_driver& driver);
 
 			std::unique_ptr<gui_sound_component> create_gui_component(
 				const int x, const int y, Sound::data_input_stream& source, const unsigned int channel_count) override;
 			std::unique_ptr<gui_sound_component> create_gui_component(
 				const int x, const int y, const Sound::answer_form& answer_form, const unsigned int channel_count) override;
+
+		private:
+			Sound::midi_driver& m_midi_driver;
 		};
 
 	}

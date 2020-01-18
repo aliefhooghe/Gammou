@@ -20,6 +20,7 @@ namespace Gammou {
 
 		synthesizer_gui::synthesizer_gui(
 			Sound::synthesizer * synthesizer,
+			Sound::midi_driver& driver,
 			std::mutex * synthesizer_mutex,
 			AudioBackend::abstract_audio_backend& backend)
 		:	View::window_widget(
@@ -27,6 +28,7 @@ namespace Gammou {
 				GuiProperties::main_gui_height,
 				View::cl_chartreuse), // for gui debuging
 			m_synthesizer(*synthesizer),
+			m_midi_driver(driver),
 			m_backend(backend)
 		{
 			DEBUG_PRINT("SYN GUI CTOR\n");
@@ -360,8 +362,8 @@ namespace Gammou {
             m_component_selector->add_plugin_factory(MAKE_UNIQUE_FUNCTION_COMPONENT_FACTORY(tanh));
 
 			// Control Components
-            m_component_selector->add_control_factory(std::make_unique<value_knob_gui_component_factory>());
-            m_component_selector->add_control_factory(std::make_unique<gain_knob_gui_component_factory>());
+            m_component_selector->add_control_factory(std::make_unique<value_knob_gui_component_factory>(m_midi_driver));
+            m_component_selector->add_control_factory(std::make_unique<gain_knob_gui_component_factory>(m_midi_driver));
 
             m_component_selector->add_control_factory(std::make_unique<value_slider_gui_component_factory>());
             m_component_selector->add_control_factory(std::make_unique<gain_slider_gui_component_factory>());

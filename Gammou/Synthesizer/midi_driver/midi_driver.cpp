@@ -4,6 +4,7 @@
 #define MIDI_NOTE_OFF               0x80u
 #define MIDI_NOTE_ON                0x90u
 #define MIDI_POLYPONIC_AFTERTOUCH   0xA0u
+#define MIDI_CONTROLER_CHANGE       0xB0u
 #define MIDI_CHANNEL_AFTERTOUCH     0xD0u
 #define MIDI_PITCH_BEND             0xE0
 
@@ -50,6 +51,26 @@ namespace Gammou {
                 }
                 break;
 
+                case MIDI_CONTROLER_CHANGE:
+                {
+                    const uint8_t controler = (midi_data[1] & 0x7f);
+                    const uint8_t value = (midi_data[2] & 0x7f);
+
+                    auto& control_callback = m_controls[controler];
+
+                    if (m_learning_callback) {
+                        DEBUG_PRINT("[MIDI DRIVER] Learn result : callback assigned to controler %u\n", controler);
+                        control_callback = m_learning_callback;
+                        m_learning_callback = nullptr;
+                    }
+
+                    if (control_callback)
+                        control_callback(static_cast<double>(value) / 127.0);
+
+                    DEBUG_PRINT("[MIDI DRIVER] Control %u to value %u\n", controler, value);
+                }
+                break;
+
                 case MIDI_POLYPONIC_AFTERTOUCH:
                 {
                     const uint8_t note = (midi_data[1] & 0x7f);
@@ -89,6 +110,12 @@ namespace Gammou {
         void midi_driver::handle_midi_event(const std::vector<unsigned char>& data)
         {
             handle_midi_event(data.data());
+        }
+
+        void midi_driver::learn_CC(control_change_callback callback)
+        {
+            DEBUG_PRINT("[MIDI DRIVER] Start learning...\n");
+            m_learning_callback = callback;
         }
 
     }   /* Sound */

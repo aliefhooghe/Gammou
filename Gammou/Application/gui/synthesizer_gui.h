@@ -34,11 +34,12 @@ namespace Gammou {
 
 		public:
 			synthesizer_gui(
-				Sound::synthesizer *synthesizer, 
+				Sound::synthesizer *synthesizer,
+                Sound::midi_driver& driver,
 				std::mutex *synthesizer_mutex,
 				AudioBackend::abstract_audio_backend& backend);
 			~synthesizer_gui();
-			
+
 			// Persistence
             void save_state(Persistence::gammou_state& state);
             void load_state(const Persistence::gammou_state& state);
@@ -48,6 +49,7 @@ namespace Gammou {
 
 			//
 			Sound::synthesizer& m_synthesizer;
+            Sound::midi_driver& m_midi_driver;
 			AudioBackend::abstract_audio_backend& m_backend;
 
             //	UI Widgets are All freed by their panels
