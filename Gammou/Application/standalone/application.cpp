@@ -19,7 +19,15 @@ namespace Gammou
                 GAMMOU_STANDALONE_PARAMETER_COUNT),
             m_midi_driver{m_synthesizer}
         {
-            m_midi.setCallback(midi_callback, this);
+            //  We need one RtMidiIn instance for each midi device
+
+            RtMidiIn midi_input_retriever;
+            const auto midi_input_count = midi_input_retriever.getPortCount();
+
+            m_midi_inputs.resize(midi_input_count);
+
+            for( auto& input : m_midi_inputs)
+                input.setCallback(midi_callback, this);
         }
 
         application::~application()
@@ -133,21 +141,17 @@ namespace Gammou
             return 0;
         }
 
-        void application::start_midi(const unsigned int device_index)
+        void application::enable_midi_input(
+            const unsigned int device_index,
+            const bool enable)
         {
-            stop_midi();
+            if (device_index >= m_midi_inputs.size())
+                return;
 
-            try {
-                m_midi.openPort(device_index, "Gammou MIDI-in");
-            }
-            catch(...) {}
-        }
-
-        void application::stop_midi()
-        {
-            if (m_midi.isPortOpen()) {
-                m_midi.closePort();
-            }
+            if (enable)
+                m_midi_inputs[device_index].openPort(device_index);
+            else
+                m_midi_inputs[device_index].closePort();
         }
 
         void application::midi_callback(

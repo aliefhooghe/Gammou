@@ -8,6 +8,7 @@
 #define LABEL_HEIGHT 20
 #define AUDIO_DEVICE_LIST_HEIGHT 200
 #define MIDI_DEVICE_LIST_HEIGHT 200
+#define MIDI_DEVICE_LIST_LABEL_WIDTH 270
 
 namespace Gammou
 {
@@ -103,29 +104,47 @@ namespace Gammou
                 });
 
             //  Create midi list view
+            const auto midi_port_count = m_app.m_midi_inputs.size();
+            DEBUG_PRINT("[MIDI IN] %lu midi devices where detected\n", midi_port_count);
+
             auto midi_device_view =
-                std::make_unique<View::list_box>(
+                std::make_unique<View::scrollable_panel<>>(
                     0, LABEL_HEIGHT + AUDIO_DEVICE_LIST_HEIGHT + LABEL_HEIGHT,
                     SETTING_WIDGET_WIDTH,
                     MIDI_DEVICE_LIST_HEIGHT,
-                    8,
-                    Gui::GuiProperties::main_gui_list_box_selected_item_color,
-                    Gui::GuiProperties::main_gui_list_box_hovered_item_color,
-                    Gui::GuiProperties::main_gui_list_box_background,
-                    Gui::GuiProperties::main_gui_list_box_font_color,
+                    Gui::GuiProperties::main_gui_list_box_background
+                );
+
+            for (auto i = 0; i < midi_port_count; ++i) {
+                const auto x_offset = MIDI_DEVICE_LIST_LABEL_WIDTH;
+                const auto y_offset = i * (LABEL_HEIGHT + 3);
+
+                auto label = std::make_unique<View::label>(
+                    m_app.m_midi_inputs[i].getPortName(i),
+                    0, y_offset, MIDI_DEVICE_LIST_LABEL_WIDTH, LABEL_HEIGHT,
+                    Gui::GuiProperties::component_font_color,
                     Gui::GuiProperties::component_font_size);
 
-            midi_device_view->set_item_select_event(
-                [this](auto&, const unsigned int idx)
-                {
-                    m_app.start_midi(idx);
-                });
+                auto button = std::make_unique<View::push_button>(
+                    [this, state = false, device_idx = i](View::push_button *button) mutable
+                    {
 
-            const auto midi_port_count = m_app.m_midi.getPortCount();
-            DEBUG_PRINT("[MIDI IN] %u midi devices where detected\n", midi_port_count);
+                        state = !state;
+                        m_app.enable_midi_input(device_idx, state);
+                        button->set_text(state ? "On" : "Off");
+                    },
+                    "Off",
+                    MIDI_DEVICE_LIST_LABEL_WIDTH, y_offset,
+                    SETTING_WIDGET_WIDTH - MIDI_DEVICE_LIST_LABEL_WIDTH, LABEL_HEIGHT,
+                    Gui::GuiProperties::component_font_size,	// font size
+					Gui::GuiProperties::main_gui_list_box_hovered_item_color,
+					Gui::GuiProperties::main_gui_list_box_selected_item_color,
+					Gui::GuiProperties::main_gui_list_box_font_color
+                );
 
-            for (auto i = 0; i < midi_port_count; ++i)
-                midi_device_view->add_item(m_app.m_midi.getPortName(i));
+                midi_device_view->add_widget(std::move(label));
+                midi_device_view->add_widget(std::move(button));
+            }
 
             //  Windows Layout
             add_widget(std::make_unique<View::label>(

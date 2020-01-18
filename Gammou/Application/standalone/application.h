@@ -2,6 +2,8 @@
 #define GAMMOU_APLICATION_H_
 
 #include <mutex>
+#include <vector>
+
 #include <synthesizer.h>
 #include <midi_driver/midi_driver.h>    // synthesizer midi controler
 #include <synthesizer_gui.h>
@@ -61,8 +63,9 @@ namespace Gammou {
                     void *user_data);
 
                 //  Midi management
-                void start_midi(const unsigned int device_index);
-                void stop_midi();
+                void enable_midi_input(
+                    const unsigned int device_index,
+                    bool enable = true);
 
                 static void midi_callback(
                     double timestamp,
@@ -70,7 +73,7 @@ namespace Gammou {
                     void *user_data);
 
                 std::unique_ptr<RtAudio> m_audio{};
-                RtMidiIn m_midi{};
+                std::vector<RtMidiIn> m_midi_inputs{};
 
                 Process::bytecode_frame_processor<double> m_master_circuit_processor;
                 Process::bytecode_frame_processor<double> m_polyphonic_circuit_processor;
