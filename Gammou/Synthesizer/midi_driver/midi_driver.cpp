@@ -61,6 +61,7 @@ namespace Gammou {
                     if (m_learning_callback) {
                         DEBUG_PRINT("[MIDI DRIVER] Learn result : callback assigned to controler %u\n", controler);
                         control_callback = m_learning_callback;
+                        m_controls_ref[m_learning_ref] = controler;
                         m_learning_callback = nullptr;
                     }
 
@@ -112,12 +113,27 @@ namespace Gammou {
             handle_midi_event(data.data());
         }
 
-        void midi_driver::learn_CC(control_change_callback callback)
+        void midi_driver::learn_CC(control_change_callback callback, intptr_t ref)
         {
             DEBUG_PRINT("[MIDI DRIVER] Start learning...\n");
+            unmap_CC(ref);
             m_learning_callback = callback;
+            m_learning_ref = ref;
         }
 
+        void midi_driver::unmap_CC(intptr_t ref)
+        {
+            auto it = m_controls_ref.find(ref);
+
+            if (it != m_controls_ref.end()) {
+                const auto controler = it->second;
+
+                DEBUG_PRINT("[MIDI DRIVER] Unmap controler %u\n", controler);
+
+                m_controls[controler] = nullptr;
+                m_controls_ref.erase(it);
+            }
+        }
     }   /* Sound */
 
 }   /* Gammou */

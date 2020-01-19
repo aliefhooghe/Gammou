@@ -39,7 +39,14 @@ namespace Gammou {
 				std::make_unique<View::push_button>(
 					[this](View::push_button*)
 					{
-						midi_learn(m_midi_driver, *m_control);
+						m_midi_driver.learn_CC(
+							[this](double val)
+							{
+								m_control->set_normalized_value(val);
+							},
+							reinterpret_cast<intptr_t>(this)
+						);
+
 					},
 					"L",
 					get_width() - (pos + knob_size + button_size), pos + knob_size, // x, y
@@ -54,6 +61,11 @@ namespace Gammou {
                 static_cast<float>(control->get_normalized_value()));
 			add_widget(std::move(knob_control));
 			add_widget(std::move(midi_learn_button));
+		}
+
+		knob_gui_component::~knob_gui_component()
+		{
+			m_midi_driver.unmap_CC(reinterpret_cast<intptr_t>(this));
 		}
 
 		// value_knob_gui_component_factory implementation

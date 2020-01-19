@@ -6,6 +6,8 @@
 #include "control_sound_component.h"
 #include "gain_sound_component.h"
 #include "value_sound_component.h"
+
+#include "midi_driver/midi_driver.h"
 #include "control_component_ids.h"
 
 namespace Gammou {
@@ -19,7 +21,7 @@ namespace Gammou {
 				Sound::midi_driver& driver,
 				control_sound_component *control,
 				const unsigned int x, const unsigned int y);
-			~knob_gui_component() {}
+			~knob_gui_component() override;
 
 		private:
 			control_sound_component * const m_control;

@@ -8,11 +8,11 @@ namespace Gammou {
 	namespace Gui {
 
 		control_sound_component::control_sound_component(
-			const std::string & name, 
-			const unsigned int input_count, 
-			const unsigned int output_count, 
-			const unsigned int channel_count, 
-			const double initial_normalized_value, 
+			const std::string & name,
+			const unsigned int input_count,
+			const unsigned int output_count,
+			const unsigned int channel_count,
+			const double initial_normalized_value,
 			const double amplitude, const double shape)
 			: Sound::sound_component(name, input_count, output_count, channel_count),
 				m_amplitude(amplitude),
@@ -31,7 +31,7 @@ namespace Gammou {
 			m_normalized_value = normalized_value;
 
 			if (0.99 < m_shape && m_shape < 1.01)
-				m_param_value = m_normalized_value * m_amplitude; 
+				m_param_value = m_normalized_value * m_amplitude;
 			else
 				m_param_value = m_amplitude * (std::pow(m_shape, normalized_value) - 1.0) / (m_shape - 1.0);
 		}
@@ -41,15 +41,6 @@ namespace Gammou {
 			return m_normalized_value;
 		}
 
-		void midi_learn(Sound::midi_driver& driver, control_sound_component& component)
-		{
-			driver.learn_CC(
-				[&component](double val)
-				{
-					component.set_normalized_value(val);
-				}
-			);
-		}
 
 	} /* Gui */
 
