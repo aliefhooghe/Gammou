@@ -37,12 +37,14 @@ namespace Gammou {
 			const auto button_size = 15;
 			auto midi_learn_button =
 				std::make_unique<View::push_button>(
-					[this](View::push_button*)
+					[this, knob = knob_control.get()](View::push_button*)
 					{
 						m_midi_driver.learn_CC(
-							[this](double val)
+							[this, knob](double val)
 							{
 								m_control->set_normalized_value(val);
+								knob->set_normalized_value(val);
+								redraw();
 							},
 							reinterpret_cast<intptr_t>(this)
 						);
