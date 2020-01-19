@@ -180,13 +180,16 @@ namespace Gammou {
             ev.xexpose.height = rect.height;
             ev.xexpose.window = m_back_buffer;
 
-            XSendEvent(m_display, m_window, true, ExposureMask, &ev);
+            XLockDisplay(m_display);
+            XSendEvent(m_display, m_window, false, ExposureMask, &ev);
+            XFlush(m_display);
+            XUnlockDisplay(m_display);
         }
 
         void abstract_x11_display::draw_display()
         {
             sys_draw(m_cr);
-            
+
             // Swap Buffer
             XdbeSwapInfo info;
             info.swap_window = m_window;
@@ -380,7 +383,9 @@ namespace Gammou {
                     //  While the Event Queue is not empty
                     while (XPending(self->m_display) > 0) {
                         XEvent event;
+                        XLockDisplay(self->m_display);
                         XNextEvent(self->m_display, &event);
+                        XUnlockDisplay(self->m_display);
                         handle_event(self, event);
                     }
 
