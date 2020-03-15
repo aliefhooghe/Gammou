@@ -1,0 +1,6 @@
+[submodule "src/libs/View"]
+	path = src/libs/View
+	url = https://github.com/aliefhooghe/View.git
+[submodule "src/libs/DSPJIT"]
+	path = src/libs/DSPJIT
+	url = https://github.com/aliefhooghe/DSPJIT.git
