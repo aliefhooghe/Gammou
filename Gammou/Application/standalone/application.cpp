@@ -90,8 +90,16 @@ namespace Gammou
             param.firstChannel = 0;
 
             try {
+                RtAudio::StreamOptions options;
+
+                options.flags = RTAUDIO_MINIMIZE_LATENCY | RTAUDIO_SCHEDULE_REALTIME;
+                options.numberOfBuffers = 2; // ?
+                options.streamName = "Gammou";
+                options.priority = 10;
+
                 m_audio =
                     std::make_unique<RtAudio>(api);
+
 
                 m_audio->openStream(
                     &param, nullptr,
@@ -99,7 +107,7 @@ namespace Gammou
                     sample_rate,
                     &buffer_size,
                     audio_callback,
-                    this);
+                    this, &options);
 
                 m_synthesizer.set_sample_rate(
                     static_cast<double>(sample_rate));
