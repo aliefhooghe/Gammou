@@ -84,23 +84,23 @@ namespace Gammou
          *          -   component removed
          **/
         using circuit_changed_callback =
-            std::function<void(void)>;
+        std::function<void(void)>;
 
-            circuit_editor(float width, float height);
-            circuit_editor(float width, float height, View::size_constraint width_constraint, View::size_constraint height_constraint);
+        circuit_editor(float width, float height);
+        circuit_editor(float width, float height, View::size_constraint width_constraint, View::size_constraint height_constraint);
 
-            void insert_node_widget(float x, float y, std::unique_ptr<node_widget>&&);
-            void remove_node_widget(node_widget*);
+        void insert_node_widget(float x, float y, std::unique_ptr<node_widget>&&);
+        void remove_node_widget(node_widget*);
 
-            bool on_mouse_dbl_click(float x, float y) override;
-            bool on_mouse_move(float x, float y) override;
-            bool on_mouse_drag(const View::mouse_button button, float x, float y, float dx, float dy) override;
-            bool on_mouse_drag_start(const View::mouse_button button, float x, float y) override;
-            bool on_mouse_drag_end(const View::mouse_button button, float x, float y) override;
-            bool on_mouse_drag_cancel() override;
-            bool on_mouse_button_up(const View::mouse_button button, float x, float y) override;
+        bool on_mouse_dbl_click(float x, float y) override;
+        bool on_mouse_move(float x, float y) override;
+        bool on_mouse_drag(const View::mouse_button button, float x, float y, float dx, float dy) override;
+        bool on_mouse_drag_start(const View::mouse_button button, float x, float y) override;
+        bool on_mouse_drag_end(const View::mouse_button button, float x, float y) override;
+        bool on_mouse_drag_cancel() override;
+        bool on_mouse_button_up(const View::mouse_button button, float x, float y) override;
 
-            void apply_color_theme(const View::color_theme& theme) override;
+        void apply_color_theme(const View::color_theme& theme) override;
 
         /**
          *      Event callbacks
