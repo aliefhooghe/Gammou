@@ -352,6 +352,7 @@ namespace Gammou {
                 if (node->_input_id_at(input_id, x - node->pos_x(), y - node->pos_y())) {
                     node->node().disconnect(input_id);
                     invalidate();
+                    _notify_circuit_change();
                     return true;
                 }
             }
