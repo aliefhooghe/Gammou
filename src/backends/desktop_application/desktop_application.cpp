@@ -60,7 +60,7 @@ namespace Gammou {
         editor->set_create_node_callback(create_node_callback);
 
         //  display
-        _window = std::make_unique<View::background>(std::move(editor));
+        _window = std::make_unique<View::background>(std::make_unique<View::map_wrapper>(std::move(editor), 50, 30));
         _display = std::make_unique<View::native_application_display>(*_window, 12);
     }
 
