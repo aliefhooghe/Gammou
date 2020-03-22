@@ -26,7 +26,7 @@ namespace Gammou {
 
     //  Draw helper
     node_widget::node_widget(const std::string& name, DSPJIT::compile_node_class& node)
-    : View::panel<View::widget>{node_width, widget_node_height(node)},
+    : View::panel_implementation<View::widget>{node_width, widget_node_height(node)},
         _name{name},
         _node{node},
         _input_names{node.get_input_count()},

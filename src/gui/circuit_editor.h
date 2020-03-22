@@ -16,7 +16,7 @@ namespace Gammou
 
     class circuit_editor;
 
-    class node_widget : public View::panel<View::widget> {
+    class node_widget : public View::panel_implementation<View::widget> {
         friend class circuit_editor;
     public:
         node_widget(const std::string& name, DSPJIT::compile_node_class&);
