@@ -98,6 +98,7 @@ namespace Gammou
             bool on_mouse_drag_start(const View::mouse_button button, float x, float y) override;
             bool on_mouse_drag_end(const View::mouse_button button, float x, float y) override;
             bool on_mouse_drag_cancel() override;
+            bool on_mouse_button_up(const View::mouse_button button, float x, float y) override;
 
             void apply_color_theme(const View::color_theme& theme) override;
 

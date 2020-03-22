@@ -341,6 +341,28 @@ namespace Gammou {
         return true;
     }
 
+    bool circuit_editor::on_mouse_button_up(const View::mouse_button button, float x, float y)
+    {
+        if (!View::panel_implementation<node_widget>::on_mouse_button_up(button, x, y)
+                && button == View::mouse_button::right) {
+
+            if (auto w = focused_widget()) {
+                unsigned int input_id;
+                auto node = w->get();
+                if (node->_input_id_at(input_id, x - node->pos_x(), y - node->pos_y())) {
+                    node->node().disconnect(input_id);
+                    invalidate();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
     void circuit_editor::apply_color_theme(const View::color_theme& theme)
     {
         _link_color = theme.primary_light;
