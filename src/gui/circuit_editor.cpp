@@ -190,8 +190,8 @@ namespace Gammou {
             auto w = panel_implementation<node_widget>::widget_at(x, y);
 
             if (w != nullptr) {
-                _notify_circuit_change();
                 remove_node_widget(w->get());
+                _notify_circuit_change();
                 return true;
             }
             else if (_create_node_callback) {
