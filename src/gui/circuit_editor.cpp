@@ -162,9 +162,14 @@ namespace Gammou {
         apply_color_theme(View::default_color_theme);
     }
 
-    void circuit_editor::set_create_callback(create_callback cb)
+    void circuit_editor::set_create_node_callback(create_node_callback cb)
     {
-        _create_callback = cb;
+        _create_node_callback = cb;
+    }
+
+    void circuit_editor::set_circuit_changed_callback(circuit_changed_callback cb)
+    {
+        _circuit_changed_callback = cb;
     }
 
     void circuit_editor::insert_node_widget(float x, float y, std::unique_ptr<node_widget>&& w)
@@ -185,11 +190,12 @@ namespace Gammou {
             auto w = panel_implementation<node_widget>::widget_at(x, y);
 
             if (w != nullptr) {
+                _notify_circuit_change();
                 remove_node_widget(w->get());
                 return true;
             }
-            else if (_create_callback) {
-                insert_node_widget(x, y, _create_callback());
+            else if (_create_node_callback) {
+                insert_node_widget(x, y, _create_node_callback());
                 return true;
             }
             else {
@@ -311,6 +317,7 @@ namespace Gammou {
                 //  link if one of the node's input is under the cursor
                 if (holder->_input_id_at(input_id, x - holder.pos_x(), y - holder.pos_y())) {
                     _link_source->node().connect(_link_source_output, holder->node(), input_id);
+                    _notify_circuit_change();
                 }
             }
 
@@ -403,6 +410,12 @@ namespace Gammou {
 		cairo_set_line_width(cr, 0.2f);
 		View::set_source(cr, color);
 		cairo_stroke(cr);
+    }
+
+    void circuit_editor::_notify_circuit_change()
+    {
+        if (_circuit_changed_callback)
+            _circuit_changed_callback();
     }
 
 

@@ -70,18 +70,24 @@ namespace Gammou
     };
 
     class circuit_editor : public View::panel_implementation<node_widget> {
+    public:
 
         /**
-         *  Vraiment ? pas connecté avec une factory ?
-         *  Comment gerrer les configs ? (ouverture de renetre modale)
+         *      Called to create a node at dbl click event
          **/
-        using create_callback =
+        using create_node_callback =
             std::function<std::unique_ptr<node_widget>(void)>;
 
-        public:
+        /**
+         *      Called when the circuit was changed :
+         *          -   link added/removed
+         *          -   component removed
+         **/
+        using circuit_changed_callback =
+            std::function<void(void)>;
+
             circuit_editor(float width, float height);
             circuit_editor(float width, float height, View::size_constraint width_constraint, View::size_constraint height_constraint);
-            void set_create_callback(create_callback);
 
             void insert_node_widget(float x, float y, std::unique_ptr<node_widget>&&);
             void remove_node_widget(node_widget*);
@@ -95,6 +101,12 @@ namespace Gammou
 
             void apply_color_theme(const View::color_theme& theme) override;
 
+        /**
+         *      Event callbacks
+         **/
+        void set_create_node_callback(create_node_callback);
+        void set_circuit_changed_callback(circuit_changed_callback);
+
         protected:
             // void draw_background(cairo_t *cr) override;
             void draw_foreground(cairo_t *cr) override;
@@ -103,8 +115,12 @@ namespace Gammou
                 float x_input, float y_input,
                 float x_output, float y_output) const noexcept;
 
+            void _notify_circuit_change();
+
         private:
-            create_callback _create_callback{};
+            create_node_callback _create_node_callback{};
+            circuit_changed_callback _circuit_changed_callback{};
+
             std::unordered_map<const DSPJIT::compile_node_class*, node_widget*> _node_widgets{};
 
             //  link state machine
