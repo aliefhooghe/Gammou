@@ -21,12 +21,12 @@ namespace Gammou {
         std::unique_ptr<View::widget> _window{};
         std::unique_ptr<View::native_application_display> _display{};
 
-        std::unique_ptr<RtAudio> _audio_device{};
-
         llvm::LLVMContext _llvm_context{};
         DSPJIT::graph_execution_context _execution_context;
         DSPJIT::compile_node_class _output_node;
         DSPJIT::external_plugin _external_plugin;
+
+        std::unique_ptr<RtAudio> _audio_device{};
     };
 
 }
