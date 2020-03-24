@@ -37,7 +37,7 @@ namespace Gammou {
         _audio_device->startStream();
 
         // gui
-        auto editor = std::make_unique<Gammou::circuit_editor>(50, 30);
+        auto editor = std::make_unique<Gammou::circuit_editor>(10, 10);
 
         auto compile_callback =
             [this]()
@@ -60,7 +60,12 @@ namespace Gammou {
         editor->set_create_node_callback(create_node_callback);
 
         //  display
-        _window = std::make_unique<View::background>(std::make_unique<View::map_wrapper>(std::move(editor), 50, 30));
+        _window =
+            std::make_unique<View::background>(
+                std::make_unique<View::pair_layout<View::orientation::vertical>>(
+                    std::make_unique<View::header>(std::make_unique<View::panel<>>(70, 50)),
+                    std::make_unique<View::header>(std::make_unique<View::map_wrapper>(std::move(editor), 50, 30))));
+
         _display = std::make_unique<View::native_application_display>(*_window, 12);
     }
 
