@@ -62,9 +62,14 @@ namespace Gammou
          *  @param input input values [channel0, channel1, ...]
          *  @param output output values [channel0, channel1, ...]
          **/
-        void process(
+        void process_sample(
             const float input[],
-            float output[]);
+            float output[]) noexcept;
+
+        void process_buffer(
+            std::size_t sample_count,
+            const float inputs[],
+            float outputs[]) noexcept;
 
         /*
          *
@@ -74,12 +79,16 @@ namespace Gammou
         void midi_control_change(uint8_t control, float value);
 
     private:
+        void _process_one_sample(const float[], float output[]) noexcept;
+
         auto get_voice_midi_input(voice_manager::voice voice) noexcept
         {
             return _midi_input_values.data() + voice * midi_input_count;
         }
 
         llvm::LLVMContext& _llvm_context;
+        const unsigned int _input_count;
+        const unsigned int _output_count;
 
         //  Midi input values are stored here for every running voices
         std::vector<float> _midi_input_values;
@@ -100,6 +109,9 @@ namespace Gammou
         voice_manager _voice_manager;
         unsigned int _voice_disappearance_sample_count{400u};
         std::vector<unsigned int> _voice_lifetime;
+
+        //  Main settings
+        float _volume{1.f};
     };
 
 } // namespace Gammou
