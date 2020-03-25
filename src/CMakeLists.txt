@@ -23,6 +23,8 @@ option(GAMMOU_ENABLE_DESKTOP_APP "Build a desktop application" ON)
 set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_editor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_editor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/main_gui.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/main_gui.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/synthesizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/synthesizer.cpp
