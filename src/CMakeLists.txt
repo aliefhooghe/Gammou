@@ -26,6 +26,8 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/main_gui.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/main_gui.cpp
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/midi_parser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/midi_parser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/synthesizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/synthesizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/voice_manager.h
