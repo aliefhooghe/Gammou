@@ -10,11 +10,18 @@ namespace Gammou {
     class desktop_application /* : */{
 
     public:
-        ~desktop_application() noexcept = default;
-        desktop_application(/* IO ?? */);
+        desktop_application(unsigned int input_count, unsigned int output_count);
+        ~desktop_application();
 
         void run();
+
     private:
+        void _start_audio(
+            RtAudio::Api api,
+            unsigned int device_index,
+            unsigned int sample_rate);
+        void _stop_audio();
+
         //  Processing
         llvm::LLVMContext _llvm_context;
         synthesizer _synthesizer;
@@ -23,7 +30,7 @@ namespace Gammou {
         std::unique_ptr<View::widget> _window{};
         std::unique_ptr<View::native_application_display> _display{};
 
-        //  Audio
+        //  Audio I/O
         std::unique_ptr<RtAudio> _audio_device{};
     };
 

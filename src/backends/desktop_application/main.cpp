@@ -3,7 +3,7 @@
 
 int main()
 {
-    Gammou::desktop_application app{};
+    Gammou::desktop_application app{0u,1u};
     app.run();
     std::cout << "FIN" << std::endl;
 

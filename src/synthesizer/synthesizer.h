@@ -28,6 +28,9 @@ namespace Gammou
         synthesizer(synthesizer&&) = delete;
         ~synthesizer() = default;
 
+        auto get_input_count() const noexcept { return _input_count; }
+        auto get_output_count() const noexcept { return _output_count; }
+
         //  Master circuit internal nodes
         auto& from_polyphonic_node() noexcept { return _from_polyphonic; }
         auto& output_node() noexcept { return _output; }
