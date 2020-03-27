@@ -6,7 +6,7 @@
 
 namespace Gammou {
 
-    std::unique_ptr<View::widget> make_synthesizer_gui(synthesizer&);
+    std::unique_ptr<View::widget> make_synthesizer_gui(synthesizer& , std::unique_ptr<View::widget>&& additional_toolbox = nullptr);
 
 }
 
