@@ -2,13 +2,16 @@
 #define GAMMOU_DESKTOP_APPLICATION_H_
 
 #include <RtAudio.h>
+#include <RtMidi.h>
 #include "synthesizer/synthesizer.h"
 #include "view.h"
 
 namespace Gammou {
 
-    class desktop_application /* : */{
+    class midi_device_widget;
 
+    class desktop_application /* : */{
+        friend class midi_device_widget;
     public:
         desktop_application(unsigned int input_count, unsigned int output_count);
         ~desktop_application();
@@ -16,6 +19,11 @@ namespace Gammou {
         void run();
 
     private:
+        void _initialize_midi_multiplex();
+        void _enable_midi_input(
+            unsigned int idx, bool enable = true);
+        unsigned int _midi_input_count() const noexcept;
+
         void _start_audio(
             RtAudio::Api api,
             unsigned int device_index,
@@ -32,6 +40,9 @@ namespace Gammou {
 
         //  Audio I/O
         std::unique_ptr<RtAudio> _audio_device{};
+
+        //  Midi inputs
+        std::vector<RtMidiIn> _midi_inputs;
     };
 
 }

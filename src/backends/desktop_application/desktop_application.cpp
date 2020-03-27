@@ -1,20 +1,26 @@
 
 #include "desktop_application.h"
 #include "gui/main_gui.h"
+#include "midi_device_widget.h"
+#include "synthesizer/midi_parser.h"
 
 namespace Gammou {
 
     desktop_application::desktop_application(unsigned int input_count, unsigned int output_count)
     : _synthesizer{_llvm_context, input_count, output_count}
     {
-        //  audio
-        _start_audio(RtAudio::UNIX_JACK, 0u, 48000);
+        //  audio I/O
+        //_start_audio(RtAudio::UNIX_JACK, 0u, 48000);
+
+        // midi multiplex
+        _initialize_midi_multiplex();
 
         // gui
-        _window = make_synthesizer_gui(_synthesizer);
+        auto additional_toolbox = std::make_unique<View::header>(std::make_unique<midi_device_widget>(*this));
+        _window = make_synthesizer_gui(_synthesizer, std::move(additional_toolbox));
 
         //  display
-        _display = std::make_unique<View::native_application_display>(*_window, 8);
+        _display = std::make_unique<View::native_application_display>(*_window, 12);
     }
 
     desktop_application::~desktop_application()
@@ -26,6 +32,41 @@ namespace Gammou {
     {
         _display->open("Gammou");
         _display->wait();
+    }
+
+    void desktop_application::_initialize_midi_multiplex()
+    {
+        RtMidiIn rt_midi;
+        const auto midi_input_count = rt_midi.getPortCount();
+
+        //  We need one RtMidi instance per input port
+        _midi_inputs.resize(midi_input_count);
+
+        auto midi_callback =
+            [](double timestamp, std::vector<unsigned char> *message, void *user_data)
+            {
+                auto& synth = *(synthesizer*)(user_data);
+                execute_midi_msg(synth, message->data(), message->size());
+            };
+
+        for (auto& input : _midi_inputs)
+            input.setCallback(midi_callback, &_synthesizer);
+    }
+
+    void desktop_application::_enable_midi_input(unsigned int idx, bool enable)
+    {
+        if (idx >= _midi_input_count())
+            return;
+
+        if (enable)
+            _midi_inputs[idx].openPort(idx);
+        else
+            _midi_inputs[idx].closePort();
+    }
+
+    unsigned int desktop_application::_midi_input_count() const noexcept
+    {
+        return _midi_inputs.size();
     }
 
     void desktop_application::_start_audio(

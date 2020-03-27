@@ -50,14 +50,17 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/DSPJIT/src DSPJIT)
 
 if (GAMMOU_ENABLE_DESKTOP_APP)
     find_package(RtAudio REQUIRED)
+    find_package(RtMidi REQUIRED)
 
     set(GAMMOU_DESKTOP_SRC
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/desktop_application.h
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/desktop_application.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/midi_device_widget.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/midi_device_widget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/main.cpp
     )
 
     add_executable(gammou_desktop_app ${GAMMOU_DESKTOP_SRC} ${GAMMOU_COMMON_SRC})
-    target_include_directories(gammou_desktop_app PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${RTAUDIO_INCLUDE_DIR})
-    target_link_libraries(gammou_desktop_app PUBLIC View DSPJIT ${RTAUDIO_LIBRARIES})
+    target_include_directories(gammou_desktop_app PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${RTAUDIO_INCLUDE_DIR} ${RTMIDI_INCLUDE_DIR})
+    target_link_libraries(gammou_desktop_app PUBLIC View DSPJIT ${RTMIDI_LIBRARIES} ${RTAUDIO_LIBRARIES})
 endif()

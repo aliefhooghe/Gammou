@@ -38,7 +38,7 @@ namespace Gammou {
         if (!additional_toolbox)
             toolbox = std::move(common_toolbox);
         else
-            toolbox = View::make_horizontal_layout(additional_toolbox, std::move(common_toolbox));
+            toolbox = View::make_horizontal_layout(std::move(common_toolbox), additional_toolbox);
 
 
         auto polyphonic_map_editor = std::make_unique<View::header>(std::make_unique<View::map_wrapper>(std::move(polyphonic_circuit_editor), 20, 20));
