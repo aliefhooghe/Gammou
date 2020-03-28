@@ -26,7 +26,7 @@ namespace Gammou {
     :   _llvm_context{llvm_context},
         _input_count{input_count},
         _output_count{output_count},
-        _midi_input_values(0.f, voice_count * midi_input_count),
+        _midi_input_values(voice_count * midi_input_count, 0.f),
         _master_circuit_context{_llvm_context, 1u},
         _polyphonic_circuit_context{_llvm_context, voice_count},
         _from_polyphonic{0u, polyphonic_to_master_channel_count},
@@ -34,7 +34,7 @@ namespace Gammou {
         _midi_input{0u, midi_input_count},
         _to_master{polyphonic_to_master_channel_count, 0u},
         _voice_manager{voice_count},
-        _voice_lifetime(0u, voice_count)
+        _voice_lifetime(voice_count, 0u)
     {
     }
 
