@@ -15,8 +15,10 @@ namespace Gammou {
         _initialize_midi_multiplex();
 
         // gui
-        auto additional_toolbox = std::make_unique<View::header>(_make_midi_device_widget());
-        _window = make_synthesizer_gui(_synthesizer, std::move(additional_toolbox));
+        auto additional_toolbox = View::make_horizontal_layout(
+            std::make_unique<View::header>(_make_midi_device_widget()),
+            std::make_unique<View::header>(_make_audio_device_widget())
+        );
 
         //  display
         _display = std::make_unique<View::native_application_display>(*_window, 12);
@@ -112,7 +114,55 @@ namespace Gammou {
             }
             catch(...)
             {}
+    static auto rt_audio_api_to_str(RtAudio::Api api)
+    {
+        switch (api) {
+            case RtAudio::LINUX_ALSA:        return "Alsa";
+            case RtAudio::LINUX_PULSE:       return "PulseAudio";
+            case RtAudio::UNIX_JACK:         return "Jack";
+            case RtAudio::MACOSX_CORE:       return "CoreAudio";
+            case RtAudio::WINDOWS_WASAPI:    return "Wasapi";
+            case RtAudio::WINDOWS_ASIO:      return "Asio";
+            case RtAudio::WINDOWS_DS:        return "DirectSound";
+            default:                         return "Unknown";   //  should not happen
         }
+    }
+
+    std::unique_ptr<View::widget> desktop_application::_make_audio_device_widget()
+    {
+        //  List every available audio device and build device tree
+        std::vector<RtAudio::Api> apis;
+        RtAudio::getCompiledApi(apis);
+
+        for (const auto& api : apis) {
+            RtAudio rt_audio{api};
+            auto& api_dir = _audio_device_tree.add_directory(rt_audio_api_to_str(api));
+            const auto device_count = rt_audio.getDeviceCount();
+
+            for (auto idx = 0u; idx <  device_count; ++idx) {
+                const auto info = rt_audio.getDeviceInfo(idx);
+                auto& device_dir = api_dir.add_directory(info.name);
+
+                for (auto sample_rate : info.sampleRates)
+                    device_dir.add_value(std::to_string(sample_rate), {api, idx, sample_rate});
+            }
+        }
+
+        //  Build a widget view of device tree
+        auto view =
+            View::make_directory_view(_audio_device_tree, 10, 5);
+
+        //  Set callback to select
+        view->set_value_select_callback(
+            [this](const auto& device_desc)
+            {
+                _start_audio(
+                    std::get<0>(device_desc),
+                    std::get<1>(device_desc),
+                    std::get<2>(device_desc));
+            });
+
+        return view;
     }
 
     std::unique_ptr<View::widget> desktop_application::_make_midi_device_widget()
