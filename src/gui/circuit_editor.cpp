@@ -18,7 +18,7 @@ namespace Gammou {
     static constexpr auto socket_radius = 0.3f;
     static constexpr auto node_width = 8.0f;
 
-    static constexpr auto widget_node_height(DSPJIT::compile_node_class& node)
+    static auto widget_node_height(DSPJIT::compile_node_class& node)
     {
         const auto io_count = std::max(node.get_input_count(), node.get_output_count());
         return static_cast<float>(io_count) * socket_size + node_header_size + node_corner_radius;

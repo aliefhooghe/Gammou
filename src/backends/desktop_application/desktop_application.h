@@ -3,7 +3,9 @@
 
 #include <RtAudio.h>
 #include <RtMidi.h>
+
 #include "synthesizer/synthesizer.h"
+#include "plugin_system/node_widget_factory.h"
 #include "view.h"
 
 namespace Gammou {
@@ -59,6 +61,9 @@ namespace Gammou {
 
         //  Midi inputs
         std::vector<RtMidiIn> _midi_inputs;
+
+        //  widget node factory
+        node_widget_factory _node_factory;
     };
 
 }

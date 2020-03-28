@@ -2,23 +2,53 @@
 #include "desktop_application.h"
 #include "gui/main_gui.h"
 #include "synthesizer/midi_parser.h"
+#include "external_plugin.h"
 
 namespace Gammou {
 
-    desktop_application::desktop_application(unsigned int input_count, unsigned int output_count)
-    : _synthesizer{_llvm_context, input_count, output_count}
-    {
-        //  audio I/O
-        //_start_audio(RtAudio::UNIX_JACK, 0u, 48000);
+    class node_widget_external_plugin : public node_widget_plugin {
+    public:
+        node_widget_external_plugin(
+            llvm::LLVMContext &llvm_context,
+            const std::vector<std::string>& code_object_paths,
+            const std::size_t mutable_state_size)
+        :   _dsp_plugin{llvm_context, code_object_paths, mutable_state_size}
+        {}
 
+        std::unique_ptr<node_widget> create_node() override
+        {
+            return std::make_unique<owning_node_widget>("node", _dsp_plugin.create_node());
+        }
+
+        std::unique_ptr<llvm::Module> module() override
+        {
+            return _dsp_plugin.module();
+        }
+
+    private:
+        DSPJIT::external_plugin _dsp_plugin;
+    };
+
+    desktop_application::desktop_application(unsigned int input_count, unsigned int output_count)
+    : _synthesizer{_llvm_context, input_count, output_count},
+        _node_factory{_llvm_context}
+    {
         // midi multiplex
         _initialize_midi_multiplex();
+
+        //  factory
+        const auto paths = std::vector<std::string>{"../plugin/plugin.bc"};
+        _node_factory.register_plugin(42u, std::make_unique<node_widget_external_plugin>(_llvm_context, paths, 2 * sizeof(float)));
+
+        _synthesizer.add_module(_node_factory.module());
 
         // gui
         auto additional_toolbox = View::make_horizontal_layout(
             std::make_unique<View::header>(_make_midi_device_widget()),
             std::make_unique<View::header>(_make_audio_device_widget())
         );
+
+        _window = make_synthesizer_gui(_synthesizer, _node_factory, std::move(additional_toolbox));
 
         //  display
         _display = std::make_unique<View::native_application_display>(*_window, 12);
@@ -59,10 +89,16 @@ namespace Gammou {
         if (idx >= _midi_input_count())
             return;
 
-        if (enable)
-            _midi_inputs[idx].openPort(idx);
-        else
-            _midi_inputs[idx].closePort();
+        try {
+            if (enable)
+                _midi_inputs[idx].openPort(idx);
+            else
+                _midi_inputs[idx].closePort();
+        }
+        catch(...) {
+            LOG_ERROR("[desktop_application][_enable_midi_input] Failed to %s midi input %u\n",
+                enable ? "enable" : "disable", idx);
+        }
     }
 
     unsigned int desktop_application::_midi_input_count() const noexcept
@@ -101,6 +137,7 @@ namespace Gammou {
         }
         catch(...)
         {
+            LOG_ERROR("[desktop_application][_start_audio] Failed to start audio\n");
             _stop_audio();
         }
     }
@@ -109,11 +146,19 @@ namespace Gammou {
     {
         if (_audio_device) {
             try {
-                _audio_device->stopStream();
+                if (_audio_device->isStreamRunning())
+                    _audio_device->stopStream();
+                if (_audio_device->isStreamOpen())
+                    _audio_device->closeStream();
                 _audio_device.reset();
             }
             catch(...)
-            {}
+            {
+                LOG_ERROR("[desktop_application][_stop_audio] Failed to stop audio\n");
+            }
+        }
+    }
+
     static auto rt_audio_api_to_str(RtAudio::Api api)
     {
         switch (api) {
@@ -170,7 +215,7 @@ namespace Gammou {
         auto midi_settings_widget = std::make_unique<View::panel<>>(0.f, 0.f /* dummy sizes*/);
 
         const auto midi_input_count = _midi_input_count();
-        constexpr auto y_start_offset = 0.2f;
+        constexpr auto y_start_offset = 0.5f;
         constexpr auto line_height = 1.2f;
 
         for (auto i = 0u; i < midi_input_count; ++i) {

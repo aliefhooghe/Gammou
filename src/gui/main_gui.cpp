@@ -5,34 +5,51 @@
 
 namespace Gammou {
 
-    std::unique_ptr<View::widget> make_synthesizer_gui(synthesizer& synthesizer, std::unique_ptr<View::widget>&& additional_toolbox)
+    std::unique_ptr<View::widget> make_synthesizer_gui(
+        synthesizer& synthesizer,
+        node_widget_factory& factory,
+        std::unique_ptr<View::widget>&& additional_toolbox)
     {
         //  master circuit editor
         auto master_circuit_editor = std::make_unique<circuit_editor>(20, 20);
 
-        master_circuit_editor->insert_node_widget(10, 10,
+        master_circuit_editor->insert_node_widget(5, 5,
             std::make_unique<node_widget>("From Polyphonic", synthesizer.from_polyphonic_node()));
 
-        master_circuit_editor->insert_node_widget(10, 20,
+        master_circuit_editor->insert_node_widget(5, 10,
             std::make_unique<node_widget>("Output", synthesizer.output_node()));
 
         master_circuit_editor->set_circuit_changed_callback(
             [&synthesizer](){ synthesizer.compile_master_circuit(); });
 
+        master_circuit_editor->set_create_node_callback(
+            [&factory]()
+            {
+                return factory.create_node(42u);
+            }
+        );
+
         //  polyphonic circuit editor
         auto polyphonic_circuit_editor = std::make_unique<circuit_editor>(20, 20);
 
-        polyphonic_circuit_editor->insert_node_widget(10, 10,
+        polyphonic_circuit_editor->insert_node_widget(5, 5,
             std::make_unique<node_widget>("Midi Input", synthesizer.midi_input_node()));
 
-        polyphonic_circuit_editor->insert_node_widget(10, 20,
+        polyphonic_circuit_editor->insert_node_widget(5, 10,
             std::make_unique<node_widget>("To Master", synthesizer.to_master_node()));
 
         polyphonic_circuit_editor->set_circuit_changed_callback(
             [&synthesizer](){ synthesizer.compile_polyphonic_circuit(); });
 
-        auto left_side_bar = std::make_unique<View::header>(std::make_unique<View::panel<>>(30, 100));
-        auto common_toolbox = std::make_unique<View::header>(std::make_unique<View::panel<>>(30, 30));
+        polyphonic_circuit_editor->set_create_node_callback(
+            [&factory]()
+            {
+                return factory.create_node(42u);
+            }
+        );
+
+        auto left_side_bar = std::make_unique<View::header>(std::make_unique<View::panel<>>(10, 50));
+        auto common_toolbox = std::make_unique<View::header>(std::make_unique<View::panel<>>(10, 5));
         std::unique_ptr<View::widget> toolbox{};
 
         if (!additional_toolbox)
