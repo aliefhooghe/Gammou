@@ -81,12 +81,14 @@ namespace Gammou
         }
 
     protected:
-        bool allocate_voice(note n, voice_store::iterator& it)
+        bool allocate_voice(note n, voice_store::iterator& ret_it)
         {
             //  if there is a free voice
             if (_active_voices_end != _voices.end()) {
-                it = _active_voices_end++;
-                it->first = n;
+                auto it = _active_voices_end++;
+                ret_it = _on_voice_end++;
+                std::iter_swap(it, ret_it);
+                ret_it->first = n;
                 return true;
             }
             else {
