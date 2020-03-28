@@ -13,6 +13,13 @@ namespace Gammou {
     public:
         virtual std::unique_ptr<node_widget> create_node() = 0;
         virtual std::unique_ptr<llvm::Module> module() { return nullptr; }
+
+        const auto& get_category() const noexcept { return _category; }
+        const auto& get_name() const noexcept { return _name; }
+
+    protected:
+        std::string _category{"Unknown"};
+        std::string _name{"Unamed"};
     };
 
     class node_widget_factory {
@@ -27,6 +34,8 @@ namespace Gammou {
 
         auto begin() const noexcept { return _plugins.begin(); }
         auto end() const noexcept { return _plugins.end(); }
+
+        auto& get_llvm_context() noexcept { return _llvm_context; }
     private:
         llvm::LLVMContext& _llvm_context;
         std::unordered_map<uid, std::unique_ptr<node_widget_plugin>> _plugins{};

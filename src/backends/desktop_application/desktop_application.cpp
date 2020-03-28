@@ -2,32 +2,9 @@
 #include "desktop_application.h"
 #include "gui/main_gui.h"
 #include "synthesizer/midi_parser.h"
-#include "external_plugin.h"
+#include "plugin_system/package_loader.h"
 
 namespace Gammou {
-
-    class node_widget_external_plugin : public node_widget_plugin {
-    public:
-        node_widget_external_plugin(
-            llvm::LLVMContext &llvm_context,
-            const std::vector<std::string>& code_object_paths,
-            const std::size_t mutable_state_size)
-        :   _dsp_plugin{llvm_context, code_object_paths, mutable_state_size}
-        {}
-
-        std::unique_ptr<node_widget> create_node() override
-        {
-            return std::make_unique<owning_node_widget>("node", _dsp_plugin.create_node());
-        }
-
-        std::unique_ptr<llvm::Module> module() override
-        {
-            return _dsp_plugin.module();
-        }
-
-    private:
-        DSPJIT::external_plugin _dsp_plugin;
-    };
 
     desktop_application::desktop_application(unsigned int input_count, unsigned int output_count)
     : _synthesizer{_llvm_context, input_count, output_count},
@@ -36,10 +13,10 @@ namespace Gammou {
         // midi multiplex
         _initialize_midi_multiplex();
 
-        //  factory
-        const auto paths = std::vector<std::string>{"../plugin/plugin.bc"};
-        _node_factory.register_plugin(42u, std::make_unique<node_widget_external_plugin>(_llvm_context, paths, 2 * sizeof(float)));
+        //  Load packages into factory
+        load_all_packages("../plugin/", _node_factory);
 
+        //  Prepare synthesizer
         _synthesizer.add_module(_node_factory.module());
 
         // gui

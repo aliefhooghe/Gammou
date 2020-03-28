@@ -26,6 +26,13 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/main_gui.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/main_gui.cpp
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_external_plugin.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_external_plugin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_factory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_factory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/package_loader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/package_loader.cpp
+
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/midi_parser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/midi_parser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/synthesizer.h
@@ -56,8 +63,6 @@ if (GAMMOU_ENABLE_DESKTOP_APP)
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/desktop_application.h
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/desktop_application.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/main.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_factory.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_factory.cpp
     )
 
 
