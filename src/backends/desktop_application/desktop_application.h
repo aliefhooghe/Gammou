@@ -48,14 +48,6 @@ namespace Gammou {
         std::unique_ptr<View::widget> _window{};
         std::unique_ptr<View::native_application_display> _display{};
 
-        using audio_device_descriptor =
-            std::tuple<
-                RtAudio::Api, // api
-                unsigned int, // device_index
-                unsigned int>; // sample_rate
-
-        View::storage_directory_model<std::string, audio_device_descriptor> _audio_device_tree{};
-
         //  Audio I/O
         std::unique_ptr<RtAudio> _audio_device{};
 

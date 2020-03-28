@@ -152,13 +152,25 @@ namespace Gammou {
 
     std::unique_ptr<View::widget> desktop_application::_make_audio_device_widget()
     {
+        //  The model used to describe available audio devices
+        using audio_device_descriptor =
+            std::tuple<
+                RtAudio::Api, // api
+                unsigned int, // device_index
+                unsigned int>; // sample_rate
+
+        using model =
+            View::storage_directory_model<std::string, audio_device_descriptor>;
+
+        auto audio_device_tree = std::make_unique<model>();
+
         //  List every available audio device and build device tree
         std::vector<RtAudio::Api> apis;
         RtAudio::getCompiledApi(apis);
 
         for (const auto& api : apis) {
             RtAudio rt_audio{api};
-            auto& api_dir = _audio_device_tree.add_directory(rt_audio_api_to_str(api));
+            auto& api_dir = audio_device_tree->add_directory(rt_audio_api_to_str(api));
             const auto device_count = rt_audio.getDeviceCount();
 
             for (auto idx = 0u; idx <  device_count; ++idx) {
@@ -172,7 +184,7 @@ namespace Gammou {
 
         //  Build a widget view of device tree
         auto view =
-            View::make_directory_view(_audio_device_tree, 10, 5);
+            View::make_directory_view(std::move(audio_device_tree), 10, 5);
 
         //  Set callback to select
         view->set_value_select_callback(
