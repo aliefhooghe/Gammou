@@ -11,12 +11,12 @@ namespace Gammou {
      *
      **/
     //  1 unit = font size
-    static constexpr auto node_header_size = 1.5f;
+    static constexpr auto node_header_size = 1.8f;
     static constexpr auto node_corner_radius = 1.f;
     static constexpr auto socket_size = 1.3f;
     static constexpr auto socket_hitbox_size = socket_size * 2.f;
     static constexpr auto socket_radius = 0.3f;
-    static constexpr auto node_width = 8.0f;
+    static constexpr auto node_width = 11.0f;
 
     static auto widget_node_height(DSPJIT::compile_node_class& node)
     {
@@ -85,24 +85,44 @@ namespace Gammou {
         const auto ic = _node.get_input_count();
         const auto oc = _node.get_output_count();
 
-        View::set_source(cr, _socket_color);
-
-        for (auto i = 0u; i< ic; i++) {
+        for (auto i = 0u; i < ic; i++) {
+            // draw socket
             float xc, yc;
             _input_pos(i, xc, yc);
+            View::set_source(cr, _socket_color);
             View::circle(cr, xc, yc, socket_radius);
 
             if (nullptr != _node.get_input(i))
                 cairo_fill(cr);
             else
                 cairo_stroke(cr);
+
+            //  draw input name
+            const auto y_offset = node_header_size + socket_size * i;
+            View::set_source(cr, _text_color);
+            View::draw_text(
+                cr, socket_size, y_offset, width(), socket_size,
+                1.f, _input_names[i].c_str(), false,
+                View::horizontal_alignment::left,
+                View::vertical_alignment::top);
         }
 
-        for (auto i = 0u; i< oc; i++) {
+        for (auto i = 0u; i < oc; i++) {
+            // draw socket
             float xc, yc;
             _output_pos(i, xc, yc);
+            View::set_source(cr, _socket_color);
             View::circle(cr, xc, yc, socket_radius);
             cairo_fill(cr);
+
+            //  draw input name
+            const auto y_offset = node_header_size + socket_size * i;
+            View::set_source(cr, _text_color);
+            View::draw_text(
+                cr, 0, y_offset, width() - socket_size, socket_size,
+                1.f, _output_names[i].c_str(), false,
+                View::horizontal_alignment::right,
+                View::vertical_alignment::top);
         }
     }
 
