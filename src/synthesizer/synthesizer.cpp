@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <llvm/Transforms/Utils/Cloning.h>
+
 #include "synthesizer.h"
 
 namespace Gammou {
@@ -81,6 +83,11 @@ namespace Gammou {
         /** @todo **/
     }
 
+    void synthesizer::add_module(std::unique_ptr<llvm::Module>&& m)
+    {
+        _master_circuit_context.add_module(llvm::CloneModule(*m));
+        _polyphonic_circuit_context.add_module(std::move(m));
+    }
 
     void synthesizer::compile_master_circuit()
     {

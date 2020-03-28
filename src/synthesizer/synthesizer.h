@@ -40,6 +40,11 @@ namespace Gammou
         auto& to_master_node() noexcept { return _to_master; }
 
         /**
+         *
+         **/
+        void add_module(std::unique_ptr<llvm::Module>&& m);
+
+        /**
          * @brief Compile the master circuit and update the processing code
          **/
         void compile_master_circuit();
