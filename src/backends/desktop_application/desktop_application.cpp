@@ -1,7 +1,6 @@
 
 #include "desktop_application.h"
 #include "gui/main_gui.h"
-#include "midi_device_widget.h"
 #include "synthesizer/midi_parser.h"
 
 namespace Gammou {
@@ -16,7 +15,7 @@ namespace Gammou {
         _initialize_midi_multiplex();
 
         // gui
-        auto additional_toolbox = std::make_unique<View::header>(std::make_unique<midi_device_widget>(*this));
+        auto additional_toolbox = std::make_unique<View::header>(_make_midi_device_widget());
         _window = make_synthesizer_gui(_synthesizer, std::move(additional_toolbox));
 
         //  display
@@ -114,6 +113,34 @@ namespace Gammou {
             catch(...)
             {}
         }
+    }
+
+    std::unique_ptr<View::widget> desktop_application::_make_midi_device_widget()
+    {
+        auto midi_settings_widget = std::make_unique<View::panel<>>(0.f, 0.f /* dummy sizes*/);
+
+        const auto midi_input_count = _midi_input_count();
+        constexpr auto y_start_offset = 0.2f;
+        constexpr auto line_height = 1.2f;
+
+        for (auto i = 0u; i < midi_input_count; ++i) {
+            const auto y_offset = y_start_offset + i * line_height;
+            auto device_checkbox = std::make_unique<View::checkbox>();
+            auto device_label = std::make_unique<View::label>(_midi_inputs[i].getPortName(i));
+
+            device_checkbox->set_callback(
+                [this, idx = i](bool checked)
+                {
+                    _enable_midi_input(idx, checked);
+                });
+
+            midi_settings_widget->insert_widget(1.0, y_offset + 0.1, std::move(device_checkbox));
+            midi_settings_widget->insert_widget(2.2f, y_offset, std::move(device_label));
+        }
+
+        midi_settings_widget->resize(30, line_height * midi_input_count + y_start_offset * 2);
+
+        return midi_settings_widget;
     }
 
 }

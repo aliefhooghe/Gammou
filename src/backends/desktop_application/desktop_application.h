@@ -30,6 +30,8 @@ namespace Gammou {
             unsigned int sample_rate);
         void _stop_audio();
 
+        std::unique_ptr<View::widget> _make_midi_device_widget();
+
         //  Processing
         llvm::LLVMContext _llvm_context;
         synthesizer _synthesizer;

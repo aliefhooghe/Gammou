@@ -55,8 +55,6 @@ if (GAMMOU_ENABLE_DESKTOP_APP)
     set(GAMMOU_DESKTOP_SRC
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/desktop_application.h
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/desktop_application.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/midi_device_widget.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/midi_device_widget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/main.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_factory.h
         ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_factory.cpp
