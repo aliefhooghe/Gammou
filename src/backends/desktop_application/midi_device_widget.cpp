@@ -16,11 +16,17 @@ namespace Gammou {
             auto device_label = std::make_unique<View::label>(
                 app._midi_inputs[i].getPortName(i));
 
+            device_checkbox->set_callback(
+                [&app, idx = i](bool checked)
+                {
+                    app._enable_midi_input(idx, checked);
+                });
+
             insert_widget(1.0, y_offset + 0.1, std::move(device_checkbox));
             insert_widget(2.2f, y_offset, std::move(device_label));
         }
 
-        resize(30, line_height * midi_input_count + y_start_offset);
+        resize(30, line_height * midi_input_count + y_start_offset * 2);
     }
 
 }
