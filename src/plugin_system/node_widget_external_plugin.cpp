@@ -22,6 +22,7 @@ namespace Gammou {
     :   _dsp_plugin{llvm_context, desc.modules_paths, desc.mutable_state_size}
     {
         _name = desc.name;
+        _category = desc.category;
         _node_input_names = desc.input_names;
         _node_output_names = desc.output_names;
     }
