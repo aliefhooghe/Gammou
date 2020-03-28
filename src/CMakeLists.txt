@@ -58,7 +58,10 @@ if (GAMMOU_ENABLE_DESKTOP_APP)
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/midi_device_widget.h
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/midi_device_widget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/main.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_factory.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_factory.cpp
     )
+
 
     add_executable(gammou_desktop_app ${GAMMOU_DESKTOP_SRC} ${GAMMOU_COMMON_SRC})
     target_include_directories(gammou_desktop_app PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${RTAUDIO_INCLUDE_DIR} ${RTMIDI_INCLUDE_DIR})
