@@ -11,6 +11,7 @@ namespace Gammou {
 
     class node_widget_plugin {
     public:
+        virtual ~node_widget_plugin() = default;
         virtual std::unique_ptr<node_widget> create_node() = 0;
         virtual std::unique_ptr<llvm::Module> module() { return nullptr; }
 
