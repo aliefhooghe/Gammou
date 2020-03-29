@@ -68,16 +68,22 @@ namespace Gammou {
     {
         LOG_DEBUG("[gammou][load package] Listing directory '%s'\n", packages_dir_path.c_str());
 
-        for (const auto& entry : std::filesystem::directory_iterator(packages_dir_path)) {
-            if (std::filesystem::is_directory(entry)) {
-                try {
-                    load_package(entry.path(), factory);
-                }
-                catch(...)
-                {
-                    LOG_WARNING("[gammou][load all packages] Unable to load package '%s'.\n", entry.path().c_str());
+        try {
+            for (const auto& entry : std::filesystem::directory_iterator(packages_dir_path)) {
+                if (std::filesystem::is_directory(entry)) {
+                    try {
+                        load_package(entry.path(), factory);
+                    }
+                    catch(...)
+                    {
+                        LOG_WARNING("[gammou][load all packages] Unable to load package '%s'.\n", entry.path().c_str());
+                    }
                 }
             }
+        }
+        catch(...)
+        {
+            LOG_ERROR("[gammou][load all packages] Unable to open directory package '%s'.\n", packages_dir_path.c_str());
         }
     }
 }
