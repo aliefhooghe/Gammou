@@ -3,6 +3,7 @@
 #include "gui/main_gui.h"
 #include "synthesizer/midi_parser.h"
 #include "plugin_system/package_loader.h"
+#include "backends/common/configuration.h"
 #include "helpers/alphabetical_compare.h"
 
 namespace Gammou {
@@ -15,7 +16,7 @@ namespace Gammou {
         _initialize_midi_multiplex();
 
         //  Load packages into factory
-        load_all_packages("../plugin/", _node_factory);
+        load_all_packages(get_packages_directory_path(), _node_factory);
 
         //  Prepare synthesizer
         _synthesizer.add_module(_node_factory.module());

@@ -22,6 +22,9 @@ option(GAMMOU_ENABLE_VST2_PLUGIN "Build a VST2 plugin" ON)
 ############################
 
 set(GAMMOU_COMMON_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/configuration.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/configuration.cpp
+
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_editor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_editor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/main_gui.h

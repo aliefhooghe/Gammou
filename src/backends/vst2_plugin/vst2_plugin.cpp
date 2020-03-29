@@ -4,6 +4,7 @@
 #include "gui/main_gui.h"
 #include "plugin_system/package_loader.h"
 #include "synthesizer/midi_parser.h"
+#include "backends/common/configuration.h"
 
 #include <algorithm>
 #include <cstdlib>
@@ -36,10 +37,10 @@ namespace Gammou {
         _effect->processReplacing = process_replacing_proc;
 
         //  Load packages into factory
-        //load_all_packages("../plugin/", _node_factory);
+        load_all_packages(get_packages_directory_path(), _node_factory);
 
         //  Prepare synthesizer
-        //_synthesizer.add_module(_node_factory.module());
+        _synthesizer.add_module(_node_factory.module());
 
         //  Build gui
         _window = make_synthesizer_gui(_synthesizer, _node_factory);
