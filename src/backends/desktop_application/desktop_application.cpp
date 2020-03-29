@@ -3,6 +3,7 @@
 #include "gui/main_gui.h"
 #include "synthesizer/midi_parser.h"
 #include "plugin_system/package_loader.h"
+#include "helpers/alphabetical_compare.h"
 
 namespace Gammou {
 
@@ -160,7 +161,7 @@ namespace Gammou {
                 unsigned int>; // sample_rate
 
         using model =
-            View::storage_directory_model<std::string, audio_device_descriptor>;
+            View::storage_directory_model<std::string, audio_device_descriptor, View::alphabetical_compare>;
 
         auto audio_device_tree = std::make_unique<model>();
 
@@ -177,8 +178,12 @@ namespace Gammou {
                 const auto info = rt_audio.getDeviceInfo(idx);
                 auto& device_dir = api_dir.add_directory(info.name);
 
-                for (auto sample_rate : info.sampleRates)
-                    device_dir.add_value(std::to_string(sample_rate), {api, idx, sample_rate});
+                for (auto sample_rate : info.sampleRates) {
+                    auto freq_key = std::to_string(sample_rate) + " Hz";
+                    //  Left pad string in order to sort from lowest to highest available frequency
+                    freq_key.insert(freq_key.begin(), 9 - freq_key.length(), ' ');
+                    device_dir.add_value(freq_key, {api, idx, sample_rate});
+                }
             }
         }
 
