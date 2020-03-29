@@ -134,11 +134,20 @@ namespace Gammou {
     }
 
     void vst2_plugin::process_replacing_proc(
-        AEffect *fx, float **inputs, float **outputs, int32_t sample_count)
+        AEffect *fx, float ** /*inputs*/, float **outputs, int32_t sample_count)
     {
         auto plugin =
             reinterpret_cast<vst2_plugin*>(fx->user);
-        plugin->_synthesizer.process_sample(nullptr, outputs[0]);
+
+        auto output_left_buffer = outputs[0];
+        auto output_right_buffer = outputs[1];
+
+        for (auto i = 0u; i < sample_count; ++i) {
+            float tmp[2];
+            plugin->_synthesizer.process_sample(nullptr, tmp);
+            output_left_buffer[i] = tmp[0];
+            output_right_buffer[i] = tmp[1];
+        }
     }
 
     void vst2_plugin::_handle_event(const VstEvent &ev)
