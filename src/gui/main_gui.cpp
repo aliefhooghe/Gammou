@@ -125,8 +125,8 @@ namespace Gammou {
         std::unique_ptr<View::widget> toolbox = make_toolbox(std::move(additional_toolbox));
 
         //  main Windows
-        auto polyphonic_map_editor = std::make_unique<View::header>(std::make_unique<View::map_wrapper>(std::move(polyphonic_circuit_editor), 20, 20));
-        auto master_map_editor = std::make_unique<View::header>(std::make_unique<View::map_wrapper>(std::move(master_circuit_editor), 20, 20));
+        auto polyphonic_map_editor = std::make_unique<View::header>(std::make_unique<View::map_wrapper>(std::move(polyphonic_circuit_editor), 100, 30));
+        auto master_map_editor = std::make_unique<View::header>(std::make_unique<View::map_wrapper>(std::move(master_circuit_editor), 100, 30));
 
         return std::make_unique<View::background>(
             View::make_horizontal_layout(

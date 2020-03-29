@@ -13,6 +13,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 ############################
 
 option(GAMMOU_ENABLE_DESKTOP_APP "Build a desktop application" ON)
+option(GAMMOU_ENABLE_VST2_PLUGIN "Build a VST2 plugin" ON)
 
 ############################
 #                          #
@@ -65,8 +66,27 @@ if (GAMMOU_ENABLE_DESKTOP_APP)
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/main.cpp
     )
 
-
     add_executable(gammou_desktop_app ${GAMMOU_DESKTOP_SRC} ${GAMMOU_COMMON_SRC})
     target_include_directories(gammou_desktop_app PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${RTAUDIO_INCLUDE_DIR} ${RTMIDI_INCLUDE_DIR})
     target_link_libraries(gammou_desktop_app PUBLIC View DSPJIT ${RTMIDI_LIBRARIES} ${RTAUDIO_LIBRARIES})
+endif()
+
+############################
+#                          #
+#       VST2 PLUGIN        #
+#                          #
+############################
+
+if (GAMMOU_ENABLE_VST2_PLUGIN)
+
+    set(GAMMOU_VST_PLUGIN_SRC
+        ${CMAKE_CURRENT_SOURCE_DIR}/backends/vst2_plugin/vst_compat.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/backends/vst2_plugin/vst2_plugin.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/backends/vst2_plugin/vst2_plugin.cpp
+    )
+
+    add_library(gammou_vst2_plugin MODULE ${GAMMOU_VST_PLUGIN_SRC} ${GAMMOU_COMMON_SRC})
+    target_include_directories(gammou_vst2_plugin PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(gammou_vst2_plugin PUBLIC View DSPJIT)
+
 endif()

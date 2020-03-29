@@ -6,7 +6,7 @@
 
 #include "synthesizer/synthesizer.h"
 #include "plugin_system/node_widget_factory.h"
-#include "view.h"
+#include <view.h>
 
 namespace Gammou {
 
