@@ -200,6 +200,7 @@ namespace Gammou {
 
     void circuit_editor::remove_node_widget(node_widget *children)
     {
+        _socket_highlighting = false;
         _node_widgets.erase(&(children->node()));
         View::panel_implementation<node_widget>::remove_widget(children);
     }
