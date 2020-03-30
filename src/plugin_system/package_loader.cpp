@@ -51,7 +51,7 @@ namespace Gammou {
             }
 
             //  Create and plugin into factory
-            LOG_INFO("[gammou][load package] Loading plugin uid : 0x%016llx, name : '%s'\n", node_class_desc.uid, node_class_desc.name.c_str());
+            LOG_INFO("[gammou][load package] Loading plugin uid : 0x%016lx, name : '%s'\n", node_class_desc.uid, node_class_desc.name.c_str());
 
             try {
                 auto plugin = std::make_unique<node_widget_external_plugin>(factory.get_llvm_context(), node_class_desc);
