@@ -24,13 +24,15 @@ namespace Gammou {
             llvm::LLVMContext &llvm_context,
             unsigned int input_count,
             unsigned int output_count,
-            unsigned int voice_count)
+            unsigned int voice_count,
+            const opt_level level,
+            const llvm::TargetOptions& options)
     :   _llvm_context{llvm_context},
         _input_count{input_count},
         _output_count{output_count},
         _midi_input_values(voice_count * midi_input_count, 0.f),
-        _master_circuit_context{_llvm_context, 1u},
-        _polyphonic_circuit_context{_llvm_context, voice_count},
+        _master_circuit_context{_llvm_context, 1u, level, options},
+        _polyphonic_circuit_context{_llvm_context, voice_count, level, options},
         _from_polyphonic{0u, polyphonic_to_master_channel_count},
         _output{output_count, 0u},
         _midi_input{0u, midi_input_count},

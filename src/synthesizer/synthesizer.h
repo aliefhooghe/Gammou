@@ -19,11 +19,15 @@ namespace Gammou
         static constexpr auto polyphonic_to_master_channel_count = 2u;
         static constexpr auto voice_disappearance_treshold = 0.0003f;
 
+        using opt_level = DSPJIT::graph_execution_context::opt_level;
+
         synthesizer(
             llvm::LLVMContext &llvm_context,
             unsigned int input_count = 0u,
             unsigned int output_count = 2u,
-            unsigned int voice_count = 64);
+            unsigned int voice_count = 128,
+            const opt_level level = opt_level::Default,
+            const llvm::TargetOptions& options = llvm::TargetOptions{});
 
         synthesizer(const synthesizer&) = delete;
         synthesizer(synthesizer&&) = delete;
