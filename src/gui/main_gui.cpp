@@ -38,6 +38,7 @@ namespace Gammou {
             std::make_unique<node_widget>("Midi Input", synthesizer.midi_input_node());
         midi_input_node->set_output_name(0u, "Gate");
         midi_input_node->set_output_name(1u, "Pitch");
+        midi_input_node->set_output_name(2u, "Attack");
         polyphonic_circuit_editor->insert_node_widget(5, 5, std::move(midi_input_node));
 
         polyphonic_circuit_editor->insert_node_widget(5, 10,

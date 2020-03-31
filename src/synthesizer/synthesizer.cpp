@@ -65,6 +65,7 @@ namespace Gammou {
             auto midi_input = get_voice_midi_input(voice);
             midi_input[gate] = 1.f;
             midi_input[pitch] = note_frequencies[note];
+            midi_input[attack] = velocity;
             _voice_lifetime[voice] = _voice_disappearance_sample_count;
         }
     }

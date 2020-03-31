@@ -11,6 +11,7 @@ namespace Gammou
         enum midi_inputs {
             gate = 0u,
             pitch,
+            attack,
 
             midi_input_count
         };
@@ -21,8 +22,8 @@ namespace Gammou
         synthesizer(
             llvm::LLVMContext &llvm_context,
             unsigned int input_count = 0u,
-            unsigned int output_count = 1u,
-            unsigned int voice_count = 16);
+            unsigned int output_count = 2u,
+            unsigned int voice_count = 64);
 
         synthesizer(const synthesizer&) = delete;
         synthesizer(synthesizer&&) = delete;
@@ -115,11 +116,11 @@ namespace Gammou
 
         //  Voice management
         voice_manager _voice_manager;
-        unsigned int _voice_disappearance_sample_count{400u};
+        unsigned int _voice_disappearance_sample_count{40000u};
         std::vector<unsigned int> _voice_lifetime;
 
         //  Main settings
-        float _volume{1.f};
+        float _volume{0.2f};
     };
 
 } // namespace Gammou
