@@ -16,7 +16,7 @@ namespace Gammou
 
     class circuit_editor;
 
-    class node_widget : public View::panel_implementation<View::widget> {
+    class node_widget : public View::panel_implementation<> {
         friend class circuit_editor;
     public:
         node_widget(const std::string& name, DSPJIT::compile_node_class&);
@@ -33,8 +33,8 @@ namespace Gammou
         auto& node() const noexcept { return _node; }
         auto& node() noexcept { return _node; }
 
-    protected:
-        void draw_background(cairo_t *cr) override;
+        void draw(cairo_t* cr) override;
+        void draw_rect(cairo_t* cr, const View::rectangle<>&rect) override { draw(cr);} /* \todo */
 
     private:
         auto _default_input_name(unsigned int idx) { return "In " + std::to_string(idx); }
@@ -108,10 +108,11 @@ namespace Gammou
         void set_create_node_callback(create_node_callback);
         void set_circuit_changed_callback(circuit_changed_callback);
 
+        void draw(cairo_t* cr) override;
+        void draw_rect(cairo_t* cr, const View::rectangle<>&rect) override { draw(cr);} /* \todo */
+
         protected:
-            // void draw_background(cairo_t *cr) override;
-            void draw_foreground(cairo_t *cr) override;
-            void draw_link(
+            void _draw_link(
                 cairo_t *cr, View::color color,
                 float x_input, float y_input,
                 float x_output, float y_output) const noexcept;

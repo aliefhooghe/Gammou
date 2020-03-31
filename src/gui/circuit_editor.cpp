@@ -26,7 +26,7 @@ namespace Gammou {
 
     //  Draw helper
     node_widget::node_widget(const std::string& name, DSPJIT::compile_node_class& node)
-    : View::panel_implementation<View::widget>{node_width, widget_node_height(node)},
+    : View::panel_implementation<>{node_width, widget_node_height(node)},
         _name{name},
         _node{node},
         _input_names{node.get_input_count()},
@@ -64,7 +64,7 @@ namespace Gammou {
             _output_names[output_id] = name;
     }
 
-    void node_widget::draw_background(cairo_t *cr)
+    void node_widget::draw(cairo_t *cr)
     {
         View::rounded_rectangle(cr, 0.f, 0.f, width(), height(), node_corner_radius);
         cairo_set_line_width(cr, 0.1f);
@@ -124,6 +124,9 @@ namespace Gammou {
                 View::horizontal_alignment::right,
                 View::vertical_alignment::top);
         }
+
+        //  Draw childrens
+        panel_implementation<>::draw(cr);
     }
 
     bool node_widget::_input_id_at(unsigned int& input_id, float x, float y)
@@ -395,8 +398,11 @@ namespace Gammou {
         _socket_highlight_color = theme.secondary_light;
     }
 
-    void circuit_editor::draw_foreground(cairo_t *cr)
+    void circuit_editor::draw(cairo_t *cr)
     {
+        //  Draw nodes
+        panel_implementation<node_widget>::draw(cr);
+
         //  Draw node links
         for (const auto& holder : _childrens) {
             const auto& node = holder->node();
@@ -419,7 +425,7 @@ namespace Gammou {
                         holder->_input_pos(i, input_x, input_y);
 
                         //  draw link
-                        draw_link(cr, _link_color,
+                        _draw_link(cr, _link_color,
                             output_x + input_node_widget->pos_x(), output_y + input_node_widget->pos_y(),
                             input_x + holder.pos_x(), input_y + holder.pos_y());
                     }
@@ -431,7 +437,7 @@ namespace Gammou {
         if (_is_linking) {
             float output_x, output_y;
             _link_source->_output_pos(_link_source_output, output_x, output_y);
-            draw_link(cr, _linking_color,
+            _draw_link(cr, _linking_color,
                 output_x + _link_source->pos_x(), output_y + _link_source->pos_y(),
                 _linking_x, _linking_y);
         }
@@ -444,7 +450,7 @@ namespace Gammou {
         }
     }
 
-    void circuit_editor::draw_link(
+    void circuit_editor::_draw_link(
         cairo_t *cr, View::color color,
         float x_output, float y_output,
         float x_input, float y_input) const noexcept
