@@ -14,7 +14,9 @@ namespace Gammou {
 
     void node_widget_factory::register_plugin(uid id, std::unique_ptr<node_widget_plugin>&& plugin)
     {
-        llvm::Linker::linkModules(*_module, plugin->module());
+        auto plugin_module = plugin->module();
+        if (plugin_module)
+            llvm::Linker::linkModules(*_module, std::move(plugin_module));
         _plugins.emplace(id, std::move(plugin));
     }
 
