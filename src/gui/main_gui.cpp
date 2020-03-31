@@ -65,34 +65,14 @@ namespace Gammou {
         return toolbox;
     }
 
-    std::unique_ptr<View::widget> make_synthesizer_gui(
-        synthesizer& synthesizer,
+    /**
+     * @brief build the left sidebar
+     */
+    static auto make_left_sidebar(
         node_widget_factory& factory,
-        std::unique_ptr<View::widget>&& additional_toolbox)
+        circuit_editor& master_circuit,
+        circuit_editor& polyphonic_circuit)
     {
-        //  circuit editors
-        auto master_circuit_editor = make_master_circuit_editor(synthesizer);
-        auto polyphonic_circuit_editor = make_polyphonic_circuit_editor(synthesizer);
-
-        // master_circuit_editor->set_create_node_callback(
-        //     [&factory]()
-        //     {
-        //         return factory.create_node(42u);
-        //     }
-        // );
-
-        //  polyphonic circuit editor
-
-
-        // polyphonic_circuit_editor->set_create_node_callback(
-        //     [&factory]()
-        //     {
-        //         return factory.create_node(42u);
-        //     }
-        // );
-
-        //  left side bar
-
         using node_class_model =
             View::storage_directory_model<std::string, node_widget_factory::uid, View::alphabetical_compare>;
 
@@ -112,17 +92,30 @@ namespace Gammou {
 
         auto node_class_selector = View::make_directory_view(std::move(node_classes), 10, 50);
         node_class_selector->set_value_select_callback(
-            [&factory, master = master_circuit_editor.get(), polyphonic = polyphonic_circuit_editor.get()](auto uid)
+            [&factory, &master_circuit, &polyphonic_circuit](auto uid)
             {
                 auto create_node_callback = [&factory, uid]() { return factory.create_node(uid); };
-                master->set_create_node_callback(create_node_callback);
-                polyphonic->set_create_node_callback(create_node_callback);
+                master_circuit.set_create_node_callback(create_node_callback);
+                polyphonic_circuit.set_create_node_callback(create_node_callback);
             });
 
-        auto left_side_bar = std::make_unique<View::header>(std::move(node_class_selector));
+        return std::make_unique<View::header>(std::move(node_class_selector));
+    }
+
+    std::unique_ptr<View::widget> make_synthesizer_gui(
+        synthesizer& synthesizer,
+        node_widget_factory& factory,
+        std::unique_ptr<View::widget>&& additional_toolbox)
+    {
+        //  circuit editors
+        auto master_circuit_editor = make_master_circuit_editor(synthesizer);
+        auto polyphonic_circuit_editor = make_polyphonic_circuit_editor(synthesizer);
+
+        //  left side bar
+        auto left_sidebar = make_left_sidebar(factory, *master_circuit_editor, *polyphonic_circuit_editor);
 
         //  toolbox
-        std::unique_ptr<View::widget> toolbox = make_toolbox(std::move(additional_toolbox));
+        auto toolbox = make_toolbox(std::move(additional_toolbox));
 
         //  main Windows
         auto polyphonic_map_editor = std::make_unique<View::header>(std::make_unique<View::map_wrapper>(std::move(polyphonic_circuit_editor), 100, 30));
@@ -130,7 +123,7 @@ namespace Gammou {
 
         return std::make_unique<View::background>(
             View::make_horizontal_layout(
-                left_side_bar
+                left_sidebar
                 ,
 
                 View::make_vertical_layout(
