@@ -1,4 +1,6 @@
 
+#include <algorithm>
+
 #include "node_widget_external_plugin.h"
 
 namespace Gammou {
@@ -21,16 +23,14 @@ namespace Gammou {
         const node_widget_external_plugin_descriptor& desc)
     :   _dsp_plugin{llvm_context, desc.modules_paths, desc.mutable_state_size}
     {
-        if (_dsp_plugin.get_input_count() != desc.input_names.size() ||
-            _dsp_plugin.get_output_count() != desc.output_names.size())
-        {
-            throw std::runtime_error("node_widget_external_plugin ctor : I/O name does not match code !");
-        }
+        auto ic = std::min<unsigned int>(_dsp_plugin.get_input_count(), desc.input_names.size());
+        auto oc = std::min<unsigned int>(_dsp_plugin.get_output_count(), desc.output_names.size());
 
         _name = desc.name;
         _category = desc.category;
-        _node_input_names = desc.input_names;
-        _node_output_names = desc.output_names;
+
+        _node_input_names.assign(std::begin(desc.input_names), std::begin(desc.input_names) + ic);
+        _node_output_names.assign(std::begin(desc.output_names), std::begin(desc.output_names) + oc);
     }
 
     std::unique_ptr<node_widget> node_widget_external_plugin::create_node()
