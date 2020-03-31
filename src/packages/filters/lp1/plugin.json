@@ -1,0 +1,8 @@
+{
+    "name" : "Lp1",
+    "uid"  : 43,
+    "category" : "Filter",
+    "mutable-state-size": 4,
+    "input-names" : ["in", "cutoff"],
+    "output-names" : ["out"]
+}
