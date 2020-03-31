@@ -3,6 +3,7 @@
 
 #include "gui/main_gui.h"
 #include "plugin_system/package_loader.h"
+#include "builtin_plugins/load_builtin_plugins.h"
 #include "synthesizer/midi_parser.h"
 #include "backends/common/configuration.h"
 
@@ -35,6 +36,9 @@ namespace Gammou {
         _effect->uniqueID = 0xFA5DAD42u;    //  todo better ?
         _effect->version = kVstVersion;
         _effect->processReplacing = process_replacing_proc;
+
+        //  Load builtin plugins into factory
+        load_builtin_plugins(_node_factory);
 
         //  Load packages into factory
         load_all_packages(get_packages_directory_path(), _node_factory);
