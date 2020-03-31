@@ -37,8 +37,8 @@ namespace Gammou
         void draw_background(cairo_t *cr) override;
 
     private:
-        auto _default_input_name(unsigned int idx) { return "Out " + std::to_string(idx); }
-        auto _default_output_name(unsigned int idx) { return "In " + std::to_string(idx); }
+        auto _default_input_name(unsigned int idx) { return "In " + std::to_string(idx); }
+        auto _default_output_name(unsigned int idx) { return "Out " + std::to_string(idx); }
 
         bool _input_id_at(unsigned int& input_id, float x, float y);
         bool _output_id_at(unsigned int& output_id, float x, float y);
