@@ -3,19 +3,20 @@
 #include <nlohmann/json.hpp>
 
 #include "package_loader.h"
+#include "node_widget_external_plugin.h"
 
 namespace Gammou {
 
     struct package_descriptor {
         std::string package_name{};
-        std::vector<node_widget_external_plugin_descriptor> node_class{};
+        std::vector<node_widget_external_plugin_descriptor> plugins{};
         //std::vector<std::string> additional_modules{};
     };
 
     void from_json(const nlohmann::json& j, package_descriptor& desc)
     {
         j.at("package-name").get_to(desc.package_name);
-        j.at("node-class").get_to(desc.node_class);
+        j.at("plugins").get_to(desc.plugins);
         //j.at("additional_modules").get_to(desc.additional_modules);
     }
 
@@ -39,10 +40,11 @@ namespace Gammou {
         //  deserialize package descriptor from the file
         auto package_desc = json_object.get<package_descriptor>();
 
-        LOG_INFO("[gammou][load package] Loading package '%s'\n", dir_path.c_str());
+        LOG_INFO("[gammou][load package] Loading package '%s'\n",
+            package_desc.package_name.c_str());
 
         //  Load nodes classes to factory
-        for (auto& node_class_desc : package_desc.node_class) {
+        for (auto& node_class_desc : package_desc.plugins) {
 
             //  Make sure that path are according to pwd
             for (auto& path : node_class_desc.modules_paths) {
