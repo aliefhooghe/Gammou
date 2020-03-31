@@ -1,0 +1,8 @@
+{
+    "name" : "Saw",
+    "uid"  : 43,
+    "category" : "Oscillator",
+    "mutable-state-size": 4,
+    "input-names" : ["freq"],
+    "output-names" : ["out"]
+}

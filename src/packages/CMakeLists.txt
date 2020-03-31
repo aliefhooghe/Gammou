@@ -10,10 +10,15 @@ add_gammou_plugin(
     ${CMAKE_CURRENT_SOURCE_DIR}/oscillators/sin/plugin.json
     ${CMAKE_CURRENT_SOURCE_DIR}/oscillators/sin/process.c)
 
+add_gammou_plugin(
+    SawPlugin
+    ${CMAKE_CURRENT_SOURCE_DIR}/oscillators/saw/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/oscillators/saw/process.c)
+
 add_gammou_package(
     Oscillators
     ${CMAKE_CURRENT_SOURCE_DIR}/oscillators/content.json
-    SinPlugin)
+    SinPlugin SawPlugin)
 
 #####################
 #      Filters      #
