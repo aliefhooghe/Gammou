@@ -1,0 +1,8 @@
+{
+    "name" : "Sin",
+    "uid"  : 42,
+    "category" : "Oscillator",
+    "mutable-state-size": 4,
+    "input-names" : ["freq", "phase"],
+    "output-names" : ["out"]
+}

@@ -97,3 +97,11 @@ if (GAMMOU_ENABLE_VST2_PLUGIN)
     target_link_libraries(gammou_vst2_plugin PUBLIC View DSPJIT)
 
 endif()
+
+############################
+#                          #
+#    GAMMOU PACKAGES       #
+#                          #
+############################
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/packages)
