@@ -187,7 +187,7 @@ namespace Gammou
         std::vector<unsigned int> _voice_lifetime;
 
         //  Parameter management
-        parameter_manager<parameter_count> _parameter_manager{};
+        parameter_manager<parameter_count> _parameter_manager{48000.f};
         std::array<param_id, 255u> _midi_learn_map;
         bool _midi_learning{false};
         param_id _learning_param;

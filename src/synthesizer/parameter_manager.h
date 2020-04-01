@@ -55,7 +55,9 @@ namespace Gammou {
             param_id _id;
         };
 
-        parameter_manager() noexcept
+        parameter_manager(float sample_rate, float smooth_characteristic_time = 0.1f) noexcept
+        :   _dt{1.f / sample_rate},
+            _smooth_characteristic_time{smooth_characteristic_time}
         {
             std::fill_n(_parameter_values.begin(), ParameterCount, 0.f);
             std::fill_n(_parameter_settings.begin(), ParameterCount, 0.f);
@@ -65,12 +67,31 @@ namespace Gammou {
                 _free_params.push(i);
         }
 
+        void set_sample_rate(float sample_rate) noexcept
+        {
+            _dt = 1.f / sample_rate;
+        }
+
+        void set_smooth_characteristic_time(float tau) noexcept
+        {
+            _smooth_characteristic_time = tau;
+        }
+
         void process_one_sample() noexcept
         {
             const auto parameter_count = _parameter_values.size();
-            /** @todo smooth using 1-pole low pass filter **/
-            for (auto i = 0u; i < parameter_count; ++i)
-                _parameter_values[i] = _parameter_settings[i];
+            const auto factor = _smooth_characteristic_time / _dt;
+            const auto denominator = 1.f + factor;
+            /*
+             *  Each paramter is smoothed using a naive 1 pole low pass filter implementation.
+             *  It is not required to use a more precise numerical method since parameter are changing
+             *  at subsonic frequencies.
+             */
+            for (auto i = 0u; i < parameter_count; ++i) {
+                _parameter_values[i] =
+                    (_parameter_settings[i] + factor * _parameter_values[i]) /
+                    denominator;
+            }
         }
 
         parameter allocate_parameter(float initial_value = 0.f)
@@ -110,6 +131,8 @@ namespace Gammou {
         std::stack<unsigned int> _free_params;
         std::array<float, ParameterCount> _parameter_settings;
         std::array<float, ParameterCount> _parameter_values;
+        float _dt;
+        float _smooth_characteristic_time;
     };
 
 }
