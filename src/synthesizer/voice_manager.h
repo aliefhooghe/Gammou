@@ -14,7 +14,7 @@ namespace Gammou
         using voice = uint32_t;
         using voice_store = std::vector<std::pair<note, voice>>;
 
-        voice_manager(const std::size_t voice_count)
+        inline voice_manager(const std::size_t voice_count)
         :   _voices{}
         {
             _voices.reserve(voice_count);
@@ -29,7 +29,7 @@ namespace Gammou
          *  @brief  Allocate a new voice
          *  @param n the note for which the voice is allocated
          **/
-        bool note_on(note n, voice& v)
+        inline bool note_on(note n, voice& v)
         {
             voice_store::iterator it;
             if (allocate_voice(n, it)) {
@@ -46,7 +46,7 @@ namespace Gammou
          *  @param n the note assigned to the voice
          *
          **/
-        bool note_off(note n, voice& v)
+        inline bool note_off(note n, voice& v)
         {
             auto it = find_on_voice(n);
             if (it != _on_voice_end) {
@@ -81,7 +81,7 @@ namespace Gammou
         }
 
     protected:
-        bool allocate_voice(note n, voice_store::iterator& ret_it)
+        inline bool allocate_voice(note n, voice_store::iterator& ret_it)
         {
             //  if there is a free voice
             if (_active_voices_end != _voices.end()) {
@@ -96,17 +96,17 @@ namespace Gammou
             }
         }
 
-        void voice_off(voice_store::iterator it)
+        inline void voice_off(voice_store::iterator it)
         {
             std::iter_swap(it, --_on_voice_end);
         }
 
-        void voice_stop(voice_store::iterator it)
+        inline void voice_stop(voice_store::iterator it)
         {
             std::iter_swap(it, --_active_voices_end);
         }
 
-        voice_store::iterator find_on_voice(note n)
+        inline voice_store::iterator find_on_voice(note n)
         {
             for (auto it = _voices.begin(); it != _on_voice_end; ++it) {
                 if (it->first == n)
