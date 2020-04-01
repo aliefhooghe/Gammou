@@ -249,45 +249,57 @@ namespace Gammou {
         if (_socket_highlighting == true) {
             _socket_highlighting = false;
             invalidate();
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     bool circuit_editor::on_mouse_drag(const View::mouse_button button, float x, float y, float dx, float dy)
     {
-        if (_is_linking) {
-            _linking_x = x;
-            _linking_y = y;
-            _socket_highlighting = false;
+        if (!View::panel_implementation<node_widget>::on_mouse_drag(button, x, y, dx, dy)) {
+            if (_is_linking) {
+                _linking_x = x;
+                _linking_y = y;
+                _socket_highlighting = false;
 
-            auto under_cursor = widget_at(x, y);
-            if (under_cursor != nullptr) {
-                auto node = under_cursor->get();
-                unsigned int input_id;
+                auto under_cursor = widget_at(x, y);
+                if (under_cursor != nullptr) {
+                    auto node = under_cursor->get();
+                    unsigned int input_id;
 
-                if (node->_input_id_at(input_id, x - node->pos_x(), y - node->pos_y())) {
-                    float cx, cy;
-                    node->_input_pos(input_id, cx, cy);
-                    _socket_highlighting = true;
-                    _socket_highlight_x = cx + node->pos_x();
-                    _socket_highlight_y = cy + node->pos_y();
+                    if (node->_input_id_at(input_id, x - node->pos_x(), y - node->pos_y())) {
+                        float cx, cy;
+                        node->_input_pos(input_id, cx, cy);
+                        _socket_highlighting = true;
+                        _socket_highlight_x = cx + node->pos_x();
+                        _socket_highlight_y = cy + node->pos_y();
+                    }
                 }
-            }
 
-            invalidate();
-            return true;
-        }
-        else {
-            //  if a widget is focused : translate it
-            if (auto w = focused_widget()) {
-                w->set_pos(w->pos_x() + dx, w->pos_y() + dy);
                 invalidate();
                 return true;
             }
             else {
-                return false;
+                //  if a widget is focused : translate it
+                if (auto w = focused_widget()) {
+                    w->set_pos(w->pos_x() + dx, w->pos_y() + dy);
+                    invalidate();
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
+        }
+        else {
+            //  If event was used by a children, stop linking
+            if (_is_linking) {
+                _is_linking = false;
+                invalidate();
+            }
+
+            return true;
         }
     }
 
@@ -295,37 +307,43 @@ namespace Gammou {
     {
         _socket_highlighting = false;
 
-        if (button == View::mouse_button::left) {
-            auto holder_ptr = widget_at(x, y);
+        if (!View::panel_implementation<node_widget>::on_mouse_drag_start(button, x, y)) {
 
-            if (holder_ptr != nullptr) {
-                auto& holder = *holder_ptr;
-                unsigned int output_id;
+            if (button == View::mouse_button::left) {
+                auto holder_ptr = widget_at(x, y);
 
-                //  start a link if one output is under the cursor
-                if (holder->_output_id_at(output_id, x - holder.pos_x(), y - holder.pos_y())) {
-                    _link_source = holder.get();
-                    _link_source_output = output_id;
-                    _linking_x = x;
-                    _linking_y = y;
-                    _is_linking = true;
+                if (holder_ptr != nullptr) {
+                    auto& holder = *holder_ptr;
+                    unsigned int output_id;
+
+                    //  start a link if one output is under the cursor
+                    if (holder->_output_id_at(output_id, x - holder.pos_x(), y - holder.pos_y())) {
+                        _link_source = holder.get();
+                        _link_source_output = output_id;
+                        _linking_x = x;
+                        _linking_y = y;
+                        _is_linking = true;
+                    }
                 }
-            }
-            else {
-                /** @todo move the map ?? Non ailleur, pas le role de l'editor
-                  **/
+                else {
+                    /** @todo move the map ?? Non ailleur, pas le role de l'editor
+                     **/
+                }
+
+                return true;
             }
 
+            return false;
+        }
+        else {
             return true;
         }
-        return false;
     }
 
     bool circuit_editor::on_mouse_drag_end(const View::mouse_button button, float x, float y)
     {
-        //  Since drag event are not transferred to the panel implementation,
-        //  we must inform the panel that cursor moved
-        panel_implementation<node_widget>::on_mouse_move(x, y);
+        //  Always handle drag end event at circuit_editor level to avoid geting stuck in linking state
+        auto ret = View::panel_implementation<node_widget>::on_mouse_drag_end(button, x, y);
 
         if (button == View::mouse_button::left && _is_linking) {
             auto holder_ptr = widget_at(x, y);
@@ -340,24 +358,26 @@ namespace Gammou {
                     _notify_circuit_change();
                 }
             }
-
             invalidate();
             _is_linking = false;
             _socket_highlighting = false;
             return true;
         }
         else {
-            return false;
+            return ret;
         }
     }
 
     bool circuit_editor::on_mouse_drag_cancel()
     {
+        View::panel_implementation<node_widget>::on_mouse_drag_cancel();
+
         if (_is_linking) {
             _is_linking = false;
             _socket_highlighting = false;
             invalidate();
         }
+
         return true;
     }
 
