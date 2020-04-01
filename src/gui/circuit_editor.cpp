@@ -10,18 +10,11 @@ namespace Gammou {
      *      node widget implementation
      *
      **/
-    //  1 unit = font size
-    static constexpr auto node_header_size = 1.8f;
-    static constexpr auto node_corner_radius = 1.f;
-    static constexpr auto socket_size = 1.3f;
-    static constexpr auto socket_hitbox_size = socket_size * 2.f;
-    static constexpr auto socket_radius = 0.3f;
-    static constexpr auto node_width = 11.0f;
-
     static auto widget_node_height(DSPJIT::compile_node_class& node)
     {
         const auto io_count = std::max(node.get_input_count(), node.get_output_count());
-        return static_cast<float>(io_count) * socket_size + node_header_size + node_corner_radius;
+        return static_cast<float>(io_count) * node_widget::socket_size +
+            node_widget::node_header_size + node_widget::node_corner_radius;
     }
 
     //  Draw helper
@@ -444,7 +437,7 @@ namespace Gammou {
 
         // If a socket is highlighted
         if (_socket_highlighting) {
-            View::circle(cr, _socket_highlight_x, _socket_highlight_y, socket_radius * 1.3f);
+            View::circle(cr, _socket_highlight_x, _socket_highlight_y, node_widget::socket_radius * 1.3f);
             View::set_source(cr, _socket_highlight_color);
             cairo_fill(cr);
         }
@@ -461,6 +454,8 @@ namespace Gammou {
 		cairo_curve_to(cr, x_output + D, y_output, x_input - D, y_input, x_input, y_input);
 
 		cairo_set_line_width(cr, 0.2f);
+        cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+
 		View::set_source(cr, color);
 		cairo_stroke(cr);
     }

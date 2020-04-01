@@ -36,6 +36,14 @@ namespace Gammou
         void draw(cairo_t* cr) override;
         void draw_rect(cairo_t* cr, const View::rectangle<>&rect) override { draw(cr);} /* \todo */
 
+        //  1 unit = font size
+        static constexpr auto node_header_size = 1.8f;
+        static constexpr auto node_corner_radius = 1.f;
+        static constexpr auto socket_size = 1.3f;
+        static constexpr auto socket_hitbox_size = socket_size * 2.f;
+        static constexpr auto socket_radius = 0.3f;
+        static constexpr auto node_width = 11.0f;
+
     private:
         auto _default_input_name(unsigned int idx) { return "In " + std::to_string(idx); }
         auto _default_output_name(unsigned int idx) { return "Out " + std::to_string(idx); }

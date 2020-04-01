@@ -4,6 +4,7 @@
 #include "synthesizer/midi_parser.h"
 #include "plugin_system/package_loader.h"
 #include "builtin_plugins/load_builtin_plugins.h"
+#include "gui/control_node_widgets/load_control_plugins.h"
 #include "backends/common/configuration.h"
 #include "helpers/alphabetical_compare.h"
 
@@ -18,6 +19,9 @@ namespace Gammou {
 
         //  Load builtin plugins into factory
         load_builtin_plugins(_node_factory);
+
+        //  Load control plugins into factory
+        load_control_plugins(_synthesizer, _node_factory);
 
         //  Load packages into factory
         load_all_packages(get_packages_directory_path(), _node_factory);
