@@ -87,6 +87,7 @@ namespace Gammou {
         if (_midi_learning) {
             _midi_learn_map[control] = _learning_param;
             _midi_learning = false;
+            LOG_DEBUG("[synthesizer][midi learn] Midi control %u assigned to parameter %u\n", control, _learning_param);
         }
 
         auto param_id = _midi_learn_map[control];
@@ -101,6 +102,8 @@ namespace Gammou {
 
     void synthesizer::midi_learn(const parameter& param)
     {
+        LOG_DEBUG("[synthesizer][midi learn] start midi learn for parameter %u\n", param.id());
+        midi_unlearn(param);
         _learning_param = param.id();
         _midi_learning = true;
     }
