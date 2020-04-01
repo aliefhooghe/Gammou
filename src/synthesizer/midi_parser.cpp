@@ -6,6 +6,7 @@ namespace Gammou {
     enum midi_opcode : uint8_t {
         note_off = 0x8u,
         note_on = 0x9u,
+        control_change = 0xBu
 
         //  to be continued
     };
@@ -39,6 +40,14 @@ namespace Gammou {
             const auto note = data[1] & 0x7F;
             const auto velocity = data[2] & 0x7F;
             synth.midi_note_off(note, static_cast<float>(velocity) / 127.f);
+        }
+        break;
+
+        case midi_opcode::control_change:
+        {
+            const auto control = data[1] & 0x7F;
+            const auto value = data[2] & 0x7F;
+            synth.midi_control_change(control, static_cast<float>(value) / 127.f);
         }
         break;
 
