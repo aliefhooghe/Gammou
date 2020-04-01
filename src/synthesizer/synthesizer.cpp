@@ -5,8 +5,8 @@
 
 namespace Gammou {
 
-    /*
-     *  Map midi note number to Hz frequencies
+    /**
+     *  \brief Map midi note number to Hz frequencies
      */
     static constexpr float note_frequencies[128] =
     {
@@ -40,6 +40,7 @@ namespace Gammou {
         _voice_manager{voice_count},
         _voice_lifetime(voice_count, 0u)
     {
+        std::fill_n(_midi_learn_map.begin(), 255u, parameter_count);
     }
 
     void synthesizer::process_sample(const float input[], float output[]) noexcept
@@ -81,9 +82,38 @@ namespace Gammou {
         }
     }
 
-    void synthesizer::midi_control_change(uint8_t , float )
+    void synthesizer::midi_control_change(uint8_t control, float value)
     {
-        /** @todo **/
+        if (_midi_learning) {
+            _midi_learn_map[control] = _learning_param;
+            _midi_learning = false;
+        }
+
+        auto param_id = _midi_learn_map[control];
+        if (param_id != parameter_count)
+            _parameter_manager.set_parameter(param_id, value);
+    }
+
+    synthesizer::parameter synthesizer::allocate_parameter(float initial_value)
+    {
+        return _parameter_manager.allocate_parameter(initial_value);
+    }
+
+    void synthesizer::midi_learn(const parameter& param)
+    {
+        _learning_param = param.id();
+        _midi_learning = true;
+    }
+
+    void synthesizer::midi_unlearn(const parameter& param)
+    {
+        if (_midi_learning && _learning_param == param.id())
+            _midi_learning = false;
+
+        for (auto& learned_param : _midi_learn_map) {
+            if (learned_param == param.id())
+                learned_param = parameter_count;
+        }
     }
 
     void synthesizer::add_module(std::unique_ptr<llvm::Module>&& m)
@@ -105,6 +135,9 @@ namespace Gammou {
     void synthesizer::_process_one_sample(const float[], float output[]) noexcept
     {
         float polyphonic_output[polyphonic_to_master_channel_count] = {0.f};
+
+        //  Update parameters
+        _parameter_manager.process_one_sample();
 
         //  Sum the outputs of each active voice
         _voice_manager.foreach_active_voice(

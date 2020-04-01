@@ -3,24 +3,40 @@
 
 #include <compile_node_class.h>
 #include "voice_manager.h"
+#include "parameter_manager.h"
 
 namespace Gammou
 {
     class synthesizer {
     public:
+
+        /**
+         *  \enum midi_inputs The available channel midi inputs
+         */
         enum midi_inputs {
-            gate = 0u,
-            pitch,
-            attack,
+            gate = 0u,          /** 1. when not is on, 0. otherwise **/
+            pitch,              /** the pitch of the note being played (Hz) **/
+            attack,             /** the attack velocity in [0., 1.] **/
 
             midi_input_count
         };
 
+        static constexpr auto parameter_count = 16u;
         static constexpr auto polyphonic_to_master_channel_count = 2u;
         static constexpr auto voice_disappearance_treshold = 0.0003f;
 
         using opt_level = DSPJIT::graph_execution_context::opt_level;
+        using parameter = parameter_manager<parameter_count>::parameter;
 
+        /**
+         *  \brief Initialize a synthesizer instance
+         *  \param llvm_context llvm context instance used to perform just in time compilation
+         *  \param input_count \todo
+         *  \param output_count synthesizer output_count \see output_node()
+         *  \param voice_count the maximum number of voice that can be played at the same time
+         *  \param level Optimization level in {None, Less, Default, Aggressive}
+         *  \param options native target code generation advanced options
+         */
         synthesizer(
             llvm::LLVMContext &llvm_context,
             unsigned int input_count = 0u,
@@ -33,7 +49,14 @@ namespace Gammou
         synthesizer(synthesizer&&) = delete;
         ~synthesizer() = default;
 
+        /**
+         *  \brief Return the number of inputs
+         */
         auto get_input_count() const noexcept { return _input_count; }
+
+        /**
+         *  \brief Return the number of outputs
+         */
         auto get_output_count() const noexcept { return _output_count; }
 
         //  Master circuit internal nodes
@@ -45,53 +68,93 @@ namespace Gammou
         auto& to_master_node() noexcept { return _to_master; }
 
         /**
-         *
-         **/
+         *  \brief Add module and make it available for synthesizer circuits nodes
+         */
         void add_module(std::unique_ptr<llvm::Module>&& m);
 
         /**
-         * @brief Compile the master circuit and update the processing code
-         **/
+         *  \brief Compile the master circuit and update the processing code
+         */
         void compile_master_circuit();
 
         /**
-         * @brief Compile the polyphonic circuit and update the processing code
-         **/
+         *  \brief Compile the polyphonic circuit and update the processing code
+         */
         void compile_polyphonic_circuit();
-
-        /**
-         *  @brief
-         **/
-        // void bypass_master(bool);
 
         /**
          **
          **    Process thread part
          **
+         **     This part can be safely used concurrently with the previous methods,
+         **     typically in a sound processing thread, while gui thread access the compilation and graph editing interface.
          **/
 
         /**
-         *  @brief
-         *  @param input input values [channel0, channel1, ...]
-         *  @param output output values [channel0, channel1, ...]
-         **/
+         *  \brief compute one output sample using one input sample
+         *  \param input input values [channel0, channel1, ..., channelN]
+         *  \param output output values [channel0, channel1, ..., channelN]
+         */
         void process_sample(
             const float input[],
             float output[]) noexcept;
 
+        /**
+         *  \brief compute N output samples using N input samples
+         *  \param sample_count the number of sample to be computed
+         *  \param inputs input buffer [ch0, ch1, ..., chN, ch0, ch1, ..., chN, ...]
+         *  \param outputs output buffer [ch0, ch1, ..., chN, ch0, ch1, ..., chN, ...]
+         */
         void process_buffer(
             std::size_t sample_count,
             const float inputs[],
             float outputs[]) noexcept;
 
-        /*
-         *
+        /**
+         *  \brief handle a midi note on event
+         *  \param note midi note played in [0, 127]
+         *  \param velocity midi velocity in [0., 1.]
          */
         void midi_note_on(uint8_t node, float velocity);
+
+        /**
+         *  \brief handle a midi note off event
+         *  \param note midi note played in [0, 127]
+         *  \param velocity midi velocity in [0., 1.]
+         */
         void midi_note_off(uint8_t node, float velocity);
+
+        /**
+         *  \brief handle a midi control change event
+         *  \param control the control id in \todo
+         *  \param value the new control value in [0., 1.]
+         */
         void midi_control_change(uint8_t control, float value);
 
+        /**
+         *  \brief allocate a new parameter
+         *  \param initial_value the value at which the new parameter is initialized
+         *  \return the new parameter if allocation was succeffull, throw an exception otherwise
+         */
+        parameter allocate_parameter(float initial_value = 0.f);
+
+        /**
+         *  \brief Link this parameter to the next midi control changed
+         *  \param param the parameter to be linked to a midi control
+         *  \note This will cancel any midi learning that was not terminated
+         */
+        void midi_learn(const parameter& param);
+
+        /**
+         *  \brief Unlink this parameter to any midi control
+         *  \param param the parameter to be unlinked
+         *  \note This will cancel any midi learning that was not terminated for that parameter
+         */
+        void midi_unlearn(const parameter& param);
+
     private:
+        using param_id = parameter_manager<parameter_count>::param_id;
+
         void _process_one_sample(const float[], float output[]) noexcept;
 
         auto get_voice_midi_input(voice_manager::voice voice) noexcept
@@ -122,6 +185,12 @@ namespace Gammou
         voice_manager _voice_manager;
         unsigned int _voice_disappearance_sample_count{40000u};
         std::vector<unsigned int> _voice_lifetime;
+
+        //  Parameter management
+        parameter_manager<parameter_count> _parameter_manager{};
+        std::array<param_id, 255u> _midi_learn_map;
+        bool _midi_learning{false};
+        param_id _learning_param;
 
         //  Main settings
         float _volume{0.2f};
