@@ -1,7 +1,7 @@
 #ifndef GAMMOU_BUILTIN_PLUGIN_H_
 #define GAMMOU_BUILTIN_PLUGIN_H_
 
-#include "../plugin_system/node_widget_factory.h"
+#include "plugin_system/node_widget_factory.h"
 
 namespace Gammou {
 
