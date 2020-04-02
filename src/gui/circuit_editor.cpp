@@ -201,6 +201,24 @@ namespace Gammou {
         View::panel_implementation<node_widget>::remove_widget(children);
     }
 
+    void circuit_editor::clear()
+    {
+        std::vector<node_widget*> to_delete;
+        to_delete.reserve(_childrens.size());
+
+        //  list the node to be removed and unlink every links
+        for (auto& child : _childrens) {
+            to_delete.push_back(child.get());
+
+            const auto ic = child->node().get_input_count();
+            for (auto i = 0u; i < ic; ++i)
+                child->node().disconnect(i);
+        }
+
+        for (auto node : to_delete)
+            remove_node_widget(node);
+    }
+
     bool circuit_editor::on_mouse_dbl_click(float x, float y)
     {
         if (!panel_implementation<node_widget>::on_mouse_dbl_click(x, y)) {
@@ -486,5 +504,182 @@ namespace Gammou {
             _circuit_changed_callback();
     }
 
+    /*
+     *
+     *      Serialization / Deserialization
+     *
+     */
+
+    struct node_desc {
+        float x;
+        float y;
+        nlohmann::json node;
+    };
+
+    struct link_source_desc {
+        unsigned int node;
+        unsigned int out;
+    };
+
+    struct link_dest_desc {
+        unsigned int node;
+        unsigned int in;
+    };
+    struct link_desc {
+        link_source_desc from;
+        link_dest_desc to;
+    };
+
+    struct circuit_desc {
+        std::vector<node_desc> nodes;
+        std::vector<link_desc> links;
+    };
+
+    static void from_json(const nlohmann::json& json, node_desc& desc)
+    {
+        json.at("x").get_to(desc.x);
+        json.at("y").get_to(desc.y);
+        desc.node = json.at("node");
+    }
+
+    static void to_json(nlohmann::json& json, const node_desc& desc)
+    {
+        json = nlohmann::json{
+            {"x", desc.x},
+            {"y", desc.y},
+            {"node", desc.node}
+        };
+    }
+
+    static void from_json(const nlohmann::json& json, link_source_desc& desc)
+    {
+        json.at("node").get_to(desc.node);
+        json.at("out").get_to(desc.out);
+    }
+
+    static void to_json(nlohmann::json& json, const link_source_desc& desc)
+    {
+        json = nlohmann::json{
+            {"node", desc.node},
+            {"out", desc.out}
+        };
+    }
+
+    static void from_json(const nlohmann::json& json, link_dest_desc& desc)
+    {
+        json.at("node").get_to(desc.node);
+        json.at("in").get_to(desc.in);
+    }
+
+    static void to_json(nlohmann::json& json, const link_dest_desc& desc)
+    {
+        json = nlohmann::json{
+            {"node", desc.node},
+            {"in", desc.in}
+        };
+    }
+
+    static void from_json(const nlohmann::json& json, link_desc& desc)
+    {
+        json.at("from").get_to(desc.from);
+        json.at("to").get_to(desc.to);
+    }
+
+    static void to_json(nlohmann::json& json, const link_desc& desc)
+    {
+        json = nlohmann::json{
+            {"from", desc.from},
+            {"to", desc.to}
+        };
+    }
+
+    static void from_json(const nlohmann::json& json, circuit_desc& desc)
+    {
+        json.at("nodes").get_to(desc.nodes);
+        json.at("links").get_to(desc.links);
+    }
+
+    static void to_json(nlohmann::json& json, const circuit_desc& desc)
+    {
+        json = nlohmann::json{
+            {"nodes", desc.nodes},
+            {"links", desc.links}
+        };
+    }
+
+    nlohmann::json circuit_editor::serialize()
+    {
+        std::unordered_map<const node_widget*, unsigned int> node_index{};
+        circuit_desc desc;
+
+        //  Store nodes
+        desc.nodes.reserve(_childrens.size());
+
+        for (auto i = 0u; i < _childrens.size(); ++i) {
+            const auto& child = _childrens[i];
+            desc.nodes.emplace_back(
+                node_desc{
+                    child.pos_x(),
+                    child.pos_y(),
+                    std::move(child->serialize())});
+            node_index.emplace(child.get(), i);
+        }
+
+        //  Store links
+        for (const auto& child : _childrens) {
+            const auto child_index = node_index[child.get()];
+            const auto& node = child->node();
+            const auto ic = node.get_input_count();
+
+            for (auto i = 0u; i < ic; ++i) {
+                unsigned int output_id;
+                const auto input_node = node.get_input(i, output_id);
+
+                if (input_node != nullptr) {
+                    auto it = _node_widgets.find(input_node);
+
+                    if (it != _node_widgets.end()) {
+                        desc.links.emplace_back(link_desc{
+                            link_source_desc{node_index[it->second], output_id},
+                            link_dest_desc{child_index, i}}
+                        );
+                    }
+                }
+            }
+        }
+
+        return desc;
+    }
+
+    void circuit_editor::deserialize(const nlohmann::json& json, node_deserializer deserializer)
+    {
+        std::unordered_map<unsigned int, node_widget*> node_index{};
+        circuit_desc desc;
+        from_json(json, desc);
+
+        //  clear current content
+        clear();
+
+        //  Create nodes
+        for (auto i = 0u; i < desc.nodes.size(); ++i) {
+            const auto& node_desc = desc.nodes[i];
+            auto node = deserializer(node_desc.node);
+            node_index.emplace(i, node.get());
+            insert_node_widget(
+                node_desc.x,
+                node_desc.y,
+                std::move(node));
+        }
+
+        //  create links
+        for (const auto& link_desc : desc.links) {
+            node_index[link_desc.from.node]->node().connect(
+                link_desc.from.out,
+                node_index[link_desc.to.node]->node(),
+                link_desc.to.in);
+        }
+
+        _notify_circuit_change();
+    }
 
 }

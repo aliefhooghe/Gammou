@@ -35,10 +35,11 @@ namespace Gammou {
             std::make_unique<View::header>(_make_audio_device_widget())
         );
 
-        _window = make_synthesizer_gui(_synthesizer, _node_factory, std::move(additional_toolbox));
+        _main_gui = std::make_unique<main_gui>(
+            _synthesizer, _node_factory, std::move(additional_toolbox));
 
         //  display
-        _display = std::make_unique<View::native_application_display>(*_window, 12);
+        _display = std::make_unique<View::native_application_display>(_main_gui->widget(), 12);
     }
 
     desktop_application::~desktop_application()

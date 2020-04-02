@@ -95,13 +95,17 @@ namespace Gammou
          *          -   component removed
          **/
         using circuit_changed_callback =
-        std::function<void(void)>;
+            std::function<void(void)>;
+
+        using node_deserializer =
+            std::function<std::unique_ptr<node_widget>(const nlohmann::json&)>;
 
         circuit_editor(float width, float height);
         circuit_editor(float width, float height, View::size_constraint width_constraint, View::size_constraint height_constraint);
 
         void insert_node_widget(float x, float y, std::unique_ptr<node_widget>&&);
         void remove_node_widget(node_widget*);
+        void clear();
 
         bool on_mouse_dbl_click(float x, float y) override;
         bool on_mouse_move(float x, float y) override;
@@ -113,11 +117,17 @@ namespace Gammou
 
         void apply_color_theme(const View::color_theme& theme) override;
 
-        /**
+        /*
          *      Event callbacks
          **/
         void set_create_node_callback(create_node_callback);
         void set_circuit_changed_callback(circuit_changed_callback);
+
+        /*
+         *      Serialization / Deserialization
+         */
+        nlohmann::json serialize();
+        void deserialize(const nlohmann::json&, node_deserializer);
 
         void draw(cairo_t* cr) override;
         void draw_rect(cairo_t* cr, const View::rectangle<>&rect) override { draw(cr);} /* \todo */
@@ -153,7 +163,6 @@ namespace Gammou
             View::color _linking_color;
             View::color _socket_highlight_color;
     };
-
 
 } // namespace Gammou
 

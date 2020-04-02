@@ -5,7 +5,7 @@
 #include <RtMidi.h>
 
 #include "synthesizer/synthesizer.h"
-#include "plugin_system/node_widget_factory.h"
+#include "gui/main_gui.h"
 #include <view.h>
 
 namespace Gammou {
@@ -45,7 +45,7 @@ namespace Gammou {
         synthesizer _synthesizer;
 
         //  GUI
-        std::unique_ptr<View::widget> _window{};
+        std::unique_ptr<main_gui> _main_gui;
         std::unique_ptr<View::native_application_display> _display{};
 
         //  Audio I/O

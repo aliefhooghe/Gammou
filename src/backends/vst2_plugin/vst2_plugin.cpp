@@ -51,10 +51,10 @@ namespace Gammou {
         _synthesizer.add_module(_node_factory.module());
 
         //  Build gui
-        _window = make_synthesizer_gui(_synthesizer, _node_factory);
+        _main_gui = std::make_unique<main_gui>(_synthesizer, _node_factory);
 
         //  Initialize display
-        _display = std::make_unique<View::native_vst2_display>(*_window, 12);
+        _display = std::make_unique<View::native_vst2_display>(_main_gui->widget(), 12);
 
         _window_rect.left = 0u;
         _window_rect.right = _display->px_width();
