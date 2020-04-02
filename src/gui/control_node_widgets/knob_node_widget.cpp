@@ -23,18 +23,32 @@ namespace Gammou {
             knob->set_value(*_param.get_value_ptr());
 
             //  Create the midi learn button
-            auto button = std::make_unique<View::text_push_button>("L", 1.5f, 1.5f);
-            button->set_callback([this, &synth](){ synth.midi_learn(_param); });
+            auto learn_button = std::make_unique<View::text_push_button>("L", 1.5f, 1.5f);
+            learn_button->set_callback([this, &synth](){ synth.midi_learn(_param); });
+
+            // //  Create the scale buttons
+            auto button_scale_up = std::make_unique<View::text_push_button>("+", 1.5f, 1.5f);
+            auto button_scale_down = std::make_unique<View::text_push_button>("-", 1.5f, 1.5f);
+
+            button_scale_up->set_callback([this](){ _param.set_shape_scale(_param.get_shape_scale() * 2.f); });
+            button_scale_down->set_callback([this](){ _param.set_shape_scale(_param.get_shape_scale() / 2.f); });
 
             //  Insert the widgets
             resize_height(node_widget::node_header_size * 2.f + knob->height());
             insert_widget(
-                (width() - knob->width()) / 2,
+                width() - node_widget::node_header_size - knob->width(),
                 node_widget::node_header_size * 1.5f,
                 std::move(knob));
 
             insert_widget(
-                node_widget::node_header_size, node_widget::node_header_size, std::move(button));
+                node_widget::node_header_size, node_widget::node_header_size, std::move(learn_button));
+
+            insert_widget(
+                node_widget::node_header_size, node_widget::node_header_size * 2, std::move(button_scale_up));
+
+            insert_widget(
+                node_widget::node_header_size, node_widget::node_header_size * 3, std::move(button_scale_down));
+
         }
 
     private:

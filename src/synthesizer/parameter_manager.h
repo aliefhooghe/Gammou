@@ -54,6 +54,25 @@ namespace Gammou {
                 return _mgr.get_parameter_value_ptr(_id);
             }
 
+            void set_shape_scale(float scale) noexcept
+            {
+                _mgr.set_parameter_shape_scale(_id, scale);
+            }
+
+            void set_shape_exponent(float exponent) noexcept
+            {
+                _mgr.set_parameter_shape_exponent(_id, exponent);
+            }
+
+            float get_shape_scale() const noexcept
+            {
+                return _mgr.get_parameter_shape_scale(_id);
+            }
+
+            float get_shape_exponent() const noexcept
+            {
+                return _mgr.get_parameter_shape_exponent(_id);
+            }
 
         private:
             parameter(parameter_manager& mgr, param_id id)
@@ -74,6 +93,8 @@ namespace Gammou {
         {
             std::fill_n(_parameter_values.begin(), ParameterCount, 0.f);
             std::fill_n(_parameter_settings.begin(), ParameterCount, 0.f);
+            std::fill_n(_shape_scales.begin(), ParameterCount, 1.f);
+            std::fill_n(_shape_exponents.begin(), ParameterCount, 3.f);
 
             //  At begining all parameter are free
             for (auto i = 0; i < ParameterCount; ++i)
@@ -88,6 +109,26 @@ namespace Gammou {
         void set_smooth_characteristic_time(float tau) noexcept
         {
             _smooth_characteristic_time = tau;
+        }
+
+        void set_parameter_shape_scale(param_id param, float scale) noexcept
+        {
+            _shape_scales[param] = scale;
+        }
+
+        void set_parameter_shape_exponent(param_id param, float exponent) noexcept
+        {
+            _shape_exponents[param] = exponent;
+        }
+
+        float get_parameter_shape_scale(param_id param) const noexcept
+        {
+            return _shape_scales[param];
+        }
+
+        float get_parameter_shape_exponent(param_id param) const noexcept
+        {
+            return _shape_exponents[param];
         }
 
         void process_one_sample() noexcept
@@ -123,7 +164,9 @@ namespace Gammou {
 
         void set_parameter_nomalized(param_id param, float value) noexcept
         {
-            _parameter_settings[param] = value;
+            const auto scale = _shape_scales[param];
+            const auto exponent = _shape_exponents[param];
+            _parameter_settings[param] = scale * (powf(exponent, value) - 1.f) / (exponent - 1.f);
         }
 
         const float *get_parameter_value_ptr(param_id param) const noexcept
@@ -140,6 +183,8 @@ namespace Gammou {
         std::stack<unsigned int> _free_params;
         std::array<float, ParameterCount> _parameter_settings;
         std::array<float, ParameterCount> _parameter_values;
+        std::array<float, ParameterCount> _shape_scales;
+        std::array<float, ParameterCount> _shape_exponents;
         float _dt;
         float _smooth_characteristic_time;
     };
