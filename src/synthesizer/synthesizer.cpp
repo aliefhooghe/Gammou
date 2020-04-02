@@ -92,7 +92,7 @@ namespace Gammou {
 
         auto param_id = _midi_learn_map[control];
         if (param_id != parameter_count)
-            _parameter_manager.set_parameter(param_id, value);
+            _parameter_manager.set_parameter_nomalized(param_id, value);
     }
 
     synthesizer::parameter synthesizer::allocate_parameter(float initial_value)

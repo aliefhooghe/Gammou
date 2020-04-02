@@ -27,20 +27,33 @@ namespace Gammou {
                     _mgr.free_parameter(_id);
             }
 
+            /**
+             *  \return the id identifying the parameter
+             */
             param_id id() const noexcept
             {
                 return _id;
             }
 
-            void set(float value)
+            /**
+             *  \brief set the normalized parameter setting value.
+             *  \param value the normalized value in [0., 1.]
+             *  \details the actual parameter setting value will be computed
+             *          according to the shape settings
+             */
+            void set_normalized(float value) noexcept
             {
-                _mgr.set_parameter(_id, value);
+                _mgr.set_parameter_nomalized(_id, value);
             }
 
-            const float* get_value_ref()
+            /**
+             *  \return a read only pointer to the smoothed value
+             */
+            const float* get_value_ptr() const noexcept
             {
-                return _mgr.get_parameter_value_ref(_id);
+                return _mgr.get_parameter_value_ptr(_id);
             }
+
 
         private:
             parameter(parameter_manager& mgr, param_id id)
@@ -108,23 +121,19 @@ namespace Gammou {
             }
         }
 
-        void set_parameter(param_id param, float value) noexcept
+        void set_parameter_nomalized(param_id param, float value) noexcept
         {
             _parameter_settings[param] = value;
         }
 
-        const float *get_parameter_value_ref(param_id param) const noexcept
+        const float *get_parameter_value_ptr(param_id param) const noexcept
         {
-            if (param < ParameterCount)
-                return &_parameter_values[param];
-            else
-                return nullptr;
+            return &_parameter_values[param];
         }
 
         void free_parameter(param_id param) noexcept
         {
-            if (param < ParameterCount)
-                _free_params.push(param);
+            _free_params.push(param);
         }
 
     private:

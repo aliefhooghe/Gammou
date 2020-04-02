@@ -10,7 +10,7 @@ namespace Gammou {
         knob_node_widget(synthesizer& synth, parameter && param)
         :   owning_node_widget{
                 "Knob",
-                std::make_unique<DSPJIT::reference_compile_node>(param.get_value_ref())
+                std::make_unique<DSPJIT::reference_compile_node>(param.get_value_ptr())
             },
             _param{std::move(param)}
         {
@@ -19,8 +19,8 @@ namespace Gammou {
 
             //  Create the knob and link it to the parameter
             auto knob = std::make_unique<View::knob>();
-            knob->set_callback([this](float val) { _param.set(val);});
-            knob->set_value(*_param.get_value_ref());
+            knob->set_callback([this](float val) { _param.set_normalized(val);});
+            knob->set_value(*_param.get_value_ptr());
 
             //  Create the midi learn button
             auto button = std::make_unique<View::text_push_button>("L", 1.5f, 1.5f);
