@@ -35,6 +35,8 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/control_node_widgets/load_control_plugins.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_editor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_editor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/internal_node_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/internal_node_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/main_gui.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/main_gui.cpp
 

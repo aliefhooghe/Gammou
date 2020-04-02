@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <nlohmann/json.hpp>
 
 #include <compile_node_class.h>   //  DSPJIT nodes
 #include <view.h>
@@ -35,6 +36,8 @@ namespace Gammou
 
         void draw(cairo_t* cr) override;
         void draw_rect(cairo_t* cr, const View::rectangle<>&rect) override { draw(cr);} /* \todo */
+
+        virtual nlohmann::json serialize() =0;
 
         //  1 unit = font size
         static constexpr auto node_header_size = 1.8f;
@@ -81,13 +84,13 @@ namespace Gammou
     public:
 
         /**
-         *      Called to create a node at dbl click event
+         *  \brief Called to create a node at dbl click event
          **/
         using create_node_callback =
             std::function<std::unique_ptr<node_widget>(void)>;
 
         /**
-         *      Called when the circuit was changed :
+         *  \brief  Called when the circuit was changed :
          *          -   link added/removed
          *          -   component removed
          **/

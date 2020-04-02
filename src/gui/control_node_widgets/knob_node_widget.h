@@ -6,10 +6,10 @@
 
 namespace Gammou {
 
-    class  knob_node_widget_plugin  : public node_widget_plugin {
+    class  knob_node_widget_plugin  : public node_widget_factory::plugin {
     public:
         knob_node_widget_plugin(synthesizer& synth);
-        std::unique_ptr<node_widget> create_node() override;
+        std::unique_ptr<plugin_node_widget> create_node() override;
     private:
         synthesizer& _synth;
     };

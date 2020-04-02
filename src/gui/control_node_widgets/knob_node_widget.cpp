@@ -4,12 +4,12 @@
 
 namespace Gammou {
 
-    class knob_node_widget : public owning_node_widget {
+    class knob_node_widget : public plugin_node_widget {
         using parameter = synthesizer::parameter;
     public:
         knob_node_widget(synthesizer& synth, parameter && param)
-        :   owning_node_widget{
-                "Knob",
+        :   plugin_node_widget{
+                "Knob", 12,
                 std::make_unique<DSPJIT::reference_compile_node>(param.get_value_ptr())
             },
             _param{std::move(param)}
@@ -56,13 +56,12 @@ namespace Gammou {
     };
 
     knob_node_widget_plugin::knob_node_widget_plugin(synthesizer& synth)
-    :   _synth{synth}
+    :   node_widget_factory::plugin{12, "Knob" ,"Control"},
+        _synth{synth}
     {
-        _name = "Knob";
-        _category = "Control";
     }
 
-    std::unique_ptr<node_widget> knob_node_widget_plugin::create_node()
+    std::unique_ptr<plugin_node_widget> knob_node_widget_plugin::create_node()
     {
         return std::make_unique<knob_node_widget>(
             _synth, _synth.allocate_parameter());

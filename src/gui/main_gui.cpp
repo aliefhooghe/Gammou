@@ -1,7 +1,7 @@
 
-
 #include "helpers/alphabetical_compare.h"
 #include "circuit_editor.h"
+#include "internal_node_widget.h"
 
 #include "main_gui.h"
 
@@ -16,10 +16,10 @@ namespace Gammou {
         auto master_circuit_editor = std::make_unique<circuit_editor>(20, 20);
 
         master_circuit_editor->insert_node_widget(5, 5,
-            std::make_unique<node_widget>("From Polyphonic", synthesizer.from_polyphonic_node()));
+            std::make_unique<internal_node_widget>("from-polyphonic", "From Polyphonic", synthesizer.from_polyphonic_node()));
 
         master_circuit_editor->insert_node_widget(5, 10,
-            std::make_unique<node_widget>("Output", synthesizer.output_node()));
+            std::make_unique<internal_node_widget>("output", "Output", synthesizer.output_node()));
 
         master_circuit_editor->set_circuit_changed_callback(
             [&synthesizer](){ synthesizer.compile_master_circuit(); });
@@ -35,14 +35,14 @@ namespace Gammou {
         auto polyphonic_circuit_editor = std::make_unique<circuit_editor>(20, 20);
 
         auto midi_input_node =
-            std::make_unique<node_widget>("Midi Input", synthesizer.midi_input_node());
+            std::make_unique<internal_node_widget>("midi-input", "Midi Input", synthesizer.midi_input_node());
         midi_input_node->set_output_name(0u, "Gate");
         midi_input_node->set_output_name(1u, "Pitch");
         midi_input_node->set_output_name(2u, "Attack");
         polyphonic_circuit_editor->insert_node_widget(5, 5, std::move(midi_input_node));
 
         polyphonic_circuit_editor->insert_node_widget(5, 10,
-            std::make_unique<node_widget>("To Master", synthesizer.to_master_node()));
+            std::make_unique<internal_node_widget>("to-master", "To Master", synthesizer.to_master_node()));
 
         polyphonic_circuit_editor->set_circuit_changed_callback(
             [&synthesizer](){ synthesizer.compile_polyphonic_circuit(); });
@@ -75,7 +75,7 @@ namespace Gammou {
         circuit_editor& polyphonic_circuit)
     {
         using node_class_model =
-            View::storage_directory_model<std::string, node_widget_factory::uid, View::alphabetical_compare>;
+            View::storage_directory_model<std::string, node_widget_factory::plugin_id, View::alphabetical_compare>;
 
         auto node_classes = std::make_unique<node_class_model>();
 
@@ -85,10 +85,10 @@ namespace Gammou {
             const auto& plugin = pair.second;
 
             //  Create or get existing category directory
-            auto& category_dir = node_classes->add_directory(plugin->get_category());
+            auto& category_dir = node_classes->add_directory(plugin->category());
 
             //  Insert plugin in category directory
-            category_dir.add_value(plugin->get_name(), std::move(uid));
+            category_dir.add_value(plugin->name(), std::move(uid));
         }
 
         auto node_class_selector = View::make_directory_view(std::move(node_classes), 10, 50);

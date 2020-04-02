@@ -10,7 +10,7 @@
 namespace Gammou
 {
     struct node_widget_external_plugin_descriptor {
-        node_widget_factory::uid uid{0u};
+        node_widget_factory::plugin_id plugin_id{0u};
         std::string name{};
         std::string category{};
         std::size_t mutable_state_size{0u};
@@ -21,7 +21,7 @@ namespace Gammou
 
     void from_json(const nlohmann::json&, node_widget_external_plugin_descriptor&);
 
-    class node_widget_external_plugin : public node_widget_plugin {
+    class node_widget_external_plugin : public node_widget_factory::plugin {
     public:
         node_widget_external_plugin(
             llvm::LLVMContext &llvm_context,
@@ -31,7 +31,7 @@ namespace Gammou
         node_widget_external_plugin(const node_widget_external_plugin&) = delete;
         node_widget_external_plugin(node_widget_external_plugin&&) = default;
 
-        std::unique_ptr<node_widget> create_node() override;
+        std::unique_ptr<plugin_node_widget> create_node() override;
         std::unique_ptr<llvm::Module> module() override;
 
     private:

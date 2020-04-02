@@ -6,57 +6,32 @@
 namespace Gammou {
 
     template <typename TCompileNode>
-    class node_widget_builtin_plugin : public node_widget_plugin {
+    class node_widget_builtin_plugin : public node_widget_factory::plugin {
     public:
+        using plugin_id = node_widget_factory::plugin_id;
+
         node_widget_builtin_plugin(
+            plugin_id id,
             const std::string& name,
             const std::string& category)
-        {
-            _name = name;
-            _category = category;
-        }
+        :   node_widget_factory::plugin{id, name, category}
+        {}
 
-        node_widget_builtin_plugin(
-            const std::string& name,
-            const std::string& category,
-            const std::vector<std::string>& input_names,
-            const std::vector<std::string>& output_names)
-        :   node_widget_builtin_plugin{name, category}
+        std::unique_ptr<plugin_node_widget> create_node() override
         {
-            _node_input_names = input_names;
-            _node_output_names = output_names;
-        }
-
-        std::unique_ptr<node_widget> create_node() override
-        {
-            return std::make_unique<owning_node_widget>(
-                _name,
+            return std::make_unique<plugin_node_widget>(
+                name(), id(),
                 std::make_unique<TCompileNode>());
         }
-
-
-    private:
-        std::vector<std::string> _node_input_names{};
-        std::vector<std::string> _node_output_names{};
     };
 
     template <typename TCompileNode>
     auto make_builtin_plugin(
+        node_widget_factory::plugin_id id,
         const std::string& name,
         const std::string& category)
     {
-        return std::make_unique<node_widget_builtin_plugin<TCompileNode>>(name, category);
-    }
-
-    template <typename TCompileNode>
-    auto make_builtin_plugin(
-        const std::string& name,
-        const std::string& category,
-        const std::vector<std::string>& input_names,
-        const std::vector<std::string>& output_names)
-    {
-        return std::make_unique<node_widget_builtin_plugin<TCompileNode>>(
-            name, category, input_names, output_names);
+        return std::make_unique<node_widget_builtin_plugin<TCompileNode>>(id, name, category);
     }
 
 }

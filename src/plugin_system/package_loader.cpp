@@ -57,7 +57,7 @@ namespace Gammou {
 
             try {
                 auto plugin = std::make_unique<node_widget_external_plugin>(factory.get_llvm_context(), node_class_desc);
-                factory.register_plugin(node_class_desc.uid, std::move(plugin));
+                factory.register_plugin(std::move(plugin));
             }
             catch (...)
             {
