@@ -33,6 +33,8 @@ namespace Gammou {
         std::unique_ptr<circuit_editor> _make_polyphonic_circuit_editor();
         std::unique_ptr<View::widget> _make_toolbox(std::unique_ptr<View::widget>&& additional_toolbox);
         std::unique_ptr<View::widget> _make_left_sidebar();
+        std::unique_ptr<View::widget> _make_preset_tool_box();
+        std::unique_ptr<View::widget> _make_node_selector();
 
         std::unique_ptr<node_widget> _make_master_from_polyphonic_node();
         std::unique_ptr<node_widget> _make_master_output_node();

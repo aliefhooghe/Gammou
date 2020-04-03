@@ -1,5 +1,6 @@
 
 #include "helpers/alphabetical_compare.h"
+#include "helpers/filesystem_directory_model.h"
 #include "circuit_editor.h"
 #include "internal_node_widget.h"
 #include "main_gui.h"
@@ -128,28 +129,6 @@ namespace Gammou {
     {
         auto common_toolbox = std::make_unique<View::panel<>>(10, 5);
 
-        auto button_ser = std::make_unique<View::text_push_button>("ser");
-        button_ser->set_callback([this](){
-            std::cout << "Serialize" << std::endl;
-            std::ofstream stream{"preset.json", std::ios_base::trunc};
-            const auto json = serialize();
-            stream << std::setw(4) << json;
-        });
-
-        auto button_des = std::make_unique<View::text_push_button>("des");
-        button_des->set_callback([this](){
-            std::cout << "Deserialize" << std::endl;
-            std::ifstream stream{"preset.json", std::ios_base::in};
-
-            nlohmann::json json;
-            stream >> json;
-
-            deserialize(json);
-        });
-
-        common_toolbox->insert_widget(1, 1, std::move(button_ser));
-        common_toolbox->insert_widget(6, 1, std::move(button_des));
-
         if (!additional_toolbox)
             return std::make_unique<View::header>(std::move(common_toolbox));
         else
@@ -160,6 +139,75 @@ namespace Gammou {
      * @brief build the left sidebar
      */
     std::unique_ptr<View::widget> main_gui::_make_left_sidebar()
+    {
+        return View::make_vertical_layout(
+            _make_preset_tool_box(),
+            _make_node_selector()
+        );
+    }
+
+    std::unique_ptr<View::widget> main_gui::_make_preset_tool_box()
+    {
+        const std::filesystem::path preset_dir_path{"/home/aliefhooghe/Documents/PRESET_DEBUG"};
+
+        auto preset_name_input = std::make_unique<View::text_input>(10.f, 1.5f);
+        auto save_button = std::make_unique<View::text_push_button>("Save", 5.f, 1.5f);
+        auto update_button = std::make_unique<View::text_push_button>("Update", 15.5f);
+
+        auto filesystem_view =
+            View::make_directory_view(
+                std::make_unique<View::filesystem_directory_model>(preset_dir_path),
+                16.5f, 8.f);
+
+        update_button->set_callback([fv = filesystem_view.get()]() { fv->update(); });
+
+        filesystem_view->set_value_select_callback(
+            [this](const auto& preset_path)
+            {
+                LOG_INFO("[main gui] Loading patch '%s'\n", preset_path.c_str());
+                try {
+                    nlohmann::json json;
+                    std::ifstream stream{preset_path, std::ios_base::in};
+                    stream >> json;
+                    deserialize(json);
+                }
+                catch(...)
+                {
+                    LOG_ERROR("[main gui] Failed to load preset\n");
+                }
+            });
+
+        save_button->set_callback(
+            [this, input = preset_name_input.get(), fv = filesystem_view.get(), preset_dir_path]()
+            {
+                try {
+                    const auto preset_path = preset_dir_path / input->get_text();
+                    std::ofstream stream{preset_path, std::ios_base::trunc};
+                    const auto json = serialize();
+                    stream << std::setw(4) << json;
+                    stream.close();
+                    fv->update();
+                    LOG_INFO("[main gui] Saved patch '%s'\n", preset_path.c_str());
+                }
+                catch(...)
+                {
+                    LOG_ERROR("[main gui] Failed to save preset\n");
+                }
+            });
+
+        auto panel = std::make_unique<View::panel<>>(16.5f, 4.5f);
+        panel->insert_widget(0.5f, 0.5f, std::move(preset_name_input));
+        panel->insert_widget(11.f, 0.5f, std::move(save_button));
+        panel->insert_widget(0.5f, 2.5f, std::move(update_button));
+
+        return std::make_unique<View::header>(
+            View::make_vertical_layout(
+                std::move(panel),
+                std::move(filesystem_view)
+            ));
+    }
+
+    std::unique_ptr<View::widget> main_gui::_make_node_selector()
     {
         using node_class_model =
             View::storage_directory_model<std::string, node_widget_factory::plugin_id, View::alphabetical_compare>;
