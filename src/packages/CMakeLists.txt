@@ -34,7 +34,13 @@ add_gammou_plugin(
     ${CMAKE_CURRENT_SOURCE_DIR}/filters/moog_ladder/plugin.json
     ${CMAKE_CURRENT_SOURCE_DIR}/filters/moog_ladder/process.c)
 
+add_gammou_plugin(
+    DCBlocker
+    ${CMAKE_CURRENT_SOURCE_DIR}/filters/dc_blocker/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/filters/dc_blocker/process.c)
+
+
 add_gammou_package(
     Filters
     ${CMAKE_CURRENT_SOURCE_DIR}/filters/content.json
-    Lp1Plugin MoogLadder)
+    Lp1Plugin MoogLadder DCBlocker)
