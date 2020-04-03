@@ -4,6 +4,7 @@
 
 namespace Gammou {
 
+    static constexpr auto knob_widget_uid = 0x384d61a1be4de6cdu;
     struct parameter_descriptor
     {
         float normalized;
@@ -41,7 +42,7 @@ namespace Gammou {
     public:
         knob_node_widget(synthesizer& synth, parameter && param)
         :   plugin_node_widget{
-                "Knob", 12,
+                "Knob", knob_widget_uid,
                 std::make_unique<DSPJIT::reference_compile_node>(param.get_value_ptr())
             },
             _param{std::move(param)},
@@ -68,8 +69,10 @@ namespace Gammou {
 
             //  Insert the widgets
             resize_height(node_widget::node_header_size * 2.f + knob->height());
+
+            const auto knob_x_pos = width() - node_widget::node_header_size - knob->width();
             insert_widget(
-                width() - node_widget::node_header_size - knob->width(),
+                knob_x_pos,
                 node_widget::node_header_size * 1.5f,
                 std::move(knob));
 
@@ -106,7 +109,7 @@ namespace Gammou {
     };
 
     knob_node_widget_plugin::knob_node_widget_plugin(synthesizer& synth)
-    :   node_widget_factory::plugin{12, "Knob" ,"Control"},
+    :   node_widget_factory::plugin{knob_widget_uid, "Knob" ,"Control"},
         _synth{synth}
     {
     }
