@@ -1,0 +1,8 @@
+{
+    "name" : "Moog Ladder",
+    "uid"  : 101,
+    "category" : "Filter",
+    "mutable-state-size": 24,
+    "input-names" : ["In", "Cutoff", "G"],
+    "output-names" : ["out"]
+}
