@@ -35,10 +35,10 @@ namespace Gammou {
     {
         auto node =  std::make_unique<plugin_node_widget>(name(), id(),  _dsp_plugin.create_node());
 
-        for (auto i = 0u; i < _dsp_plugin.get_input_count(); ++i)
+        for (auto i = 0u; i < _node_input_names.size(); ++i)
             node->set_input_name(i, _node_input_names[i]);
 
-        for (auto i = 0; i < _dsp_plugin.get_output_count(); ++i)
+        for (auto i = 0; i < _node_output_names.size(); ++i)
             node->set_output_name(i, _node_output_names[i]);
 
         return node;
