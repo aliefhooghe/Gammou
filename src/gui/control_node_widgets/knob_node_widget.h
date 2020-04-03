@@ -10,6 +10,7 @@ namespace Gammou {
     public:
         knob_node_widget_plugin(synthesizer& synth);
         std::unique_ptr<plugin_node_widget> create_node() override;
+        std::unique_ptr<plugin_node_widget> create_node(const nlohmann::json&) override;
     private:
         synthesizer& _synth;
     };

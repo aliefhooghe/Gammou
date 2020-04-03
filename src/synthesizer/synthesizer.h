@@ -139,18 +139,32 @@ namespace Gammou
         parameter allocate_parameter(float initial_value = 0.f);
 
         /**
-         *  \brief Link this parameter to the next midi control changed
+         *  \brief Assign this parameter to the next midi control whose value change
          *  \param param the parameter to be linked to a midi control
          *  \note This will cancel any midi learning that was not terminated
          */
         void midi_learn(const parameter& param);
 
         /**
-         *  \brief Unlink this parameter to any midi control
+         *  \brief Disassign this parameter to any midi control
          *  \param param the parameter to be unlinked
          *  \note This will cancel any midi learning that was not terminated for that parameter
          */
-        void midi_unlearn(const parameter& param);
+        void midi_disassign(const parameter& param);
+
+        /**
+         *  \brief Assign a control to a parameter
+         *  \param control
+         *  \param parameter
+         */
+        void midi_assign_control(uint8_t control, const parameter& param);
+
+        /**
+         *  \param control reference used to return the control linked to the parameter if any
+         *  \param param  the parameter
+         *  \return true if the parameter is assigned to a midi control
+         */
+        bool midi_assigned_to_control(uint8_t& control, const parameter& param);
 
     private:
         using param_id = parameter_manager<parameter_count>::param_id;
@@ -188,7 +202,7 @@ namespace Gammou
 
         //  Parameter management
         parameter_manager<parameter_count> _parameter_manager{48000.f};
-        std::array<param_id, 255u> _midi_learn_map;
+        std::array<param_id, 256u> _midi_learn_map;
         bool _midi_learning{false};
         param_id _learning_param;
 

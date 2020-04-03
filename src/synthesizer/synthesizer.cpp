@@ -95,20 +95,22 @@ namespace Gammou {
             _parameter_manager.set_parameter_nomalized(param_id, value);
     }
 
-    synthesizer::parameter synthesizer::allocate_parameter(float initial_value)
+    synthesizer::parameter synthesizer::allocate_parameter(float normalized_initial_value)
     {
-        return _parameter_manager.allocate_parameter(initial_value);
+        auto param = _parameter_manager.allocate_parameter(normalized_initial_value);
+        midi_disassign(param);
+        return param;
     }
 
     void synthesizer::midi_learn(const parameter& param)
     {
         LOG_DEBUG("[synthesizer][midi learn] start midi learn for parameter %u\n", param.id());
-        midi_unlearn(param);
+        midi_disassign(param);
         _learning_param = param.id();
         _midi_learning = true;
     }
 
-    void synthesizer::midi_unlearn(const parameter& param)
+    void synthesizer::midi_disassign(const parameter& param)
     {
         if (_midi_learning && _learning_param == param.id())
             _midi_learning = false;
@@ -117,6 +119,22 @@ namespace Gammou {
             if (learned_param == param.id())
                 learned_param = parameter_count;
         }
+    }
+
+    void synthesizer::midi_assign_control(uint8_t control, const parameter& param)
+    {
+        _midi_learn_map[control] = param.id();
+    }
+
+    bool synthesizer::midi_assigned_to_control(uint8_t& control, const parameter& param)
+    {
+        for (auto i = 0u; i < 256; ++i) {
+            if (_midi_learn_map[i] == param.id()) {
+                control = i;
+                return true;
+            }
+        }
+        return false;
     }
 
     void synthesizer::add_module(std::unique_ptr<llvm::Module>&& m)
