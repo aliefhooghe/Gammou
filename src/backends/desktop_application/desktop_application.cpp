@@ -1,12 +1,17 @@
 
 #include "desktop_application.h"
-#include "gui/main_gui.h"
-#include "synthesizer/midi_parser.h"
-#include "plugin_system/package_loader.h"
+
+#include "backends/common/configuration.h"
 #include "builtin_plugins/load_builtin_plugins.h"
 #include "gui/control_node_widgets/load_control_plugins.h"
-#include "backends/common/configuration.h"
+#include "gui/main_gui.h"
 #include "helpers/alphabetical_compare.h"
+#include "plugin_system/package_loader.h"
+#include "synthesizer/midi_parser.h"
+
+#ifdef GAMMOU_BENCHMARKING_MODE
+#include <chrono>
+#endif
 
 namespace Gammou {
 
@@ -31,8 +36,11 @@ namespace Gammou {
 
         // gui
         auto additional_toolbox = View::make_horizontal_layout(
-            std::make_unique<View::header>(_make_midi_device_widget()),
+            std::make_unique<View::header>(_make_midi_device_widget())
+#ifndef GAMMOU_BENCHMARKING_MODE
+            ,
             std::make_unique<View::header>(_make_audio_device_widget())
+#endif
         );
 
         _main_gui = std::make_unique<main_gui>(
@@ -50,6 +58,22 @@ namespace Gammou {
     void desktop_application::run()
     {
         _display->open("Gammou");
+
+#ifdef GAMMOU_BENCHMARKING_MODE
+        float dummy_output[2];
+        while (_display->is_open()) {
+            constexpr auto count = 100000u;
+            const auto start = std::chrono::steady_clock::now();
+
+            for (auto i = 0u; i < count; ++i)
+                _synthesizer.process_sample(nullptr, dummy_output);
+
+            const auto end = std::chrono::steady_clock::now();
+            const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+            const auto sample_per_seconds = 1000.f * static_cast<float>(count) / static_cast<float>(duration);
+            std::cout << "Current speed " << std::scientific << sample_per_seconds << " samples per second\n";
+        }
+#endif
         _display->wait();
     }
 
