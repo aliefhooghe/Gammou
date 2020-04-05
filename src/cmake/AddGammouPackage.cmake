@@ -28,11 +28,30 @@ function(add_gammou_plugin target plugin_file) # ... sources
 		get_filename_component(source_name ${source_file} NAME_WE)
 		set(output_name ${plugin_dir}/${source_name}.bc)
 
+		#	Obtain a list of C flags used for each configuration
+		string(
+			REPLACE
+			" " ";" PLUGIN_C_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+
+		string(
+			REPLACE
+			" " ";" PLUGIN_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
+
+
+
 		add_custom_command(
-			OUTPUT ${output_name}
-			COMMAND clang
-			ARGS ${source_file} -c -emit-llvm -o ${output_name} ${CMAKE_CXX_FLAGS}
-			DEPENDS ${source_file}
+			OUTPUT
+				${output_name}
+			COMMAND
+				clang
+				${source_file}
+				-c -emit-llvm
+				"$<$<CONFIG:Debug>:${PLUGIN_C_FLAGS_DEBUG}>"
+				"$<$<CONFIG:Release>:${PLUGIN_C_FLAGS_RELEASE}>"
+				-o ${output_name}
+			DEPENDS
+				${source_file}
+			COMMAND_EXPAND_LISTS
 		)
 
 		list(APPEND bytecode_modules ${output_name})
