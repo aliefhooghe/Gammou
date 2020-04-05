@@ -1,13 +1,16 @@
 
 
+#include "../common_libs/math_utils.h"
+
 /**
  *  \brief A DPW (Differential parabolic waveform) sawtooth oscillator
  **/
 void node_process(void *state_ptr, float freq, float *out)
 {
     const float sample_rate = 48000.f;
-    const float dt = 1.0f / sample_rate;
-    const float output_factor = sample_rate / (4.f * freq * (1.f - freq/sample_rate));
+    const float dt = 1.f / sample_rate;
+    const float fr = clamp(freq, 0.5f, 18000.f);
+    const float output_factor = sample_rate / (4.f * fr * (1.f - fr/sample_rate));
     float *state = (float*)state_ptr;
 
     float phase = state[0];
@@ -19,9 +22,9 @@ void node_process(void *state_ptr, float freq, float *out)
     *out = output_factor * (current_dpw - dpw);
 
     //  phase is the naive saw
-    phase += freq * dt;
+    phase += fr * dt;
     if (phase > 1.f)
-        phase = -1.f;
+        phase -= 2.f;
 
     state[0] = phase;
     state[1] = current_dpw;

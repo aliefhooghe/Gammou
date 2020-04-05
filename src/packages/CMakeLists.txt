@@ -1,46 +1,68 @@
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/AddGammouPackage.cmake)
 
+
 #####################
-#     Oscillators   #
+#        Base       #
 #####################
+
+add_gammou_plugin(
+    Tanh
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/tanh_plugin/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/tanh_plugin/process.c)
 
 add_gammou_plugin(
     SinPlugin
-    ${CMAKE_CURRENT_SOURCE_DIR}/oscillators/sin/plugin.json
-    ${CMAKE_CURRENT_SOURCE_DIR}/oscillators/sin/process.c)
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/sin_oscillator/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/sin_oscillator/process.c)
 
 add_gammou_plugin(
     SawPlugin
-    ${CMAKE_CURRENT_SOURCE_DIR}/oscillators/saw/plugin.json
-    ${CMAKE_CURRENT_SOURCE_DIR}/oscillators/saw/process.c)
-
-add_gammou_package(
-    Oscillators
-    ${CMAKE_CURRENT_SOURCE_DIR}/oscillators/content.json
-    SinPlugin SawPlugin)
-
-#####################
-#      Filters      #
-#####################
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/saw_oscillator/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/saw_oscillator/process.c)
 
 add_gammou_plugin(
     Lp1Plugin
-    ${CMAKE_CURRENT_SOURCE_DIR}/filters/lp1/plugin.json
-    ${CMAKE_CURRENT_SOURCE_DIR}/filters/lp1/process.c)
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/lp1/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/lp1/process.c)
 
 add_gammou_plugin(
-    MoogLadder
-    ${CMAKE_CURRENT_SOURCE_DIR}/filters/moog_ladder/plugin.json
-    ${CMAKE_CURRENT_SOURCE_DIR}/filters/moog_ladder/process.c)
+    Lp2Plugin
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/lp2/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/lp2/process.c)
 
 add_gammou_plugin(
     DCBlocker
-    ${CMAKE_CURRENT_SOURCE_DIR}/filters/dc_blocker/plugin.json
-    ${CMAKE_CURRENT_SOURCE_DIR}/filters/dc_blocker/process.c)
-
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/dc_blocker/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/dc_blocker/process.c)
 
 add_gammou_package(
-    Filters
-    ${CMAKE_CURRENT_SOURCE_DIR}/filters/content.json
-    Lp1Plugin MoogLadder DCBlocker)
+    Base
+    CONTENT_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/content.json
+    PLUGINS
+        Tanh
+        SinPlugin
+        SawPlugin
+        Lp1Plugin
+        Lp2Plugin
+        DCBlocker
+    COMMON_LIBS
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs/math_utils.c)
+
+
+##################################
+#    Virtual Analog Filters      #
+##################################
+
+add_gammou_plugin(
+    MoogLadder
+    ${CMAKE_CURRENT_SOURCE_DIR}/virtual_analog_filters/moog_ladder/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/virtual_analog_filters/moog_ladder/process.c)
+
+add_gammou_package(
+    VAFilters
+    CONTENT_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/virtual_analog_filters/content.json
+    PLUGINS
+        MoogLadder)

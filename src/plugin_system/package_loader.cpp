@@ -1,23 +1,35 @@
 
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <llvm/IRReader/IRReader.h>
+#include <llvm/Support/SourceMgr.h>
 
 #include "package_loader.h"
 #include "node_widget_external_plugin.h"
 
 namespace Gammou {
 
+    using package_uid = uint64_t;
+
     struct package_descriptor {
         std::string package_name{};
+        package_uid uid;
         std::vector<node_widget_external_plugin_descriptor> plugins{};
-        //std::vector<std::string> additional_modules{};
+        std::vector<std::string> common_libs{};
     };
 
     void from_json(const nlohmann::json& j, package_descriptor& desc)
     {
         j.at("package-name").get_to(desc.package_name);
-        j.at("plugins").get_to(desc.plugins);
-        //j.at("additional_modules").get_to(desc.additional_modules);
+        j.at("package-uid").get_to(desc.uid);
+
+        auto it = j.find("plugins");
+        if (it != j.end())
+            it->get_to(desc.plugins);
+
+        it = j.find("common-libs");
+        if (it != j.end())
+            it->get_to(desc.common_libs);
     }
 
     void load_package(const std::filesystem::path& dir_path, node_widget_factory& factory)
@@ -40,10 +52,11 @@ namespace Gammou {
         //  deserialize package descriptor from the file
         auto package_desc = json_object.get<package_descriptor>();
 
-        LOG_INFO("[gammou][load package] Loading package '%s'\n",
+        LOG_INFO("[gammou][load package] Loading package uid : 0x%016lx, name : '%s'\n",
+            package_desc.uid,
             package_desc.package_name.c_str());
 
-        //  Load nodes classes to factory
+        //  Load nodes plugins to factory
         for (auto& node_class_desc : package_desc.plugins) {
 
             //  Make sure that path are according to pwd
@@ -53,7 +66,7 @@ namespace Gammou {
             }
 
             //  Create and plugin into factory
-            LOG_INFO("[gammou][load package] Loading plugin uid : 0x%016lx, name : '%s'\n", node_class_desc.uid, node_class_desc.name.c_str());
+            LOG_INFO("[gammou][load package] Loading plugin uid : 0x%016lx, name : '%s'\n", node_class_desc.plugin_id, node_class_desc.name.c_str());
 
             try {
                 auto plugin = std::make_unique<node_widget_external_plugin>(factory.get_llvm_context(), node_class_desc);
@@ -62,6 +75,26 @@ namespace Gammou {
             catch (...)
             {
                 LOG_ERROR("[gammou][load package] Failed to load plugin '%s'\n", node_class_desc.name.c_str());
+            }
+        }
+
+        //  Load additional libs
+        for (const auto& lib_path : package_desc.common_libs) {
+            llvm::SMDiagnostic error;
+
+            LOG_INFO("[gammou][load package] Loading common lib object %s\n", lib_path.c_str());
+            auto module = llvm::parseIRFile(lib_path.c_str(), error, factory.get_llvm_context());
+            if (!module) {
+                LOG_ERROR("[gammou][load package] Cannot load common lib object %s\n", lib_path.c_str());
+                throw std::runtime_error("DSPJIT : Failed to load object");
+            }
+            else {
+                //  Strip all function attribute as they prevent inlining.
+                /** \todo invesigate why ! */
+                for (auto& function : *module)
+                    function.setAttributes(
+                        llvm::AttributeList::get(factory.get_llvm_context(), llvm::ArrayRef<llvm::AttributeList>{}));
+                factory.add_module(std::move(module));
             }
         }
     }

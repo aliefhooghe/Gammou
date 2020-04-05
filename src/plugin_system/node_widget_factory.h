@@ -65,11 +65,16 @@ namespace Gammou {
         node_widget_factory(llvm::LLVMContext&);
 
         /**
-         *  \brief
-         *  \param id
+         *  \brief Register a plugin into the factory.
          *  \param plugin the new plugin to be registered
          */
         void register_plugin(std::unique_ptr<plugin>&& plugin);
+
+        /**
+         *  \brief Add a plugin dependency module into the factory
+         *  \param m the module to be added
+         */
+        void add_module(std::unique_ptr<llvm::Module>&& m);
 
         /**
          *  \return a module where all registred plugins dependencies are linked
