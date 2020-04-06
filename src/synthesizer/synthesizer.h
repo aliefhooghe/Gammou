@@ -44,7 +44,7 @@ namespace Gammou
             unsigned int input_count = 0u,
             unsigned int output_count = 2u,
             unsigned int voice_count = 128,
-            const opt_level level = opt_level::Default,
+            const opt_level level = opt_level::Aggressive,
             const llvm::TargetOptions& options = llvm::TargetOptions{});
 
         synthesizer(const synthesizer&) = delete;
