@@ -22,11 +22,18 @@ function(add_llvm_bytecode_object source_file output_file)
 	#	Obtain a list of C flags used for each configuration
 	string(
 		REPLACE
-		" " ";" PLUGIN_C_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+		" " ";" PLUGIN_C_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG}
+	)
 
 	string(
 		REPLACE
-		" " ";" PLUGIN_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
+		" " ";" PLUGIN_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE}
+	)
+
+	string(
+		REPLACE
+		" " ";" PLUGIN_C_FLAGS_RELWITHDEBINFO ${CMAKE_C_FLAGS_RELWITHDEBINFO}
+	)
 
 	add_custom_command(
 		OUTPUT
@@ -37,6 +44,7 @@ function(add_llvm_bytecode_object source_file output_file)
 			-c -emit-llvm
 			"$<$<CONFIG:Debug>:${PLUGIN_C_FLAGS_DEBUG}>"
 			"$<$<CONFIG:Release>:${PLUGIN_C_FLAGS_RELEASE}>"
+			"$<$<CONFIG:RelWithDebInfo>:${PLUGIN_C_FLAGS_RELWITHDEBINFO}>"
 			-o ${output_file}
 		DEPENDS
 			${source_file}
