@@ -60,6 +60,7 @@ namespace Gammou {
         _display->open("Gammou");
 
 #ifdef GAMMOU_BENCHMARKING_MODE
+        auto minimum_sample_per_seconds = std::numeric_limits<float>::max();
         float dummy_output[2];
         while (_display->is_open()) {
             constexpr auto count = 100000u;
@@ -72,7 +73,11 @@ namespace Gammou {
             const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
             const auto sample_per_seconds = 1000.f * static_cast<float>(count) / static_cast<float>(duration);
             std::cout << "Current speed " << std::scientific << sample_per_seconds << " samples per second\n";
+
+            if (sample_per_seconds < minimum_sample_per_seconds)
+                minimum_sample_per_seconds = sample_per_seconds;
         }
+        std::cout << "Minimum speed " << minimum_sample_per_seconds << " samples per second\n";
 #endif
         _display->wait();
     }
