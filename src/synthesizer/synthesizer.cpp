@@ -75,6 +75,7 @@ namespace Gammou {
             midi_input[pitch] = note_frequencies[note];
             midi_input[attack] = velocity;
             _voice_lifetime[voice] = _voice_disappearance_sample_count;
+            _polyphonic_circuit_context.initialize_state(voice);
         }
     }
 

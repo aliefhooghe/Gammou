@@ -2,6 +2,13 @@
 
 #include "../common_libs/math_utils.h"
 
+void node_initialize(void *state_ptr)
+{
+    float *state = (float*)state_ptr;
+    state[0] = 0.f;
+    state[1] = 0.f;
+}
+
 /**
  *  \brief A DPW (Differential parabolic waveform) sawtooth oscillator
  **/

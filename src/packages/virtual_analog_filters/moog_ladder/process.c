@@ -14,6 +14,13 @@ static float my_than(float x)
             (((28.f * x2 + 3150.f) * x2 + 62370.f) * x2 + 135135.f);
 }
 
+void node_initialize(void *state)
+{
+    float *filter_state = (float*)state;
+    for (int i = 0; i < 9; ++i)
+        filter_state[i] = 0.f;
+}
+
 void node_process(void *state, float in, float cutoff_freq, float g_res, float *out)
 {
     const float omega_c = 6.28318530718f * clamp(cutoff_freq, 1, 18000.0) / 48000.f;
