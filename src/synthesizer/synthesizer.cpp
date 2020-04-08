@@ -158,6 +158,13 @@ namespace Gammou {
         _polyphonic_circuit_context.compile({_midi_input}, {_to_master});
     }
 
+    bool synthesizer::update_program() noexcept
+    {
+        const auto b1 = _master_circuit_context.update_program();
+        const auto b2 = _polyphonic_circuit_context.update_program();
+        return b1 || b2; // use var in order to avoid lazy evaluation side efects
+    }
+
     void synthesizer::_process_one_sample(const float[], float output[]) noexcept
     {
         float polyphonic_output[polyphonic_to_master_channel_count] = {0.f};

@@ -147,6 +147,7 @@ namespace Gammou {
     {
         auto plugin =
             reinterpret_cast<vst2_plugin*>(fx->user);
+        plugin->_synthesizer.update_program();
 
         auto output_left_buffer = outputs[0];
         auto output_right_buffer = outputs[1];

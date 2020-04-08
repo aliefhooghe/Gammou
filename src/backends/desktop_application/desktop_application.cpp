@@ -65,6 +65,7 @@ namespace Gammou {
         while (_display->is_open()) {
             constexpr auto count = 100000u;
             const auto start = std::chrono::steady_clock::now();
+            _synthesizer.update_program();
 
             for (auto i = 0u; i < count; ++i)
                 _synthesizer.process_sample(nullptr, dummy_output);
@@ -142,6 +143,7 @@ namespace Gammou {
                 double stream_time, RtAudioStreamStatus status, void *user_data)
             {
                 auto& synth = *(synthesizer*)(user_data);
+                synth.update_program(); //  avoid to update for every samples
                 synth.process_buffer(sample_count, nullptr, static_cast<float*>(output_buffer));
                 return 0;
             };

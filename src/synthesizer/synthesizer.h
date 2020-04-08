@@ -93,6 +93,11 @@ namespace Gammou
          **/
 
         /**
+         *  \brief Switch to the next available compiled program
+         */
+        bool update_program() noexcept;
+
+        /**
          *  \brief compute one output sample using one input sample
          *  \param input input values [channel0, channel1, ..., channelN]
          *  \param output output values [channel0, channel1, ..., channelN]
