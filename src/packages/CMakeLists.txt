@@ -66,3 +66,46 @@ add_gammou_package(
         ${CMAKE_CURRENT_SOURCE_DIR}/virtual_analog_filters/content.json
     PLUGINS
         MoogLadder)
+
+##################################
+#          Waveguides            #
+##################################
+
+add_gammou_plugin(
+    ClosedEnd
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/closed_end/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/closed_end/process.c)
+
+add_gammou_plugin(
+    OpenEnd
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/open_end/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/open_end/process.c)
+
+add_gammou_plugin(
+    Junction
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/junction/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/junction/process.c)
+
+add_gammou_plugin(
+    ReadPoint
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/read_point/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/read_point/process.c)
+
+add_gammou_plugin(
+    WritePoint
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/write_point/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/write_point/process.c)
+
+add_gammou_plugin(
+    WaveGuide
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/waveguide/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/waveguide/process.c)
+
+add_gammou_package(
+    Waveguides
+    CONTENT_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/content.json
+    PLUGINS
+        ClosedEnd OpenEnd Junction ReadPoint WritePoint WaveGuide
+    COMMON_LIBS
+        ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/common_libs/sample_queue.c)
