@@ -22,6 +22,11 @@ add_gammou_plugin(
     ${CMAKE_CURRENT_SOURCE_DIR}/base/saw_oscillator/process.c)
 
 add_gammou_plugin(
+    SquarePlugin
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/square_oscillator/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/square_oscillator/process.c)
+
+add_gammou_plugin(
     Lp1Plugin
     ${CMAKE_CURRENT_SOURCE_DIR}/base/lp1/plugin.json
     ${CMAKE_CURRENT_SOURCE_DIR}/base/lp1/process.c)
@@ -44,6 +49,7 @@ add_gammou_package(
         Tanh
         SinPlugin
         SawPlugin
+        SquarePlugin
         Lp1Plugin
         Lp2Plugin
         DCBlocker
