@@ -2,7 +2,7 @@
     "name" : "Saw",
     "uid"  : 2605014017441422226,
     "category" : "Oscillator",
-    "mutable-state-size": 8,
+    "mutable-state-size": 4,
     "input-names" : ["freq"],
     "output-names" : ["out"]
 }

@@ -11,9 +11,9 @@ void node_initialize(void *state)
 void node_process(void *state, float freq, float p, float *out)
 {
     float *phase = (float*)state;
-    *out = fast_sin(*phase + p);
+    *out = fast_sin(*phase);
 
-    *phase += (freq / 48000.f) * PI * 2.f;
+    *phase += clamp((freq / 48000.f) * PI * 2.f + p, -PI, PI);
     if (*phase > PI)
         *phase -= PI * 2.f;
 }
