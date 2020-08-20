@@ -43,7 +43,7 @@ namespace Gammou
             llvm::LLVMContext &llvm_context,
             unsigned int input_count = 0u,
             unsigned int output_count = 2u,
-            unsigned int voice_count = 128,
+            unsigned int voice_count = 256,
             const opt_level level = opt_level::Aggressive,
             const llvm::TargetOptions& options = llvm::TargetOptions{});
 
@@ -169,7 +169,7 @@ namespace Gammou
         /**
          *  \param control reference used to return the control linked to the parameter if any
          *  \param param  the parameter
-         *  \return true if the parameter is assigned to a midi control
+         *  \return true if the parameter is assigned the given midi control
          */
         bool midi_assigned_to_control(uint8_t& control, const parameter& param);
 
@@ -208,7 +208,7 @@ namespace Gammou
 
         //  Voice management
         voice_manager _voice_manager;
-        unsigned int _voice_disappearance_sample_count{40000u};
+        unsigned int _voice_disappearance_sample_count{20000u};
         std::vector<unsigned int> _voice_lifetime;
 
         //  Parameter management

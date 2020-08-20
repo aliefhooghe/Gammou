@@ -3,6 +3,7 @@
 
 #include "synthesizer.h"
 
+#include <iostream>
 namespace Gammou {
 
     /**
@@ -69,13 +70,18 @@ namespace Gammou {
     void synthesizer::midi_note_on(uint8_t note, float velocity)
     {
         voice_manager::voice voice;
-        if (_voice_manager.note_on(note, voice)) {
+
+        auto initialize_voice = [this, note, velocity](const auto& voice){
             auto midi_input = get_voice_midi_input(voice);
             midi_input[gate] = 1.f;
             midi_input[pitch] = note_frequencies[note];
             midi_input[attack] = velocity;
             _voice_lifetime[voice] = _voice_disappearance_sample_count;
             _polyphonic_circuit_context.initialize_state(voice);
+        };
+
+        if (!_voice_manager.note_on(note, initialize_voice)) {
+            LOG_ERROR("[synthesizer][not on] No anymore free voice\n");
         }
     }
 
@@ -196,8 +202,10 @@ namespace Gammou {
                         [](const auto& s1, const auto& s2) { return std::abs(s1) < std::abs(s2); });
 
                 if (std::abs(max_voice_value) <= voice_disappearance_treshold) {
-                    if (0u == --_voice_lifetime[voice])
+                    if (0u == --_voice_lifetime[voice]) {
+                        LOG_DEBUG("[synthesizer][process one sample] Shut down voice %u\n", voice);
                         return false;
+                    }
                 }
                 else {
                     _voice_lifetime[voice] = _voice_disappearance_sample_count;

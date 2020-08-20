@@ -9,6 +9,8 @@ namespace Gammou {
 
     template <unsigned int ParameterCount>
     class parameter_manager {
+        static constexpr auto default_shape_scale = 1.0f;
+        static constexpr auto default_shape_base = 3.0f;
     public:
         using param_id = unsigned int;
         class parameter {
@@ -102,8 +104,8 @@ namespace Gammou {
             std::fill_n(_parameter_normalized_settings.begin(), ParameterCount, 0.f);
             std::fill_n(_parameter_values.begin(), ParameterCount, 0.f);
             std::fill_n(_parameter_settings.begin(), ParameterCount, 0.f);
-            std::fill_n(_shape_scales.begin(), ParameterCount, 1.f);
-            std::fill_n(_shape_bases.begin(), ParameterCount, 3.f);
+            std::fill_n(_shape_scales.begin(), ParameterCount, default_shape_scale);
+            std::fill_n(_shape_bases.begin(), ParameterCount, default_shape_base);
 
             //  At begining all parameter are free
             for (auto i = 0; i < ParameterCount; ++i)
@@ -168,8 +170,14 @@ namespace Gammou {
                 param_id new_id = _free_params.top();
                 _free_params.pop();
 
-                //  Set the initial parameter value and synchronize the output value
+                //  Set default shape and scales
+                _shape_bases[new_id] = default_shape_base;
+                _shape_scales[new_id] = default_shape_scale;
+
+                //  Set the initial parameter value
                 set_parameter_nomalized(new_id, initial_normalized_value);
+
+                //  synchronize output value
                 _parameter_values[new_id] = _parameter_settings[new_id];
 
                 return parameter{*this, new_id};

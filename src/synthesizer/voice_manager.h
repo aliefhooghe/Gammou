@@ -26,14 +26,14 @@ namespace Gammou
         }
 
         /**
-         *  @brief  Allocate a new voice
-         *  @param n the note for which the voice is allocated
+         *  \brief Allocate a new voice and call the initialize function *before* the voice is activated
+         *  \param n the note for which the voice is allocated
+         *  \param v the
          **/
-        inline bool note_on(note n, voice& v)
+        template <typename TInitFunc>
+        inline bool note_on(note n, TInitFunc init_func = [](const auto&){})
         {
-            voice_store::iterator it;
-            if (allocate_voice(n, it)) {
-                v = it->second;
+            if (allocate_voice(n, init_func)) {
                 return true;
             }
             else {
@@ -42,8 +42,8 @@ namespace Gammou
         }
 
         /**
-         *  @brief Switch a voice off
-         *  @param n the note assigned to the voice
+         *  \brief Switch a voice off
+         *  \param n the note assigned to the voice
          *
          **/
         inline bool note_off(note n, voice& v)
@@ -60,8 +60,8 @@ namespace Gammou
         }
 
         /**
-         *  @brief Call the given function on each active voice, and stop them if needed
-         *  @param func Function called on each active voice. return false is channel must be stopped
+         *  \brief Call the given function on each active voice, and stop them if function return false
+         *  \param func Function called on each active voice. return false is channel must be stopped
          **/
         template <typename TFunction>
         void foreach_active_voice(TFunction func)
@@ -81,14 +81,17 @@ namespace Gammou
         }
 
     protected:
-        inline bool allocate_voice(note n, voice_store::iterator& ret_it)
+        template <typename TInitFunc>
+        inline bool allocate_voice(note n, TInitFunc init_func)
         {
             //  if there is a free voice
             if (_active_voices_end != _voices.end()) {
-                auto it = _active_voices_end++;
-                ret_it = _on_voice_end++;
-                std::iter_swap(it, ret_it);
-                ret_it->first = n;
+                auto free_it = _active_voices_end;
+                init_func(free_it->second);
+                _active_voices_end++;
+                auto allocated_place_it = _on_voice_end++;
+                std::iter_swap(free_it, allocated_place_it);
+                allocated_place_it->first = n;
                 return true;
             }
             else {
