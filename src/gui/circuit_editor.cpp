@@ -431,9 +431,6 @@ namespace Gammou {
 
     void circuit_editor::draw(cairo_t *cr)
     {
-        //  Draw nodes
-        panel_implementation<node_widget>::draw(cr);
-
         //  Draw node links
         for (const auto& holder : _childrens) {
             const auto& node = holder->node();
@@ -463,6 +460,9 @@ namespace Gammou {
                 }
             }
         }
+
+        //  Draw nodes
+        panel_implementation<node_widget>::draw(cr);
 
         //  If linking, draw new link
         if (_is_linking) {
