@@ -97,6 +97,11 @@ add_gammou_plugin(
     ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/write_point/process.c)
 
 add_gammou_plugin(
+    Hammer
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/hammer/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/hammer/process.c)
+
+add_gammou_plugin(
     WaveGuide
     ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/waveguide/plugin.json
     ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/waveguide/process.c)
@@ -106,6 +111,6 @@ add_gammou_package(
     CONTENT_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/content.json
     PLUGINS
-        ClosedEnd OpenEnd Junction ReadPoint WritePoint WaveGuide
+        ClosedEnd OpenEnd Junction Hammer ReadPoint WritePoint WaveGuide
     COMMON_LIBS
         ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/common_libs/sample_queue.c)
