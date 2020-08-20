@@ -41,6 +41,11 @@ add_gammou_plugin(
     ${CMAKE_CURRENT_SOURCE_DIR}/base/dc_blocker/plugin.json
     ${CMAKE_CURRENT_SOURCE_DIR}/base/dc_blocker/process.c)
 
+add_gammou_plugin(
+    ADSRPlugin
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/adsr/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/adsr/process.c)
+
 add_gammou_package(
     Base
     CONTENT_FILE
@@ -53,6 +58,7 @@ add_gammou_package(
         Lp1Plugin
         Lp2Plugin
         DCBlocker
+        ADSRPlugin
     COMMON_LIBS
         ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs/math_utils.c)
 
