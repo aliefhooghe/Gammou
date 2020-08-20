@@ -36,7 +36,7 @@ namespace Gammou {
             virtual std::unique_ptr<plugin_node_widget> create_node() =0;
 
             /**
-             *  \param internal_state
+             *  \param internal_state from which the node will be deserialized
              *  \return a new plugin node built with given state
              */
             virtual std::unique_ptr<plugin_node_widget> create_node(const nlohmann::json& /*internal_state*/)
@@ -45,7 +45,7 @@ namespace Gammou {
             }
 
             /**
-             *  \brief Return a module containing allthe dependendies needed
+             *  \brief Return a module containing all the dependendies needed
              *      to compile the nodes created by the plugin
              */
             virtual std::unique_ptr<llvm::Module> module() { return nullptr; }
