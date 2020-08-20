@@ -132,11 +132,16 @@ namespace Gammou {
         _stop_audio();
 
         RtAudio::StreamParameters output_params;
+        RtAudio::StreamOptions options{};
+
         unsigned int buffer_size = 512;
 
         output_params.deviceId = device_index;
         output_params.firstChannel = 0u;
         output_params.nChannels = _synthesizer.get_output_count();
+
+        options.flags = RTAUDIO_MINIMIZE_LATENCY | RTAUDIO_SCHEDULE_REALTIME;
+        options.streamName = "Gammou output";
 
         auto audio_callback =
             [](void *output_buffer, void *input_buffer, unsigned int sample_count,
@@ -151,7 +156,7 @@ namespace Gammou {
         try {
             _audio_device = std::make_unique<RtAudio>(api);
             _audio_device->openStream(
-                &output_params, nullptr, RTAUDIO_FLOAT32, sample_rate, &buffer_size, audio_callback, &_synthesizer);
+                &output_params, nullptr, RTAUDIO_FLOAT32, sample_rate, &buffer_size, audio_callback, &_synthesizer, &options);
             _audio_device->startStream();
         }
         catch(...)
