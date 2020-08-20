@@ -32,9 +32,9 @@ namespace Gammou {
 
         //  main Windows
         auto polyphonic_map_editor =
-            std::make_unique<View::header>(std::make_unique<View::map_wrapper>(std::move(polyphonic_circuit_editor), 100, 30));
+            std::make_unique<View::header>(std::make_unique<View::map_wrapper>(std::move(polyphonic_circuit_editor), 130, 40));
         auto master_map_editor =
-            std::make_unique<View::header>(std::make_unique<View::map_wrapper>(std::move(master_circuit_editor), 100, 30));
+            std::make_unique<View::header>(std::make_unique<View::map_wrapper>(std::move(master_circuit_editor), 130, 40));
 
         _widget = std::make_unique<View::background>(
             View::make_horizontal_layout(
@@ -95,7 +95,7 @@ namespace Gammou {
      */
     std::unique_ptr<circuit_editor> main_gui::_make_master_circuit_editor()
     {
-        auto master_circuit_editor = std::make_unique<circuit_editor>(20, 20);
+        auto master_circuit_editor = std::make_unique<circuit_editor>(20, 40);
 
         master_circuit_editor->insert_node_widget(5, 5, _make_master_from_polyphonic_node());
         master_circuit_editor->insert_node_widget(5, 10, _make_master_output_node());
@@ -111,7 +111,7 @@ namespace Gammou {
      */
     std::unique_ptr<circuit_editor> main_gui::_make_polyphonic_circuit_editor()
     {
-        auto polyphonic_circuit_editor = std::make_unique<circuit_editor>(20, 20);
+        auto polyphonic_circuit_editor = std::make_unique<circuit_editor>(40, 20);
 
         polyphonic_circuit_editor->insert_node_widget(5, 5, _make_polyphonic_midi_input_node());
         polyphonic_circuit_editor->insert_node_widget(5, 10, _make_polyphonic_to_master_node());
