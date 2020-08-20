@@ -11,6 +11,7 @@ namespace Gammou {
     {
         factory.register_plugin(make_builtin_plugin<DSPJIT::add_compile_node>(0xdafa0fde10153761u, "Add", "Calculus"));
         factory.register_plugin(make_builtin_plugin<DSPJIT::mul_compile_node>(0x5d777d71620078eeu, "Mul", "Calculus"));
+        factory.register_plugin(make_builtin_plugin<DSPJIT::invert_compile_node>(0xe8c8aa483f24617c, "Invert", "Calculus"));
     }
 
 }
