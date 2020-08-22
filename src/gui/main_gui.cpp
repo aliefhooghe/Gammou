@@ -168,6 +168,10 @@ namespace Gammou {
                 try {
                     nlohmann::json json;
                     std::ifstream stream{preset_path, std::ios_base::in};
+
+                    if (!stream.good())
+                        throw std::exception{};
+
                     stream >> json;
                     deserialize(json);
                 }
@@ -183,6 +187,10 @@ namespace Gammou {
                 try {
                     const auto preset_path = preset_dir_path / input->get_text();
                     std::ofstream stream{preset_path, std::ios_base::trunc};
+
+                    if (!stream.good())
+                        throw std::exception{};
+
                     const auto json = serialize();
                     stream << std::setw(4) << json;
                     stream.close();
