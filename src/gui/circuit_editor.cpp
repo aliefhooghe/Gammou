@@ -1,7 +1,7 @@
 
-#include <stdio.h>
-
 #include "circuit_editor.h"
+
+#include <iostream>
 
 namespace Gammou {
 
@@ -57,22 +57,24 @@ namespace Gammou {
             _output_names[output_id] = name;
     }
 
-    void node_widget::draw(cairo_t *cr)
+    void node_widget::draw(NVGcontext *vg)
     {
-        View::rounded_rectangle(cr, 0.f, 0.f, width(), height(), node_corner_radius);
-        cairo_set_line_width(cr, 0.1f);
-
+        nvgBeginPath(vg);
+        nvgRoundedRect(vg, 0.f, 0.f, width(), height(), node_corner_radius);
+        
         //  Draw background
-        View::set_source(cr, _background_color);
-        cairo_fill_preserve(cr);
+        nvgFillColor(vg, _background_color);
+        nvgFill(vg);
 
         //  Draw border
-        View::set_source(cr, _border_color);
-        cairo_stroke(cr);
+        nvgStrokeColor(vg, _border_color);
+        nvgStrokeWidth(vg, 1.5f);
+        nvgStroke(vg);
 
         //  Draw name
-        View::set_source(cr, _text_color);
-        View::draw_text(cr, 0, 0, width(), node_header_size, 1.f, _name.c_str(), true);
+        nvgFillColor(vg, _text_color);
+        View::draw_text(vg, 0, 0, width(), node_header_size, 14, _name.c_str(), true, 
+            View::horizontal_alignment::center, View::vertical_alignment::bottom);
 
         //  Draw inputs/outpus sockets and names
         const auto ic = _node.get_input_count();
@@ -82,20 +84,25 @@ namespace Gammou {
             // draw socket
             float xc, yc;
             _input_pos(i, xc, yc);
-            View::set_source(cr, _socket_color);
-            View::circle(cr, xc, yc, socket_radius);
 
-            if (nullptr != _node.get_input(i))
-                cairo_fill(cr);
-            else
-                cairo_stroke(cr);
+            nvgBeginPath(vg);
+            nvgCircle(vg,  xc, yc, socket_radius);
+
+            if (nullptr != _node.get_input(i)) {
+                nvgFillColor(vg, _socket_color);
+                nvgFill(vg);
+            }
+            else {
+                nvgStrokeColor(vg, _socket_color);
+                nvgStroke(vg);
+            }
 
             //  draw input name
             const auto y_offset = node_header_size + socket_size * i;
-            View::set_source(cr, _text_color);
+            nvgFillColor(vg, _text_color);
             View::draw_text(
-                cr, socket_size, y_offset, width(), socket_size,
-                1.f, _input_names[i].c_str(), false,
+                vg, socket_size, y_offset, width(), socket_size,
+                13, _input_names[i].c_str(), false,
                 View::horizontal_alignment::left,
                 View::vertical_alignment::top);
         }
@@ -104,22 +111,24 @@ namespace Gammou {
             // draw socket
             float xc, yc;
             _output_pos(i, xc, yc);
-            View::set_source(cr, _socket_color);
-            View::circle(cr, xc, yc, socket_radius);
-            cairo_fill(cr);
+
+            nvgBeginPath(vg);
+            nvgCircle(vg,  xc, yc, socket_radius);
+            nvgFillColor(vg, _socket_color);
+            nvgFill(vg);
 
             //  draw input name
             const auto y_offset = node_header_size + socket_size * i;
-            View::set_source(cr, _text_color);
+            nvgFillColor(vg, _text_color);
             View::draw_text(
-                cr, 0, y_offset, width() - socket_size, socket_size,
-                1.f, _output_names[i].c_str(), false,
+                vg, 0, y_offset, width() - socket_size, socket_size,
+                13, _output_names[i].c_str(), false,
                 View::horizontal_alignment::right,
                 View::vertical_alignment::top);
         }
 
         //  Draw childrens
-        panel_implementation<>::draw(cr);
+        panel_implementation<>::draw(vg);
     }
 
     bool node_widget::_input_id_at(unsigned int& input_id, float x, float y)
@@ -221,6 +230,7 @@ namespace Gammou {
 
     bool circuit_editor::on_mouse_dbl_click(float x, float y)
     {
+        std::cout << "Circuit editor DBLCLICK" << std::endl;
         if (!panel_implementation<node_widget>::on_mouse_dbl_click(x, y)) {
             auto w = panel_implementation<node_widget>::widget_at(x, y);
 
@@ -429,7 +439,7 @@ namespace Gammou {
         _socket_highlight_color = theme.secondary_light;
     }
 
-    void circuit_editor::draw(cairo_t *cr)
+    void circuit_editor::draw(NVGcontext *vg)
     {
         //  Draw node links
         for (const auto& holder : _childrens) {
@@ -453,7 +463,7 @@ namespace Gammou {
                         holder->_input_pos(i, input_x, input_y);
 
                         //  draw link
-                        _draw_link(cr, _link_color,
+                        _draw_link(vg, _link_color,
                             output_x + input_node_widget->pos_x(), output_y + input_node_widget->pos_y(),
                             input_x + holder.pos_x(), input_y + holder.pos_y());
                     }
@@ -462,40 +472,39 @@ namespace Gammou {
         }
 
         //  Draw nodes
-        panel_implementation<node_widget>::draw(cr);
+        panel_implementation<node_widget>::draw(vg);
 
         //  If linking, draw new link
         if (_is_linking) {
             float output_x, output_y;
             _link_source->_output_pos(_link_source_output, output_x, output_y);
-            _draw_link(cr, _linking_color,
+            _draw_link(vg, _linking_color,
                 output_x + _link_source->pos_x(), output_y + _link_source->pos_y(),
                 _linking_x, _linking_y);
         }
 
         // If a socket is highlighted
         if (_socket_highlighting) {
-            View::circle(cr, _socket_highlight_x, _socket_highlight_y, node_widget::socket_radius * 1.3f);
-            View::set_source(cr, _socket_highlight_color);
-            cairo_fill(cr);
+            nvgBeginPath(vg);
+            nvgCircle(vg, _socket_highlight_x, _socket_highlight_y, node_widget::socket_radius * 1.3f);
+            nvgFillColor(vg, _socket_highlight_color);
+            nvgFill(vg);
         }
     }
 
     void circuit_editor::_draw_link(
-        cairo_t *cr, View::color color,
+        NVGcontext *vg, NVGcolor color,
         float x_output, float y_output,
         float x_input, float y_input) const noexcept
     {
-        float D = std::min<float>(std::fabs(x_input - x_output), x_input >= x_output ? 5.f : 10.f);
+        float D = std::min<float>(std::fabs(x_input - x_output), x_input >= x_output ? 50.f : 100.f);
 
-		cairo_move_to(cr, x_output, y_output);
-		cairo_curve_to(cr, x_output + D, y_output, x_input - D, y_input, x_input, y_input);
-
-		cairo_set_line_width(cr, 0.2f);
-        cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
-
-		View::set_source(cr, color);
-		cairo_stroke(cr);
+        nvgBeginPath(vg);
+		nvgMoveTo(vg, x_output, y_output);
+        nvgBezierTo(vg, x_output + D, y_output, x_input - D, y_input, x_input, y_input);
+		nvgStrokeWidth(vg, 3);
+        nvgStrokeColor(vg, color);
+        nvgStroke(vg);
     }
 
     void circuit_editor::_notify_circuit_change()

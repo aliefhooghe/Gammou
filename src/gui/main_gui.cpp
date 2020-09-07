@@ -32,15 +32,18 @@ namespace Gammou {
 
         //  main Windows
         auto polyphonic_map_editor =
-            std::make_unique<View::header>(std::make_unique<View::map_wrapper>(std::move(polyphonic_circuit_editor), 130, 40));
+            std::make_unique<View::header>(
+                std::make_unique<View::map_wrapper>(std::move(polyphonic_circuit_editor), 1300, 400),
+                View::color_theme::color::SURFACE_DARK);
+
         auto master_map_editor =
-            std::make_unique<View::header>(std::make_unique<View::map_wrapper>(std::move(master_circuit_editor), 130, 40));
+            std::make_unique<View::header>(
+                std::make_unique<View::map_wrapper>(std::move(master_circuit_editor), 1300, 400),
+                View::color_theme::color::SURFACE_DARK);
 
         _widget = std::make_unique<View::background>(
             View::make_horizontal_layout(
-                left_sidebar
-                ,
-
+                left_sidebar,
                 View::make_vertical_layout(
                     std::move(toolbox),
                     std::move(polyphonic_map_editor),
@@ -95,10 +98,10 @@ namespace Gammou {
      */
     std::unique_ptr<circuit_editor> main_gui::_make_master_circuit_editor()
     {
-        auto master_circuit_editor = std::make_unique<circuit_editor>(20, 40);
+        auto master_circuit_editor = std::make_unique<circuit_editor>(200, 400);
 
-        master_circuit_editor->insert_node_widget(5, 5, _make_master_from_polyphonic_node());
-        master_circuit_editor->insert_node_widget(5, 10, _make_master_output_node());
+        master_circuit_editor->insert_node_widget(50, 50, _make_master_from_polyphonic_node());
+        master_circuit_editor->insert_node_widget(50, 100, _make_master_output_node());
 
         master_circuit_editor->set_circuit_changed_callback(
             [this](){ _synthesizer.compile_master_circuit(); });
@@ -111,10 +114,10 @@ namespace Gammou {
      */
     std::unique_ptr<circuit_editor> main_gui::_make_polyphonic_circuit_editor()
     {
-        auto polyphonic_circuit_editor = std::make_unique<circuit_editor>(40, 20);
+        auto polyphonic_circuit_editor = std::make_unique<circuit_editor>(400, 200);
 
-        polyphonic_circuit_editor->insert_node_widget(5, 5, _make_polyphonic_midi_input_node());
-        polyphonic_circuit_editor->insert_node_widget(5, 10, _make_polyphonic_to_master_node());
+        polyphonic_circuit_editor->insert_node_widget(50, 50, _make_polyphonic_midi_input_node());
+        polyphonic_circuit_editor->insert_node_widget(50, 100, _make_polyphonic_to_master_node());
 
         polyphonic_circuit_editor->set_circuit_changed_callback(
             [this](){ _synthesizer.compile_polyphonic_circuit(); });
@@ -127,7 +130,7 @@ namespace Gammou {
      */
     std::unique_ptr<View::widget> main_gui::_make_toolbox(std::unique_ptr<View::widget>&& additional_toolbox)
     {
-        auto common_toolbox = std::make_unique<View::panel<>>(10, 5);
+        auto common_toolbox = std::make_unique<View::panel<>>(250, 110);
 
         if (!additional_toolbox)
             return std::make_unique<View::header>(std::move(common_toolbox));
@@ -150,14 +153,14 @@ namespace Gammou {
     {
         const std::filesystem::path preset_dir_path{"/home/aliefhooghe/Documents/PRESET_DEBUG"};
 
-        auto preset_name_input = std::make_unique<View::text_input>(10.f, 1.5f);
-        auto save_button = std::make_unique<View::text_push_button>("Save", 5.f, 1.5f);
-        auto update_button = std::make_unique<View::text_push_button>("Update", 15.5f);
+        auto preset_name_input = std::make_unique<View::text_input>(110, 21);
+        auto save_button = std::make_unique<View::text_push_button>("Save", 80, 21);
+        auto update_button = std::make_unique<View::text_push_button>("Update", 195, 21);
 
         auto filesystem_view =
             View::make_directory_view(
                 std::make_unique<View::filesystem_directory_model>(preset_dir_path),
-                16.5f, 8.f);
+                140, 90);
 
         update_button->set_callback([fv = filesystem_view.get()]() { fv->update(); });
 
@@ -203,10 +206,10 @@ namespace Gammou {
                 }
             });
 
-        auto panel = std::make_unique<View::panel<>>(16.5f, 4.5f);
-        panel->insert_widget(0.5f, 0.5f, std::move(preset_name_input));
-        panel->insert_widget(11.f, 0.5f, std::move(save_button));
-        panel->insert_widget(0.5f, 2.5f, std::move(update_button));
+        auto panel = std::make_unique<View::panel<>>(210, 57);
+        panel->insert_widget(5, 5, std::move(preset_name_input));
+        panel->insert_widget(5 + 110 + 5, 5, std::move(save_button));
+        panel->insert_widget(5, 5 + 21 + 5, std::move(update_button));
 
         return std::make_unique<View::header>(
             View::make_vertical_layout(
@@ -234,7 +237,7 @@ namespace Gammou {
             category_dir.add_value(plugin->name(), std::move(uid));
         }
 
-        auto node_class_selector = View::make_directory_view(std::move(node_classes), 10, 50);
+        auto node_class_selector = View::make_directory_view(std::move(node_classes), 100, 500);
         node_class_selector->set_value_select_callback(
             [this](auto uid)
             {
@@ -271,6 +274,4 @@ namespace Gammou {
     {
         return std::make_unique<internal_node_widget>("To Master", polyphonic_to_master_node_id, _synthesizer.to_master_node());
     }
-
-
 }

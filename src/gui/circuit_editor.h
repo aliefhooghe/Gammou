@@ -34,18 +34,18 @@ namespace Gammou
         auto& node() const noexcept { return _node; }
         auto& node() noexcept { return _node; }
 
-        void draw(cairo_t* cr) override;
-        void draw_rect(cairo_t* cr, const View::rectangle<>&rect) override { draw(cr);} /* \todo */
+        void draw(NVGcontext* vg) override;
+        void draw_rect(NVGcontext* vg, const View::rectangle<>&rect) override { draw(vg);} /* \todo */
 
         virtual nlohmann::json serialize() =0;
 
         //  1 unit = font size
-        static constexpr auto node_header_size = 1.8f;
-        static constexpr auto node_corner_radius = 1.f;
-        static constexpr auto socket_size = 1.3f;
-        static constexpr auto socket_hitbox_size = socket_size * 2.f;
-        static constexpr auto socket_radius = 0.3f;
-        static constexpr auto node_width = 11.0f;
+        static constexpr auto node_header_size = 20;
+        static constexpr auto node_corner_radius = 10;
+        static constexpr auto socket_size = 13;
+        static constexpr auto socket_hitbox_size = socket_size * 2;
+        static constexpr auto socket_radius = 3;
+        static constexpr auto node_width = 120;
 
     private:
         auto _default_input_name(unsigned int idx) { return "In " + std::to_string(idx); }
@@ -63,10 +63,10 @@ namespace Gammou
         std::vector<std::string> _output_names;
 
         //  colors
-        View::color _text_color;
-        View::color _border_color;
-        View::color _background_color;
-        View::color _socket_color;
+        NVGcolor _text_color;
+        NVGcolor _border_color;
+        NVGcolor _background_color;
+        NVGcolor _socket_color;
     };
 
     class owning_node_widget : public node_widget {
@@ -129,12 +129,12 @@ namespace Gammou
         nlohmann::json serialize();
         void deserialize(const nlohmann::json&, node_deserializer);
 
-        void draw(cairo_t* cr) override;
-        void draw_rect(cairo_t* cr, const View::rectangle<>&rect) override { draw(cr);} /* \todo */
+        void draw(NVGcontext* vg) override;
+        void draw_rect(NVGcontext* vg, const View::rectangle<>&rect) override { draw(vg);} /* \todo */
 
         protected:
             void _draw_link(
-                cairo_t *cr, View::color color,
+                NVGcontext *vg, NVGcolor color,
                 float x_input, float y_input,
                 float x_output, float y_output) const noexcept;
 
@@ -159,9 +159,9 @@ namespace Gammou
             float _socket_highlight_y;
 
             //  colors
-            View::color _link_color;
-            View::color _linking_color;
-            View::color _socket_highlight_color;
+            NVGcolor _link_color;
+            NVGcolor _linking_color;
+            NVGcolor _socket_highlight_color;
     };
 
 } // namespace Gammou

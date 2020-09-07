@@ -47,7 +47,7 @@ namespace Gammou {
             _synthesizer, _node_factory, std::move(additional_toolbox));
 
         //  display
-        _display = std::make_unique<View::native_application_display>(_main_gui->widget(), 12);
+        _display = std::make_unique<View::native_application_display>(_main_gui->widget(), 1);
     }
 
     desktop_application::~desktop_application()
@@ -235,7 +235,7 @@ namespace Gammou {
 
         //  Build a widget view of device tree
         auto view =
-            View::make_directory_view(std::move(audio_device_tree), 10, 5);
+            View::make_directory_view(std::move(audio_device_tree), 100, 50);
 
         //  Set callback to select
         view->set_value_select_callback(
@@ -255,10 +255,11 @@ namespace Gammou {
         auto midi_settings_widget = std::make_unique<View::panel<>>(0.f, 0.f /* dummy sizes*/);
 
         const auto midi_input_count = _midi_input_count();
-        constexpr auto y_start_offset = 0.5f;
-        constexpr auto line_height = 1.2f;
+        constexpr auto y_start_offset = 5;
+        constexpr auto line_height = 21;
 
         for (auto i = 0u; i < midi_input_count; ++i) {
+            const auto x_offset = 5.f;
             const auto y_offset = y_start_offset + i * line_height;
             auto device_checkbox = std::make_unique<View::checkbox>();
             auto device_label = std::make_unique<View::label>(_midi_inputs[i].getPortName(i));
@@ -269,11 +270,11 @@ namespace Gammou {
                     _enable_midi_input(idx, checked);
                 });
 
-            midi_settings_widget->insert_widget(1.0, y_offset + 0.1, std::move(device_checkbox));
-            midi_settings_widget->insert_widget(2.2f, y_offset, std::move(device_label));
+            midi_settings_widget->insert_widget(x_offset, y_offset, std::move(device_checkbox));
+            midi_settings_widget->insert_widget(x_offset * 18, y_offset, std::move(device_label));
         }
 
-        midi_settings_widget->resize(30, line_height * midi_input_count + y_start_offset * 2);
+        midi_settings_widget->resize(500, line_height * midi_input_count + y_start_offset * 2);
 
         return midi_settings_widget;
     }
