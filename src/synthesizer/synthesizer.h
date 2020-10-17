@@ -194,10 +194,6 @@ namespace Gammou
         DSPJIT::graph_execution_context _master_circuit_context;
         DSPJIT::graph_execution_context _polyphonic_circuit_context;
 
-#ifdef GAMMOU_DEBUG_DUMP_NATIVE_CODE
-        DSPJIT::object_dumper _master_dumper{"master.bin"};
-        DSPJIT::object_dumper _polyphonic_dumper{"polyphonic.bin"};
-#endif
         //  Master circuit internal nodes
         DSPJIT::compile_node_class _from_polyphonic;
         DSPJIT::compile_node_class _output;

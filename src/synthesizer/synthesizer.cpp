@@ -42,11 +42,6 @@ namespace Gammou {
         _voice_lifetime(voice_count, 0u)
     {
         std::fill_n(_midi_learn_map.begin(), 255u, parameter_count);
-
-#ifdef GAMMOU_DEBUG_DUMP_NATIVE_CODE
-        _master_circuit_context.register_JITEventListener(&_master_dumper);
-        _polyphonic_circuit_context.register_JITEventListener(&_polyphonic_dumper);
-#endif
     }
 
     void synthesizer::process_sample(const float input[], float output[]) noexcept
