@@ -91,10 +91,10 @@ namespace Gammou {
         /**
          *  \brief create a node with the plugin identified by the plugin id
          *  \param id the plugin id
-         *  \param internal_state state to build the node from
+         *  \param state state to build the node from
          *  \return the new node
          */
-        std::unique_ptr<plugin_node_widget> create_node(plugin_id id, const nlohmann::json& internal_state);
+        std::unique_ptr<plugin_node_widget> create_node(const nlohmann::json& state);
 
         /**
          *
@@ -125,7 +125,14 @@ namespace Gammou {
             plugin_id id,
             std::unique_ptr<DSPJIT::compile_node_class>&& node);
 
+        /**
+         * @return factory plugin id
+         */
         auto id() const noexcept { return _plugin_id; }
+        
+        /**
+         * @return a json object with factory id and internal state
+         */
         nlohmann::json serialize() override;
 
     protected:

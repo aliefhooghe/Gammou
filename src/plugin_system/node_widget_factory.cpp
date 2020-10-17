@@ -6,6 +6,9 @@
 
 namespace Gammou {
 
+    /*
+     *  Factory Implementation 
+     */
     node_widget_factory::node_widget_factory(llvm::LLVMContext& llvm_context)
     :   _llvm_context{llvm_context}
     {
@@ -37,8 +40,11 @@ namespace Gammou {
             throw std::runtime_error("node_widget_factory::create_node unkown id");
     }
 
-    std::unique_ptr<plugin_node_widget> node_widget_factory::create_node(plugin_id id, const nlohmann::json& internal_state)
+    std::unique_ptr<plugin_node_widget> node_widget_factory::create_node(const nlohmann::json& state)
     {
+        const auto id = state.at("plugin-uid").get<uint64_t>();
+        const auto& internal_state = state.at("state");
+
         auto it = _plugins.find(id);
         if (it != _plugins.end())
             return it->second->create_node(internal_state);
@@ -51,7 +57,9 @@ namespace Gammou {
         return llvm::CloneModule(*_module);
     }
 
-    //
+    /*
+     *  Plugin node widget implementation 
+     */
 
     plugin_node_widget::plugin_node_widget(
         const std::string& name,

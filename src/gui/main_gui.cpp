@@ -69,15 +69,11 @@ namespace Gammou {
                         return _make_polyphonic_midi_input_node();
                     else  if (identifier == polyphonic_to_master_node_id)
                         return _make_polyphonic_to_master_node();
-                    else {
-                        std::cerr << "Bad identifier = " << identifier << std::endl;
-                        throw std::runtime_error("main_gui::deserialize : Unknown internal node");
-                    }
+                    else
+                        throw std::runtime_error("main_gui::deserialize : Unknown internal node : " + identifier);
                 }
                 else {
-                    return _factory.create_node(
-                        j.at("plugin-uid").get<uint64_t>(),
-                        j.at("state"));
+                    return _factory.create_node(j);
                 }
             };
 
