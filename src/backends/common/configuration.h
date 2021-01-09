@@ -5,10 +5,6 @@
 
 #define GAMMOU_PACKAGE_PATH_ENV "GAMMOU_PACKAGE_PATH"
 
-#ifndef GAMMOU_PACKAGE_PATH_DEFAULT
-#define GAMMOU_PACKAGE_PATH_DEFAULT "/home/.gammou/packages"
-#endif
-
 namespace Gammou {
 
     /**
