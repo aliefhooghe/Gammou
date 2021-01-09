@@ -4,8 +4,10 @@
 #include <cstdint>
 #include <unordered_map>
 #include <functional>
+#include <nlohmann/json.hpp>
 
 #include "gui/circuit_editor.h"
+#include "gui/circuit_tree_model.h"
 
 namespace Gammou {
 
@@ -14,6 +16,7 @@ namespace Gammou {
     class node_widget_factory {
     public:
         using plugin_id = uint64_t;
+        static constexpr plugin_id no_id = 0u;
 
         /**
          *  \class plugin
@@ -33,15 +36,15 @@ namespace Gammou {
             /**
              *  \return a new plugin node built with default state
              */
-            virtual std::unique_ptr<plugin_node_widget> create_node() =0;
+            virtual std::unique_ptr<plugin_node_widget> create_node(circuit_tree_model&) =0;
 
             /**
              *  \param internal_state from which the node will be deserialized
              *  \return a new plugin node built with given state
              */
-            virtual std::unique_ptr<plugin_node_widget> create_node(const nlohmann::json& /*internal_state*/)
+            virtual std::unique_ptr<plugin_node_widget> create_node(circuit_tree_model& dir, const nlohmann::json& /*internal_state*/)
             {
-                return create_node();
+                return create_node(dir);
             }
 
             /**
@@ -86,7 +89,7 @@ namespace Gammou {
          *  \param id the plugin id
          *  \return the new node
          */
-        std::unique_ptr<plugin_node_widget> create_node(plugin_id id);
+        std::unique_ptr<plugin_node_widget> create_node(circuit_tree_model& dir, plugin_id id);
 
         /**
          *  \brief create a node with the plugin identified by the plugin id
@@ -94,7 +97,7 @@ namespace Gammou {
          *  \param state state to build the node from
          *  \return the new node
          */
-        std::unique_ptr<plugin_node_widget> create_node(const nlohmann::json& state);
+        std::unique_ptr<plugin_node_widget> create_node(circuit_tree_model& dir, const nlohmann::json& state);
 
         /**
          *

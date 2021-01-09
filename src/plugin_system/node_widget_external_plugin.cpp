@@ -31,7 +31,7 @@ namespace Gammou {
         _node_output_names.assign(std::begin(desc.output_names), std::begin(desc.output_names) + oc);
     }
 
-    std::unique_ptr<plugin_node_widget> node_widget_external_plugin::create_node()
+    std::unique_ptr<plugin_node_widget> node_widget_external_plugin::create_node(circuit_tree_model&)
     {
         auto node =  std::make_unique<plugin_node_widget>(name(), id(),  _dsp_plugin.create_node());
 

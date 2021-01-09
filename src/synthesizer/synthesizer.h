@@ -1,7 +1,10 @@
 #ifndef GAMMOU_SYNTHESIZER_H_
 #define GAMMOU_SYNTHESIZER_H_
 
+#include <memory>
+
 #include <compile_node_class.h>
+#include <graph_execution_context.h>
 #include <object_dumper.h>
 
 #include "voice_manager.h"
@@ -61,11 +64,15 @@ namespace Gammou
          */
         auto get_output_count() const noexcept { return _output_count; }
 
-        //  Master circuit internal nodes
+        /*
+         *  Master circuit internal nodes
+         */
         auto& from_polyphonic_node() noexcept { return _from_polyphonic; }
         auto& output_node() noexcept { return _output; }
 
-        //  Polyphonic circuit internal nodes
+        /*
+         *  Polyphonic circuit internal nodes
+         */
         auto& midi_input_node() noexcept { return _midi_input; }
         auto& to_master_node() noexcept { return _to_master; }
 

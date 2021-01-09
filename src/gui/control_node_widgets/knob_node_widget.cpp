@@ -1,6 +1,6 @@
 
 #include "knob_node_widget.h"
-#include "test_implentations.h"
+#include "common_nodes.h"
 
 namespace Gammou {
 
@@ -43,7 +43,7 @@ namespace Gammou {
         knob_node_widget(synthesizer& synth, parameter && param)
         :   plugin_node_widget{
                 "Knob", knob_widget_uid,
-                std::make_unique<DSPJIT::reference_compile_node>(param.get_value_ptr())
+                std::make_unique<DSPJIT::reference_node>(param.get_value_ptr())
             },
             _param{std::move(param)},
             _synthesizer{synth}
@@ -114,13 +114,13 @@ namespace Gammou {
     {
     }
 
-    std::unique_ptr<plugin_node_widget> knob_node_widget_plugin::create_node()
+    std::unique_ptr<plugin_node_widget> knob_node_widget_plugin::create_node(circuit_tree_model&)
     {
         return std::make_unique<knob_node_widget>(
             _synth, _synth.allocate_parameter(0.f));
     }
 
-    std::unique_ptr<plugin_node_widget> knob_node_widget_plugin::create_node(const nlohmann::json& json)
+    std::unique_ptr<plugin_node_widget> knob_node_widget_plugin::create_node(circuit_tree_model&, const nlohmann::json& json)
     {
         parameter_descriptor desc;
         from_json(json, desc);

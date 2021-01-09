@@ -28,6 +28,7 @@ namespace Gammou
         void set_input_name(unsigned int input_id, const std::string& name);
         void set_output_name(unsigned int output_id, const std::string& name);
 
+        const auto& name() const noexcept { return _name; }
         const auto& get_input_name(const unsigned int input_id) const noexcept { return _input_names[input_id]; }
         const auto& get_output_name(const unsigned int output_id) const noexcept { return _output_names[output_id]; }
 

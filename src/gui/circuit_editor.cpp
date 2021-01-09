@@ -241,9 +241,13 @@ namespace Gammou {
             }
             else if (_create_node_callback) {
                 auto node = _create_node_callback();
-                const auto insert_x = x - node->width() / 2.f;
-                const auto insert_y = y - node->height() / 2.f;
-                insert_node_widget(insert_x, insert_y, std::move(node));
+
+                if (node) {
+                    const auto insert_x = x - node->width() / 2.f;
+                    const auto insert_y = y - node->height() / 2.f;
+                    insert_node_widget(insert_x, insert_y, std::move(node));
+                }
+
                 return true;
             }
             else {

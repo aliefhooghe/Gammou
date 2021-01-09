@@ -31,7 +31,7 @@ namespace Gammou
         node_widget_external_plugin(const node_widget_external_plugin&) = delete;
         node_widget_external_plugin(node_widget_external_plugin&&) = default;
 
-        std::unique_ptr<plugin_node_widget> create_node() override;
+        std::unique_ptr<plugin_node_widget> create_node(circuit_tree_model&) override;
         std::unique_ptr<llvm::Module> module() override;
 
     private:
