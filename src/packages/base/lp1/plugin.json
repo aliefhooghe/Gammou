@@ -2,7 +2,6 @@
     "name" : "Lp1",
     "uid"  : 15071368858070565797,
     "category" : "Filter",
-    "mutable-state-size": 4,
     "input-names" : ["in", "cutoff"],
     "output-names" : ["out"]
 }

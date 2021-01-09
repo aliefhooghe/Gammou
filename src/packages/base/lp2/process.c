@@ -2,17 +2,19 @@
 #include "../common_libs/math_utils.h"
 #include "../common_libs/math_constant.h"
 
-void node_initialize(void *state)
+
+struct filter_state {
+    // [Xn-1, Xn-2, Xn-3, Yn-1, Yn-2, Yn-3]
+    float state[6];
+};
+void node_initialize(struct filter_state *state)
 {
-    float *filter_state = (float*)state;
     for (int i = 0; i < 6; ++i)
-        filter_state[i] = 0.f;
+        state->state[i] = 0.f;
 }
 
-void node_process(void *state, float in, float cutoff_freq, float q, float *out)
+void node_process(struct filter_state *state, float in, float cutoff_freq, float q, float *out)
 {
-    float *filter_state = (float*)state; // = [Xn-1, Xn-2, Xn-3, Yn-1, Yn-2, Yn-3]
-
     const float dt = 1.f / 48000.f;
     const float Q = q / 128.f;
     const float omega = 2.f * PI * clamp(cutoff_freq, 1.f, 18000.f);
@@ -24,17 +26,17 @@ void node_process(void *state, float in, float cutoff_freq, float q, float *out)
 
     *out =
         (
-          a * (filter_state[2] + 3.f * (filter_state[1] + filter_state[0]) + in) -
+          a * (state->state[2] + 3.f * (state->state[1] + state->state[0]) + in) -
           (
-            (a - c) * filter_state[5] +
-            (3.f * a - b) * filter_state[4] +
-            (c + 3.f * a) * filter_state[3]))
+            (a - c) * state->state[5] +
+            (3.f * a - b) * state->state[4] +
+            (c + 3.f * a) * state->state[3]))
         / (a + b);
 
-    filter_state[5] = filter_state[4];
-    filter_state[4] = filter_state[3];
-    filter_state[3] = *out;
-    filter_state[2] = filter_state[1];
-    filter_state[1] = filter_state[0];
-    filter_state[0] = in;
+    state->state[5] = state->state[4];
+    state->state[4] = state->state[3];
+    state->state[3] = *out;
+    state->state[2] = state->state[1];
+    state->state[1] = state->state[0];
+    state->state[0] = in;
 }

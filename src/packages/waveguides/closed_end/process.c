@@ -1,5 +1,5 @@
 
-void node_process(void *state, float in, float *out)
+void node_process(float in, float *out)
 {
     *out = in;
 }

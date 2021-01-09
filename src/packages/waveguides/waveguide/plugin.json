@@ -2,7 +2,6 @@
     "name" : "Waveguide",
     "uid"  : 4056574897038437391,
     "category" : "Waveguides",
-    "mutable-state-size": 80008,
     "input-names" : ["in -", "t", "g", "in +"],
     "output-names" : ["out +", "out -"]
 }

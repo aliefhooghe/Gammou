@@ -2,7 +2,6 @@
     "name" : "Hammer",
     "uid"  : 11468496073748411161,
     "category" : "Waveguides",
-    "mutable-state-size": 8,
     "input-names" : ["in -", "k", "in +"],
     "output-names" : ["out +", "out -"]
 }

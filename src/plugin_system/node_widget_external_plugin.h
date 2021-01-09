@@ -13,7 +13,6 @@ namespace Gammou
         node_widget_factory::plugin_id plugin_id{0u};
         std::string name{};
         std::string category{};
-        std::size_t mutable_state_size{0u};
         std::vector<std::string> input_names{};
         std::vector<std::string> output_names{};
         std::vector<std::filesystem::path> modules_paths{};

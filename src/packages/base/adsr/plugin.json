@@ -2,7 +2,6 @@
     "name" : "ADSR",
     "uid"  : 11735043973976220348,
     "category" : "Envelope",
-    "mutable-state-size": 8,
     "input-names" : ["gate", "attack", "decay", "sustain", "release"],
     "output-names" : ["out"]
 }

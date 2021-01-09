@@ -2,7 +2,6 @@
     "name" : "Sin",
     "uid"  : 9371533241038442701,
     "category" : "Oscillator",
-    "mutable-state-size": 4,
     "input-names" : ["freq", "phase"],
     "output-names" : ["out"]
 }

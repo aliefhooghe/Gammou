@@ -2,15 +2,13 @@
 #include "../common_libs/math_constant.h"
 #include "../common_libs/math_utils.h"
 
-void node_initialize(void *state)
+void node_initialize(float *phase)
 {
-    float *phase = (float*)state;
     *phase = 0.f;
 }
 
-void node_process(void *state, float freq, float p, float *out)
+void node_process(float *phase, float freq, float p, float *out)
 {
-    float *phase = (float*)state;
     *out = fast_sin(*phase);
 
     *phase += clamp((freq / 48000.f) * PI * 2.f + p, -PI, PI);

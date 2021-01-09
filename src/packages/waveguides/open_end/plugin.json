@@ -2,7 +2,6 @@
     "name" : "Opened End",
     "uid"  : 16128341101362828553,
     "category" : "Waveguides",
-    "mutable-state-size": 0,
     "input-names" : ["in"],
     "output-names" : ["out"]
 }

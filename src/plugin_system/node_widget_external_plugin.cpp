@@ -12,7 +12,6 @@ namespace Gammou {
         j.at("name").get_to(desc.name);
         j.at("uid").get_to(desc.plugin_id);
         j.at("category").get_to(desc.category);
-        j.at("mutable-state-size").get_to(desc.mutable_state_size);
         j.at("input-names").get_to(desc.input_names);
         j.at("output-names").get_to(desc.output_names);
         j.at("modules").get_to(desc.modules_paths);
@@ -22,7 +21,7 @@ namespace Gammou {
         llvm::LLVMContext &llvm_context,
         const node_widget_external_plugin_descriptor& desc)
     :   node_widget_factory::plugin{desc.plugin_id, desc.name, desc.category},
-        _dsp_plugin{llvm_context, desc.modules_paths, desc.mutable_state_size}
+        _dsp_plugin{llvm_context, desc.modules_paths}
     {
         auto ic = std::min<unsigned int>(_dsp_plugin.get_input_count(), desc.input_names.size());
         auto oc = std::min<unsigned int>(_dsp_plugin.get_output_count(), desc.output_names.size());
