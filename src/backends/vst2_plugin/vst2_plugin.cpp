@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <cstring>
 
 namespace Gammou {
 
@@ -111,6 +112,20 @@ namespace Gammou {
             }
             break;
 
+            case effGetChunk:
+            {
+                if (index == 0)
+                    return plugin->_save_state((void **)ptr);
+            }
+            break;
+
+            case effSetChunk:
+            {
+                if (index == 0)
+                    return plugin->_load_state(ptr, value);
+            }
+            break;
+
             case effCanDo:
                 return 1;
                 break;
@@ -168,6 +183,58 @@ namespace Gammou {
                 _synthesizer,
                 reinterpret_cast<const uint8_t*>(midi_ev->midiData),
                 4u);
+        }
+    }
+
+    std::size_t vst2_plugin::_load_state(const void *chunk, std::size_t size)
+    {
+        LOG_INFO("Loading VST2 state (size = %llu)\n", size);
+
+        try {
+            const auto data = reinterpret_cast<const uint8_t*>(chunk);
+            const auto json_object = nlohmann::json::from_cbor( data, data + size);
+            _main_gui->deserialize(json_object);
+            return size;
+        }
+        catch(const std::exception& e)
+        {
+            LOG_ERROR("Failed to load VST2 state : %s\n", e.what());
+            return 0u;
+        }
+        catch(...)
+        {
+            LOG_ERROR("Failed to load VST2 state : unknown error\n");
+            return 0u;
+        }
+    }
+
+    std::size_t vst2_plugin::_save_state(void **chunk_ptr)
+    {
+        LOG_INFO("Save VST2 state\n");
+
+        // For VST serialize json state as cbor (Concise Binary Object Representation)
+        try {
+
+            const auto json_object = _main_gui->serialize();
+            const auto binary_data = nlohmann::json::to_cbor(json_object);
+
+            if ((*chunk_ptr = std::malloc(binary_data.size())) == nullptr)
+                throw std::bad_alloc();
+
+            std::memcpy(*chunk_ptr, binary_data.data(), binary_data.size());
+            LOG_INFO("Successfully saved VST2 sate (size = %llu)\n", binary_data.size());
+
+            return binary_data.size();
+        }
+        catch(const std::exception& e)
+        {
+            LOG_ERROR("Failed to save VST2 state : %s\n", e.what());
+            return 0u;
+        }
+        catch(...)
+        {
+            LOG_ERROR("Failed to save VST2 state (unknown error\n");
+            return 0u;
         }
     }
 
