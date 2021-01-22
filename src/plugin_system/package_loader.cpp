@@ -116,6 +116,10 @@ namespace Gammou {
                 }
             }
         }
+        catch(const std::exception& e)
+        {
+            LOG_ERROR("[gammou][load all packages] Unable to open directory package '%s' (%s).\n", packages_dir_path.c_str(), e.what());
+        }
         catch(...)
         {
             LOG_ERROR("[gammou][load all packages] Unable to open directory package '%s'.\n", packages_dir_path.c_str());
