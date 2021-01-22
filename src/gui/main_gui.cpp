@@ -1,6 +1,7 @@
 
 #include "helpers/alphabetical_compare.h"
 #include "helpers/filesystem_directory_model.h"
+#include "backends/common/configuration.h"
 #include "circuit_editor.h"
 #include "internal_node_widget.h"
 #include "composite_node_plugin.h"
@@ -20,7 +21,7 @@ namespace Gammou {
         ss << ptr;
         return  ss.str();
     }
-    
+
     main_gui::main_gui(
         synthesizer& synthesizer,
         node_widget_factory& factory,
@@ -32,14 +33,14 @@ namespace Gammou {
         _make_master_circuit_editor();
         _make_polyphonic_circuit_editor();
 
-        // main circuit editor  
+        // main circuit editor
         auto editor = _make_main_editor_widget();
 
         //  Register composite node plugin into factory
         _factory.register_plugin(std::make_unique<composite_node_plugin>(*this));
 
         //  left side bar
-        auto left_sidebar = 
+        auto left_sidebar =
             View::make_vertical_layout(
                 _make_patch_browser(),
                 _make_plugin_browser(),
@@ -85,7 +86,7 @@ namespace Gammou {
             LOG_DEBUG("main_editor::_create_node : No plugin is being used\n");
             return nullptr;
         }
-        
+
         return create_node(dir, _insert_plugin_id);
     }
 
@@ -100,7 +101,7 @@ namespace Gammou {
     {
         _synthesizer.compile_master_circuit();
         _synthesizer.compile_polyphonic_circuit();
-    }    
+    }
 
     void main_gui::deserialize(const nlohmann::json& json)
     {
@@ -143,7 +144,7 @@ namespace Gammou {
             [this, &editor_dir]()
             {
                 return create_node(editor_dir);
-            });            
+            });
 
         return editor_dir;
     }
@@ -238,7 +239,7 @@ namespace Gammou {
     std::unique_ptr<View::widget> main_gui::_make_circuit_browser()
     {
         auto circuit_browser = View::make_directory_view(_circuit_tree, 100, 500);
-    
+
         circuit_browser->set_value_select_callback(
             [this](std::weak_ptr<View::widget> config)
             {
@@ -264,7 +265,7 @@ namespace Gammou {
 
     std::unique_ptr<View::widget> main_gui::_make_patch_browser()
     {
-        const std::filesystem::path preset_dir_path{"/home/aliefhooghe/Documents/PRESET_DEBUG"};
+        const auto patch_dir_path = configuration::get_patch_path();
 
         auto preset_name_input = std::make_unique<View::text_input>(110, 21);
         auto save_button = std::make_unique<View::text_push_button>("Save", 80, 21);
@@ -272,12 +273,12 @@ namespace Gammou {
 
         auto filesystem_view =
             View::make_directory_view(
-                std::make_unique<View::filesystem_directory_model>(preset_dir_path),
+                std::make_unique<View::filesystem_directory_model>(patch_dir_path),
                 140, 90);
 
         update_button->set_callback(
             [fv = filesystem_view.get()]()
-            { 
+            {
                 fv->data_model().sync();
                 fv->update();
             });
@@ -296,17 +297,21 @@ namespace Gammou {
                     stream >> json;
                     deserialize(json);
                 }
+                catch(const std::exception& e)
+                {
+                    LOG_ERROR("[main gui] Failed to load preset : %s\n", e.what());
+                }
                 catch(...)
                 {
-                    LOG_ERROR("[main gui] Failed to load preset\n");
+                    LOG_ERROR("[main gui] Failed to load preset : unknown error\n");
                 }
             });
 
         save_button->set_callback(
-            [this, input = preset_name_input.get(), fv = filesystem_view.get(), preset_dir_path]()
+            [this, input = preset_name_input.get(), fv = filesystem_view.get(), patch_dir_path]()
             {
                 try {
-                    const auto preset_path = preset_dir_path / input->get_text();
+                    const auto preset_path = patch_dir_path / input->get_text();
                     std::ofstream stream{preset_path, std::ios_base::trunc};
 
                     if (!stream.good())
@@ -319,9 +324,13 @@ namespace Gammou {
                     fv->update();
                     LOG_INFO("[main gui] Saved patch '%s'\n", preset_path.c_str());
                 }
+                catch(const std::exception& e)
+                {
+                    LOG_ERROR("[main gui] Failed to save preset : %s\n", e.what());
+                }
                 catch(...)
                 {
-                    LOG_ERROR("[main gui] Failed to save preset\n");
+                    LOG_ERROR("[main gui] Failed to save preset : unknown error\n");
                 }
             });
 
@@ -365,7 +374,7 @@ namespace Gammou {
 
     std::unique_ptr<node_widget> main_gui::_deserialize_node(circuit_tree_model& dir, const nlohmann::json& j)
     {
-        return j.is_string() ? 
+        return j.is_string() ?
             _deserialize_internal_node(j.get<std::string>()) :
             create_node(dir, j);
     }

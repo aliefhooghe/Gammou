@@ -69,11 +69,6 @@ namespace Gammou {
         std::unique_ptr<node_widget> _deserialize_node(circuit_tree_model& dir, const nlohmann::json&);
         std::unique_ptr<node_widget> _deserialize_internal_node(const std::string& identifier);
 
-        /*
-         *
-         */
-        void _select_editor(circuit_tree_model& dir);
-
         circuit_tree_model _circuit_tree{};
         circuit_tree_model *_master_circuit_dir{nullptr};
         circuit_tree_model *_polyphonic_circuit_dir{nullptr};

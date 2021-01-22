@@ -29,7 +29,7 @@ namespace Gammou {
         load_control_plugins(_synthesizer, _node_factory);
 
         //  Load packages into factory
-        load_all_packages(get_packages_directory_path(), _node_factory);
+        load_all_packages(configuration::get_packages_directory_path(), _node_factory);
 
         //  Prepare synthesizer
         _synthesizer.add_module(_node_factory.module());
