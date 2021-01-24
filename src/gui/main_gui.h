@@ -40,9 +40,6 @@ namespace Gammou {
         /*
          *  circuit tree management
          */
-        circuit_tree_model& _add_root_circuit(
-            const std::string& name,
-            std::shared_ptr<circuit_editor> root_circuit);
 
         //void _remove_node(const circuit_editor*, );
 
@@ -77,8 +74,11 @@ namespace Gammou {
         node_widget_factory& _factory;
         node_widget_factory::plugin_id _insert_plugin_id{node_widget_factory::no_id};
 
-        std::shared_ptr<circuit_editor> _polyphonic_circuit_editor{};
-        std::shared_ptr<circuit_editor> _master_circuit_editor{};
+        std::shared_ptr<View::widget> _polyphonic_circuit_widget{};
+        std::shared_ptr<View::widget> _master_circuit_widget{};
+        circuit_editor *_polyphonic_circuit_editor{};
+        circuit_editor *_master_circuit_editor{};
+
         View::widget_proxy<> *_main_editor{nullptr};
         std::function<void()> _update_circuit_browser_widget{};
         std::unique_ptr<View::widget> _main_widget{};

@@ -91,10 +91,12 @@ namespace Gammou {
 
         circuit_tree_model& _initialize_internal_editor(main_gui& gui, circuit_tree_model& dir)
         {
-            _internal_editor = std::make_shared<circuit_editor>(100, 100);
-            
-            auto& editor_dir = 
-                dir.add_directory("composite-" + ptr_2_string(this), circuit_tree_model{_internal_editor});
+            auto editor = std::make_unique<circuit_editor>(100, 100);
+            _internal_editor = editor.get();
+            _editor_widget = std::make_shared<View::map_wrapper>(std::move(editor), 100, 100);
+
+            auto& editor_dir =
+                dir.add_directory("composite-" + ptr_2_string(this), circuit_tree_model{_editor_widget});
 
             _internal_editor->set_circuit_changed_callback(
                 [&gui]()
@@ -124,7 +126,9 @@ namespace Gammou {
         }
 
         DSPJIT::composite_node *_composite_node;
-        std::shared_ptr<circuit_editor> _internal_editor{};
+
+        circuit_editor *_internal_editor{};
+        std::shared_ptr<widget> _editor_widget{};
     };
 
     composite_node_plugin::composite_node_plugin(main_gui& gui)

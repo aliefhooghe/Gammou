@@ -51,17 +51,15 @@ namespace Gammou {
         auto toolbox = _make_toolbox(std::move(additional_toolbox));
 
         //  main Windows
-        auto map_editor =
-            std::make_unique<View::header>(
-                std::make_unique<View::map_wrapper>(std::move(editor), 1300, 400),
-                View::color_theme::color::SURFACE_DARK);
-
         _main_widget = std::make_unique<View::background>(
             View::make_horizontal_layout(
                 left_sidebar,
                 View::make_vertical_layout(
                     std::move(toolbox),
-                    std::move(map_editor)
+                    std::make_unique<View::header>(
+                        std::move(editor),
+                        View::color_theme::color::SURFACE_DARK
+                    )
                 )
             ));
 
@@ -114,7 +112,7 @@ namespace Gammou {
             });
         _polyphonic_circuit_editor->deserialize(
             json.at("polyphonic-circuit"),
-            [this, ed = _polyphonic_circuit_editor.get()](const nlohmann::json& j)
+            [this](const nlohmann::json& j)
             {
                 return _deserialize_node(*_polyphonic_circuit_dir, j);
             });
@@ -128,34 +126,29 @@ namespace Gammou {
         };
     }
 
-    circuit_tree_model& main_gui::_add_root_circuit(
-        const std::string& name,
-        std::shared_ptr<circuit_editor> root_circuit)
-    {
-        auto& editor_dir = _circuit_tree.add_directory(name, circuit_tree_model{root_circuit});
-
-        root_circuit->set_circuit_changed_callback(
-            [this]()
-            {
-                compile();
-            });
-
-        root_circuit->set_create_node_callback(
-            [this, &editor_dir]()
-            {
-                return create_node(editor_dir);
-            });
-
-        return editor_dir;
-    }
-
     void main_gui::_reset_circuit_tree()
     {
         _circuit_tree.clear();
-        auto& master_dir = _add_root_circuit("Master", _master_circuit_editor);
-        auto& poly_dir = _add_root_circuit("Polyphonic", _polyphonic_circuit_editor);
-        _master_circuit_dir = &master_dir;
-        _polyphonic_circuit_dir = &poly_dir;
+
+        auto& master_circuit_dir =
+            _circuit_tree.add_directory("Master", circuit_tree_model{_master_circuit_widget});
+        auto& polyphonic_circuit_dir =
+            _circuit_tree.add_directory("Polyphonic", circuit_tree_model{_polyphonic_circuit_widget});
+
+        _master_circuit_dir = &master_circuit_dir;
+        _polyphonic_circuit_dir = &polyphonic_circuit_dir;
+
+        _master_circuit_editor->set_create_node_callback(
+            [this]()
+            {
+                return create_node(*_master_circuit_dir);
+            });
+        _polyphonic_circuit_editor->set_create_node_callback(
+            [this]()
+            {
+                return create_node(*_polyphonic_circuit_dir);
+            });
+
         _update_circuit_browser_widget();
     }
 
@@ -171,7 +164,10 @@ namespace Gammou {
      */
     void main_gui::_make_master_circuit_editor()
     {
-        _master_circuit_editor = std::make_shared<circuit_editor>(200, 400);
+        auto editor = std::make_unique<circuit_editor>(200, 400);
+
+        _master_circuit_editor = editor.get();
+        _master_circuit_widget = std::make_shared<View::map_wrapper>(std::move(editor), 200, 400);
 
         _master_circuit_editor->insert_node_widget(50, 50, _make_master_from_polyphonic_node());
         _master_circuit_editor->insert_node_widget(50, 100, _make_master_output_node());
@@ -185,7 +181,10 @@ namespace Gammou {
      */
     void main_gui::_make_polyphonic_circuit_editor()
     {
-        _polyphonic_circuit_editor = std::make_shared<circuit_editor>(400, 200);
+        auto editor = std::make_unique<circuit_editor>(200, 400);
+
+        _polyphonic_circuit_editor = editor.get();
+        _polyphonic_circuit_widget = std::make_shared<View::map_wrapper>(std::move(editor), 200, 400);
 
         _polyphonic_circuit_editor->insert_node_widget(50, 50, _make_polyphonic_midi_input_node());
         _polyphonic_circuit_editor->insert_node_widget(50, 100, _make_polyphonic_to_master_node());
