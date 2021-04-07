@@ -133,7 +133,7 @@ namespace Gammou {
         _midi_learn_map[control] = param.id();
     }
 
-    bool synthesizer::midi_assigned_to_control(uint8_t& control, const parameter& param)
+    bool synthesizer::midi_assigned_to_control(uint8_t& control, const parameter& param) const noexcept
     {
         for (auto i = 0u; i < 256; ++i) {
             if (_midi_learn_map[i] == param.id()) {

@@ -6,9 +6,18 @@
 
 namespace Gammou {
 
-    class  knob_node_widget_plugin  : public node_widget_factory::plugin {
+    class  value_knob_node_widget_plugin  : public node_widget_factory::plugin {
     public:
-        knob_node_widget_plugin(synthesizer& synth);
+        value_knob_node_widget_plugin(synthesizer& synth);
+        std::unique_ptr<plugin_node_widget> create_node(circuit_tree_model&) override;
+        std::unique_ptr<plugin_node_widget> create_node(circuit_tree_model&, const nlohmann::json&) override;
+    private:
+        synthesizer& _synth;
+    };
+
+    class  gain_knob_node_widget_plugin  : public node_widget_factory::plugin {
+    public:
+        gain_knob_node_widget_plugin(synthesizer& synth);
         std::unique_ptr<plugin_node_widget> create_node(circuit_tree_model&) override;
         std::unique_ptr<plugin_node_widget> create_node(circuit_tree_model&, const nlohmann::json&) override;
     private:

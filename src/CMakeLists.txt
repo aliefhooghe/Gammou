@@ -29,6 +29,8 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/builtin_plugins/load_builtin_plugins.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/builtin_plugins/node_widget_builtin_plugin.h
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/control_node_widgets/parameter_serialization.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/control_node_widgets/parameter_serialization.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/control_node_widgets/knob_node_widget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/control_node_widgets/knob_node_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/control_node_widgets/load_control_plugins.h

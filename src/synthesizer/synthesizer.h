@@ -178,7 +178,7 @@ namespace Gammou
          *  \param param  the parameter
          *  \return true if the parameter is assigned the given midi control
          */
-        bool midi_assigned_to_control(uint8_t& control, const parameter& param);
+        bool midi_assigned_to_control(uint8_t& control, const parameter& param) const noexcept;
 
     private:
         using param_id = parameter_manager<parameter_count>::param_id;

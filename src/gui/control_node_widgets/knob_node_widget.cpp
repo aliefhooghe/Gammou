@@ -1,55 +1,33 @@
 
 #include "knob_node_widget.h"
 #include "common_nodes.h"
+#include "parameter_serialization.h"
 
 namespace Gammou {
 
-    static constexpr auto knob_widget_uid = 0x384d61a1be4de6cdu;
-    struct parameter_descriptor
-    {
-        float normalized;
-        float shape_base;
-        float shape_scale;
-        std::optional<uint8_t> control;
-    };
-
-    void from_json(const nlohmann::json& json, parameter_descriptor& desc)
-    {
-        json.at("normalized").get_to(desc.normalized);
-        json.at("shape-base").get_to(desc.shape_base);
-        json.at("shape-scale").get_to(desc.shape_scale);
-
-        auto it = json.find("control");
-        if (it != json.end())
-            desc.control = it->get<uint8_t>();
-    }
-
-    void to_json(nlohmann::json& json, const parameter_descriptor& desc)
-    {
-        json = {
-            {"normalized", desc.normalized},
-            {"shape-base", desc.shape_base},
-            {"shape-scale", desc.shape_scale}
-        };
-
-        if (desc.control)
-            json["control"] = desc.control.value();
-    }
-
+    static constexpr auto value_knob_widget_uid = 0x384d61a1be4de6cdu;
+    static constexpr auto gain_knob_widget_uid = 0xdde47c1126a20041u;
 
     class knob_node_widget : public plugin_node_widget {
         using parameter = synthesizer::parameter;
     public:
-        knob_node_widget(synthesizer& synth, parameter && param)
+
+        enum class mode {
+            VALUE, GAIN
+        };
+
+        knob_node_widget(synthesizer& synth, mode m, parameter && param)
         :   plugin_node_widget{
-                "Knob", knob_widget_uid,
-                std::make_unique<DSPJIT::reference_node>(param.get_value_ptr())
+                "Knob", m == mode::VALUE ? value_knob_widget_uid : gain_knob_widget_uid,
+                make_compile_node(m, param)
             },
             _param{std::move(param)},
             _synthesizer{synth}
         {
             //  To make place for the knob widget
             set_output_name(0u, "");
+            if (m == mode::GAIN)
+                set_input_name(0u, "");
 
             //  Create the knob and link it to the parameter
             auto knob = std::make_unique<View::knob>();
@@ -84,54 +62,75 @@ namespace Gammou {
 
             insert_widget(
                 node_widget::node_header_size, node_widget::node_header_size * 3, std::move(button_scale_down));
-
         }
 
         nlohmann::json serialize_internal_state() override
         {
-            parameter_descriptor desc;
-            desc.normalized = _param.get_normalized();
-            desc.shape_base = _param.get_shape_base();
-            desc.shape_scale = _param.get_shape_scale();
-
-            uint8_t control;
-            if (_synthesizer.midi_assigned_to_control(control, _param))
-                desc.control = control;
-
-            nlohmann::json state;
-            to_json(state, desc);
-            return state;
+            return parameter_to_json(_synthesizer, _param);
         }
 
     private:
+        static std::unique_ptr<DSPJIT::compile_node_class> make_compile_node(mode m, parameter& param)
+        {
+            if (m == mode::VALUE)
+                return std::make_unique<DSPJIT::reference_node>(param.get_value_ptr());
+            else // GAIN
+                return std::make_unique<DSPJIT::reference_multiply_node>(param.get_value_ptr());
+        }
+
         parameter _param;
         synthesizer& _synthesizer;
     };
 
-    knob_node_widget_plugin::knob_node_widget_plugin(synthesizer& synth)
-    :   node_widget_factory::plugin{knob_widget_uid, "Knob" ,"Control"},
+    /**
+     * \brief value_knob_node_widget_plugin
+     */
+    value_knob_node_widget_plugin::value_knob_node_widget_plugin(synthesizer& synth)
+    :   node_widget_factory::plugin{value_knob_widget_uid, "Knob" ,"Control"},
         _synth{synth}
     {
     }
 
-    std::unique_ptr<plugin_node_widget> knob_node_widget_plugin::create_node(circuit_tree_model&)
+    std::unique_ptr<plugin_node_widget> value_knob_node_widget_plugin::create_node(circuit_tree_model&)
     {
         return std::make_unique<knob_node_widget>(
-            _synth, _synth.allocate_parameter(0.f));
+            _synth,
+            knob_node_widget::mode::VALUE,
+            _synth.allocate_parameter(0.f));
     }
 
-    std::unique_ptr<plugin_node_widget> knob_node_widget_plugin::create_node(circuit_tree_model&, const nlohmann::json& json)
+    std::unique_ptr<plugin_node_widget> value_knob_node_widget_plugin::create_node(circuit_tree_model&, const nlohmann::json& json)
     {
-        parameter_descriptor desc;
-        from_json(json, desc);
+        auto param = parameter_from_json(json, _synth);
+        return std::make_unique<knob_node_widget>(
+            _synth,
+            knob_node_widget::mode::VALUE,
+            std::move(param));
+    }
 
-        auto param = _synth.allocate_parameter(desc.normalized);
-        param.set_shape_base(desc.shape_base);
-        param.set_shape_scale(desc.shape_scale);
+    /**
+     * \brief gain_knob_node_widget_plugin
+     */
+    gain_knob_node_widget_plugin::gain_knob_node_widget_plugin(synthesizer& synth)
+    :   node_widget_factory::plugin{gain_knob_widget_uid, "Gain Knob" ,"Control"},
+        _synth{synth}
+    {
+    }
 
-        if (desc.control)
-            _synth.midi_assign_control(desc.control.value(), param);
+    std::unique_ptr<plugin_node_widget> gain_knob_node_widget_plugin::create_node(circuit_tree_model&)
+    {
+        return std::make_unique<knob_node_widget>(
+            _synth,
+            knob_node_widget::mode::GAIN,
+            _synth.allocate_parameter(0.f));
+    }
 
-        return std::make_unique<knob_node_widget>(_synth, std::move(param));
+    std::unique_ptr<plugin_node_widget> gain_knob_node_widget_plugin::create_node(circuit_tree_model&, const nlohmann::json& json)
+    {
+        auto param = parameter_from_json(json, _synth);
+        return std::make_unique<knob_node_widget>(
+            _synth,
+            knob_node_widget::mode::GAIN,
+            std::move(param));
     }
 }
