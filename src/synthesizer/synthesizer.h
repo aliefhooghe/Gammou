@@ -19,19 +19,18 @@ namespace Gammou
          *  \enum midi_inputs The available channel midi inputs
          */
         enum midi_inputs {
-            gate = 0u,          /** 1. when not is on, 0. otherwise **/
+            gate = 0u,          /** 1. when note is on, 0. otherwise **/
             pitch,              /** the pitch of the note being played (Hz) **/
             attack,             /** the attack velocity in [0., 1.] **/
 
             midi_input_count
         };
 
-        static constexpr auto parameter_count = 16u;
         static constexpr auto polyphonic_to_master_channel_count = 2u;
         static constexpr auto voice_disappearance_treshold = 0.0003f;
 
         using opt_level = DSPJIT::graph_execution_context::opt_level;
-        using parameter = parameter_manager<parameter_count>::parameter;
+        using parameter = parameter_manager::parameter;
 
         /**
          *  \brief Initialize a synthesizer instance
@@ -181,7 +180,7 @@ namespace Gammou
         bool midi_assigned_to_control(uint8_t& control, const parameter& param) const noexcept;
 
     private:
-        using param_id = parameter_manager<parameter_count>::param_id;
+        using param_id = parameter_manager::param_id;
 
         void _process_one_sample(const float[], float output[]) noexcept;
 
@@ -215,7 +214,7 @@ namespace Gammou
         std::vector<unsigned int> _voice_lifetime;
 
         //  Parameter management
-        parameter_manager<parameter_count> _parameter_manager{48000.f};
+        parameter_manager _parameter_manager{48000.f};
         std::array<param_id, 256u> _midi_learn_map;
         bool _midi_learning{false};
         param_id _learning_param;

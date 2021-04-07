@@ -41,7 +41,7 @@ namespace Gammou {
         _voice_manager{voice_count},
         _voice_lifetime(voice_count, 0u)
     {
-        std::fill_n(_midi_learn_map.begin(), 255u, parameter_count);
+        std::fill_n(_midi_learn_map.begin(), 255u, parameter_manager::INVALID_PARAM);
     }
 
     void synthesizer::process_sample(const float input[], float output[]) noexcept
@@ -98,7 +98,7 @@ namespace Gammou {
         }
 
         auto param_id = _midi_learn_map[control];
-        if (param_id != parameter_count)
+        if (param_id != parameter_manager::INVALID_PARAM)
             _parameter_manager.set_parameter_nomalized(param_id, value);
     }
 
@@ -124,7 +124,7 @@ namespace Gammou {
 
         for (auto& learned_param : _midi_learn_map) {
             if (learned_param == param.id())
-                learned_param = parameter_count;
+                learned_param = parameter_manager::INVALID_PARAM;
         }
     }
 
