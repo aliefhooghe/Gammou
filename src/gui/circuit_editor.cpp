@@ -226,6 +226,8 @@ namespace Gammou {
 
         for (auto node : to_delete)
             remove_node_widget(node);
+
+        invalidate();
     }
 
     bool circuit_editor::on_mouse_dbl_click(float x, float y)

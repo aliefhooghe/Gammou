@@ -64,7 +64,7 @@ namespace Gammou {
             ));
 
         //
-        _reset_circuit_tree();
+        _reset_content();
     }
 
 
@@ -103,7 +103,7 @@ namespace Gammou {
 
     void main_gui::deserialize(const nlohmann::json& json)
     {
-        _reset_circuit_tree();
+        _reset_content();
         _master_circuit_editor->deserialize(
             json.at("master-circuit"),
             [this](const nlohmann::json& j)
@@ -126,7 +126,7 @@ namespace Gammou {
         };
     }
 
-    void main_gui::_reset_circuit_tree()
+    void main_gui::_reset_content()
     {
         _circuit_tree.clear();
 
@@ -150,6 +150,19 @@ namespace Gammou {
             });
 
         _update_circuit_browser_widget();
+
+        _master_circuit_editor->clear();
+        _master_circuit_editor->insert_node_widget(50, 50, _make_master_from_polyphonic_node());
+        _master_circuit_editor->insert_node_widget(50, 100, _make_master_output_node());
+
+        _polyphonic_circuit_editor->clear();
+        _polyphonic_circuit_editor->insert_node_widget(50, 50, _make_polyphonic_midi_input_node());
+        _polyphonic_circuit_editor->insert_node_widget(50, 100, _make_polyphonic_to_master_node());
+
+        _master_circuit_widget->reset_view();
+        _polyphonic_circuit_widget->reset_view();
+
+        compile();
     }
 
     std::unique_ptr<View::widget> main_gui::_make_main_editor_widget()
@@ -169,9 +182,6 @@ namespace Gammou {
         _master_circuit_editor = editor.get();
         _master_circuit_widget = std::make_shared<View::map_wrapper>(std::move(editor), 200, 400);
 
-        _master_circuit_editor->insert_node_widget(50, 50, _make_master_from_polyphonic_node());
-        _master_circuit_editor->insert_node_widget(50, 100, _make_master_output_node());
-
         _master_circuit_editor->set_circuit_changed_callback(
             [this](){ _synthesizer.compile_master_circuit(); });
     }
@@ -186,9 +196,6 @@ namespace Gammou {
         _polyphonic_circuit_editor = editor.get();
         _polyphonic_circuit_widget = std::make_shared<View::map_wrapper>(std::move(editor), 200, 400);
 
-        _polyphonic_circuit_editor->insert_node_widget(50, 50, _make_polyphonic_midi_input_node());
-        _polyphonic_circuit_editor->insert_node_widget(50, 100, _make_polyphonic_to_master_node());
-
         _polyphonic_circuit_editor->set_circuit_changed_callback(
             [this](){ _synthesizer.compile_polyphonic_circuit(); });
     }
@@ -198,7 +205,12 @@ namespace Gammou {
      */
     std::unique_ptr<View::widget> main_gui::_make_toolbox(std::unique_ptr<View::widget>&& additional_toolbox)
     {
-        auto common_toolbox = std::make_unique<View::panel<>>(250, 110);
+        const auto common_toolbox_width = additional_toolbox ? 780 : 1000;
+        auto common_toolbox = std::make_unique<View::panel<>>(common_toolbox_width, 110);
+
+        auto reset_button = std::make_unique<View::text_push_button>("Reset", 80, 21);
+        reset_button->set_callback([this]() { _reset_content(); });
+        common_toolbox->insert_widget(5, 5, std::move(reset_button));
 
         if (!additional_toolbox)
             return std::make_unique<View::header>(std::move(common_toolbox));

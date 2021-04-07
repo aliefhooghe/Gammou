@@ -43,7 +43,7 @@ namespace Gammou {
 
         //void _remove_node(const circuit_editor*, );
 
-        void _reset_circuit_tree();
+        void _reset_content();
 
         /*
          * gui widgets helpers
@@ -74,8 +74,8 @@ namespace Gammou {
         node_widget_factory& _factory;
         node_widget_factory::plugin_id _insert_plugin_id{node_widget_factory::no_id};
 
-        std::shared_ptr<View::widget> _polyphonic_circuit_widget{};
-        std::shared_ptr<View::widget> _master_circuit_widget{};
+        std::shared_ptr<View::map_wrapper> _polyphonic_circuit_widget{};
+        std::shared_ptr<View::map_wrapper> _master_circuit_widget{};
         circuit_editor *_polyphonic_circuit_editor{};
         circuit_editor *_master_circuit_editor{};
 
