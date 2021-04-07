@@ -37,6 +37,10 @@ namespace Gammou {
         using namespace std::filesystem;
         LOG_DEBUG("[gammou][load package] Scanning package '%s'\n", dir_path.c_str());
 
+        // Loaded plugin list
+        std::vector<std::unique_ptr<node_widget_external_plugin>> loaded_plugins{};
+        std::vector<std::unique_ptr<llvm::Module>> additionalModules{};
+
         //  a package is a directory
         if (!is_directory(dir_path))
             throw std::runtime_error("load_package : given path is not a directory");
@@ -69,8 +73,8 @@ namespace Gammou {
             LOG_INFO("[gammou][load package] Loading plugin uid : 0x%016lx, name : '%s'\n", node_class_desc.plugin_id, node_class_desc.name.c_str());
 
             try {
-                auto plugin = std::make_unique<node_widget_external_plugin>(factory.get_llvm_context(), node_class_desc);
-                factory.register_plugin(std::move(plugin));
+                loaded_plugins.emplace_back(
+                    std::make_unique<node_widget_external_plugin>(factory.get_llvm_context(), node_class_desc));
             }
             catch (...)
             {
@@ -98,9 +102,15 @@ namespace Gammou {
                 for (auto& function : *module)
                     function.setAttributes(
                         llvm::AttributeList::get(factory.get_llvm_context(), llvm::ArrayRef<llvm::AttributeList>{}));
-                factory.add_module(std::move(module));
+                additionalModules.emplace_back(std::move(module));
             }
         }
+
+        // Load plugins into the factory and additional modules into factory
+        for (auto&& plugin : loaded_plugins)
+            factory.register_plugin(std::move(plugin));
+        for (auto&& module : additionalModules)
+            factory.add_module(std::move(module));
     }
 
     void load_all_packages(const std::filesystem::path& packages_dir_path, node_widget_factory& factory)
