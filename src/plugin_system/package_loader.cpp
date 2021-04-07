@@ -15,7 +15,7 @@ namespace Gammou {
         std::string package_name{};
         package_uid uid;
         std::vector<node_widget_external_plugin_descriptor> plugins{};
-        std::vector<std::string> common_libs{};
+        std::vector<std::filesystem::path> common_libs{};
     };
 
     void from_json(const nlohmann::json& j, package_descriptor& desc)
@@ -79,11 +79,15 @@ namespace Gammou {
         }
 
         //  Load additional libs
-        for (const auto& lib_path : package_desc.common_libs) {
+        for (auto& lib_path : package_desc.common_libs) {
             llvm::SMDiagnostic error;
+
+            if (lib_path.is_relative())
+                lib_path = dir_path / lib_path;
 
             LOG_INFO("[gammou][load package] Loading common lib object %s\n", lib_path.c_str());
             auto module = llvm::parseIRFile(lib_path.c_str(), error, factory.get_llvm_context());
+
             if (!module) {
                 LOG_ERROR("[gammou][load package] Cannot load common lib object %s\n", lib_path.c_str());
                 throw std::runtime_error("DSPJIT : Failed to load object");

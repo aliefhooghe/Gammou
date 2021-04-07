@@ -5,6 +5,10 @@ import sys
 
 
 def generate_plugin(dest, src, modules):
+    """
+        dest : desitnation plugin json file
+        src  : source plugin json file
+    """
     input_file = open(src, "rb")
     output_file = open(dest, "w+")
     input_content = json.loads(input_file.read())
