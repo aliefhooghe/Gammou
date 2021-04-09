@@ -19,4 +19,6 @@ float fast_tanh(float x);
 
 float clamp(float x, float min, float max);
 
+float absolute(float x);
+
 #endif

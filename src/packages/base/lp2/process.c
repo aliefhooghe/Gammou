@@ -16,8 +16,8 @@ void node_initialize(struct filter_state *state)
 void node_process(struct filter_state *state, float in, float cutoff_freq, float q, float *out)
 {
     const float dt = 1.f / 48000.f;
-    const float Q = q / 128.f;
-    const float omega = 2.f * PI * clamp(cutoff_freq, 1.f, 18000.f);
+    const float Q = 0.125f / clamp(q, 0.015625f, 8192.f);
+    const float omega = CST_2_PI * clamp(cutoff_freq, 1.f, 18000.f);
 
     const float a = omega * omega * dt * dt * dt;
     const float tmp = 4.f * omega * Q * dt;

@@ -27,7 +27,12 @@ float fast_tanh(float x)
 
 float clamp(float x, float min, float max)
 {
-    if (x < min) return min;
-    else if (x > max) return max;
-    else return x;
+    const float a = x < min ? min : x;
+    return a > max ? max : a;
+}
+
+float absolute(float x)
+{
+    const unsigned int bits = 0x7fffffffu & (*(unsigned int*)&x);
+    return *(float*)&bits;
 }

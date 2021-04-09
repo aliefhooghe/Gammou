@@ -7,11 +7,12 @@ void node_initialize(float *phase)
     *phase = 0.f;
 }
 
-void node_process(float *phase, float freq, float p, float *out)
+void node_process(float *phase, float freq, float *out)
 {
     *out = fast_sin(*phase);
-
-    *phase += clamp((freq / 48000.f) * PI * 2.f + p, -PI, PI);
-    if (*phase > PI)
-        *phase -= PI * 2.f;
+    *phase += clamp(freq, -24000.0, 24000.0) / 48000.f * CST_2_PI;
+    if (*phase > CST_PI)
+        *phase -= CST_2_PI;
+    else if (*phase < -CST_PI)
+        *phase += CST_2_PI;
 }
