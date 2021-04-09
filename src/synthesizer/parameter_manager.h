@@ -1,7 +1,7 @@
 #ifndef GAMMOU_PARAMETER_MANAGER_H_
 #define GAMMOU_PARAMETER_MANAGER_H_
 
-#include <array>
+#include <deque>
 #include <algorithm>
 #include <stack>
 #include <limits>
@@ -126,11 +126,11 @@ namespace Gammou {
         void _free_parameter(param_id param) noexcept;
 
         std::stack<unsigned int> _free_params;
-        std::vector<float> _parameter_normalized_settings{};
-        std::vector<float> _parameter_settings{};
-        std::vector<float> _parameter_values{};
-        std::vector<float> _shape_scales{};
-        std::vector<float> _shape_bases{};
+        std::deque<float> _parameter_normalized_settings{};
+        std::deque<float> _parameter_settings{};
+        std::deque<float> _parameter_values{};
+        std::deque<float> _shape_scales{};
+        std::deque<float> _shape_bases{};
         float _dt;
         float _smooth_characteristic_time;
     };
