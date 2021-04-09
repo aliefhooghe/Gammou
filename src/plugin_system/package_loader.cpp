@@ -70,7 +70,7 @@ namespace Gammou {
             }
 
             //  Create and plugin into factory
-            LOG_INFO("[gammou][load package] Loading plugin uid : 0x%016lx, name : '%s'\n", node_class_desc.plugin_id, node_class_desc.name.c_str());
+            LOG_DEBUG("[gammou][load package] Loading plugin uid : 0x%016lx, name : '%s'\n", node_class_desc.plugin_id, node_class_desc.name.c_str());
 
             try {
                 loaded_plugins.emplace_back(
@@ -89,7 +89,7 @@ namespace Gammou {
             if (lib_path.is_relative())
                 lib_path = dir_path / lib_path;
 
-            LOG_INFO("[gammou][load package] Loading common lib object %s\n", lib_path.c_str());
+            LOG_DEBUG("[gammou][load package] Loading common lib object %s\n", lib_path.c_str());
             auto module = llvm::parseIRFile(lib_path.c_str(), error, factory.get_llvm_context());
 
             if (!module) {
@@ -115,7 +115,7 @@ namespace Gammou {
 
     void load_all_packages(const std::filesystem::path& packages_dir_path, node_widget_factory& factory)
     {
-        LOG_DEBUG("[gammou][load package] Listing directory '%s'\n", packages_dir_path.c_str());
+        LOG_INFO("[gammou][load package] Scanning package directory '%s'\n", packages_dir_path.c_str());
 
         try {
             for (const auto& entry : std::filesystem::directory_iterator(packages_dir_path)) {

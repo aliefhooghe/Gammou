@@ -128,6 +128,8 @@ namespace Gammou {
 
     void main_gui::_reset_content()
     {
+        LOG_DEBUG("[main gui] Reset content\n");
+
         _circuit_tree.clear();
 
         auto& master_circuit_dir =
@@ -205,7 +207,7 @@ namespace Gammou {
      */
     std::unique_ptr<View::widget> main_gui::_make_toolbox(std::unique_ptr<View::widget>&& additional_toolbox)
     {
-        const auto common_toolbox_width = additional_toolbox ? 780 : 1000;
+        const auto common_toolbox_width = additional_toolbox ? 780 : 1300;
         auto common_toolbox = std::make_unique<View::panel<>>(common_toolbox_width, 110);
 
         auto reset_button = std::make_unique<View::text_push_button>("Reset", 80, 21);

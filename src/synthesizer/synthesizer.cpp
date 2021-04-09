@@ -152,11 +152,13 @@ namespace Gammou {
 
     void synthesizer::compile_master_circuit()
     {
+        LOG_INFO("[synthesizer] Compile master circuit\n");
         _master_circuit_context.compile({_from_polyphonic}, {_output});
     }
 
     void synthesizer::compile_polyphonic_circuit()
     {
+        LOG_INFO("[synthesizer] Compile polyphonic circuit\n");
         _polyphonic_circuit_context.compile({_midi_input}, {_to_master});
     }
 

@@ -232,7 +232,6 @@ namespace Gammou {
 
     bool circuit_editor::on_mouse_dbl_click(float x, float y)
     {
-        std::cout << "Circuit editor DBLCLICK" << std::endl;
         if (!panel_implementation<node_widget>::on_mouse_dbl_click(x, y)) {
             auto w = panel_implementation<node_widget>::widget_at(x, y);
 
