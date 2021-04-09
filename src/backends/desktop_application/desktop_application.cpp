@@ -235,7 +235,7 @@ namespace Gammou {
 
         //  Build a widget view of device tree
         auto view =
-            View::make_directory_view(std::move(audio_device_tree), 100, 50);
+            View::make_directory_view(std::move(audio_device_tree), 500, 50);
 
         //  Set callback to select
         view->set_value_select_callback(
