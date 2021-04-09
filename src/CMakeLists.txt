@@ -66,8 +66,8 @@ set(GAMMOU_COMMON_SRC
 #                          #
 ############################
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/View/src View)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/DSPJIT/src DSPJIT)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/View/src View EXCLUDE_FROM_ALL)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/DSPJIT/src DSPJIT EXCLUDE_FROM_ALL)
 
 ############################
 #                          #
