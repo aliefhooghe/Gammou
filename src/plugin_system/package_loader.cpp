@@ -56,7 +56,7 @@ namespace Gammou {
         //  deserialize package descriptor from the file
         auto package_desc = json_object.get<package_descriptor>();
 
-        LOG_INFO("[gammou][load package] Loading package uid : 0x%016lx, name : '%s'\n",
+        LOG_INFO("[gammou][load package] Loading package uid : 0x%016llx, name : '%s'\n",
             package_desc.uid,
             package_desc.package_name.c_str());
 
@@ -90,7 +90,7 @@ namespace Gammou {
                 lib_path = dir_path / lib_path;
 
             LOG_DEBUG("[gammou][load package] Loading common lib object %s\n", lib_path.c_str());
-            auto module = llvm::parseIRFile(lib_path.c_str(), error, factory.get_llvm_context());
+            auto module = llvm::parseIRFile(lib_path.string(), error, factory.get_llvm_context());
 
             if (!module) {
                 LOG_ERROR("[gammou][load package] Cannot load common lib object %s\n", lib_path.c_str());

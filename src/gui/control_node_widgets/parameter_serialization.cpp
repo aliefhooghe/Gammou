@@ -1,4 +1,5 @@
 
+#include <optional>
 #include <stdint.h>
 
 #include "parameter_serialization.h"

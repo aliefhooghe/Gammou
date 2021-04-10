@@ -68,6 +68,7 @@ set(GAMMOU_COMMON_SRC
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/View/src View EXCLUDE_FROM_ALL)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/DSPJIT/src DSPJIT EXCLUDE_FROM_ALL)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 ############################
 #                          #
@@ -97,6 +98,7 @@ endif()
 ############################
 
 if (GAMMOU_ENABLE_VST2_PLUGIN)
+    message(STATUS "Build vst2 plugin")
 
     set(GAMMOU_VST_PLUGIN_SRC
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/vst2_plugin/vst_compat.hpp
@@ -105,8 +107,13 @@ if (GAMMOU_ENABLE_VST2_PLUGIN)
     )
 
     add_library(gammou_vst2_plugin MODULE ${GAMMOU_VST_PLUGIN_SRC} ${GAMMOU_COMMON_SRC})
-    target_include_directories(gammou_vst2_plugin PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(gammou_vst2_plugin PUBLIC View DSPJIT)
+    target_include_directories(gammou_vst2_plugin PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(gammou_vst2_plugin PRIVATE View DSPJIT nlohmann_json::nlohmann_json nlohmann_json)
+
+    if(WIN32)                   
+        # On windows symbol are not exported by default
+        set_target_properties(gammou_vst2_plugin PROPERTIES LINK_FLAGS "/EXPORT:VSTPluginMain")
+    endif()
 
 endif()
 

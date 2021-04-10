@@ -7,6 +7,27 @@
 #include <filesystem>
 #include <nlohmann/json.hpp>
 
+namespace nlohmann {
+    /**
+     * This specialization in the nlohmann namespace is needed because we don't want to write  
+     * in the std namespace. 
+     * 
+     * see github.com/nlohmann/json#how-do-i-convert-third-party-types
+     */
+    template <>
+    struct adl_serializer<std::filesystem::path> {
+        static void to_json(json& j, const std::filesystem::path& path)
+        {
+            j = path.string();
+        }
+
+        static void from_json(const json& j, std::filesystem::path& path)
+        {
+            path = j.get<std::string>();
+        }
+    };
+}
+
 namespace Gammou
 {
     struct node_widget_external_plugin_descriptor {
