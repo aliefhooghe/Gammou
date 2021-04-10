@@ -55,7 +55,7 @@ namespace Gammou {
         _main_gui = std::make_unique<main_gui>(_synthesizer, _node_factory);
 
         //  Initialize display
-        _display = std::make_unique<View::native_vst2_display>(_main_gui->widget(), 1);
+        _display = View::create_vst2_display(_main_gui->widget(), 1);
 
         _window_rect.left = 0u;
         _window_rect.right = _display->px_width();

@@ -51,7 +51,7 @@ namespace Gammou {
 
         //  Gui
         std::unique_ptr<main_gui> _main_gui;
-        std::unique_ptr<View::native_vst2_display> _display;
+        std::unique_ptr<View::vst2_display> _display;
         ERect _window_rect; //  used by host
 
         //  Widget node factory

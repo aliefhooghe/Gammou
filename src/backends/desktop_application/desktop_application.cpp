@@ -47,7 +47,7 @@ namespace Gammou {
             _synthesizer, _node_factory, std::move(additional_toolbox));
 
         //  display
-        _display = std::make_unique<View::native_application_display>(_main_gui->widget(), 1);
+        _display = View::create_application_display(_main_gui->widget(), 1);
     }
 
     desktop_application::~desktop_application()

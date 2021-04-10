@@ -46,7 +46,7 @@ namespace Gammou {
 
         //  GUI
         std::unique_ptr<main_gui> _main_gui;
-        std::unique_ptr<View::native_application_display> _display{};
+        std::unique_ptr<View::application_display> _display{};
 
         //  Audio I/O
         std::unique_ptr<RtAudio> _audio_device{};
