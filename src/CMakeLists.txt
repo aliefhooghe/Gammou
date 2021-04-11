@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.1)
+cmake_minimum_required (VERSION 3.15)
 
 project(Gammou CXX)
 set(CMAKE_CXX_STANDARD 17)
@@ -14,6 +14,11 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 option(GAMMOU_ENABLE_DESKTOP_APP "Build a desktop application" ON)
 option(GAMMOU_ENABLE_VST2_PLUGIN "Build a VST2 plugin" ON)
+
+# Use static runtime library on MSVC
+if (WIN32)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
 
 ############################
 #                          #

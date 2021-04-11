@@ -20,6 +20,10 @@ namespace Gammou {
     {
         //  Allocate effect instance
         _effect = static_cast<AEffect*>(std::malloc(sizeof(AEffect)));
+
+        if (_effect == nullptr)
+            throw std::bad_alloc();
+
         std::memset(_effect, 0u, sizeof(AEffect));
 
         _effect->magic = kEffectMagic;
@@ -138,6 +142,14 @@ namespace Gammou {
                 return 1;
                 break;
 
+            case effGetNumMidiInputChannels:
+                return 1;
+                break;
+
+            case effGetVendorString:
+                std::strcpy(reinterpret_cast<char*>(ptr), "Arthur Liefhooghe");
+                break;
+
 
             default:
                 return 0u;
@@ -167,7 +179,7 @@ namespace Gammou {
         auto output_left_buffer = outputs[0];
         auto output_right_buffer = outputs[1];
 
-        for (auto i = 0u; i < sample_count; ++i) {
+        for (auto i = 0; i < sample_count; ++i) {
             float tmp[2];
             plugin->_synthesizer.process_sample(nullptr, tmp);
             output_left_buffer[i] = tmp[0];
@@ -233,7 +245,7 @@ namespace Gammou {
         }
         catch(...)
         {
-            LOG_ERROR("Failed to save VST2 state (unknown error\n");
+            LOG_ERROR("Failed to save VST2 state (unknown error)\n");
             return 0u;
         }
     }
