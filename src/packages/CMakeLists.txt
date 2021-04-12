@@ -118,11 +118,16 @@ add_gammou_plugin(
     ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/waveguide/plugin.json
     ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/waveguide/process.c)
 
+add_gammou_plugin(
+    Delay
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/delay/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/delay/process.c)
+
 add_gammou_package(
     Waveguides
     CONTENT_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/content.json
     PLUGINS
-        ClosedEnd OpenEnd Junction Hammer ReadPoint WritePoint WaveGuide
+        ClosedEnd OpenEnd Junction Hammer ReadPoint WritePoint WaveGuide Delay
     COMMON_LIBS
         ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/common_libs/sample_queue.c)
