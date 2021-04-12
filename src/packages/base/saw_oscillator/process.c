@@ -1,4 +1,5 @@
 
+#include <synthesizer_def.h>
 
 #include "../common_libs/math_utils.h"
 
@@ -12,10 +13,9 @@ void node_initialize(float *state)
  **/
 void node_process(float *state, float freq, float *out)
 {
-    const float sample_rate = 48000.f;
-    const float dt = 1.f / sample_rate;
+    const float dt = 1.f / _sample_rate;
     const float fr = clamp(freq, 0.5f, 18000.f);
-    const float output_factor = sample_rate / (4.f * fr * (1.f - fr/sample_rate));
+    const float output_factor = _sample_rate / (4.f * fr * (1.f - fr / _sample_rate));
 
     float phase = state[0];
     float next_phase = phase + fr * dt;

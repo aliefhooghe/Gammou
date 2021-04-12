@@ -23,6 +23,7 @@ namespace Gammou {
 
     synthesizer::synthesizer(
             llvm::LLVMContext &llvm_context,
+            float samplerate,
             unsigned int input_count,
             unsigned int output_count,
             unsigned int voice_count,
@@ -31,6 +32,7 @@ namespace Gammou {
     :   _llvm_context{llvm_context},
         _input_count{input_count},
         _output_count{output_count},
+        _sample_rate{samplerate},
         _midi_input_values(voice_count * midi_input_count, 0.f),
         _master_circuit_context{_llvm_context, 1u, level, options},
         _polyphonic_circuit_context{_llvm_context, voice_count, level, options},
@@ -42,6 +44,9 @@ namespace Gammou {
         _voice_lifetime(voice_count, 0u)
     {
         std::fill_n(_midi_learn_map.begin(), 255u, parameter_manager::INVALID_PARAM);
+        
+        //  Create initial sample_rate variable
+        _initialize_samplerate_variable();
     }
 
     void synthesizer::process_sample(const float input[], float output[]) noexcept
@@ -167,6 +172,22 @@ namespace Gammou {
         const auto b1 = _master_circuit_context.update_program();
         const auto b2 = _polyphonic_circuit_context.update_program();
         return b1 || b2; // use var in order to avoid lazy evaluation side efects
+    }
+
+    void synthesizer::_initialize_samplerate_variable()
+    {
+        //  Create a module with the sample rate global variable
+        auto module = std::make_unique<llvm::Module>("synthesizer-samplerate", _llvm_context);
+
+        module->getOrInsertGlobal(samplerate_symbol, llvm::Type::getFloatTy(_llvm_context));
+        auto variable = module->getNamedGlobal(samplerate_symbol);
+
+        if (variable == nullptr)
+            throw std::runtime_error("Failed to create sample rate variable");
+
+        variable->setInitializer(llvm::ConstantFP::get(_llvm_context, llvm::APFloat{_sample_rate}));
+
+        add_module(std::move(module));
     }
 
     void synthesizer::_process_one_sample(const float[], float output[]) noexcept

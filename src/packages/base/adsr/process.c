@@ -1,4 +1,6 @@
 
+#include <synthesizer_def.h>
+
 struct adsr_state
 {
     float out;
@@ -42,7 +44,7 @@ void node_process(
         command = 0.f;
     }
 
-    const float factor = characteristic_time * 48000.0;
+    const float factor = characteristic_time * _sample_rate;
     *out = (command + factor * state->out) / (1.f + factor);
     state->out = *out;
 }

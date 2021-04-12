@@ -1,4 +1,5 @@
 
+#include <synthesizer_def.h>
 #include "../common_libs/math_utils.h"
 #include "../common_libs/math_constant.h"
 
@@ -15,7 +16,7 @@ void node_initialize(struct filter_state *state)
 
 void node_process(struct filter_state *state, float in, float cutoff_freq, float q, float *out)
 {
-    const float dt = 1.f / 48000.f;
+    const float dt = 1.f / _sample_rate;
     const float Q = 0.125f / clamp(q, 0.015625f, 8192.f);
     const float omega = CST_2_PI * clamp(cutoff_freq, 1.f, 18000.f);
 

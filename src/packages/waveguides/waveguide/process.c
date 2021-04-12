@@ -1,5 +1,7 @@
 
 #include <math.h>
+#include <synthesizer_def.h>
+
 #include "../common_libs/sample_queue.h"
 
 #define QUEUE_SIZE 10000u
@@ -28,7 +30,7 @@ void node_process(struct waveguide_state *state, float in_m, float t, float g, f
 {
     const float gain = powf(g, t);
 
-    const float fidx = t * 48000.f - 1.f;
+    const float fidx = t * _sample_rate - 1.f;
     const unsigned int idx = fidx;
     const float factor = fidx - (float)idx;
 

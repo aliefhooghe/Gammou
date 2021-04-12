@@ -19,8 +19,6 @@ define_property(
 
 
 function(add_llvm_bytecode_object source_file output_file)
-
-
 	add_custom_command(
 		OUTPUT
 			${output_file}
@@ -29,6 +27,7 @@ function(add_llvm_bytecode_object source_file output_file)
 			${source_file}
 			-c -emit-llvm -O2
 			-o ${output_file}
+			-I "${CMAKE_CURRENT_SOURCE_DIR}/common"
 		DEPENDS
 			${source_file}
 		COMMAND_EXPAND_LISTS

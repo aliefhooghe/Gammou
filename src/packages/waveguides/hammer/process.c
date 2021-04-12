@@ -1,6 +1,6 @@
 
 #include <math.h>
-
+#include <synthesizer_def.h>
 
 struct hammer_state {
     float pos;
@@ -15,9 +15,7 @@ void node_initialize(struct hammer_state *state)
 
 void node_process(struct hammer_state *state, float in_m, float k, float in_p, float *out_p, float *out_m)
 {
-    const float dt = 1.f / 48000.f;
-
-    state->pos += dt * state->speed;
+    state->pos += state->speed / _sample_rate;
 
     if (state->pos <= 0.) {     //  no contact
         //  total transmition
@@ -28,7 +26,7 @@ void node_process(struct hammer_state *state, float in_m, float k, float in_p, f
         //  total reflexion + hammer force
         const float normalized_hammer_force = powf(state->pos, k);
         const float hammer_force = normalized_hammer_force * 50000.0;
-        state->speed -= dt * hammer_force;
+        state->speed -= hammer_force / _sample_rate;
         *out_p = -in_m + normalized_hammer_force;
         *out_m = -in_p + normalized_hammer_force;
     }

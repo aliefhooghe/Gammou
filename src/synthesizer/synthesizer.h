@@ -13,6 +13,7 @@
 namespace Gammou
 {
     class synthesizer {
+        static constexpr auto samplerate_symbol = "_sample_rate";
     public:
 
         /**
@@ -43,6 +44,7 @@ namespace Gammou
          */
         synthesizer(
             llvm::LLVMContext &llvm_context,
+            float samplerate = 48000.f,
             unsigned int input_count = 0u,
             unsigned int output_count = 2u,
             unsigned int voice_count = 256,
@@ -182,6 +184,8 @@ namespace Gammou
     private:
         using param_id = parameter_manager::param_id;
 
+        void _initialize_samplerate_variable();
+
         void _process_one_sample(const float[], float output[]) noexcept;
 
         auto get_voice_midi_input(voice_manager::voice voice) noexcept
@@ -192,6 +196,7 @@ namespace Gammou
         llvm::LLVMContext& _llvm_context;
         const unsigned int _input_count;
         const unsigned int _output_count;
+        float _sample_rate;
 
         //  Midi input values are stored here for every running voices
         std::vector<float> _midi_input_values;
