@@ -137,7 +137,7 @@ namespace Gammou
             void _draw_link(
                 NVGcontext *vg, NVGcolor color,
                 float x_input, float y_input,
-                float x_output, float y_output) const noexcept;
+                float x_output, float y_output, float link_width) const noexcept;
 
             void _notify_circuit_change();
 
@@ -158,6 +158,9 @@ namespace Gammou
             bool _socket_highlighting{false};
             float _socket_highlight_x;
             float _socket_highlight_y;
+
+            // link highlight
+            const node_widget* _last_focused{nullptr};
 
             //  colors
             NVGcolor _link_color;

@@ -262,21 +262,32 @@ namespace Gammou {
 
     bool circuit_editor::on_mouse_move(float x, float y)
     {
-        auto w = focused_widget();
         View::panel_implementation<node_widget>::on_mouse_move(x, y);
+        auto holder = focused_widget();
 
-        if (w != nullptr) {
-            auto node = w->get();
+        if (holder != nullptr) {
+            auto focused_node = holder->get();
+
+            if (focused_node != _last_focused) {
+                _last_focused = focused_node;
+                invalidate();
+            }
+
             unsigned int output_id;
-            if (node->_output_id_at(output_id, x - node->pos_x(), y - node->pos_y())) {
+            if (focused_node->_output_id_at(output_id, x - focused_node->pos_x(), y - focused_node->pos_y())) {
                 float cx, cy;
-                node->_output_pos(output_id, cx, cy);
+                focused_node->_output_pos(output_id, cx, cy);
                 _socket_highlighting = true;
-                _socket_highlight_x = cx + node->pos_x();
-                _socket_highlight_y = cy + node->pos_y();
+                _socket_highlight_x = cx + focused_node->pos_x();
+                _socket_highlight_y = cy + focused_node->pos_y();
                 invalidate();
                 return true;
             }
+
+        }
+        else if (_last_focused != nullptr) {
+            _last_focused = nullptr;
+            invalidate();
         }
 
         if (_socket_highlighting == true) {
@@ -467,10 +478,16 @@ namespace Gammou {
                         input_node_widget->_output_pos(output_id, output_x, output_y);
                         holder->_input_pos(i, input_x, input_y);
 
+                        const bool highlight_link =
+                            !_is_linking && (_last_focused == input_node_widget || _last_focused == holder.get());
+
+                        const auto link_width = 3.f;
+                        const auto link_color = highlight_link ? _linking_color : _link_color;
+
                         //  draw link
-                        _draw_link(vg, _link_color,
+                        _draw_link(vg, link_color,
                             output_x + input_node_widget->pos_x(), output_y + input_node_widget->pos_y(),
-                            input_x + holder.pos_x(), input_y + holder.pos_y());
+                            input_x + holder.pos_x(), input_y + holder.pos_y(), link_width);
                     }
                 }
             }
@@ -485,7 +502,7 @@ namespace Gammou {
             _link_source->_output_pos(_link_source_output, output_x, output_y);
             _draw_link(vg, _linking_color,
                 output_x + _link_source->pos_x(), output_y + _link_source->pos_y(),
-                _linking_x, _linking_y);
+                _linking_x, _linking_y, 3.f);
         }
 
         // If a socket is highlighted
@@ -500,14 +517,14 @@ namespace Gammou {
     void circuit_editor::_draw_link(
         NVGcontext *vg, NVGcolor color,
         float x_output, float y_output,
-        float x_input, float y_input) const noexcept
+        float x_input, float y_input, float link_width) const noexcept
     {
         float D = std::min<float>(std::fabs(x_input - x_output), x_input >= x_output ? 50.f : 100.f);
 
         nvgBeginPath(vg);
 		nvgMoveTo(vg, x_output, y_output);
         nvgBezierTo(vg, x_output + D, y_output, x_input - D, y_input, x_input, y_input);
-		nvgStrokeWidth(vg, 3);
+		nvgStrokeWidth(vg, link_width);
         nvgStrokeColor(vg, color);
         nvgStroke(vg);
     }
