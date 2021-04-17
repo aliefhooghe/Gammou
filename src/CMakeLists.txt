@@ -30,6 +30,8 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/configuration.h
     ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/configuration.cpp
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/builtin_plugins/additional_builtin_nodes.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/builtin_plugins/additional_builtin_nodes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/builtin_plugins/load_builtin_plugins.h
     ${CMAKE_CURRENT_SOURCE_DIR}/builtin_plugins/load_builtin_plugins.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/builtin_plugins/node_widget_builtin_plugin.h
