@@ -2,6 +2,7 @@
 #include <cmath>
 #include <stdexcept>
 
+#include "log.h"
 #include "parameter_manager.h"
 
 namespace Gammou
@@ -77,6 +78,7 @@ namespace Gammou
             _parameter_normalized_settings.push_back(0.f);
             _parameter_values.push_back(0.f);
             _parameter_settings.push_back(0.f);
+            _callbacks.emplace_back(control_changed_callback{});
         }
         else
         {
@@ -103,6 +105,12 @@ namespace Gammou
         const auto base = _shape_bases[param];
         _parameter_normalized_settings[param] = value;
         _parameter_settings[param] = scale * (powf(base, value) - 1.f) / (base - 1.f);
+        
+        if (auto& callback = _callbacks[param])
+        {
+            callback();
+            LOG_INFO("[parameter_manager][set_parameter_nomalized] Call callback\n");
+        }
     }
 
     float parameter_manager::get_parameter_nomalized(param_id param) const noexcept
@@ -115,9 +123,15 @@ namespace Gammou
         return &_parameter_values[param];
     }
 
+    void parameter_manager::set_control_changed_callback(param_id param, control_changed_callback callback) noexcept
+    {
+        _callbacks[param] = callback;
+    }
+
     void parameter_manager::_free_parameter(param_id param) noexcept
     {
         _free_params.push(param);
+        _callbacks[param] = {};
     }
 
 } // namespace Gammou

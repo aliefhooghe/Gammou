@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <stack>
 #include <limits>
+#include <functional>
 
 namespace Gammou {
 
@@ -16,6 +17,7 @@ namespace Gammou {
     public:
         using param_id = unsigned int;
         static constexpr param_id INVALID_PARAM = std::numeric_limits<param_id>::max();
+        using control_changed_callback = std::function<void()>;
 
         /**
          * \class parameter
@@ -92,6 +94,11 @@ namespace Gammou {
                 return _mgr.get_parameter_shape_base(_id);
             }
 
+            void set_control_changed_callback(control_changed_callback callback) noexcept
+            {
+                _mgr.set_control_changed_callback(_id, callback);
+            }
+
         private:
             parameter(parameter_manager& mgr, param_id id)
             : _mgr{mgr}, _id{id}
@@ -105,7 +112,7 @@ namespace Gammou {
             param_id _id;
         };
 
-        parameter_manager(float sample_rate, float smooth_characteristic_time = 0.1f) noexcept;
+        parameter_manager(float sample_rate, float smooth_characteristic_time = 0.05f) noexcept;
 
         void set_sample_rate(float sample_rate) noexcept;
         void set_smooth_characteristic_time(float tau) noexcept;
@@ -122,6 +129,8 @@ namespace Gammou {
         float get_parameter_shape_base(param_id param) const noexcept;
         const float *get_parameter_value_ptr(param_id param) const noexcept;
 
+        void set_control_changed_callback(param_id param, control_changed_callback callback) noexcept;
+
     private:
         void _free_parameter(param_id param) noexcept;
 
@@ -131,6 +140,7 @@ namespace Gammou {
         std::deque<float> _parameter_values{};
         std::deque<float> _shape_scales{};
         std::deque<float> _shape_bases{};
+        std::deque< control_changed_callback> _callbacks{};
         float _dt;
         float _smooth_characteristic_time;
     };

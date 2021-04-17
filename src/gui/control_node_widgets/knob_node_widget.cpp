@@ -31,8 +31,19 @@ namespace Gammou {
 
             //  Create the knob and link it to the parameter
             auto knob = std::make_unique<View::knob>();
-            knob->set_callback([this](float val) { _param.set_normalized(val);});
+
             knob->set_value(_param.get_normalized());
+            knob->set_callback(
+                [this](float val)
+                {
+                    _param.set_normalized(val);
+                });
+            _param.set_control_changed_callback(
+                [this, kn = knob.get()]()
+                {
+                    kn->set_value(_param.get_normalized());
+                    invalidate();
+                });
 
             //  Create the midi learn button
             auto learn_button = std::make_unique<View::text_push_button>("L", node_widget::node_header_size, node_widget::node_header_size);
