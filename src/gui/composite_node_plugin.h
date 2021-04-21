@@ -12,8 +12,8 @@ namespace Gammou {
 
         composite_node_plugin(main_gui& gui);        
 
-        std::unique_ptr<plugin_node_widget> create_node(circuit_tree_model& dir) override;
-        std::unique_ptr<plugin_node_widget> create_node(circuit_tree_model& dir, const nlohmann::json& state) override;
+        std::unique_ptr<plugin_node_widget> create_node(circuit_tree& dir) override;
+        std::unique_ptr<plugin_node_widget> create_node(circuit_tree& dir, const nlohmann::json& state) override;
 
     private:
         main_gui& _main_gui;

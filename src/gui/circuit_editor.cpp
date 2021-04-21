@@ -45,16 +45,26 @@ namespace Gammou {
         _socket_color = theme.primary;
     }
 
+    void node_widget::set_name(const std::string& name)
+    {
+        _name = name;
+        invalidate();
+    }
+
     void node_widget::set_input_name(unsigned int input_id, const std::string& name)
     {
-        if (input_id < _input_names.size())
+        if (input_id < _input_names.size()) {
             _input_names[input_id] = name;
+            invalidate();
+        }
     }
 
     void node_widget::set_output_name(unsigned int output_id, const std::string& name)
     {
-        if (output_id < _output_names.size())
+        if (output_id < _output_names.size()) {
             _output_names[output_id] = name;
+            invalidate();
+        }
     }
 
     void node_widget::draw(NVGcontext *vg)

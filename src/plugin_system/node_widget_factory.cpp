@@ -32,16 +32,21 @@ namespace Gammou {
         llvm::Linker::linkModules(*_module, std::move(m));
     }
 
-    std::unique_ptr<plugin_node_widget> node_widget_factory::create_node(circuit_tree_model& dir, plugin_id id)
+    std::unique_ptr<plugin_node_widget> node_widget_factory::create_node(plugin_id id, circuit_tree& dir)
     {
-        auto it = _plugins.find(id);
-        if (it != _plugins.end())
-            return it->second->create_node(dir);
-        else
-            throw std::runtime_error("node_widget_factory::create_node unkown id");
+        if (id == no_id) {
+            return {};
+        }
+        else {
+            auto it = _plugins.find(id);
+            if (it != _plugins.end())
+                return it->second->create_node(dir);
+            else
+                throw std::runtime_error("node_widget_factory::create_node unkown id");
+        }
     }
 
-    std::unique_ptr<plugin_node_widget> node_widget_factory::create_node(circuit_tree_model& dir, const nlohmann::json& state)
+    std::unique_ptr<plugin_node_widget> node_widget_factory::create_node(const nlohmann::json& state, circuit_tree& dir)
     {
         const auto id = state.at("plugin-uid").get<uint64_t>();
         const auto& internal_state = state.at("state");

@@ -217,18 +217,18 @@ namespace Gammou {
 
         for (const auto& api : apis) {
             RtAudio rt_audio{api};
-            auto& api_dir = audio_device_tree->add_directory(rt_audio_api_to_str(api));
+            auto& api_dir = audio_device_tree->get_or_create_directory(rt_audio_api_to_str(api));
             const auto device_count = rt_audio.getDeviceCount();
 
             for (auto idx = 0u; idx <  device_count; ++idx) {
                 const auto info = rt_audio.getDeviceInfo(idx);
-                auto& device_dir = api_dir.add_directory(info.name);
+                auto& device_dir = api_dir.get_or_create_directory(info.name);
 
                 for (auto sample_rate : info.sampleRates) {
                     auto freq_key = std::to_string(sample_rate) + " Hz";
                     //  Left pad string in order to sort from lowest to highest available frequency
                     freq_key.insert(freq_key.begin(), 9 - freq_key.length(), ' ');
-                    device_dir.add_value(freq_key, {api, idx, sample_rate});
+                    device_dir.insert_value(freq_key, {api, idx, sample_rate});
                 }
             }
         }

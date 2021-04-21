@@ -28,9 +28,14 @@ namespace Gammou {
 
         View::widget& widget() noexcept { return *_main_widget; }
 
-        std::unique_ptr<node_widget> create_node(circuit_tree_model& dir, const nlohmann::json& state);
-        std::unique_ptr<node_widget> create_node(circuit_tree_model& dir, node_widget_factory::plugin_id id);
-        std::unique_ptr<node_widget> create_node(circuit_tree_model& dir);
+
+        std::unique_ptr<node_widget> create_node(circuit_tree& parent, const nlohmann::json& state);
+        std::unique_ptr<node_widget> create_node(circuit_tree& parent, node_widget_factory::plugin_id id);
+        std::unique_ptr<node_widget> create_node(circuit_tree& parent);
+        
+        circuit_tree& rename_config(circuit_tree& config_dir, const std::string& new_name);
+        void remove_config(circuit_tree& config_dir);
+        
         void compile();
 
         void deserialize(const nlohmann::json&);
@@ -63,12 +68,12 @@ namespace Gammou {
         /*
          *  serialize/deserialize helper
          */
-        std::unique_ptr<node_widget> _deserialize_node(circuit_tree_model& dir, const nlohmann::json&);
+        std::unique_ptr<node_widget> _deserialize_node(circuit_tree& dir, const nlohmann::json&);
         std::unique_ptr<node_widget> _deserialize_internal_node(const std::string& identifier);
 
-        circuit_tree_model _circuit_tree{};
-        circuit_tree_model *_master_circuit_dir{nullptr};
-        circuit_tree_model *_polyphonic_circuit_dir{nullptr};
+        circuit_tree _circuit_tree{};
+        circuit_tree *_master_circuit_dir{nullptr};
+        circuit_tree *_polyphonic_circuit_dir{nullptr};
 
         synthesizer& _synthesizer;
         node_widget_factory& _factory;

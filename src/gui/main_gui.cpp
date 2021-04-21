@@ -13,6 +13,7 @@
 #include <sstream>
 #include <thread>
 
+
 namespace Gammou {
 
     static auto ptr_2_string(const void* ptr)
@@ -67,17 +68,14 @@ namespace Gammou {
         _reset_content();
     }
 
-
-    std::unique_ptr<node_widget> main_gui::create_node(
-        circuit_tree_model& dir,
-        node_widget_factory::plugin_id id)
+    std::unique_ptr<node_widget> main_gui::create_node(circuit_tree& dir, node_widget_factory::plugin_id id)
     {
-        auto node = _factory.create_node(dir, id);
+        auto node = _factory.create_node(id, dir);
         _update_circuit_browser_widget();
         return node;
     }
 
-    std::unique_ptr<node_widget> main_gui::create_node(circuit_tree_model& dir)
+    std::unique_ptr<node_widget> main_gui::create_node(circuit_tree& dir)
     {
         //  No plugin is being used
         if (_insert_plugin_id == node_widget_factory::no_id) {
@@ -88,9 +86,22 @@ namespace Gammou {
         return create_node(dir, _insert_plugin_id);
     }
 
-    std::unique_ptr<node_widget> main_gui::create_node(circuit_tree_model& dir, const nlohmann::json& state)
+    circuit_tree& main_gui::rename_config(circuit_tree& config_dir, const std::string& new_name)
     {
-        auto node = _factory.create_node(dir, state);
+        auto& new_dir = _circuit_tree.rename_config(config_dir, new_name);
+        _update_circuit_browser_widget();
+        return new_dir;
+    }
+
+    void main_gui::remove_config(circuit_tree& config_dir)
+    {
+        _circuit_tree.remove_config(config_dir);
+        _update_circuit_browser_widget();
+    }
+
+    std::unique_ptr<node_widget> main_gui::create_node(circuit_tree& dir, const nlohmann::json& state)
+    {
+        auto node = _factory.create_node(state, dir);
         _update_circuit_browser_widget();
         return node;
     }
@@ -133,12 +144,12 @@ namespace Gammou {
         _circuit_tree.clear();
 
         auto& master_circuit_dir =
-            _circuit_tree.add_directory("Master", circuit_tree_model{_master_circuit_widget});
+            _circuit_tree.insert_directory("Master", circuit_tree{_master_circuit_widget});
         auto& polyphonic_circuit_dir =
-            _circuit_tree.add_directory("Polyphonic", circuit_tree_model{_polyphonic_circuit_widget});
+            _circuit_tree.insert_directory("Polyphonic", circuit_tree{_polyphonic_circuit_widget});
 
-        _master_circuit_dir = &master_circuit_dir;
-        _polyphonic_circuit_dir = &polyphonic_circuit_dir;
+         _master_circuit_dir = &master_circuit_dir;
+         _polyphonic_circuit_dir = &polyphonic_circuit_dir;
 
         _master_circuit_editor->set_create_node_callback(
             [this]()
@@ -233,10 +244,10 @@ namespace Gammou {
             const auto& plugin = pair.second;
 
             //  Create or get existing category directory
-            auto& category_dir = node_classes->add_directory(plugin->category());
+            auto& category_dir = node_classes->get_or_create_directory(plugin->category());
 
             //  Insert plugin in category directory
-            category_dir.add_value(plugin->name(), std::move(uid));
+            category_dir.insert_value(plugin->name(), std::move(uid));
         }
 
         auto node_class_selector = View::make_directory_view(std::move(node_classes), 100, 500);
@@ -261,10 +272,10 @@ namespace Gammou {
             });
 
         circuit_browser->set_directory_select_callback(
-            [this](circuit_tree_model& dir)
+            [this](circuit_tree& dir)
             {
                 // select and display the circuit
-                _main_editor->set_widget(dir.editor);
+                _main_editor->set_widget(dir.get_config_widget());
             });
 
         _update_circuit_browser_widget =
@@ -288,6 +299,9 @@ namespace Gammou {
             View::make_directory_view(
                 std::make_unique<View::filesystem_directory_model>(patch_dir_path),
                 140, 90);
+
+        LOG_INFO("[main gui] Using patch path '%s'\n", 
+            patch_dir_path.generic_string().c_str());
 
         update_button->set_callback(
             [fv = filesystem_view.get()]()
@@ -376,6 +390,7 @@ namespace Gammou {
         midi_input_node->set_output_name(0u, "Gate");
         midi_input_node->set_output_name(1u, "Pitch");
         midi_input_node->set_output_name(2u, "Attack");
+        midi_input_node->set_output_name(3u, "Release");
 
         return midi_input_node;
     }
@@ -385,11 +400,11 @@ namespace Gammou {
         return std::make_unique<internal_node_widget>("To Master", polyphonic_to_master_node_id, _synthesizer.to_master_node());
     }
 
-    std::unique_ptr<node_widget> main_gui::_deserialize_node(circuit_tree_model& dir, const nlohmann::json& j)
+    std::unique_ptr<node_widget> main_gui::_deserialize_node(circuit_tree& dir, const nlohmann::json& json)
     {
-        return j.is_string() ?
-            _deserialize_internal_node(j.get<std::string>()) :
-            create_node(dir, j);
+        return json.is_string() ?
+            _deserialize_internal_node(json.get<std::string>()) :
+            create_node(dir, json);
     }
 
     std::unique_ptr<node_widget> main_gui::_deserialize_internal_node(const std::string& identifier)
