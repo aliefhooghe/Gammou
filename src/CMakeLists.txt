@@ -12,7 +12,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 #                          #
 ############################
 
-option(GAMMOU_ENABLE_DESKTOP_APP "Build a desktop application" ON)
+option(GAMMOU_ENABLE_DESKTOP_APP "Build a desktop application" OFF)
 option(GAMMOU_ENABLE_VST2_PLUGIN "Build a VST2 plugin" ON)
 
 # Use static runtime library on MSVC
