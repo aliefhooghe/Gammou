@@ -35,7 +35,7 @@ namespace Gammou {
     void load_package(const std::filesystem::path& dir_path, node_widget_factory& factory)
     {
         using namespace std::filesystem;
-        LOG_DEBUG("[gammou][load package] Scanning package '%s'\n", dir_path.c_str());
+        LOG_DEBUG("[gammou][load package] Scanning package '%s'\n", dir_path.generic_string().c_str());
 
         // Loaded plugin list
         std::vector<std::unique_ptr<node_widget_external_plugin>> loaded_plugins{};
@@ -89,11 +89,13 @@ namespace Gammou {
             if (lib_path.is_relative())
                 lib_path = dir_path / lib_path;
 
-            LOG_DEBUG("[gammou][load package] Loading common lib object %s\n", lib_path.c_str());
-            auto module = llvm::parseIRFile(lib_path.string(), error, factory.get_llvm_context());
+            LOG_DEBUG("[gammou][load package] Loading common lib object %s\n",
+                lib_path.generic_string().c_str());
 
+            auto module = llvm::parseIRFile(lib_path.string(), error, factory.get_llvm_context());
             if (!module) {
-                LOG_ERROR("[gammou][load package] Cannot load common lib object %s\n", lib_path.c_str());
+                LOG_ERROR("[gammou][load package] Cannot load common lib object %s\n",
+                    lib_path.generic_string().c_str());
                 throw std::runtime_error("DSPJIT : Failed to load object");
             }
             else {
@@ -115,17 +117,18 @@ namespace Gammou {
 
     void load_all_packages(const std::filesystem::path& packages_dir_path, node_widget_factory& factory)
     {
-        LOG_INFO("[gammou][load package] Scanning package directory '%s'\n", packages_dir_path.c_str());
+        LOG_INFO("[gammou][load package] Scanning package directory '%s'\n", packages_dir_path.generic_string().c_str());
 
         try {
             for (const auto& entry : std::filesystem::directory_iterator(packages_dir_path)) {
-                if (std::filesystem::is_directory(entry)) {
+                if (std::filesystem::is_directory(entry) && (entry.path().c_str()[0] != '.')) {
                     try {
                         load_package(entry.path(), factory);
                     }
                     catch(...)
                     {
-                        LOG_WARNING("[gammou][load all packages] Unable to load package '%s'.\n", entry.path().c_str());
+                        const auto entry_path = entry.path().generic_string().c_str();
+                        LOG_WARNING("[gammou][load all packages] Unable to load package '%s'.\n", entry_path);
                     }
                 }
             }
