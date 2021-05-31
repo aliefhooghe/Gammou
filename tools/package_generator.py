@@ -5,6 +5,10 @@ import json
 import sys
 import os
 
+def unixPath(p):
+    # Always write unix style path as they are understood in most OS
+    return p.replace(os.path.sep, '/')
+
 def generate_content_file(output, package_content, plugin_contents, common_libs):
     #   Get package directory
     package_dir = os.path.dirname(output)
@@ -19,7 +23,7 @@ def generate_content_file(output, package_content, plugin_contents, common_libs)
 
             for i in range(len(plugin["modules"])):
                 module_rel_path = os.path.relpath(plugin["modules"][i], plugin_src_dir)
-                plugin["modules"][i] = os.path.join(plugin_rel_dir_name, module_rel_path)
+                plugin["modules"][i] = unixPath(os.path.join(plugin_rel_dir_name, module_rel_path))
             package_plugins.append(plugin)
 
     #   Load and check input file content
@@ -36,7 +40,7 @@ def generate_content_file(output, package_content, plugin_contents, common_libs)
         output_dir = os.path.dirname(output)
 
         for i in range(len(common_libs)):
-            common_libs[i] = os.path.relpath(common_libs[i], output_dir)
+            common_libs[i] = unixPath(os.path.relpath(common_libs[i], output_dir))
 
         input_content["common-libs"] = common_libs
 
