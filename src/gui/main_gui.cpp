@@ -180,7 +180,7 @@ namespace Gammou {
 
     std::unique_ptr<View::widget> main_gui::_make_main_editor_widget()
     {
-        auto main_editor_widget = std::make_unique<View::widget_proxy<>>(200, 400);
+        auto main_editor_widget = std::make_unique<View::widget_proxy<>>(1200, 750);
         _main_editor = main_editor_widget.get();
         return main_editor_widget;
     }
@@ -218,7 +218,7 @@ namespace Gammou {
      */
     std::unique_ptr<View::widget> main_gui::_make_toolbox(std::unique_ptr<View::widget>&& additional_toolbox)
     {
-        const auto common_toolbox_width = additional_toolbox ? 780 : 1300;
+        const auto common_toolbox_width = additional_toolbox ? 100 : 700;
         auto common_toolbox = std::make_unique<View::panel<>>(common_toolbox_width, 110);
 
         auto reset_button = std::make_unique<View::text_push_button>("Reset", 80, 21);
@@ -262,7 +262,7 @@ namespace Gammou {
 
     std::unique_ptr<View::widget> main_gui::_make_circuit_browser()
     {
-        auto circuit_browser = View::make_directory_view(_circuit_tree, 100, 500);
+        auto circuit_browser = View::make_directory_view(_circuit_tree, 210, 60);
 
         circuit_browser->set_value_select_callback(
             [this](std::weak_ptr<View::widget> config)
@@ -361,7 +361,7 @@ namespace Gammou {
                 }
             });
 
-        auto panel = std::make_unique<View::panel<>>(210, 57);
+        auto panel = std::make_unique<View::panel<>>(210, 60);
         panel->insert_widget(5, 5, std::move(preset_name_input));
         panel->insert_widget(5 + 110 + 5, 5, std::move(save_button));
         panel->insert_widget(5, 5 + 21 + 5, std::move(update_button));
