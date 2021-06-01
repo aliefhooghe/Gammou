@@ -16,7 +16,7 @@
 namespace Gammou {
 
     desktop_application::desktop_application(unsigned int input_count, unsigned int output_count)
-    : _synthesizer{_llvm_context, input_count, output_count},
+    : _synthesizer{_llvm_context, 44100.f, input_count, output_count},
         _node_factory{_llvm_context}
     {
         // midi multiplex
