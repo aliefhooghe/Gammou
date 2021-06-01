@@ -121,14 +121,14 @@ namespace Gammou {
 
         try {
             for (const auto& entry : std::filesystem::directory_iterator(packages_dir_path)) {
-                if (std::filesystem::is_directory(entry) && (entry.path().c_str()[0] != '.')) {
+                const auto entry_path = entry.path();
+                if (std::filesystem::is_directory(entry) && entry_path != ".." && entry_path != ".") {
                     try {
-                        load_package(entry.path(), factory);
+                        load_package(entry_path, factory);
                     }
                     catch(...)
                     {
-                        const auto entry_path = entry.path().generic_string().c_str();
-                        LOG_WARNING("[gammou][load all packages] Unable to load package '%s'.\n", entry_path);
+                        LOG_WARNING("[gammou][load all packages] Unable to load package '%s'.\n", entry_path.generic_string().c_str());
                     }
                 }
             }
