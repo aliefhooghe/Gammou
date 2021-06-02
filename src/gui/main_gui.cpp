@@ -50,14 +50,8 @@ namespace Gammou {
                 left_sidebar,
                 View::make_vertical_layout(
                     std::move(toolbox),
-                    std::make_unique<View::header>(
-                        std::move(editor),
-                        View::color_theme::color::SURFACE_DARK
-                    )
-                )
-            ));
+                    std::move(editor))));
 
-        //
         _reset_content();
     }
 
@@ -169,9 +163,10 @@ namespace Gammou {
         _polyphonic_circuit_editor->insert_node_widget(50, 50, _make_polyphonic_midi_input_node());
         _polyphonic_circuit_editor->insert_node_widget(50, 100, _make_polyphonic_to_master_node());
 
-        _master_circuit_widget->reset_view();
-        _polyphonic_circuit_widget->reset_view();
+        //  Select master circuit by default
+        _main_editor->set_widget(_master_circuit_widget);
 
+        //  Triger a recompilation
         compile();
     }
 
@@ -190,7 +185,12 @@ namespace Gammou {
         auto editor = std::make_unique<circuit_editor>(200, 400);
 
         _master_circuit_editor = editor.get();
-        _master_circuit_widget = std::make_shared<View::map_wrapper>(std::move(editor), 200, 400);
+        _master_circuit_widget =
+            std::make_unique<View::header>(
+                std::make_unique<View::map_wrapper>(
+                    std::move(editor),
+                    100, 100),
+                View::color_theme::color::SURFACE_DARK);
 
         _master_circuit_editor->set_circuit_changed_callback(
             [this](){ _synthesizer.compile_master_circuit(); });
@@ -204,7 +204,12 @@ namespace Gammou {
         auto editor = std::make_unique<circuit_editor>(200, 400);
 
         _polyphonic_circuit_editor = editor.get();
-        _polyphonic_circuit_widget = std::make_shared<View::map_wrapper>(std::move(editor), 200, 400);
+        _polyphonic_circuit_widget =
+            std::make_unique<View::header>(
+                std::make_unique<View::map_wrapper>(
+                    std::move(editor),
+                    100, 100),
+                View::color_theme::color::SURFACE_DARK);
 
         _polyphonic_circuit_editor->set_circuit_changed_callback(
             [this](){ _synthesizer.compile_polyphonic_circuit(); });

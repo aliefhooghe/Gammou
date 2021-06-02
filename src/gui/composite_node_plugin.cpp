@@ -144,13 +144,14 @@ namespace Gammou {
             toolbox->insert_widget(5, 5 + 21 + 5, std::move(name_button));
             toolbox->insert_widget(5, 5 + 21 + 5 + 21 + 5, std::move(export_button));
 
-            _editor_widget = 
-                std::make_shared<View::map_wrapper>(
-                    View::make_vertical_layout(
-                        std::move(toolbox),
-                        std::move(editor)
-                    ), 
-                    100, 100);
+            _editor_widget =
+                View::make_shared_vertical_layout(
+                    std::make_unique<View::header>(std::move(toolbox)),
+                    std::make_unique<View::header>(
+                        std::make_unique<View::map_wrapper>(
+                            std::move(editor),
+                            100, 100),
+                        View::color_theme::color::SURFACE_DARK));
 
             //  Create editor dir with available name
             std::string new_name = node_name;

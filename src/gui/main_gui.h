@@ -30,9 +30,9 @@ namespace Gammou {
         View::widget& widget() noexcept { return *_main_widget; }
 
 
-        std::unique_ptr<node_widget> create_node(circuit_tree& parent, const nlohmann::json& state);
-        std::unique_ptr<node_widget> create_node(circuit_tree& parent, node_widget_factory::plugin_id id);
-        std::unique_ptr<node_widget> create_node(circuit_tree& parent);
+        std::unique_ptr<node_widget> create_node(circuit_tree& parent_config, const nlohmann::json& state);
+        std::unique_ptr<node_widget> create_node(circuit_tree& parent_config, node_widget_factory::plugin_id id);
+        std::unique_ptr<node_widget> create_node(circuit_tree& parent_config);
         
         circuit_tree& rename_config(circuit_tree& config_dir, const std::string& new_name);
         void remove_config(circuit_tree& config_dir);
@@ -48,9 +48,6 @@ namespace Gammou {
         /*
          *  circuit tree management
          */
-
-        //void _remove_node(const circuit_editor*, );
-
         void _reset_content();
 
         /*
@@ -81,8 +78,8 @@ namespace Gammou {
         synthesizer& _synthesizer;
         node_widget_factory& _factory;
 
-        std::shared_ptr<View::map_wrapper> _polyphonic_circuit_widget{};
-        std::shared_ptr<View::map_wrapper> _master_circuit_widget{};
+        std::shared_ptr<View::widget> _polyphonic_circuit_widget{};
+        std::shared_ptr<View::widget> _master_circuit_widget{};
         circuit_editor *_polyphonic_circuit_editor{};
         circuit_editor *_master_circuit_editor{};
 
