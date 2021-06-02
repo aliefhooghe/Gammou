@@ -16,13 +16,6 @@
 
 namespace Gammou {
 
-    static auto ptr_2_string(const void* ptr)
-    {
-        std::stringstream ss;
-        ss << ptr;
-        return  ss.str();
-    }
-
     main_gui::main_gui(
         synthesizer& synthesizer,
         node_widget_factory& factory,
@@ -77,13 +70,9 @@ namespace Gammou {
 
     std::unique_ptr<node_widget> main_gui::create_node(circuit_tree& dir)
     {
-        //  No plugin is being used
-        if (_insert_plugin_id == node_widget_factory::no_id) {
-            LOG_DEBUG("main_editor::_create_node : No plugin is being used\n");
-            return nullptr;
-        }
-
-        return create_node(dir, _insert_plugin_id);
+        auto node = _factory_widget->create_node(dir);
+        _update_circuit_browser_widget();
+        return node;
     }
 
     circuit_tree& main_gui::rename_config(circuit_tree& config_dir, const std::string& new_name)
@@ -110,6 +99,11 @@ namespace Gammou {
     {
         _synthesizer.compile_master_circuit();
         _synthesizer.compile_polyphonic_circuit();
+    }
+
+    void main_gui::register_user_node(nlohmann::json&& state, const std::string& name)
+    {
+        _factory_widget->register_user_node(std::move(state), name);
     }
 
     void main_gui::deserialize(const nlohmann::json& json)
@@ -236,31 +230,9 @@ namespace Gammou {
 
     std::unique_ptr<View::widget> main_gui::_make_plugin_browser()
     {
-        using node_class_model =
-            View::storage_directory_model<std::string, node_widget_factory::plugin_id, View::alphabetical_compare>;
-
-        auto node_classes = std::make_unique<node_class_model>();
-
-        //  Insert each plugin
-        for (const auto& pair : _factory) {
-            auto uid = pair.first;
-            const auto& plugin = pair.second;
-
-            //  Create or get existing category directory
-            auto& category_dir = node_classes->get_or_create_directory(plugin->category());
-
-            //  Insert plugin in category directory
-            category_dir.insert_value(plugin->name(), std::move(uid));
-        }
-
-        auto node_class_selector = View::make_directory_view(std::move(node_classes), 100, 500);
-        node_class_selector->set_value_select_callback(
-            [this](auto uid)
-            {
-                _insert_plugin_id = uid;
-            });
-
-        return std::make_unique<View::header>(std::move(node_class_selector));
+        auto browser = std::make_unique<factory_widget>(_factory, 100, 500);
+        _factory_widget = browser.get();
+        return std::make_unique<View::header>(std::move(browser));
     }
 
     std::unique_ptr<View::widget> main_gui::_make_circuit_browser()
@@ -305,6 +277,8 @@ namespace Gammou {
 
         LOG_INFO("[main gui] Using patch path '%s'\n", 
             patch_dir_path.generic_string().c_str());
+
+        preset_name_input->set_text("patch");
 
         update_button->set_callback(
             [fv = filesystem_view.get()]()

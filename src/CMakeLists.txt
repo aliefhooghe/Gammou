@@ -48,6 +48,8 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_editor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_tree_model.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_tree_model.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/factory_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/factory_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/internal_node_widget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/internal_node_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/main_gui.h

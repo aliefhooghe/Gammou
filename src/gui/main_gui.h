@@ -7,6 +7,7 @@
 
 #include "synthesizer/synthesizer.h"
 #include "plugin_system/node_widget_factory.h"
+#include "factory_widget.h"
 
 namespace Gammou {
 
@@ -37,6 +38,8 @@ namespace Gammou {
         void remove_config(circuit_tree& config_dir);
         
         void compile();
+
+        void register_user_node(nlohmann::json&& state, const std::string& name);
 
         void deserialize(const nlohmann::json&);
         nlohmann::json serialize();
@@ -77,7 +80,6 @@ namespace Gammou {
 
         synthesizer& _synthesizer;
         node_widget_factory& _factory;
-        node_widget_factory::plugin_id _insert_plugin_id{node_widget_factory::no_id};
 
         std::shared_ptr<View::map_wrapper> _polyphonic_circuit_widget{};
         std::shared_ptr<View::map_wrapper> _master_circuit_widget{};
@@ -85,6 +87,7 @@ namespace Gammou {
         circuit_editor *_master_circuit_editor{};
 
         View::widget_proxy<> *_main_editor{nullptr};
+        factory_widget* _factory_widget{};
         std::function<void()> _update_circuit_browser_widget{};
         std::unique_ptr<View::widget> _main_widget{};
     };

@@ -133,8 +133,16 @@ namespace Gammou {
                     }
                 });
             
+            auto export_button = std::make_unique<View::text_push_button>("export");
+            export_button->set_callback(
+                [this]
+                {
+                    _gui->register_user_node(serialize(), name());
+                });
+
             toolbox->insert_widget(5, 5, std::move(name_text_input));
             toolbox->insert_widget(5, 5 + 21 + 5, std::move(name_button));
+            toolbox->insert_widget(5, 5 + 21 + 5 + 21 + 5, std::move(export_button));
 
             _editor_widget = 
                 std::make_shared<View::map_wrapper>(
