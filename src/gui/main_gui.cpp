@@ -143,10 +143,13 @@ namespace Gammou {
 
         _circuit_tree.clear();
 
+        std::string master_name = "Master";
+        std::string polyphonic_name = "Polyphonic";
+
         auto& master_circuit_dir =
-            _circuit_tree.insert_directory("Master", circuit_tree{_master_circuit_widget});
+            _circuit_tree.insert_config_dir(master_name, circuit_tree{_master_circuit_widget});
         auto& polyphonic_circuit_dir =
-            _circuit_tree.insert_directory("Polyphonic", circuit_tree{_polyphonic_circuit_widget});
+            _circuit_tree.insert_config_dir(polyphonic_name, circuit_tree{_polyphonic_circuit_widget});
 
          _master_circuit_dir = &master_circuit_dir;
          _polyphonic_circuit_dir = &polyphonic_circuit_dir;

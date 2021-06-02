@@ -88,11 +88,9 @@ namespace Gammou {
                     "Output", composite_output_id, _composite_node->output());
         }
 
-        void _initialize(main_gui& gui, circuit_tree& parent, const std::string& name)
+        void _initialize(main_gui& gui, circuit_tree& parent, const std::string& node_name)
         {
             _gui = &gui;
-
-            set_name(name);
             
             //  Create circuit editor
             auto editor = std::make_unique<circuit_editor>(100, 100);
@@ -146,9 +144,12 @@ namespace Gammou {
                     ), 
                     100, 100);
 
-            //  Create editor dir
-            auto& editor_dir = parent.insert_directory(name, circuit_tree{ _editor_widget });
+            //  Create editor dir with available name
+            std::string new_name = node_name;
+            auto& editor_dir = parent.insert_config_dir(new_name, circuit_tree{ _editor_widget });
             _editor_dir = &editor_dir;
+
+            set_name(new_name);
         }
 
         std::unique_ptr<node_widget> _deserialize_internal_node(const std::string& identifier)

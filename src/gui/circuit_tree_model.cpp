@@ -22,6 +22,22 @@ namespace Gammou {
             return new_dir;
         }
     }
+
+    circuit_tree& circuit_tree::insert_config_dir(std::string& desired_name, circuit_tree&& dir)
+    {
+        auto new_name{desired_name};
+        int sufix = 1;
+
+        do {
+            if (find(new_name) == end()) {
+                desired_name = new_name;
+                return insert_directory(new_name, std::move(dir));
+            }
+            else {
+                new_name = desired_name + "-" + std::to_string(sufix++);
+            }
+        } while (true);
+    }
     
     void circuit_tree::remove_config(circuit_tree& config)
     {

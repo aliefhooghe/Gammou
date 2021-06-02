@@ -18,17 +18,35 @@ namespace Gammou {
         : _config_widget{ed}
         {}
 
+        /**
+         * \brief Get the configuration widget linked to this node
+         */
         std::weak_ptr<View::widget> get_config_widget();
+
+        /**
+         * \brief Insert a config directory with an available name
+         * \param desired_name name to be used if available, is suffixed if not
+         * \param dir the config directory to be added
+         */
+        circuit_tree& insert_config_dir(std::string& desired_name, circuit_tree&& dir);
+
+        /**
+         * \brief rename a configuration
+         * \param config_dir previously inserted directory to be renamed
+         * \param new_name name to be applied
+         */
         circuit_tree& rename_config(circuit_tree& config_dir, const std::string& new_name);
+
+        /**
+         * \brief Remove a previously inserted configuration directory
+         * \param config configuration dir to be removed
+         */
         void remove_config(circuit_tree& config);
 
-        using item = typename implem::item;
-        using implem::move;
-        using implem::get_or_create_directory;
-        using implem::insert_directory;
-        using implem::insert_value;
+        /**
+         * \brief Remove every configuration directories
+         */
         using implem::clear;
-        using implem::erase;
 
     private:
         circuit_tree* _find_parent(const circuit_tree& child, std::string& key);
