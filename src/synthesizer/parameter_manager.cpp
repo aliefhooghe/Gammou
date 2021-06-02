@@ -2,7 +2,6 @@
 #include <cmath>
 #include <stdexcept>
 
-#include "log.h"
 #include "parameter_manager.h"
 
 namespace Gammou
@@ -107,10 +106,7 @@ namespace Gammou
         _parameter_settings[param] = scale * (powf(base, value) - 1.f) / (base - 1.f);
         
         if (auto& callback = _callbacks[param])
-        {
             callback();
-            LOG_INFO("[parameter_manager][set_parameter_nomalized] Call callback\n");
-        }
     }
 
     float parameter_manager::get_parameter_nomalized(param_id param) const noexcept
