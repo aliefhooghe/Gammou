@@ -37,6 +37,11 @@ add_gammou_plugin(
     ${CMAKE_CURRENT_SOURCE_DIR}/base/lp2/process.c)
 
 add_gammou_plugin(
+    BiquadLpPlugin
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/biquad_filter/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/biquad_filter/process.c)
+
+add_gammou_plugin(
     DCBlocker
     ${CMAKE_CURRENT_SOURCE_DIR}/base/dc_blocker/plugin.json
     ${CMAKE_CURRENT_SOURCE_DIR}/base/dc_blocker/process.c)
@@ -57,6 +62,7 @@ add_gammou_package(
         SquarePlugin
         Lp1Plugin
         Lp2Plugin
+        BiquadLpPlugin
         DCBlocker
         ADSRPlugin
     COMMON_LIBS

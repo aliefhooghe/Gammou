@@ -1,0 +1,7 @@
+{
+  "name": "Biquad LP",
+  "uid": 9302039778744947912,
+  "category": "Filter",
+  "input-names": [ "in", "cutoff", "Q" ],
+  "output-names": [ "out" ]
+}
