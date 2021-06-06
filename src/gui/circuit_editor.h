@@ -29,9 +29,9 @@ namespace Gammou
         void set_input_name(unsigned int input_id, const std::string& name);
         void set_output_name(unsigned int output_id, const std::string& name);
 
-        const auto& name() const noexcept { return _name; }
-        const auto& get_input_name(const unsigned int input_id) const noexcept { return _input_names[input_id]; }
-        const auto& get_output_name(const unsigned int output_id) const noexcept { return _output_names[output_id]; }
+        const std::string& name() const noexcept { return _name; }
+        const std::string& get_input_name(const unsigned int input_id) const;
+        const std::string& get_output_name(const unsigned int output_id) const;
 
         auto& node() const noexcept { return _node; }
         auto& node() noexcept { return _node; }
@@ -50,14 +50,16 @@ namespace Gammou
         static constexpr auto node_width = 120;
 
     private:
-        auto _default_input_name(unsigned int idx) { return "In " + std::to_string(idx); }
-        auto _default_output_name(unsigned int idx) { return "Out " + std::to_string(idx); }
+        static auto _default_input_name(unsigned int idx) { return "In " + std::to_string(idx); }
+        static auto _default_output_name(unsigned int idx) { return "Out " + std::to_string(idx); }
 
         bool _input_id_at(unsigned int& input_id, float x, float y);
         bool _output_id_at(unsigned int& output_id, float x, float y);
 
         void _input_pos(unsigned int input_id, float& x, float& y);
         void _output_pos(unsigned int output_id, float& x, float& y);
+
+        void _check_io_counts();
 
         DSPJIT::compile_node_class& _node;
         std::string _name;

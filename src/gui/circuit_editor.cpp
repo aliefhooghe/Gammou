@@ -67,8 +67,27 @@ namespace Gammou {
         }
     }
 
+    const std::string& node_widget::get_input_name(const unsigned int input_id) const
+    {
+        if (input_id < _input_names.size())
+            return _input_names[input_id];
+        else
+            throw std::out_of_range("input id");
+    }
+
+    const std::string& node_widget::get_output_name(const unsigned int output_id) const
+    {
+        if (output_id < _output_names.size())
+            return _output_names[output_id];
+        else
+            throw std::out_of_range("output_id");
+    }
+
     void node_widget::draw(NVGcontext *vg)
     {
+        // Check if IO have been added/removed
+        _check_io_counts();
+
         nvgBeginPath(vg);
         nvgRoundedRect(vg, 0.f, 0.f, width(), height(), node_corner_radius);
         
@@ -177,6 +196,23 @@ namespace Gammou {
     {
         x = width() - socket_size / 2.f;
         y = node_header_size + output_id * socket_size + (socket_size / 2.f);
+    }
+
+    template <typename TNameGen>
+    static void _check_io_name_vector(std::vector<std::string>& names, unsigned int node_io_count, TNameGen gen)
+    {
+        const auto gui_io_count = names.size();
+        if (gui_io_count != node_io_count) {
+            names.resize(node_io_count);
+            for (auto i = gui_io_count; i < node_io_count; i++)
+                names[i] = gen(i);
+        }
+    }
+
+    void node_widget::_check_io_counts()
+    {
+        _check_io_name_vector(_input_names, _node.get_input_count(), _default_input_name);
+        _check_io_name_vector(_output_names, _node.get_output_count(), _default_output_name);
     }
 
     /**
