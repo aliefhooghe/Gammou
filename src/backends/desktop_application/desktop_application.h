@@ -22,11 +22,10 @@ namespace Gammou {
 
     private:
         void _initialize_midi_multiplex();
-        void _enable_midi_input(
-            unsigned int idx, bool enable = true);
+        bool _enable_midi_input(unsigned int idx, bool enable = true);
         unsigned int _midi_input_count() const noexcept;
 
-        void _start_audio(
+        bool _start_audio(
             RtAudio::Api api,
             unsigned int device_index,
             unsigned int sample_rate);

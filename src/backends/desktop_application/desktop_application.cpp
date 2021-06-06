@@ -102,20 +102,22 @@ namespace Gammou {
             input.setCallback(midi_callback, &_synthesizer);
     }
 
-    void desktop_application::_enable_midi_input(unsigned int idx, bool enable)
+    bool desktop_application::_enable_midi_input(unsigned int idx, bool enable)
     {
         if (idx >= _midi_input_count())
-            return;
+            return false;
 
         try {
             if (enable)
                 _midi_inputs[idx].openPort(idx);
             else
                 _midi_inputs[idx].closePort();
+            return true;
         }
         catch(...) {
             LOG_ERROR("[desktop_application][_enable_midi_input] Failed to %s midi input %u\n",
                 enable ? "enable" : "disable", idx);
+            return false;
         }
     }
 
@@ -124,7 +126,7 @@ namespace Gammou {
         return _midi_inputs.size();
     }
 
-    void desktop_application::_start_audio(
+    bool desktop_application::_start_audio(
             RtAudio::Api api,
             unsigned int device_index,
             unsigned int sample_rate)
@@ -158,11 +160,13 @@ namespace Gammou {
             _audio_device->openStream(
                 &output_params, nullptr, RTAUDIO_FLOAT32, sample_rate, &buffer_size, audio_callback, &_synthesizer, &options);
             _audio_device->startStream();
+            return true;
         }
         catch(...)
         {
             LOG_ERROR("[desktop_application][_start_audio] Failed to start audio\n");
             _stop_audio();
+            return false;
         }
     }
 
@@ -180,20 +184,6 @@ namespace Gammou {
             {
                 LOG_ERROR("[desktop_application][_stop_audio] Failed to stop audio\n");
             }
-        }
-    }
-
-    static auto rt_audio_api_to_str(RtAudio::Api api)
-    {
-        switch (api) {
-            case RtAudio::LINUX_ALSA:        return "Alsa";
-            case RtAudio::LINUX_PULSE:       return "PulseAudio";
-            case RtAudio::UNIX_JACK:         return "Jack";
-            case RtAudio::MACOSX_CORE:       return "CoreAudio";
-            case RtAudio::WINDOWS_WASAPI:    return "Wasapi";
-            case RtAudio::WINDOWS_ASIO:      return "Asio";
-            case RtAudio::WINDOWS_DS:        return "DirectSound";
-            default:                         return "Unknown";   //  should not happen
         }
     }
 
@@ -215,20 +205,23 @@ namespace Gammou {
         std::vector<RtAudio::Api> apis;
         RtAudio::getCompiledApi(apis);
 
-        for (const auto& api : apis) {
+        for (const auto api : apis) {
             RtAudio rt_audio{api};
-            auto& api_dir = audio_device_tree->get_or_create_directory(rt_audio_api_to_str(api));
+            auto& api_dir = audio_device_tree->get_or_create_directory(RtAudio::getApiDisplayName(api));
             const auto device_count = rt_audio.getDeviceCount();
 
             for (auto idx = 0u; idx <  device_count; ++idx) {
                 const auto info = rt_audio.getDeviceInfo(idx);
-                auto& device_dir = api_dir.get_or_create_directory(info.name);
 
-                for (auto sample_rate : info.sampleRates) {
-                    auto freq_key = std::to_string(sample_rate) + " Hz";
-                    //  Left pad string in order to sort from lowest to highest available frequency
-                    freq_key.insert(freq_key.begin(), 9 - freq_key.length(), ' ');
-                    device_dir.insert_value(freq_key, {api, idx, sample_rate});
+                if (info.probed) {
+                    auto& device_dir = api_dir.get_or_create_directory(info.name);
+
+                    for (auto sample_rate : info.sampleRates) {
+                        auto freq_key = std::to_string(sample_rate) + " Hz";
+                        //  Left pad string in order to sort from lowest to highest available frequency
+                        freq_key.insert(freq_key.begin(), 9 - freq_key.length(), ' ');
+                        device_dir.insert_value(freq_key, {api, idx, sample_rate});
+                    }
                 }
             }
         }
@@ -239,12 +232,15 @@ namespace Gammou {
 
         //  Set callback to select
         view->set_value_select_callback(
-            [this](const auto& device_desc)
+            [this, v = view.get()](const auto& device_desc)
             {
-                _start_audio(
+                if (!_start_audio(
                     std::get<0>(device_desc),
                     std::get<1>(device_desc),
-                    std::get<2>(device_desc));
+                    std::get<2>(device_desc)))
+                {
+                    v->reset_selection();
+                }
             });
 
         return view;
@@ -265,9 +261,11 @@ namespace Gammou {
             auto device_label = std::make_unique<View::label>(_midi_inputs[i].getPortName(i));
 
             device_checkbox->set_callback(
-                [this, idx = i](bool checked)
+                [this, idx = i, check = device_checkbox.get()](bool checked)
                 {
-                    _enable_midi_input(idx, checked);
+                    // In case of failure
+                    if (!_enable_midi_input(idx, checked))
+                        check->set_checked(!checked);
                 });
 
             midi_settings_widget->insert_widget(x_offset, y_offset, std::move(device_checkbox));
