@@ -72,21 +72,20 @@ namespace Gammou {
         std::unique_ptr<node_widget> _deserialize_internal_node(const std::string& identifier);
 
         circuit_tree _circuit_tree{};
-        circuit_tree *_master_circuit_dir{nullptr};
-        circuit_tree *_polyphonic_circuit_dir{nullptr};
-
         synthesizer& _synthesizer;
         node_widget_factory& _factory;
-
+        std::unique_ptr<View::widget> _main_widget{};
         std::shared_ptr<View::widget> _polyphonic_circuit_widget{};
         std::shared_ptr<View::widget> _master_circuit_widget{};
+
+        std::function<void()> _update_circuit_browser_widget{};
+
         circuit_editor *_polyphonic_circuit_editor{};
         circuit_editor *_master_circuit_editor{};
-
-        View::widget_proxy<> *_main_editor{nullptr};
         factory_widget* _factory_widget{};
-        std::function<void()> _update_circuit_browser_widget{};
-        std::unique_ptr<View::widget> _main_widget{};
+        circuit_tree *_master_circuit_dir{nullptr};
+        circuit_tree *_polyphonic_circuit_dir{nullptr};
+        View::widget_proxy<> *_main_editor{nullptr};
     };
 
 }
