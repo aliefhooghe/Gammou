@@ -108,13 +108,14 @@ namespace Gammou {
                     return _gui->create_node(*_editor_dir);
                 });    
 
-            // Create composite node toolbox
+            // Create composite node toolbox :
             auto toolbox = std::make_unique<View::panel<>>(100, 100);
 
+            // rename
             auto name_text_input = std::make_unique<View::text_input>();
-            name_text_input->set_text("NewName");
+            auto name_text_input_ptr = name_text_input.get();
 
-            auto name_button = std::make_unique<View::text_push_button>("set name");
+            auto name_button = std::make_unique<View::text_push_button>("rename");
             name_button->set_callback(
                 [this, input = name_text_input.get()]()
                 {
@@ -133,6 +134,7 @@ namespace Gammou {
                     }
                 });
             
+            // export
             auto export_button = std::make_unique<View::text_push_button>("export");
             export_button->set_callback(
                 [this]
@@ -158,7 +160,9 @@ namespace Gammou {
             auto& editor_dir = parent.insert_config_dir(new_name, circuit_tree{ _editor_widget });
             _editor_dir = &editor_dir;
 
+            // Apply the new name
             set_name(new_name);
+            name_text_input_ptr->set_text(new_name);
         }
 
         std::unique_ptr<node_widget> _deserialize_internal_node(const std::string& identifier)
