@@ -53,6 +53,7 @@ namespace Gammou {
 
     void node_widget::set_input_name(unsigned int input_id, const std::string& name)
     {
+        _check_io_counts();
         if (input_id < _input_names.size()) {
             _input_names[input_id] = name;
             invalidate();
@@ -61,22 +62,25 @@ namespace Gammou {
 
     void node_widget::set_output_name(unsigned int output_id, const std::string& name)
     {
+        _check_io_counts();
         if (output_id < _output_names.size()) {
             _output_names[output_id] = name;
             invalidate();
         }
     }
 
-    const std::string& node_widget::get_input_name(const unsigned int input_id) const
+    const std::string& node_widget::get_input_name(const unsigned int input_id)
     {
+        _check_io_counts();
         if (input_id < _input_names.size())
             return _input_names[input_id];
         else
             throw std::out_of_range("input id");
     }
 
-    const std::string& node_widget::get_output_name(const unsigned int output_id) const
+    const std::string& node_widget::get_output_name(const unsigned int output_id)
     {
+        _check_io_counts();
         if (output_id < _output_names.size())
             return _output_names[output_id];
         else
@@ -772,7 +776,7 @@ namespace Gammou {
                 link_desc.to.in);
         }
 
-        _notify_circuit_change();
+        // caller is responsible of recompilation
     }
 
 }
