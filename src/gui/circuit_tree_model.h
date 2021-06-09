@@ -43,11 +43,6 @@ namespace Gammou {
          */
         void remove_config(circuit_tree& config);
 
-        /**
-         * \brief Remove every configuration directories
-         */
-        using implem::clear;
-
     private:
         circuit_tree* _find_parent(const circuit_tree& child, std::string& key);
 

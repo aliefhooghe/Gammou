@@ -46,8 +46,9 @@ namespace Gammou {
 
     private:
         /*
-         *  circuit tree management
+         *  content management
          */
+        void _initialize_synthesizer_circuits();
         void _reset_content();
 
         /*

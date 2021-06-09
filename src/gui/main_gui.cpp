@@ -52,7 +52,8 @@ namespace Gammou {
                     std::move(toolbox),
                     std::move(editor))));
 
-        _reset_content();
+        _initialize_synthesizer_circuits();
+        compile();
     }
 
     std::unique_ptr<node_widget> main_gui::create_node(circuit_tree& dir, node_widget_factory::plugin_id id)
@@ -115,6 +116,9 @@ namespace Gammou {
             {
                 return _deserialize_node(*_polyphonic_circuit_dir, j);
             });
+
+        // Recompile the new loaded circuit
+        compile();
     }
 
     nlohmann::json main_gui::serialize()
@@ -125,12 +129,8 @@ namespace Gammou {
         };
     }
 
-    void main_gui::_reset_content()
+    void main_gui::_initialize_synthesizer_circuits()
     {
-        LOG_DEBUG("[main gui] Reset content\n");
-
-        _circuit_tree.clear();
-
         std::string master_name = "Master";
         std::string polyphonic_name = "Polyphonic";
 
@@ -153,8 +153,14 @@ namespace Gammou {
                 return create_node(*_polyphonic_circuit_dir);
             });
 
-        _update_circuit_browser_widget();
+        _reset_content();
+    }
 
+    void main_gui::_reset_content()
+    {
+        LOG_DEBUG("[main gui] Reset content\n");
+
+        // Remove the nodes : this will also remove relevant configuration dirs
         _master_circuit_editor->clear();
         _master_circuit_editor->insert_node_widget(50, 50, _make_master_from_polyphonic_node());
         _master_circuit_editor->insert_node_widget(50, 100, _make_master_output_node());
@@ -163,11 +169,11 @@ namespace Gammou {
         _polyphonic_circuit_editor->insert_node_widget(50, 50, _make_polyphonic_midi_input_node());
         _polyphonic_circuit_editor->insert_node_widget(50, 100, _make_polyphonic_to_master_node());
 
+        // Update the circuit browser
+        _update_circuit_browser_widget();
+
         //  Select master circuit by default
         _main_editor->set_widget(_master_circuit_widget);
-
-        //  Triger a recompilation
-        compile();
     }
 
     std::unique_ptr<View::widget> main_gui::_make_main_editor_widget()
@@ -224,7 +230,8 @@ namespace Gammou {
         auto common_toolbox = std::make_unique<View::panel<>>(common_toolbox_width, 110);
 
         auto reset_button = std::make_unique<View::text_push_button>("Reset", 80, 21);
-        reset_button->set_callback([this]() { _reset_content(); });
+        reset_button->set_callback([this]() { _reset_content(); compile(); });
+
         common_toolbox->insert_widget(5, 5, std::move(reset_button));
 
         if (!additional_toolbox)
@@ -293,9 +300,9 @@ namespace Gammou {
             });
 
         filesystem_view->set_value_select_callback(
-            [this](const auto& preset_path)
+            [this, name_input =  preset_name_input.get(), patch_dir_path](const auto& preset_path)
             {
-                LOG_INFO("[main gui] Loading patch '%s'\n", preset_path.c_str());
+                LOG_INFO("[main gui] Loading patch '%s'\n", preset_path.generic_string().c_str());
                 try {
                     nlohmann::json json;
                     std::ifstream stream{preset_path, std::ios_base::in};
@@ -305,6 +312,10 @@ namespace Gammou {
 
                     stream >> json;
                     deserialize(json);
+
+                    const auto relative_path =
+                        std::filesystem::relative(preset_path, patch_dir_path);
+                    name_input->set_text(relative_path.generic_string());
                 }
                 catch(const std::exception& e)
                 {
@@ -327,11 +338,11 @@ namespace Gammou {
                         throw std::exception{};
 
                     const auto json = serialize();
-                    stream << std::setw(4) << json;
+                    stream << json.dump();
                     stream.close();
                     fv->data_model().sync();
                     fv->update();
-                    LOG_INFO("[main gui] Saved patch '%s'\n", preset_path.c_str());
+                    LOG_INFO("[main gui] Saved patch '%s'\n", preset_path.generic_string().c_str());
                 }
                 catch(const std::exception& e)
                 {
