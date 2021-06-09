@@ -133,45 +133,52 @@ namespace Gammou
         nlohmann::json serialize();
         void deserialize(const nlohmann::json&, node_deserializer);
 
-        void draw(NVGcontext* vg) override;
-        void draw_rect(NVGcontext* vg, const View::rectangle<>&rect) override { draw(vg);} /* \todo */
+        void draw(NVGcontext *vg) override;
+        void draw_rect(NVGcontext *vg, const View::rectangle<> &rect) override { draw(vg); } /* \todo */
 
-        protected:
-            void _draw_link(
-                NVGcontext *vg, NVGcolor color,
-                float x_input, float y_input,
-                float x_output, float y_output, float link_width) const noexcept;
+    protected:
+        void _draw_link(
+            NVGcontext *vg, NVGcolor color,
+            float x_input, float y_input,
+            float x_output, float y_output, float link_width) const noexcept;
 
-            void _notify_circuit_change();
+        void _notify_circuit_change();
 
-        private:
-            create_node_callback _create_node_callback{};
-            circuit_changed_callback _circuit_changed_callback{};
+    private:
+        create_node_callback _create_node_callback{};
+        circuit_changed_callback _circuit_changed_callback{};
 
-            std::unordered_map<const DSPJIT::compile_node_class*, node_widget*> _node_widgets{};
+        std::unordered_map<const DSPJIT::compile_node_class *, node_widget *> _node_widgets{};
 
-            //  link state machine
-            bool _is_linking{false};
-            node_widget *_link_source;
-			unsigned int _link_source_output;
-			float _linking_x;
-			float _linking_y;
+        //  mouse drag state machine
+        enum class drag_state
+        {
+            OFF,
+            DRAG_NODE,
+            MOVE_NODE,
+            LINK_NODE 
+        };
 
-            //  socket highlight
-            bool _socket_highlighting{false};
-            float _socket_highlight_x;
-            float _socket_highlight_y;
+        drag_state _drag_state{drag_state::OFF};
+        node_widget *_link_source;
+        unsigned int _link_source_output;
+        float _linking_x;
+        float _linking_y;
 
-            // link highlight
-            const node_widget* _last_focused{nullptr};
+        //  socket highlight
+        bool _socket_highlighting{false};
+        float _socket_highlight_x;
+        float _socket_highlight_y;
 
-            //  colors
-            NVGcolor _link_color;
-            NVGcolor _linking_color;
-            NVGcolor _socket_highlight_color;
+        // link highlight
+        const node_widget *_last_focused{nullptr};
+
+        //  colors
+        NVGcolor _link_color;
+        NVGcolor _linking_color;
+        NVGcolor _socket_highlight_color;
     };
 
 } // namespace Gammou
-
 
 #endif

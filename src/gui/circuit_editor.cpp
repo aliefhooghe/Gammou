@@ -347,49 +347,51 @@ namespace Gammou {
 
     bool circuit_editor::on_mouse_drag(const View::mouse_button button, float x, float y, float dx, float dy)
     {
-        if (!View::panel_implementation<node_widget>::on_mouse_drag(button, x, y, dx, dy)) {
-            if (_is_linking) {
-                _linking_x = x;
-                _linking_y = y;
-                _socket_highlighting = false;
+        if (_drag_state == drag_state::DRAG_NODE)
+        {
+            return View::panel_implementation<node_widget>::on_mouse_drag(button, x, y, dx, dy);
+        }
+        else if (_drag_state == drag_state::LINK_NODE)
+        {
+            _linking_x = x;
+            _linking_y = y;
+            _socket_highlighting = false;
 
-                auto under_cursor = widget_at(x, y);
-                if (under_cursor != nullptr) {
-                    auto node = under_cursor->get();
-                    unsigned int input_id;
+            auto under_cursor = widget_at(x, y);
+            if (under_cursor != nullptr) {
+                auto node = under_cursor->get();
+                unsigned int input_id;
 
-                    if (node->_input_id_at(input_id, x - node->pos_x(), y - node->pos_y())) {
-                        float cx, cy;
-                        node->_input_pos(input_id, cx, cy);
-                        _socket_highlighting = true;
-                        _socket_highlight_x = cx + node->pos_x();
-                        _socket_highlight_y = cy + node->pos_y();
-                    }
+                if (node->_input_id_at(input_id, x - node->pos_x(), y - node->pos_y())) {
+                    float cx, cy;
+                    node->_input_pos(input_id, cx, cy);
+                    _socket_highlighting = true;
+                    _socket_highlight_x = cx + node->pos_x();
+                    _socket_highlight_y = cy + node->pos_y();
                 }
+            }
 
+            invalidate();
+            return true;
+        }
+        else if (_drag_state == drag_state::MOVE_NODE)
+        {
+            if (auto w = focused_widget())
+            {
+                w->set_pos(w->pos_x() + dx, w->pos_y() + dy);
                 invalidate();
                 return true;
             }
-            else {
-                //  if a widget is focused : translate it
-                if (auto w = focused_widget()) {
-                    w->set_pos(w->pos_x() + dx, w->pos_y() + dy);
-                    invalidate();
-                    return true;
-                }
-                else {
-                    return false;
-                }
+            else
+            {
+                LOG_WARNING("[circuit editor][drag] LOST MOVING WIDGET\n");
+                _drag_state = drag_state::OFF;
+                return false;
             }
         }
-        else {
-            //  If event was used by a children, stop linking
-            if (_is_linking) {
-                _is_linking = false;
-                invalidate();
-            }
+        else {  // OFF
+            return false;
 
-            return true;
         }
     }
 
@@ -412,30 +414,44 @@ namespace Gammou {
                         _link_source_output = output_id;
                         _linking_x = x;
                         _linking_y = y;
-                        _is_linking = true;
+                        _drag_state = drag_state::LINK_NODE;
+                        return true;
+                    }
+                    else {
+                        _drag_state = drag_state::MOVE_NODE;
+                        return true;
                     }
                 }
                 else {
                     /** @todo move the map ?? Non ailleur, pas le role de l'editor
                      **/
+                    _drag_state = drag_state::OFF;
+                    return false;
                 }
 
-                return true;
             }
-
-            return false;
+            else {
+                _drag_state = drag_state::OFF;  // ignore other buttons
+                return false;
+            }
         }
         else {
+            _drag_state = drag_state::DRAG_NODE;
             return true;
         }
     }
 
     bool circuit_editor::on_mouse_drag_end(const View::mouse_button button, float x, float y)
     {
-        //  Always handle drag end event at circuit_editor level to avoid geting stuck in linking state
-        auto ret = View::panel_implementation<node_widget>::on_mouse_drag_end(button, x, y);
+        const auto previous_state = _drag_state;
+        _drag_state = drag_state::OFF;
 
-        if (button == View::mouse_button::left && _is_linking) {
+        if (previous_state == drag_state::DRAG_NODE)
+        {
+            return View::panel_implementation<node_widget>::on_mouse_drag_end(button, x, y);
+        }
+        else if (previous_state == drag_state::LINK_NODE)
+        {
             auto holder_ptr = widget_at(x, y);
 
             if (holder_ptr != nullptr) {
@@ -449,12 +465,11 @@ namespace Gammou {
                 }
             }
             invalidate();
-            _is_linking = false;
             _socket_highlighting = false;
             return true;
         }
         else {
-            return ret;
+            return false;
         }
     }
 
@@ -462,12 +477,12 @@ namespace Gammou {
     {
         View::panel_implementation<node_widget>::on_mouse_drag_cancel();
 
-        if (_is_linking) {
-            _is_linking = false;
+        if (_drag_state == drag_state::LINK_NODE) {
             _socket_highlighting = false;
             invalidate();
         }
 
+        _drag_state = drag_state::OFF;
         return true;
     }
 
@@ -525,7 +540,8 @@ namespace Gammou {
                         holder->_input_pos(i, input_x, input_y);
 
                         const bool highlight_link =
-                            !_is_linking && (_last_focused == input_node_widget || _last_focused == holder.get());
+                            (_drag_state != drag_state::LINK_NODE) && 
+                            (_last_focused == input_node_widget || _last_focused == holder.get());
 
                         const auto link_width = 3.f;
                         const auto link_color = highlight_link ? _linking_color : _link_color;
@@ -543,7 +559,7 @@ namespace Gammou {
         panel_implementation<node_widget>::draw(vg);
 
         //  If linking, draw new link
-        if (_is_linking) {
+        if (_drag_state == drag_state::LINK_NODE) {
             float output_x, output_y;
             _link_source->_output_pos(_link_source_output, output_x, output_y);
             _draw_link(vg, _linking_color,
