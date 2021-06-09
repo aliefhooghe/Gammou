@@ -41,7 +41,7 @@ namespace Gammou {
 
         void register_user_node(nlohmann::json&& state, const std::string& name);
 
-        void deserialize(const nlohmann::json&);
+        bool deserialize(const nlohmann::json&) noexcept;
         nlohmann::json serialize();
 
     private:

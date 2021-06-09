@@ -201,12 +201,15 @@ namespace Gammou {
     std::size_t vst2_plugin::_load_state(const void *chunk, std::size_t size)
     {
         LOG_INFO("Loading VST2 state (size = %llu)\n", size);
+        const auto data = reinterpret_cast<const uint8_t*>(chunk);
 
         try {
-            const auto data = reinterpret_cast<const uint8_t*>(chunk);
-            const auto json_object = nlohmann::json::from_cbor( data, data + size);
-            _main_gui->deserialize(json_object);
-            return size;
+            const auto json_object = nlohmann::json::from_cbor(data, data + size);
+
+            if (_main_gui->deserialize(json_object))
+                return size;
+            else
+                return 0u;
         }
         catch(const std::exception& e)
         {

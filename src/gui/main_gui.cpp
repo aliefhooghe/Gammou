@@ -101,24 +101,37 @@ namespace Gammou {
         _factory_widget->register_user_node(std::move(state), name);
     }
 
-    void main_gui::deserialize(const nlohmann::json& json)
+    bool main_gui::deserialize(const nlohmann::json& json) noexcept
     {
-        _reset_content();
-        _master_circuit_editor->deserialize(
-            json.at("master-circuit"),
-            [this](const nlohmann::json& j)
-            {
-                return _deserialize_node(*_master_circuit_dir, j);
-            });
-        _polyphonic_circuit_editor->deserialize(
-            json.at("polyphonic-circuit"),
-            [this](const nlohmann::json& j)
-            {
-                return _deserialize_node(*_polyphonic_circuit_dir, j);
-            });
+        try {
+            _reset_content();
+            _master_circuit_editor->deserialize(
+                json.at("master-circuit"),
+                [this](const nlohmann::json &j)
+                {
+                    return _deserialize_node(*_master_circuit_dir, j);
+                });
+            _polyphonic_circuit_editor->deserialize(
+                json.at("polyphonic-circuit"),
+                [this](const nlohmann::json &j)
+                {
+                    return _deserialize_node(*_polyphonic_circuit_dir, j);
+                });
 
-        // Recompile the new loaded circuit
-        compile();
+            // Recompile the new loaded circuit
+            compile();
+            return true;
+        }
+        catch (const std::exception &e) {
+            _reset_content();
+            LOG_ERROR("[main gui] Failed to load preset : %s\n", e.what());
+            return false;
+        }
+        catch (...) {
+            _reset_content();
+            LOG_ERROR("[main gui] Failed to load preset : unknown error\n");
+            return false;
+        }
     }
 
     nlohmann::json main_gui::serialize()
@@ -300,30 +313,32 @@ namespace Gammou {
             });
 
         filesystem_view->set_value_select_callback(
-            [this, name_input =  preset_name_input.get(), patch_dir_path](const auto& preset_path)
+            [this, name_input = preset_name_input.get(), patch_dir_path](const auto &preset_path)
             {
                 LOG_INFO("[main gui] Loading patch '%s'\n", preset_path.generic_string().c_str());
+
+                nlohmann::json json;
+                std::ifstream stream{preset_path, std::ios_base::in};
+
+                if (!stream.good())
+                    throw std::exception{};
+
                 try {
-                    nlohmann::json json;
-                    std::ifstream stream{preset_path, std::ios_base::in};
-
-                    if (!stream.good())
-                        throw std::exception{};
-
                     stream >> json;
-                    deserialize(json);
 
-                    const auto relative_path =
-                        std::filesystem::relative(preset_path, patch_dir_path);
-                    name_input->set_text(relative_path.generic_string());
+                    if (deserialize(json)) {
+                        const auto relative_path =
+                            std::filesystem::relative(preset_path, patch_dir_path);
+                        name_input->set_text(relative_path.generic_string());
+                    }
                 }
-                catch(const std::exception& e)
+                catch (const std::exception& e)
                 {
-                    LOG_ERROR("[main gui] Failed to load preset : %s\n", e.what());
+                    LOG_ERROR("[main gui] Failed to deserialize json : %s\n", e.what());
                 }
                 catch(...)
                 {
-                    LOG_ERROR("[main gui] Failed to load preset : unknown error\n");
+                    LOG_ERROR("[main gui] Failed to deserialize json : unknown error\n");
                 }
             });
 
