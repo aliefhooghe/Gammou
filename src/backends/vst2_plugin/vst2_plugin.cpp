@@ -150,6 +150,13 @@ namespace Gammou {
                 std::strcpy(reinterpret_cast<char*>(ptr), "Arthur Liefhooghe");
                 break;
 
+            case effGetPlugCategory:
+                return kPlugCategSynth;
+                break;
+
+            case effGetEffectName:
+                std::strcpy(reinterpret_cast<char*>(ptr), "Gammou");
+                break;
 
             default:
                 return 0u;
