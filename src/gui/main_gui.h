@@ -50,6 +50,7 @@ namespace Gammou {
          */
         void _initialize_synthesizer_circuits();
         void _reset_content();
+        void _update_circuit_browser();
 
         /*
          * gui widgets helpers
@@ -79,13 +80,12 @@ namespace Gammou {
         std::shared_ptr<View::widget> _polyphonic_circuit_widget{};
         std::shared_ptr<View::widget> _master_circuit_widget{};
 
-        std::function<void()> _update_circuit_browser_widget{};
-
         circuit_editor *_polyphonic_circuit_editor{};
         circuit_editor *_master_circuit_editor{};
         factory_widget* _factory_widget{};
         circuit_tree *_master_circuit_dir{nullptr};
         circuit_tree *_polyphonic_circuit_dir{nullptr};
+        View::directory_view<circuit_tree> *_circuit_browser{nullptr};
         View::widget_proxy<> *_main_editor{nullptr};
     };
 

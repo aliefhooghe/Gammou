@@ -59,34 +59,34 @@ namespace Gammou {
     std::unique_ptr<node_widget> main_gui::create_node(circuit_tree& dir, node_widget_factory::plugin_id id)
     {
         auto node = _factory.create_node(id, dir);
-        _update_circuit_browser_widget();
+        _update_circuit_browser();
         return node;
     }
 
     std::unique_ptr<node_widget> main_gui::create_node(circuit_tree& dir)
     {
         auto node = _factory_widget->create_node(dir);
-        _update_circuit_browser_widget();
+        _update_circuit_browser();
         return node;
     }
 
     circuit_tree& main_gui::rename_config(circuit_tree& config_dir, const std::string& new_name)
     {
         auto& new_dir = _circuit_tree.rename_config(config_dir, new_name);
-        _update_circuit_browser_widget();
+        _update_circuit_browser();
         return new_dir;
     }
 
     void main_gui::remove_config(circuit_tree& config_dir)
     {
         _circuit_tree.remove_config(config_dir);
-        _update_circuit_browser_widget();
+        _update_circuit_browser();
     }
 
     std::unique_ptr<node_widget> main_gui::create_node(circuit_tree& dir, const nlohmann::json& state)
     {
         auto node = _factory.create_node(state, dir);
-        _update_circuit_browser_widget();
+        _update_circuit_browser();
         return node;
     }
 
@@ -183,10 +183,16 @@ namespace Gammou {
         _polyphonic_circuit_editor->insert_node_widget(50, 100, _make_polyphonic_to_master_node());
 
         // Update the circuit browser
-        _update_circuit_browser_widget();
+        _update_circuit_browser();
 
         //  Select master circuit by default
         _main_editor->set_widget(_master_circuit_widget);
+    }
+
+    void main_gui::_update_circuit_browser()
+    {
+        if (_circuit_browser)
+            _circuit_browser->update();
     }
 
     std::unique_ptr<View::widget> main_gui::_make_main_editor_widget()
@@ -278,11 +284,7 @@ namespace Gammou {
                 _main_editor->set_widget(dir.get_config_widget());
             });
 
-        _update_circuit_browser_widget =
-            [br = circuit_browser.get()]()
-            {
-                br->update();
-            };
+        _circuit_browser = circuit_browser.get();
 
         return std::make_unique<View::header>(std::move(circuit_browser));
     }
