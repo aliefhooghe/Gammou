@@ -35,6 +35,7 @@ namespace Gammou {
         std::unique_ptr<node_widget> create_node(circuit_tree& parent_config);
         
         circuit_tree& rename_config(circuit_tree& config_dir, const std::string& new_name);
+        void select_config(circuit_tree& config_dir);
         void remove_config(circuit_tree& config_dir);
         
         void compile();

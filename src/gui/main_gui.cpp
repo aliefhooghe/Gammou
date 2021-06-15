@@ -77,6 +77,12 @@ namespace Gammou {
         return new_dir;
     }
 
+    void main_gui::select_config(circuit_tree& config_dir)
+    {
+        if (_circuit_browser->select_directory(config_dir))
+            _main_editor->set_widget(config_dir.get_config_widget());
+    }
+
     void main_gui::remove_config(circuit_tree& config_dir)
     {
         _circuit_tree.remove_config(config_dir);

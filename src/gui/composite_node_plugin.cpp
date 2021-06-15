@@ -163,6 +163,15 @@ namespace Gammou {
             // Apply the new name
             set_name(new_name);
             name_text_input_ptr->set_text(new_name);
+
+            // Customize node widget : add edit button
+            const auto edit_width = 30.f;
+            const auto edit_height = 18.f;
+            const auto edit_posx = (width() - edit_width) / 2.f;
+            const auto edit_posy = height() - node_widget::node_header_size;
+            auto edit_button = std::make_unique<View::text_push_button>("edit", 30, 18);
+            edit_button->set_callback([this]() { _gui->select_config(*_editor_dir); });
+            insert_widget(edit_posx, edit_posy, std::move(edit_button));
         }
 
         std::unique_ptr<node_widget> _deserialize_internal_node(const std::string& identifier)
