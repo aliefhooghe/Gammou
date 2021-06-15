@@ -85,21 +85,28 @@ namespace Gammou {
 
     void desktop_application::_initialize_midi_multiplex()
     {
-        RtMidiIn rt_midi;
-        const auto midi_input_count = rt_midi.getPortCount();
+        try {
+            RtMidiIn rt_midi;
+            const auto midi_input_count = rt_midi.getPortCount();
 
-        //  We need one RtMidi instance per input port
-        _midi_inputs.resize(midi_input_count);
+            //  We need one RtMidi instance per input port
+            _midi_inputs.resize(midi_input_count);
 
-        auto midi_callback =
-            [](double timestamp, std::vector<unsigned char> *message, void *user_data)
-            {
-                auto& synth = *(synthesizer*)(user_data);
-                execute_midi_msg(synth, message->data(), message->size());
-            };
+            auto midi_callback =
+                [](double timestamp, std::vector<unsigned char> *message, void *user_data)
+                {
+                    auto& synth = *(synthesizer*)(user_data);
+                    execute_midi_msg(synth, message->data(), message->size());
+                };
 
-        for (auto& input : _midi_inputs)
-            input.setCallback(midi_callback, &_synthesizer);
+            for (auto& input : _midi_inputs)
+                input.setCallback(midi_callback, &_synthesizer);
+        }
+        catch (std::exception& e)
+        {
+            LOG_ERROR("[desktop_application] Could not initialize midi multiplex : '%s'\n", e.what());
+            _midi_inputs.resize(0);
+        }
     }
 
     bool desktop_application::_enable_midi_input(unsigned int idx, bool enable)
@@ -273,8 +280,7 @@ namespace Gammou {
             midi_settings_widget->insert_widget(x_offset * 18, y_offset, std::move(device_label));
         }
 
-        midi_settings_widget->resize(500, line_height * midi_input_count + y_start_offset * 2);
-
+        midi_settings_widget->resize(500, line_height * std::max(1u, midi_input_count) + y_start_offset * 2);
         return midi_settings_widget;
     }
 

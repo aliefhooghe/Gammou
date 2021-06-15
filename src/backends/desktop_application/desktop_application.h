@@ -51,7 +51,7 @@ namespace Gammou {
         std::unique_ptr<RtAudio> _audio_device{};
 
         //  Midi inputs
-        std::vector<RtMidiIn> _midi_inputs;
+        std::vector<RtMidiIn> _midi_inputs{};
 
         //  widget node factory
         node_widget_factory _node_factory;
