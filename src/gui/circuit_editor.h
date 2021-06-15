@@ -169,6 +169,7 @@ namespace Gammou
         float _linking_y;
 
         //  socket highlight
+        NVGcolor _socket_highlight_color;
         bool _socket_highlighting{false};
         float _socket_highlight_x;
         float _socket_highlight_y;
@@ -176,10 +177,11 @@ namespace Gammou
         // link highlight
         const node_widget *_last_focused{nullptr};
 
-        //  colors
+        //  colors theme
         NVGcolor _link_color;
         NVGcolor _linking_color;
-        NVGcolor _socket_highlight_color;
+        NVGcolor _output_highlight_color;
+        NVGcolor _input_highlight_color;
     };
 
 } // namespace Gammou

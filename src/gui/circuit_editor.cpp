@@ -296,13 +296,17 @@ namespace Gammou {
             unsigned int io_id;
             float cx, cy;
 
-            if (focused_node->_output_id_at(io_id, x - focused_node->pos_x(), y - focused_node->pos_y())) {
+            if (focused_node->_output_id_at(io_id, x - focused_node->pos_x(), y - focused_node->pos_y()))
+            {
                 focused_node->_output_pos(io_id, cx, cy);
+                _socket_highlight_color = _output_highlight_color;
                 _socket_highlighting = true;
             }
             else if (focused_node->_input_id_at(io_id, x - focused_node->pos_x(), y - focused_node->pos_y()) &&
-                    focused_node->node().get_input(io_id) != nullptr) {
+                    focused_node->node().get_input(io_id) != nullptr)
+            {
                 focused_node->_input_pos(io_id, cx, cy);
+                _socket_highlight_color = _input_highlight_color;
                 _socket_highlighting = true;
             }
             else if (_socket_highlighting) {
@@ -514,7 +518,8 @@ namespace Gammou {
     {
         _link_color = theme.primary_light;
         _linking_color = theme.secondary_light;
-        _socket_highlight_color = theme.secondary_light;
+        _output_highlight_color = theme.secondary_light;
+        _input_highlight_color = theme.error;
     }
 
     void circuit_editor::draw(NVGcontext *vg)
