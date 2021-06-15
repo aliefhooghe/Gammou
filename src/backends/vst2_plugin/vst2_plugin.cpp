@@ -139,6 +139,8 @@ namespace Gammou {
                 break;
 
             case effEditKey:
+            case effEditKeyUp:
+                plugin->_display->text_input(index, value, opt);
                 return 1;
                 break;
 
