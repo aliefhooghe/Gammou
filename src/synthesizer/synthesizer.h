@@ -28,7 +28,7 @@ namespace Gammou
         };
 
         static constexpr auto polyphonic_to_master_channel_count = 2u;
-        static constexpr auto voice_disappearance_treshold = 0.0003f;
+        static constexpr auto voice_disappearance_treshold_default = 0.0003f;
 
         using opt_level = DSPJIT::graph_execution_context::opt_level;
         using parameter = parameter_manager::parameter;
@@ -96,6 +96,12 @@ namespace Gammou
          *  \brief Set the samplerate and recompile circuits
          */
         void set_sample_rate(float samplerate);
+
+        /**
+         * \brief Set the amplitude threshold used to determine if a voice
+         * should be stopped
+         */
+        void set_voice_disapearance_threshold(float threshold);
 
         /**
          **
@@ -218,6 +224,7 @@ namespace Gammou
         //  Voice management
         voice_manager _voice_manager;
         unsigned int _voice_disappearance_sample_count{20000u};
+        float _voice_disappearance_treshold{voice_disappearance_treshold_default};
         std::vector<unsigned int> _voice_lifetime;
 
         //  Parameter management
