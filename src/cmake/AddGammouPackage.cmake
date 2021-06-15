@@ -43,7 +43,7 @@ function(add_gammou_plugin target plugin_file) # ... sources
 
 	#	List of generated llvm ir modules
 	set(bytecode_modules)
-	set(plugin_dir ${CMAKE_CURRENT_BINARY_DIR}/${target})
+	set(plugin_dir ${CMAKE_CURRENT_BINARY_DIR}/tmp/${target})
 
 	#   Make plugin directory at configuration time
 	file(MAKE_DIRECTORY ${plugin_dir})
@@ -106,7 +106,7 @@ function(add_gammou_package target)
 	endif()
 
 	#	Create package directory
-	set(package_dir ${CMAKE_CURRENT_BINARY_DIR}/${target})
+	set(package_dir ${CMAKE_CURRENT_BINARY_DIR}/out/${target})
 	file(MAKE_DIRECTORY ${package_dir})
 
 	set(all_plugin_content_files)
