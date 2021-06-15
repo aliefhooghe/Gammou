@@ -12,6 +12,11 @@ add_gammou_plugin(
     ${CMAKE_CURRENT_SOURCE_DIR}/base/tanh_plugin/process.c)
 
 add_gammou_plugin(
+    Invert
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/invert/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/invert/process.c)
+
+add_gammou_plugin(
     SinPlugin
     ${CMAKE_CURRENT_SOURCE_DIR}/base/sin_oscillator/plugin.json
     ${CMAKE_CURRENT_SOURCE_DIR}/base/sin_oscillator/process.c)
@@ -56,6 +61,7 @@ add_gammou_package(
     CONTENT_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/base/content.json
     PLUGINS
+        Invert
         Tanh
         SinPlugin
         SawPlugin

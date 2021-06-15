@@ -31,8 +31,24 @@ float clamp(float x, float min, float max)
     return a > max ? max : a;
 }
 
+float exclude_zero(float x, float epsilon)
+{
+    if (x < -epsilon || x > epsilon)
+        return x;
+    else
+        return copy_sign(x, epsilon);
+}
+
 float absolute(float x)
 {
     const unsigned int bits = 0x7fffffffu & (*(unsigned int*)&x);
-    return *(float*)&bits;
+    return *(const float*)&bits;
+}
+
+float copy_sign(float from, float to)
+{
+    const unsigned int bits =
+        0x80000000u & (*(unsigned int*)&from) & // select sign
+        0x7fffffffu & (*(unsigned int*)&to);    // absolute(to
+    return *(const float*)&bits;
 }

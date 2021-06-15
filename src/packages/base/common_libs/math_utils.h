@@ -18,7 +18,9 @@ float fast_sin(float x);
 float fast_tanh(float x);
 
 float clamp(float x, float min, float max);
+float exclude_zero(float x, float epsilon);
 
 float absolute(float x);
+float copy_sign(float from, float to);
 
 #endif
