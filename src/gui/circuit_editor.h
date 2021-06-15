@@ -29,6 +29,9 @@ namespace Gammou
         void set_input_name(unsigned int input_id, const std::string& name);
         void set_output_name(unsigned int output_id, const std::string& name);
 
+        void set_internal(bool internal = true) noexcept { _is_internal = internal; }
+        bool is_internal() const noexcept { return _is_internal; }
+
         const std::string& name() const noexcept { return _name; }
         const std::string& get_input_name(const unsigned int input_id);
         const std::string& get_output_name(const unsigned int output_id);
@@ -65,6 +68,7 @@ namespace Gammou
         std::string _name;
         std::vector<std::string> _input_names;
         std::vector<std::string> _output_names;
+        bool _is_internal{false}; // an internal node can not be removed by user
 
         //  colors
         NVGcolor _text_color;
@@ -111,7 +115,6 @@ namespace Gammou
         void remove_node_widget(node_widget*);
         void clear();
 
-        bool on_mouse_dbl_click(float x, float y) override;
         bool on_mouse_move(float x, float y) override;
         bool on_mouse_drag(const View::mouse_button button, float x, float y, float dx, float dy) override;
         bool on_mouse_drag_start(const View::mouse_button button, float x, float y) override;

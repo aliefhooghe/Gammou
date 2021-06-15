@@ -94,7 +94,7 @@ namespace Gammou {
 
         nvgBeginPath(vg);
         nvgRoundedRect(vg, 0.f, 0.f, width(), height(), node_corner_radius);
-        
+
         //  Draw background
         nvgFillColor(vg, _background_color);
         nvgFill(vg);
@@ -106,7 +106,7 @@ namespace Gammou {
 
         //  Draw name
         nvgFillColor(vg, _text_color);
-        View::draw_text(vg, 0, 0, width(), node_header_size, 14, _name.c_str(), true, 
+        View::draw_text(vg, 0, 0, width(), node_header_size, 14, _name.c_str(), true,
             View::horizontal_alignment::center, View::vertical_alignment::bottom);
 
         //  Draw inputs/outpus sockets and names
@@ -280,36 +280,6 @@ namespace Gammou {
         invalidate();
     }
 
-    bool circuit_editor::on_mouse_dbl_click(float x, float y)
-    {
-        if (!panel_implementation<node_widget>::on_mouse_dbl_click(x, y)) {
-            auto w = panel_implementation<node_widget>::widget_at(x, y);
-
-            if (w != nullptr) {
-                remove_node_widget(w->get());
-                _notify_circuit_change();
-                return true;
-            }
-            else if (_create_node_callback) {
-                auto node = _create_node_callback();
-
-                if (node) {
-                    const auto insert_x = x - node->width() / 2.f;
-                    const auto insert_y = y - node->height() / 2.f;
-                    insert_node_widget(insert_x, insert_y, std::move(node));
-                }
-
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            return true;
-        }
-    }
-
     bool circuit_editor::on_mouse_move(float x, float y)
     {
         View::panel_implementation<node_widget>::on_mouse_move(x, y);
@@ -323,30 +293,39 @@ namespace Gammou {
                 invalidate();
             }
 
-            unsigned int output_id;
-            if (focused_node->_output_id_at(output_id, x - focused_node->pos_x(), y - focused_node->pos_y())) {
-                float cx, cy;
-                focused_node->_output_pos(output_id, cx, cy);
+            unsigned int io_id;
+            float cx, cy;
+
+            if (focused_node->_output_id_at(io_id, x - focused_node->pos_x(), y - focused_node->pos_y())) {
+                focused_node->_output_pos(io_id, cx, cy);
                 _socket_highlighting = true;
+            }
+            else if (focused_node->_input_id_at(io_id, x - focused_node->pos_x(), y - focused_node->pos_y()) &&
+                    focused_node->node().get_input(io_id) != nullptr) {
+                focused_node->_input_pos(io_id, cx, cy);
+                _socket_highlighting = true;
+            }
+            else if (_socket_highlighting) {
+                _socket_highlighting = false;
+                invalidate();
+            }
+
+            if (_socket_highlighting) {
                 _socket_highlight_x = cx + focused_node->pos_x();
                 _socket_highlight_y = cy + focused_node->pos_y();
                 invalidate();
                 return true;
             }
-
         }
-        else if (_last_focused != nullptr) {
-            _last_focused = nullptr;
-            invalidate();
-        }
+        else {
+            if (_last_focused != nullptr || _socket_highlighting == true) {
+                _last_focused = nullptr;
+                _socket_highlighting = false;
+                invalidate();
+            }
 
-        if (_socket_highlighting == true) {
-            _socket_highlighting = false;
-            invalidate();
-            return true;
+            return false;
         }
-
-        return false;
     }
 
     bool circuit_editor::on_mouse_drag(const View::mouse_button button, float x, float y, float dx, float dy)
@@ -492,25 +471,43 @@ namespace Gammou {
 
     bool circuit_editor::on_mouse_button_up(const View::mouse_button button, float x, float y)
     {
-        if (!View::panel_implementation<node_widget>::on_mouse_button_up(button, x, y)
-                && button == View::mouse_button::right) {
-
+        if (!View::panel_implementation<node_widget>::on_mouse_button_up(button, x, y))
+        {
             if (auto w = focused_widget()) {
-                unsigned int input_id;
-                auto node = w->get();
-                if (node->_input_id_at(input_id, x - node->pos_x(), y - node->pos_y())) {
-                    node->node().disconnect(input_id);
-                    invalidate();
+                auto widget = w->get();
+                // delete focused node with right click
+                if (button == View::mouse_button::right) {
+                    unsigned int input_id;
+
+                    if (widget->_input_id_at(input_id, x - widget->pos_x(), y - widget->pos_y()) &&
+                        widget->node().get_input(input_id) != nullptr) {
+                        widget->node().disconnect(input_id);
+                    }
+                    else {
+                        if (!w->get()->is_internal())
+                            remove_node_widget(w->get());
+                    }
+
                     _notify_circuit_change();
+                    invalidate();
                     return true;
                 }
             }
+            // nothing focused : create node with left click
+            else if (button == View::mouse_button::left && _create_node_callback) {
+				auto node = _create_node_callback();
 
-            return false;
+				if (node) {
+					const auto insert_x = x - node->width() / 2.f;
+					const auto insert_y = y - node->height() / 2.f;
+					insert_node_widget(insert_x, insert_y, std::move(node));
+                }
+
+				return true;
+            }
         }
-        else {
-            return true;
-        }
+
+        return true;
     }
 
     void circuit_editor::apply_color_theme(const View::color_theme& theme)
@@ -544,7 +541,7 @@ namespace Gammou {
                         holder->_input_pos(i, input_x, input_y);
 
                         const bool highlight_link =
-                            (_drag_state != drag_state::LINK_NODE) && 
+                            (_drag_state != drag_state::LINK_NODE) &&
                             (_last_focused == input_node_widget || _last_focused == holder.get());
 
                         const auto link_width = 3.f;
