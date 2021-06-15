@@ -80,7 +80,7 @@ namespace Gammou {
          *  \brief Add a plugin dependency module into the factory
          *  \param m the module to be added
          */
-        void add_module(std::unique_ptr<llvm::Module>&& m);
+        void add_library_module(std::unique_ptr<llvm::Module>&& m);
 
         /**
          *  \return a module where all registred plugins dependencies are linked

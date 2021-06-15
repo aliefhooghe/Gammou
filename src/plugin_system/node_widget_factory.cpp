@@ -22,12 +22,12 @@ namespace Gammou {
         auto id = plugin->id();
 
         if (plugin_module)
-            add_module(std::move(plugin_module));
+            add_library_module(std::move(plugin_module));
 
         _plugins.emplace(id, std::move(plugin));
     }
 
-    void node_widget_factory::add_module(std::unique_ptr<llvm::Module>&& m)
+    void node_widget_factory::add_library_module(std::unique_ptr<llvm::Module>&& m)
     {
         llvm::Linker::linkModules(*_module, std::move(m));
     }

@@ -53,7 +53,7 @@ namespace Gammou {
         load_all_packages(configuration::get_packages_directory_path(), _node_factory);
 
         //  Prepare synthesizer
-        _synthesizer.add_module(_node_factory.module());
+        _synthesizer.add_library_module(_node_factory.module());
 
         //  Build gui
         _main_gui = std::make_unique<main_gui>(_synthesizer, _node_factory);
@@ -156,6 +156,12 @@ namespace Gammou {
 
             case effGetEffectName:
                 std::strcpy(reinterpret_cast<char*>(ptr), "Gammou");
+                break;
+
+            case effSetBlockSizeAndSampleRate:
+            case effSetSampleRate:
+                LOG_INFO("[vst2_plugin) Set samplerate to %f\n", opt);
+                plugin->_synthesizer.set_sample_rate(opt);
                 break;
 
             default:

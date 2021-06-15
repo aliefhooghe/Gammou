@@ -32,7 +32,6 @@ namespace Gammou {
     :   _llvm_context{llvm_context},
         _input_count{input_count},
         _output_count{output_count},
-        _sample_rate{samplerate},
         _midi_input_values(voice_count * midi_input_count, 0.f),
         _master_circuit_context{_llvm_context, 1u, level, options},
         _polyphonic_circuit_context{_llvm_context, voice_count, level, options},
@@ -41,12 +40,11 @@ namespace Gammou {
         _midi_input{0u, midi_input_count},
         _to_master{polyphonic_to_master_channel_count, 0u},
         _voice_manager{voice_count},
-        _voice_lifetime(voice_count, 0u)
+        _voice_lifetime(voice_count, 0u),
+        _parameter_manager{samplerate}
     {
         std::fill_n(_midi_learn_map.begin(), 255u, parameter_manager::INVALID_PARAM);
-        
-        //  Create initial sample_rate variable
-        _initialize_samplerate_variable();
+        set_sample_rate(samplerate);
     }
 
     void synthesizer::process_sample(const float input[], float output[]) noexcept
@@ -149,10 +147,10 @@ namespace Gammou {
         return false;
     }
 
-    void synthesizer::add_module(std::unique_ptr<llvm::Module>&& m)
+    void synthesizer::add_library_module(std::unique_ptr<llvm::Module>&& m)
     {
-        _master_circuit_context.add_module(llvm::CloneModule(*m));
-        _polyphonic_circuit_context.add_module(std::move(m));
+        _master_circuit_context.add_library_module(llvm::CloneModule(*m));
+        _polyphonic_circuit_context.add_library_module(std::move(m));
     }
 
     void synthesizer::compile_master_circuit()
@@ -167,27 +165,23 @@ namespace Gammou {
         _polyphonic_circuit_context.compile({_midi_input}, {_to_master});
     }
 
+    void synthesizer::set_sample_rate(float samplerate)
+    {
+        _master_circuit_context.set_global_constant(_samplerate_symbol, samplerate);
+        _polyphonic_circuit_context.set_global_constant(_samplerate_symbol, samplerate);
+        _parameter_manager.set_sample_rate(samplerate);
+    }
+
+    void synthesizer::set_voice_disapearance_threshold(float threshold)
+    {
+        _voice_disappearance_treshold = threshold;
+    }
+
     bool synthesizer::update_program() noexcept
     {
         const auto b1 = _master_circuit_context.update_program();
         const auto b2 = _polyphonic_circuit_context.update_program();
         return b1 || b2; // use var in order to avoid lazy evaluation side efects
-    }
-
-    void synthesizer::_initialize_samplerate_variable()
-    {
-        //  Create a module with the sample rate global variable
-        auto module = std::make_unique<llvm::Module>("synthesizer-samplerate", _llvm_context);
-
-        module->getOrInsertGlobal(samplerate_symbol, llvm::Type::getFloatTy(_llvm_context));
-        auto variable = module->getNamedGlobal(samplerate_symbol);
-
-        if (variable == nullptr)
-            throw std::runtime_error("Failed to create sample rate variable");
-
-        variable->setInitializer(llvm::ConstantFP::get(_llvm_context, llvm::APFloat{_sample_rate}));
-
-        add_module(std::move(module));
     }
 
     void synthesizer::_process_one_sample(const float[], float output[]) noexcept

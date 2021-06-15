@@ -112,7 +112,7 @@ namespace Gammou {
         for (auto&& plugin : loaded_plugins)
             factory.register_plugin(std::move(plugin));
         for (auto&& module : additionalModules)
-            factory.add_module(std::move(module));
+            factory.add_library_module(std::move(module));
     }
 
     void load_all_packages(const std::filesystem::path& packages_dir_path, node_widget_factory& factory)

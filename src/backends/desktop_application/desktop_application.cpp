@@ -15,8 +15,8 @@
 
 namespace Gammou {
 
-    desktop_application::desktop_application(unsigned int input_count, unsigned int output_count)
-    : _synthesizer{_llvm_context, 44100.f, input_count, output_count},
+    desktop_application::desktop_application(float samplerate, unsigned int input_count, unsigned int output_count)
+    : _synthesizer{_llvm_context, samplerate, input_count, output_count},
         _node_factory{_llvm_context}
     {
         // midi multiplex
@@ -159,6 +159,7 @@ namespace Gammou {
             _audio_device = std::make_unique<RtAudio>(api);
             _audio_device->openStream(
                 &output_params, nullptr, RTAUDIO_FLOAT32, sample_rate, &buffer_size, audio_callback, &_synthesizer, &options);
+            _synthesizer.set_sample_rate(sample_rate);
             _audio_device->startStream();
             return true;
         }

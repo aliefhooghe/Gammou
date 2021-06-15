@@ -13,7 +13,7 @@
 namespace Gammou
 {
     class synthesizer {
-        static constexpr auto samplerate_symbol = "_sample_rate";
+        static constexpr auto _samplerate_symbol = "_sample_rate";
     public:
 
         /**
@@ -80,7 +80,7 @@ namespace Gammou
         /**
          *  \brief Add module and make it available for synthesizer circuits nodes
          */
-        void add_module(std::unique_ptr<llvm::Module>&& m);
+        void add_library_module(std::unique_ptr<llvm::Module>&& m);
 
         /**
          *  \brief Compile the master circuit and update the processing code
@@ -91,6 +91,11 @@ namespace Gammou
          *  \brief Compile the polyphonic circuit and update the processing code
          */
         void compile_polyphonic_circuit();
+
+        /**
+         *  \brief Set the samplerate and recompile circuits
+         */
+        void set_sample_rate(float samplerate);
 
         /**
          **
@@ -184,8 +189,6 @@ namespace Gammou
     private:
         using param_id = parameter_manager::param_id;
 
-        void _initialize_samplerate_variable();
-
         void _process_one_sample(const float[], float output[]) noexcept;
 
         auto get_voice_midi_input(voice_manager::voice voice) noexcept
@@ -196,7 +199,6 @@ namespace Gammou
         llvm::LLVMContext& _llvm_context;
         const unsigned int _input_count;
         const unsigned int _output_count;
-        float _sample_rate;
 
         //  Midi input values are stored here for every running voices
         std::vector<float> _midi_input_values;
@@ -219,7 +221,7 @@ namespace Gammou
         std::vector<unsigned int> _voice_lifetime;
 
         //  Parameter management
-        parameter_manager _parameter_manager{48000.f};
+        parameter_manager _parameter_manager;
         std::array<param_id, 256u> _midi_learn_map;
         bool _midi_learning{false};
         param_id _learning_param;

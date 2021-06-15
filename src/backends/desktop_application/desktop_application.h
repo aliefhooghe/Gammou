@@ -15,7 +15,7 @@ namespace Gammou {
     class desktop_application /* : */{
         friend class midi_device_widget;
     public:
-        desktop_application(unsigned int input_count, unsigned int output_count);
+        desktop_application(float samplerate, unsigned int input_count, unsigned int output_count);
         ~desktop_application();
 
         void run();
