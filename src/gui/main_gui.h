@@ -49,7 +49,7 @@ namespace Gammou {
         /*
          *  content management
          */
-        void _initialize_synthesizer_circuits();
+        void _initialize_cicuit_tree();
         void _reset_content();
         void _update_circuit_browser();
 

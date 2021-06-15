@@ -52,8 +52,7 @@ namespace Gammou {
                     std::move(toolbox),
                     std::move(editor))));
 
-        _initialize_synthesizer_circuits();
-        compile();
+        _initialize_cicuit_tree();
     }
 
     std::unique_ptr<node_widget> main_gui::create_node(circuit_tree& dir, node_widget_factory::plugin_id id)
@@ -148,7 +147,7 @@ namespace Gammou {
         };
     }
 
-    void main_gui::_initialize_synthesizer_circuits()
+    void main_gui::_initialize_cicuit_tree()
     {
         std::string master_name = "Master";
         std::string polyphonic_name = "Polyphonic";
@@ -329,24 +328,26 @@ namespace Gammou {
                 std::ifstream stream{preset_path, std::ios_base::in};
 
                 if (!stream.good())
-                    throw std::exception{};
+                    return;
 
                 try {
                     stream >> json;
-
-                    if (deserialize(json)) {
-                        const auto relative_path =
-                            std::filesystem::relative(preset_path, patch_dir_path);
-                        name_input->set_text(relative_path.generic_string());
-                    }
                 }
                 catch (const std::exception& e)
                 {
-                    LOG_ERROR("[main gui] Failed to deserialize json : %s\n", e.what());
+                    LOG_ERROR("[main gui] Failed to load json file : %s\n", e.what());
+                    return;
                 }
                 catch(...)
                 {
-                    LOG_ERROR("[main gui] Failed to deserialize json : unknown error\n");
+                    LOG_ERROR("[main gui] Failed to load json file : unknown error\n");
+                    return;
+                }
+
+                if (deserialize(json)) {
+                    const auto relative_path =
+                        std::filesystem::relative(preset_path, patch_dir_path);
+                    name_input->set_text(relative_path.generic_string());
                 }
             });
 

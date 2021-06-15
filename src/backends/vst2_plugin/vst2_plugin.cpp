@@ -216,24 +216,23 @@ namespace Gammou {
         LOG_INFO("Loading VST2 state (size = %llu)\n", size);
         const auto data = reinterpret_cast<const uint8_t*>(chunk);
 
-        try {
-            const auto json_object = nlohmann::json::from_cbor(data, data + size);
+        nlohmann::json json_object;
 
-            if (_main_gui->deserialize(json_object))
-                return size;
-            else
-                return 0u;
+        try {
+            json_object = nlohmann::json::from_cbor(data, data + size);
         }
         catch(const std::exception& e)
         {
-            LOG_ERROR("Failed to load VST2 state : %s\n", e.what());
+            LOG_ERROR("Failed to deserialize cbor object : %s\n", e.what());
             return 0u;
         }
         catch(...)
         {
-            LOG_ERROR("Failed to load VST2 state : unknown error\n");
+            LOG_ERROR("Failed to deserialize cbor object : unknown error\n");
             return 0u;
         }
+
+        return _main_gui->deserialize(json_object) ? size : 0u;
     }
 
     std::size_t vst2_plugin::_save_state(void **chunk_ptr)
