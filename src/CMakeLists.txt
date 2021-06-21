@@ -55,6 +55,8 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/main_gui.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/main_gui.cpp
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/ir_loader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/ir_loader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_external_plugin.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_external_plugin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_factory.h
@@ -121,7 +123,7 @@ if (GAMMOU_ENABLE_VST2_PLUGIN)
     target_include_directories(gammou_vst2_plugin PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_link_libraries(gammou_vst2_plugin PRIVATE View DSPJIT nlohmann_json::nlohmann_json nlohmann_json)
 
-    if(WIN32)                   
+    if(WIN32)
         # On windows symbol are not exported by default
         set_target_properties(gammou_vst2_plugin PROPERTIES LINK_FLAGS "/EXPORT:VSTPluginMain")
     endif()

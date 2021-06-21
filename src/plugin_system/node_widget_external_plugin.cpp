@@ -1,7 +1,7 @@
 
 #include <algorithm>
-
 #include "node_widget_external_plugin.h"
+#include "ir_loader.h"
 
 namespace Gammou {
 
@@ -18,16 +18,27 @@ namespace Gammou {
     }
 
     node_widget_external_plugin::node_widget_external_plugin(
-        llvm::LLVMContext &llvm_context,
-        const node_widget_external_plugin_descriptor& desc)
-    :   node_widget_factory::plugin{desc.plugin_id, desc.name, desc.category},
-        _dsp_plugin{llvm_context, desc.modules_paths}
+        const node_widget_factory::plugin_id plugin_id,
+        const std::string& name, const std::string& category,
+        const std::vector<std::string>& input_names,
+        const std::vector<std::string>& output_names,
+        std::unique_ptr<llvm::Module>&& module)
+    :   node_widget_factory::plugin{plugin_id, name, category},
+        _dsp_plugin{std::move(module)}
     {
-        auto ic = std::min<unsigned int>(_dsp_plugin.get_input_count(), desc.input_names.size());
-        auto oc = std::min<unsigned int>(_dsp_plugin.get_output_count(), desc.output_names.size());
+        const auto& proc_info = _dsp_plugin.get_process_info();
+        auto ic = std::min<unsigned int>(proc_info.input_count, input_names.size());
+        auto oc = std::min<unsigned int>(proc_info.output_count, output_names.size());
+        _node_input_names.assign(std::begin(input_names), std::begin(input_names) + ic);
+        _node_output_names.assign(std::begin(output_names), std::begin(output_names) + oc);
+    }
 
-        _node_input_names.assign(std::begin(desc.input_names), std::begin(desc.input_names) + ic);
-        _node_output_names.assign(std::begin(desc.output_names), std::begin(desc.output_names) + oc);
+    std::unique_ptr<node_widget_external_plugin> node_widget_external_plugin::from_desc(node_widget_external_plugin_descriptor& desc, llvm::LLVMContext& ctx)
+    {
+        auto module = load_ir_modules(ctx, desc.modules_paths);
+        return std::make_unique<node_widget_external_plugin>(
+            desc.plugin_id, desc.name, desc.category,
+            desc.input_names, desc.output_names, std::move(module));
     }
 
     std::unique_ptr<plugin_node_widget> node_widget_external_plugin::create_node(circuit_tree&)
@@ -45,7 +56,7 @@ namespace Gammou {
 
     std::unique_ptr<llvm::Module> node_widget_external_plugin::module()
     {
-        return _dsp_plugin.module();
+        return _dsp_plugin.create_module();
     }
 
 }

@@ -4,18 +4,23 @@
 #include "../common_libs/math_constant.h"
 #include "../common_libs/math_utils.h"
 
-void node_initialize(float *phase)
+struct sin_state
 {
-    *phase = 0.f;
+    float phase;
+};
+
+void node_initialize(struct sin_state *state)
+{
+    state->phase = 0.f;
 }
 
-void node_process(float *phase, float freq, float *out)
+void node_process(struct sin_state *state, float freq, float *out)
 {
     const float limit = _sample_rate / 2.f;
-    *out = fast_sin(*phase);
-    *phase += clamp(freq, -limit, limit) / _sample_rate * CST_2_PI;
-    if (*phase > CST_PI)
-        *phase -= CST_2_PI;
-    else if (*phase < -CST_PI)
-        *phase += CST_2_PI;
+    *out = fast_sin(state->phase);
+    state->phase += clamp(freq, -limit, limit) / _sample_rate * CST_2_PI;
+    if (state->phase > CST_PI)
+        state->phase -= CST_2_PI;
+    else if (state->phase < -CST_PI)
+        state->phase += CST_2_PI;
 }

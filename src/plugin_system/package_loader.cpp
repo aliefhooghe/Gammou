@@ -51,7 +51,10 @@ namespace Gammou {
 
         //  load json object from the file
         std::ifstream stream{content_file_path};
-        stream >> json_object;
+        if (!stream.is_open())
+            throw std::runtime_error("load_package : cannot load content.json file");
+        else
+            stream >> json_object;
 
         //  deserialize package descriptor from the file
         auto package_desc = json_object.get<package_descriptor>();
@@ -74,11 +77,14 @@ namespace Gammou {
 
             try {
                 loaded_plugins.emplace_back(
-                    std::make_unique<node_widget_external_plugin>(factory.get_llvm_context(), node_class_desc));
+                    node_widget_external_plugin::from_desc(
+                        node_class_desc, factory.get_llvm_context()));
             }
-            catch (...)
+            catch (const std::exception& e)
             {
-                LOG_ERROR("[gammou][load package] Failed to load plugin '%s'\n", node_class_desc.name.c_str());
+                // A plugin load failure is tolerable
+                LOG_ERROR("[gammou][load package] Failed to load plugin '%s'.\n%s\n",
+                    node_class_desc.name.c_str(), e.what());
             }
         }
 
@@ -94,9 +100,7 @@ namespace Gammou {
 
             auto module = llvm::parseIRFile(lib_path.string(), error, factory.get_llvm_context());
             if (!module) {
-                LOG_ERROR("[gammou][load package] Cannot load common lib object %s\n",
-                    lib_path.generic_string().c_str());
-                throw std::runtime_error("DSPJIT : Failed to load object");
+                throw std::runtime_error("Failed to load common libs object");
             }
             else {
                 //  Strip all function attribute as they prevent inlining.
@@ -126,20 +130,18 @@ namespace Gammou {
                     try {
                         load_package(entry_path, factory);
                     }
-                    catch(...)
+                    catch(const std::exception& e)
                     {
-                        LOG_WARNING("[gammou][load all packages] Unable to load package '%s'.\n", entry_path.generic_string().c_str());
+                        LOG_WARNING("[gammou][load all packages] Unable to load package '%s'.\n%s\n",
+                            entry_path.generic_string().c_str(), e.what());
                     }
                 }
             }
         }
         catch(const std::exception& e)
         {
-            LOG_ERROR("[gammou][load all packages] Unable to open directory package '%s' (%s).\n", packages_dir_path.c_str(), e.what());
-        }
-        catch(...)
-        {
-            LOG_ERROR("[gammou][load all packages] Unable to open directory package '%s'.\n", packages_dir_path.c_str());
+            LOG_ERROR("[gammou][load all packages] Unable to list directory package '%s'.\n%s\n",
+                packages_dir_path.c_str(), e.what());
         }
     }
 }

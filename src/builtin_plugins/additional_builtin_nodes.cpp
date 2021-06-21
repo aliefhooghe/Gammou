@@ -5,7 +5,7 @@
 
 namespace Gammou {
 
-	std::vector<llvm::Value*> logical_not_node::emit_outputs(DSPJIT::graph_compiler& compiler, const std::vector<llvm::Value*>& inputs, llvm::Value*) const
+	std::vector<llvm::Value*> logical_not_node::emit_outputs(DSPJIT::graph_compiler& compiler, const std::vector<llvm::Value*>& inputs, llvm::Value*, llvm::Value*) const
 	{
 		auto& ir_builder = compiler.builder();
 
@@ -18,4 +18,3 @@ namespace Gammou {
 
 
 } /* Gammou */
-

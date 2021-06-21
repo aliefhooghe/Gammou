@@ -9,9 +9,9 @@
 
 namespace nlohmann {
     /**
-     * This specialization in the nlohmann namespace is needed because we don't want to write  
-     * in the std namespace. 
-     * 
+     * This specialization in the nlohmann namespace is needed because we don't want to write
+     * in the std namespace.
+     *
      * see github.com/nlohmann/json#how-do-i-convert-third-party-types
      */
     template <>
@@ -42,11 +42,19 @@ namespace Gammou
     void from_json(const nlohmann::json&, node_widget_external_plugin_descriptor&);
 
     class node_widget_external_plugin : public node_widget_factory::plugin {
+
     public:
         node_widget_external_plugin(
-            llvm::LLVMContext &llvm_context,
-            const node_widget_external_plugin_descriptor& desc);
+            const node_widget_factory::plugin_id plugin_id,
+            const std::string& name, const std::string& category,
+            const std::vector<std::string>& input_names,
+            const std::vector<std::string>& output_names,
+            std::unique_ptr<llvm::Module>&& module);
         ~node_widget_external_plugin() = default;
+
+        static std::unique_ptr<node_widget_external_plugin> from_desc(
+            node_widget_external_plugin_descriptor& desc,
+            llvm::LLVMContext& ctx);
 
         node_widget_external_plugin(const node_widget_external_plugin&) = delete;
         node_widget_external_plugin(node_widget_external_plugin&&) = default;

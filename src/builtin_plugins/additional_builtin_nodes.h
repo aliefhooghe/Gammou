@@ -15,7 +15,7 @@ namespace Gammou {
 		std::vector<llvm::Value*> emit_outputs(
 			DSPJIT::graph_compiler& compiler,
 			const std::vector<llvm::Value*>& inputs,
-			llvm::Value*) const override;
+			llvm::Value*, llvm::Value*) const override;
 	};
 
 }

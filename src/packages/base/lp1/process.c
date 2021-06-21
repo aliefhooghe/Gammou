@@ -2,9 +2,14 @@
 #include <synthesizer_def.h>
 #include "../common_libs/math_constant.h"
 
-void node_initialize(float *state)
+struct lp1_state
 {
-    *state = 0.f;
+    float state;
+};
+
+void node_initialize(struct lp1_state *lp1)
+{
+    lp1->state = 0.f;
 }
 
 /**
@@ -14,10 +19,10 @@ void node_initialize(float *state)
  *  \param cutoff_freq filter cutoff frequency in Hz
  *  \param out one filter output sample
  */
-void node_process(float *state, float in, float cutoff_freq, float *out)
+void node_process(struct lp1_state *lp1, float in, float cutoff_freq, float *out)
 {
     const float dt = 1.0f / _sample_rate;
     const float g = CST_PI * cutoff_freq * dt;
-    *out = (*state + g * in) / (1.f + g);
-    *state = *out * 2.f - *state;
+    *out = (lp1->state + g * in) / (1.f + g);
+    lp1->state = *out * 2.f - lp1->state;
 }
