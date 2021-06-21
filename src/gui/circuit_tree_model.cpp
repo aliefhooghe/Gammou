@@ -31,6 +31,8 @@ namespace Gammou {
         do {
             if (find(new_name) == end()) {
                 desired_name = new_name;
+                if (dir._circuit_controller == nullptr)
+                    dir._circuit_controller = _circuit_controller;
                 return insert_directory(new_name, std::move(dir));
             }
             else {
@@ -38,7 +40,7 @@ namespace Gammou {
             }
         } while (true);
     }
-    
+
     void circuit_tree::remove_config(circuit_tree& config)
     {
         std::string old_name;
@@ -46,6 +48,11 @@ namespace Gammou {
 
         if (parent != nullptr)
             parent->erase(old_name);
+    }
+
+    synthesizer::circuit_controller* circuit_tree::get_circuit_controller() const noexcept
+    {
+        return _circuit_controller;
     }
 
     circuit_tree* circuit_tree::_find_parent(const circuit_tree& child, std::string& key)

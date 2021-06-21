@@ -7,8 +7,55 @@
 namespace Gammou {
 
     /**
-     *  \brief Map midi note number to Hz frequencies
+     *  Circuit controllers implementation
      */
+    synthesizer::master_circuit_controller::master_circuit_controller(synthesizer& synth)
+    :   _synthesizer{synth}
+    {
+    }
+
+    void synthesizer::master_circuit_controller::compile()
+    {
+        LOG_INFO("[synthesizer] Compile master circuit\n");
+        _synthesizer._master_circuit_context.compile({_synthesizer._from_polyphonic}, {_synthesizer._output});
+    }
+
+    void synthesizer::master_circuit_controller::register_static_memory_chunk(const DSPJIT::compile_node_class &node, std::vector<uint8_t> &&data)
+    {
+        _synthesizer._master_circuit_context.register_static_memory_chunk(node, std::move(data));
+    }
+
+    void synthesizer::master_circuit_controller::free_static_memory_chunk(const DSPJIT::compile_node_class &node)
+    {
+        _synthesizer._master_circuit_context.free_static_memory_chunk(node);
+    }
+
+    synthesizer::polyphonic_circuit_controller::polyphonic_circuit_controller(synthesizer& synth)
+    :   _synthesizer{synth}
+    {
+    }
+
+    void synthesizer::polyphonic_circuit_controller::compile()
+    {
+        LOG_INFO("[synthesizer] Compile polyphonic circuit\n");
+        _synthesizer._polyphonic_circuit_context.compile({_synthesizer._midi_input}, {_synthesizer._to_master});
+    }
+
+    void synthesizer::polyphonic_circuit_controller::register_static_memory_chunk(const DSPJIT::compile_node_class &node, std::vector<uint8_t> &&data)
+    {
+        _synthesizer._polyphonic_circuit_context.register_static_memory_chunk(node, std::move(data));
+    }
+
+    void synthesizer::polyphonic_circuit_controller::free_static_memory_chunk(const DSPJIT::compile_node_class &node)
+    {
+        _synthesizer._polyphonic_circuit_context.free_static_memory_chunk(node);
+    }
+
+    /**
+     *  Synthesizer implementation
+     */
+
+    /** Map midi note number to Hz frequencies **/
     static constexpr float note_frequencies[128] =
     {
         8.176f,8.662f,9.177f,9.723f,10.301f,10.913f,11.562f,12.250f,12.978f,13.750f,14.568f,15.434f,16.352f,17.324f,18.354f,19.445f,
@@ -40,6 +87,8 @@ namespace Gammou {
         _midi_input{0u, midi_input_count},
         _to_master{polyphonic_to_master_channel_count, 0u},
         _voice_manager{voice_count},
+        _master_circuit_controller{*this},
+        _polyphonic_circuit_controller{*this},
         _voice_lifetime(voice_count, 0u),
         _parameter_manager{samplerate}
     {
@@ -153,28 +202,11 @@ namespace Gammou {
         _polyphonic_circuit_context.add_library_module(std::move(m));
     }
 
-    void synthesizer::compile_master_circuit()
-    {
-        LOG_INFO("[synthesizer] Compile master circuit\n");
-        _master_circuit_context.compile({_from_polyphonic}, {_output});
-    }
-
-    void synthesizer::compile_polyphonic_circuit()
-    {
-        LOG_INFO("[synthesizer] Compile polyphonic circuit\n");
-        _polyphonic_circuit_context.compile({_midi_input}, {_to_master});
-    }
-
     void synthesizer::set_sample_rate(float samplerate)
     {
         _master_circuit_context.set_global_constant(_samplerate_symbol, samplerate);
         _polyphonic_circuit_context.set_global_constant(_samplerate_symbol, samplerate);
         _parameter_manager.set_sample_rate(samplerate);
-    }
-
-    void synthesizer::set_voice_disapearance_threshold(float threshold)
-    {
-        _voice_disappearance_treshold = threshold;
     }
 
     bool synthesizer::update_program() noexcept

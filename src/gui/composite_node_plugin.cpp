@@ -20,7 +20,7 @@ namespace Gammou {
             circuit_tree& parent,
             unsigned int input_count,
             unsigned int output_count)
-        : plugin_node_widget{"name", composite_node_plugin::uid, 
+        : plugin_node_widget{"name", composite_node_plugin::uid,
             [this, input_count, output_count]()
             {
                 auto node = std::make_unique<DSPJIT::composite_node>(input_count, output_count);
@@ -37,7 +37,7 @@ namespace Gammou {
             main_gui& gui,
             circuit_tree& parent,
             const nlohmann::json& state)
-        : plugin_node_widget{"name", composite_node_plugin::uid, 
+        : plugin_node_widget{"name", composite_node_plugin::uid,
             [&state, this]()
             {
                 const auto input_count = state.at("input-count").get<unsigned int>();
@@ -80,7 +80,7 @@ namespace Gammou {
         {
             return std::make_unique<internal_node_widget>(
                     "Input", composite_input_id, _composite_node->input());
-        } 
+        }
 
         std::unique_ptr<node_widget> _make_output_node()
         {
@@ -91,7 +91,7 @@ namespace Gammou {
         void _initialize(main_gui& gui, circuit_tree& parent, const std::string& node_name)
         {
             _gui = &gui;
-            
+
             //  Create circuit editor
             auto editor = std::make_unique<circuit_editor>(100, 100);
             _internal_editor = editor.get();
@@ -99,14 +99,15 @@ namespace Gammou {
             editor->set_circuit_changed_callback(
                 [this]()
                 {
-                    _gui->compile();
+                    if (auto ctl = _editor_dir->get_circuit_controller())
+                        ctl->compile();
                 });
 
             editor->set_create_node_callback(
                 [this]()
                 {
                     return _gui->create_node(*_editor_dir);
-                });    
+                });
 
             // Create composite node toolbox :
             auto toolbox = std::make_unique<View::panel<>>(100, 100);
@@ -133,7 +134,7 @@ namespace Gammou {
                         LOG_WARNING("[composite node][config toolbox] Cannot rename configuration\n");
                     }
                 });
-            
+
             // export
             auto export_button = std::make_unique<View::text_push_button>("export");
             export_button->set_callback(
@@ -212,7 +213,7 @@ namespace Gammou {
         },
         _main_gui{gui}
     {
-    }      
+    }
 
     std::unique_ptr<plugin_node_widget> composite_node_plugin::create_node(circuit_tree& dir)
     {

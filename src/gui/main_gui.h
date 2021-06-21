@@ -33,12 +33,10 @@ namespace Gammou {
         std::unique_ptr<node_widget> create_node(circuit_tree& parent_config, const nlohmann::json& state);
         std::unique_ptr<node_widget> create_node(circuit_tree& parent_config, node_widget_factory::plugin_id id);
         std::unique_ptr<node_widget> create_node(circuit_tree& parent_config);
-        
+
         circuit_tree& rename_config(circuit_tree& config_dir, const std::string& new_name);
         void select_config(circuit_tree& config_dir);
         void remove_config(circuit_tree& config_dir);
-        
-        void compile();
 
         void register_user_node(nlohmann::json&& state, const std::string& name);
 
@@ -49,6 +47,7 @@ namespace Gammou {
         /*
          *  content management
          */
+        void _compile();
         void _initialize_cicuit_tree();
         void _reset_content();
         void _update_circuit_browser();

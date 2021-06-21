@@ -5,17 +5,18 @@
 
 #include "view.h"
 #include "helpers/alphabetical_compare.h"
+#include "synthesizer/synthesizer.h"
 
 namespace Gammou {
 
-    class circuit_tree : 
+    class circuit_tree :
         public View::abstract_storage_directory_model<std::string, std::weak_ptr<View::widget>, View::alphabetical_compare, circuit_tree>
     {
         using implem =
             View::abstract_storage_directory_model<std::string, std::weak_ptr<View::widget>, View::alphabetical_compare, circuit_tree>;
     public:
-        circuit_tree(const std::weak_ptr<View::widget> ed = {})
-        : _config_widget{ed}
+        circuit_tree(const std::weak_ptr<View::widget> ed = {}, synthesizer::circuit_controller *circuit_ctl = nullptr)
+        : _config_widget{ed}, _circuit_controller{circuit_ctl}
         {}
 
         /**
@@ -43,11 +44,20 @@ namespace Gammou {
          */
         void remove_config(circuit_tree& config);
 
+        /**
+         * \brief Return the circuit controller linked to this config.
+         * Return null if no controller was linked
+         */
+        synthesizer::circuit_controller *get_circuit_controller() const noexcept;
+
     private:
         circuit_tree* _find_parent(const circuit_tree& child, std::string& key);
 
+        synthesizer::circuit_controller *_circuit_controller{nullptr};
         std::weak_ptr<View::widget> _config_widget;
     };
+
+
 
 }
 

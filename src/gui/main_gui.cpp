@@ -95,12 +95,6 @@ namespace Gammou {
         return node;
     }
 
-    void main_gui::compile()
-    {
-        _synthesizer.compile_master_circuit();
-        _synthesizer.compile_polyphonic_circuit();
-    }
-
     void main_gui::register_user_node(nlohmann::json&& state, const std::string& name)
     {
         _factory_widget->register_user_node(std::move(state), name);
@@ -124,7 +118,7 @@ namespace Gammou {
                 });
 
             // Recompile the new loaded circuit
-            compile();
+            _compile();
             return true;
         }
         catch (const std::exception &e) {
@@ -147,15 +141,22 @@ namespace Gammou {
         };
     }
 
+
+    void main_gui::_compile()
+    {
+        _synthesizer.get_master_circuit_controller().compile();
+        _synthesizer.get_polyphonic_circuit_controller().compile();
+    }
+
     void main_gui::_initialize_cicuit_tree()
     {
         std::string master_name = "Master";
         std::string polyphonic_name = "Polyphonic";
 
         auto& master_circuit_dir =
-            _circuit_tree.insert_config_dir(master_name, circuit_tree{_master_circuit_widget});
+            _circuit_tree.insert_config_dir(master_name, circuit_tree{_master_circuit_widget, &_synthesizer.get_master_circuit_controller()});
         auto& polyphonic_circuit_dir =
-            _circuit_tree.insert_config_dir(polyphonic_name, circuit_tree{_polyphonic_circuit_widget});
+            _circuit_tree.insert_config_dir(polyphonic_name, circuit_tree{_polyphonic_circuit_widget, &_synthesizer.get_polyphonic_circuit_controller()});
 
          _master_circuit_dir = &master_circuit_dir;
          _polyphonic_circuit_dir = &polyphonic_circuit_dir;
@@ -223,7 +224,7 @@ namespace Gammou {
                 View::color_theme::color::SURFACE_DARK);
 
         _master_circuit_editor->set_circuit_changed_callback(
-            [this](){ _synthesizer.compile_master_circuit(); });
+            [this](){ _synthesizer.get_master_circuit_controller().compile(); });
     }
 
     /**
@@ -242,7 +243,7 @@ namespace Gammou {
                 View::color_theme::color::SURFACE_DARK);
 
         _polyphonic_circuit_editor->set_circuit_changed_callback(
-            [this](){ _synthesizer.compile_polyphonic_circuit(); });
+            [this](){ _synthesizer.get_polyphonic_circuit_controller().compile(); });
     }
 
     /**
@@ -254,7 +255,7 @@ namespace Gammou {
         auto common_toolbox = std::make_unique<View::panel<>>(common_toolbox_width, 110);
 
         auto reset_button = std::make_unique<View::text_push_button>("Reset", 80, 21);
-        reset_button->set_callback([this]() { _reset_content(); compile(); });
+        reset_button->set_callback([this]() { _reset_content(); _compile(); });
 
         common_toolbox->insert_widget(5, 5, std::move(reset_button));
 
@@ -307,7 +308,7 @@ namespace Gammou {
                 std::make_unique<View::filesystem_directory_model>(patch_dir_path),
                 140, 90);
 
-        LOG_INFO("[main gui] Using patch path '%s'\n", 
+        LOG_INFO("[main gui] Using patch path '%s'\n",
             patch_dir_path.generic_string().c_str());
 
         preset_name_input->set_text("patch");

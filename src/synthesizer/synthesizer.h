@@ -14,7 +14,6 @@ namespace Gammou
 {
     class synthesizer {
         static constexpr auto _samplerate_symbol = "_sample_rate";
-    public:
 
         /**
          *  \enum midi_inputs The available channel midi inputs
@@ -29,6 +28,16 @@ namespace Gammou
 
         static constexpr auto polyphonic_to_master_channel_count = 2u;
         static constexpr auto voice_disappearance_treshold_default = 0.0003f;
+
+    public:
+
+        class circuit_controller
+        {
+        public:
+            virtual void compile() =0;
+            virtual void register_static_memory_chunk(const DSPJIT::compile_node_class& node, std::vector<uint8_t>&& data) =0;
+            virtual void free_static_memory_chunk(const DSPJIT::compile_node_class& node) =0;
+        };
 
         using opt_level = DSPJIT::graph_execution_context::opt_level;
         using parameter = parameter_manager::parameter;
@@ -85,12 +94,12 @@ namespace Gammou
         /**
          *  \brief Compile the master circuit and update the processing code
          */
-        void compile_master_circuit();
+        circuit_controller& get_master_circuit_controller() noexcept { return _master_circuit_controller; }
 
         /**
          *  \brief Compile the polyphonic circuit and update the processing code
          */
-        void compile_polyphonic_circuit();
+        circuit_controller& get_polyphonic_circuit_controller() noexcept { return _polyphonic_circuit_controller; }
 
         /**
          *  \brief Set the samplerate and recompile circuits
@@ -202,6 +211,35 @@ namespace Gammou
             return _midi_input_values.data() + voice * midi_input_count;
         }
 
+        class master_circuit_controller : public circuit_controller
+        {
+        public:
+            master_circuit_controller(synthesizer&);
+
+            void compile() override;
+            void register_static_memory_chunk(const DSPJIT::compile_node_class& node, std::vector<uint8_t>&& data) override;
+            void free_static_memory_chunk(const DSPJIT::compile_node_class& node) override;
+
+        private:
+            synthesizer& _synthesizer;
+        };
+
+        class polyphonic_circuit_controller : public circuit_controller
+        {
+        public:
+            polyphonic_circuit_controller(synthesizer&);
+
+            void compile() override;
+            void register_static_memory_chunk(const DSPJIT::compile_node_class& node, std::vector<uint8_t>&& data) override;
+            void free_static_memory_chunk(const DSPJIT::compile_node_class& node) override;
+
+        private:
+            synthesizer& _synthesizer;
+        };
+
+        friend class master_circuit_controler;
+        friend class polyphonic_circuit_controler;
+
         llvm::LLVMContext& _llvm_context;
         const unsigned int _input_count;
         const unsigned int _output_count;
@@ -220,6 +258,10 @@ namespace Gammou
         //  Polyphonic circuit internal nodes
         DSPJIT::compile_node_class _midi_input;
         DSPJIT::compile_node_class _to_master;
+
+        // Circuit controlers
+        master_circuit_controller _master_circuit_controller;
+        polyphonic_circuit_controller _polyphonic_circuit_controller;
 
         //  Voice management
         voice_manager _voice_manager;
