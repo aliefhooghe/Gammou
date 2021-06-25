@@ -6,7 +6,8 @@ namespace Gammou {
     enum midi_opcode : uint8_t {
         note_off = 0x8u,
         note_on = 0x9u,
-        control_change = 0xBu
+        control_change = 0xBu,
+        pitch_bend = 0xEu
 
         //  to be continued
     };
@@ -48,6 +49,13 @@ namespace Gammou {
             const auto control = data[1] & 0x7F;
             const auto value = data[2] & 0x7F;
             synth.midi_control_change(control, static_cast<float>(value) / 127.f);
+        }
+        break;
+
+        case midi_opcode::pitch_bend:
+        {
+            const auto value = static_cast<int>(data[2] & 0x7F) - 64;
+            synth.midi_control_change(0x80, static_cast<float>(value) / 63.f);
         }
         break;
 
