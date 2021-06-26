@@ -19,7 +19,7 @@ namespace Gammou {
         knob_node_widget(synthesizer& synth, mode m, parameter && param)
         :   plugin_node_widget{
                 "Knob", m == mode::VALUE ? value_knob_widget_uid : gain_knob_widget_uid,
-                make_compile_node(m, param)
+                _make_compile_node(m, param)
             },
             _param{std::move(param)},
             _synthesizer{synth}
@@ -45,6 +45,9 @@ namespace Gammou {
                     invalidate();
                 });
 
+            auto scale_label = std::make_unique<View::label>(knob->width(), node_widget::node_header_size, "");
+            _set_scale_label(*scale_label);
+
             //  Create the midi learn button
             auto learn_button = std::make_unique<View::text_push_button>("L", node_widget::node_header_size, node_widget::node_header_size);
             learn_button->set_callback([this, &synth](){ synth.midi_learn(_param); });
@@ -53,8 +56,19 @@ namespace Gammou {
             auto button_scale_up = std::make_unique<View::text_push_button>("+", node_widget::node_header_size, node_widget::node_header_size);
             auto button_scale_down = std::make_unique<View::text_push_button>("-", node_widget::node_header_size, node_widget::node_header_size);
 
-            button_scale_up->set_callback([this](){ _param.set_shape_scale(_param.get_shape_scale() * 4.f); });
-            button_scale_down->set_callback([this](){ _param.set_shape_scale(_param.get_shape_scale() / 4.f); });
+            constexpr auto scale_log_step = 4.f;
+            button_scale_up->set_callback(
+                [this, label = scale_label.get(), scale_log_step]()
+                {
+                    _param.set_shape_scale(_param.get_shape_scale() * scale_log_step);
+                    _set_scale_label(*label);
+                });
+            button_scale_down->set_callback(
+                [this, label = scale_label.get(), scale_log_step]()
+                {
+                    _param.set_shape_scale(_param.get_shape_scale() / scale_log_step);
+                    _set_scale_label(*label);
+                });
 
             //  Insert the widgets
             resize_height(node_widget::node_header_size * 2.f + knob->height());
@@ -62,7 +76,7 @@ namespace Gammou {
             const auto knob_x_pos = width() - node_widget::node_header_size - knob->width();
             insert_widget(
                 knob_x_pos,
-                node_widget::node_header_size * 1.5f,
+                node_widget::node_header_size * 1.f,
                 std::move(knob));
 
             insert_widget(
@@ -73,6 +87,10 @@ namespace Gammou {
 
             insert_widget(
                 node_widget::node_header_size, node_widget::node_header_size * 3, std::move(button_scale_down));
+
+            const auto scale_label_pos_y = height() - scale_label->height();
+            insert_widget(
+                knob_x_pos, scale_label_pos_y, std::move(scale_label));
         }
 
         nlohmann::json serialize_internal_state() override
@@ -81,12 +99,21 @@ namespace Gammou {
         }
 
     private:
-        static std::unique_ptr<DSPJIT::compile_node_class> make_compile_node(mode m, parameter& param)
+        static std::unique_ptr<DSPJIT::compile_node_class> _make_compile_node(mode m, parameter& param)
         {
             if (m == mode::VALUE)
                 return std::make_unique<DSPJIT::reference_node>(param.get_value_ptr());
             else // GAIN
                 return std::make_unique<DSPJIT::reference_multiply_node>(param.get_value_ptr());
+        }
+
+        void _set_scale_label(View::label& label)
+        {
+            constexpr auto text_len = 12;
+            char text[text_len];
+            snprintf(text, text_len - 1, "%G", _param.get_shape_scale());
+            text[text_len - 1] = '\0';
+            label.set_text(text);
         }
 
         parameter _param;
