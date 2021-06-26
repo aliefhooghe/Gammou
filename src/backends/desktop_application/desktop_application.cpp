@@ -4,7 +4,6 @@
 #include "backends/common/configuration.h"
 #include "builtin_plugins/load_builtin_plugins.h"
 #include "gui/control_node_widgets/load_control_plugins.h"
-#include "gui/main_gui.h"
 #include "helpers/alphabetical_compare.h"
 #include "plugin_system/package_loader.h"
 #include "synthesizer/midi_parser.h"
@@ -32,7 +31,7 @@ namespace Gammou {
         load_all_packages(configuration::get_packages_directory_path(), _node_factory);
 
         //  Prepare synthesizer
-        _synthesizer.add_module(_node_factory.module());
+        _synthesizer.add_library_module(_node_factory.module());
 
         // gui
         auto additional_toolbox = View::make_horizontal_layout(
@@ -43,11 +42,10 @@ namespace Gammou {
 #endif
         );
 
-        _main_gui = std::make_unique<main_gui>(
-            _synthesizer, _node_factory, std::move(additional_toolbox));
+        _application = std::make_unique<application>(_synthesizer, _node_factory, std::move(additional_toolbox));
 
         //  display
-        _display = View::create_application_display(_main_gui->widget(), 1);
+        _display = View::create_application_display(_application->main_gui(), 1);
     }
 
     desktop_application::~desktop_application()

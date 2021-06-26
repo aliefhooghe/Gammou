@@ -252,7 +252,7 @@ namespace Gammou {
                         out_tmp, out_tmp + polyphonic_to_master_channel_count,
                         [](const auto& s1, const auto& s2) { return std::abs(s1) < std::abs(s2); });
 
-                if (std::abs(max_voice_value) <= voice_disappearance_treshold) {
+                if (std::abs(max_voice_value) <= _voice_disappearance_treshold) {
                     if (0u == --_voice_lifetime[voice]) {
                         LOG_DEBUG("[synthesizer][process one sample] Shut down voice %u\n", voice);
                         return false;

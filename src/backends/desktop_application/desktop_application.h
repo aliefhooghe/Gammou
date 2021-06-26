@@ -5,14 +5,15 @@
 #include <RtMidi.h>
 
 #include "synthesizer/synthesizer.h"
-#include "gui/main_gui.h"
+#include "application/application.h"
+
 #include <view.h>
 
 namespace Gammou {
 
     class midi_device_widget;
 
-    class desktop_application /* : */{
+    class desktop_application {
         friend class midi_device_widget;
     public:
         desktop_application(float samplerate, unsigned int input_count, unsigned int output_count);
@@ -44,7 +45,7 @@ namespace Gammou {
         synthesizer _synthesizer;
 
         //  GUI
-        std::unique_ptr<main_gui> _main_gui;
+        std::unique_ptr<application> _application;
         std::unique_ptr<View::application_display> _display{};
 
         //  Audio I/O

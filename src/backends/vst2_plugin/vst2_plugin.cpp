@@ -1,7 +1,6 @@
 
 #include "vst2_plugin.h"
 
-#include "gui/main_gui.h"
 #include "plugin_system/package_loader.h"
 #include "builtin_plugins/load_builtin_plugins.h"
 #include "gui/control_node_widgets/load_control_plugins.h"
@@ -56,10 +55,10 @@ namespace Gammou {
         _synthesizer.add_library_module(_node_factory.module());
 
         //  Build gui
-        _main_gui = std::make_unique<main_gui>(_synthesizer, _node_factory);
+        _application = std::make_unique<application>(_synthesizer, _node_factory);
 
         //  Initialize display
-        _display = View::create_vst2_display(_main_gui->widget(), 1);
+        _display = View::create_vst2_display(_application->main_gui(), 1);
 
         _window_rect.left = 0u;
         _window_rect.right = _display->px_width();
@@ -234,7 +233,7 @@ namespace Gammou {
             return 0u;
         }
 
-        return _main_gui->deserialize(json_object) ? size : 0u;
+        return _application->deserialize(json_object) ? size : 0u;
     }
 
     std::size_t vst2_plugin::_save_state(void **chunk_ptr)
@@ -244,7 +243,7 @@ namespace Gammou {
         // For VST serialize json state as cbor (Concise Binary Object Representation)
         try {
 
-            const auto json_object = _main_gui->serialize();
+            const auto json_object = _application->serialize();
             const auto binary_data = nlohmann::json::to_cbor(json_object);
 
             if ((*chunk_ptr = std::malloc(binary_data.size())) == nullptr)

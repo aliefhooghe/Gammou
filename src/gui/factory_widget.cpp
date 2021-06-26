@@ -12,23 +12,33 @@ namespace Gammou {
           _factory{factory}
     {
         set_value_select_callback([this](const auto& recipe) { _current_recipe = recipe; });
-        _scan_factory();
+        rescan_factory();
     }
 
-    void factory_widget::register_user_node(nlohmann::json&& state, const std::string& name)
+    void factory_widget::register_user_node(plugin_node_widget& node, std::string_view name)
     {
         auto& recipes = data_model();
         auto& user_node_dir = recipes.get_or_create_directory("User");
-        user_node_dir.insert_value(name, factory_recipe{ std::move(state) });
+        user_node_dir.insert_value(std::string{name}, factory_recipe{ node.serialize() });
         update();
     }
 
-    std::unique_ptr<plugin_node_widget> factory_widget::create_node(circuit_tree& parent_config)
+    std::unique_ptr<node_widget> factory_widget::create_node(abstract_configuration_directory& parent_config, const nlohmann::json& state)
+    {
+        return _factory.create_node(state, parent_config);
+    }
+
+    std::unique_ptr<node_widget> factory_widget::create_node(abstract_configuration_directory& parent_config, node_widget_factory::plugin_id id)
+    {
+        return _factory.create_node(id, parent_config);
+    }
+
+    std::unique_ptr<node_widget> factory_widget::create_node(abstract_configuration_directory& parent_config)
     {
         return _create_node_from_recipe(_current_recipe, parent_config);
     }
 
-    void factory_widget::_scan_factory()
+    void factory_widget::rescan_factory()
     {
         auto& recipes = data_model();
 
@@ -47,7 +57,8 @@ namespace Gammou {
         update();
     }
 
-    std::unique_ptr<plugin_node_widget> factory_widget::_create_node_from_recipe(const factory_recipe& recipe, circuit_tree& parent_config)
+    std::unique_ptr<plugin_node_widget> factory_widget::_create_node_from_recipe(
+        const factory_recipe& recipe, abstract_configuration_directory& parent_config)
     {
         return std::visit(
             [this, &parent_config](const auto& r)

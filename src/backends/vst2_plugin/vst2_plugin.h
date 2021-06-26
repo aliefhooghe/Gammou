@@ -2,8 +2,9 @@
 #define GAMMOU_VST_PLUGIN_H_
 
 #include "synthesizer/synthesizer.h"
-#include "gui/main_gui.h"
+#include "application/application.h"
 #include "vst_compat.hpp"
+
 #include <view.h>
 
 namespace Gammou {
@@ -50,7 +51,7 @@ namespace Gammou {
         synthesizer _synthesizer;
 
         //  Gui
-        std::unique_ptr<main_gui> _main_gui;
+        std::unique_ptr<application> _application;
         std::unique_ptr<View::vst2_display> _display;
         ERect _window_rect; //  used by host
 

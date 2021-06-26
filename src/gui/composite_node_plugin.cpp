@@ -16,8 +16,8 @@ namespace Gammou {
 
     public:
         composite_node_widget(
-            main_gui& gui,
-            circuit_tree& parent,
+            factory_widget& factory,
+            abstract_configuration_directory& parent_config,
             unsigned int input_count,
             unsigned int output_count)
         : plugin_node_widget{"name", composite_node_plugin::uid,
@@ -26,16 +26,17 @@ namespace Gammou {
                 auto node = std::make_unique<DSPJIT::composite_node>(input_count, output_count);
                 _composite_node = node.get();
                 return std::move(node);
-            }()}
+            }()},
+          _factory{factory}
         {
-            _initialize(gui, parent, _default_name());
+            _initialize(parent_config, _default_name());
             _internal_editor->insert_node_widget(5, 5, _make_input_node());
             _internal_editor->insert_node_widget(10, 10, _make_output_node());
         }
 
         composite_node_widget(
-            main_gui& gui,
-            circuit_tree& parent,
+            factory_widget& factory,
+            abstract_configuration_directory& parent_config,
             const nlohmann::json& state)
         : plugin_node_widget{"name", composite_node_plugin::uid,
             [&state, this]()
@@ -45,9 +46,10 @@ namespace Gammou {
                 auto node = std::make_unique<DSPJIT::composite_node>(input_count, output_count);
                 _composite_node = node.get();
                 return std::move(node);
-            }()}
+            }()},
+          _factory{factory}
         {
-            _initialize(gui, parent, state.at("name").get<std::string>());
+            _initialize(parent_config, state.at("name").get<std::string>());
 
             _internal_editor->deserialize(
                 state.at("internal-circuit"),
@@ -56,14 +58,11 @@ namespace Gammou {
                     if (j.is_string())
                         return _deserialize_internal_node(j.get<std::string>());
                     else
-                        return _gui->create_node(*_editor_dir, j);
+                        return _factory.create_node(*_config_dir, j);
                 });
         }
 
-        ~composite_node_widget()
-        {
-            _gui->remove_config(*_editor_dir);
-        }
+        ~composite_node_widget() noexcept = default;
 
         nlohmann::json serialize_internal_state() override
         {
@@ -88,10 +87,8 @@ namespace Gammou {
                     "Output", composite_output_id, _composite_node->output());
         }
 
-        void _initialize(main_gui& gui, circuit_tree& parent, const std::string& node_name)
+        void _initialize(abstract_configuration_directory& parent_config, const std::string& node_name)
         {
-            _gui = &gui;
-
             //  Create circuit editor
             auto editor = std::make_unique<circuit_editor>(100, 100);
             _internal_editor = editor.get();
@@ -99,14 +96,13 @@ namespace Gammou {
             editor->set_circuit_changed_callback(
                 [this]()
                 {
-                    if (auto ctl = _editor_dir->get_circuit_controller())
-                        ctl->compile();
+                    _config_dir->compile();
                 });
 
             editor->set_create_node_callback(
                 [this]()
                 {
-                    return _gui->create_node(*_editor_dir);
+                    return _factory.create_node(*_config_dir);
                 });
 
             // Create composite node toolbox :
@@ -124,7 +120,7 @@ namespace Gammou {
 
                     try {
                         // Rename the configuration page
-                        _gui->rename_config(*_editor_dir, new_name);
+                        _config_dir->rename(new_name);
 
                         // Rename the node widget name
                         set_name(new_name);
@@ -140,7 +136,7 @@ namespace Gammou {
             export_button->set_callback(
                 [this]
                 {
-                    _gui->register_user_node(serialize(), name());
+                    _factory.register_user_node(*this, name());
                 });
 
             toolbox->insert_widget(5, 5, std::move(name_text_input));
@@ -158,10 +154,7 @@ namespace Gammou {
 
             //  Create editor dir with available name
             std::string new_name = node_name;
-            auto& editor_dir = parent.insert_config_dir(new_name, circuit_tree{ _editor_widget });
-            _editor_dir = &editor_dir;
-
-            // Apply the new name
+            _config_dir = parent_config.create_directory(new_name, _editor_widget);
             set_name(new_name);
             name_text_input_ptr->set_text(new_name);
 
@@ -171,7 +164,7 @@ namespace Gammou {
             const auto edit_posx = (width() - edit_width) / 2.f;
             const auto edit_posy = height() - node_widget::node_header_size;
             auto edit_button = std::make_unique<View::text_push_button>("edit", 30, 18);
-            edit_button->set_callback([this]() { _gui->select_config(*_editor_dir); });
+            edit_button->set_callback([this]() { _config_dir->display(); });
             insert_widget(edit_posx, edit_posy, std::move(edit_button));
         }
 
@@ -196,34 +189,33 @@ namespace Gammou {
         }
 
 
+        factory_widget& _factory;
         DSPJIT::composite_node *_composite_node;
-        circuit_tree* _editor_dir{};
-        circuit_editor* _internal_editor{};
-        main_gui* _gui;
+        std::unique_ptr<abstract_configuration_directory> _config_dir{};
+        circuit_editor *_internal_editor{};
         std::shared_ptr<View::widget> _editor_widget{};
     };
 
     // Composite node plugin implementation
 
-    composite_node_plugin::composite_node_plugin(main_gui& gui)
+    composite_node_plugin::composite_node_plugin(factory_widget& factory)
     :   node_widget_factory::plugin{
             composite_node_plugin::uid,
             "Circuit",
-            "Composite"
-        },
-        _main_gui{gui}
+            "Composite"},
+        _factory{factory}
     {
     }
 
-    std::unique_ptr<plugin_node_widget> composite_node_plugin::create_node(circuit_tree& dir)
+    std::unique_ptr<plugin_node_widget> composite_node_plugin::create_node(abstract_configuration_directory& parent_config)
     {
-        return std::make_unique<composite_node_widget>(_main_gui, dir, 2, 2);
+        return std::make_unique<composite_node_widget>(_factory, parent_config, 2, 2);
     }
 
-    std::unique_ptr<plugin_node_widget> composite_node_plugin::create_node(circuit_tree& dir, const nlohmann::json& internal_state)
+    std::unique_ptr<plugin_node_widget> composite_node_plugin::create_node(abstract_configuration_directory& parent_config, const nlohmann::json& internal_state)
     {
         LOG_DEBUG("composite_node_plugin::create_node(const nlohmann::json& internal_state)\n");
-        return std::make_unique<composite_node_widget>(_main_gui, dir, internal_state);
+        return std::make_unique<composite_node_widget>(_factory, parent_config, internal_state);
     }
 
 }

@@ -1,0 +1,8 @@
+{
+    "name" : "Sampler",
+    "uid"  : 15239750269115967853,
+    "category" : "Sampler",
+    "input-names" : ["pos", "speed"],
+    "output-names" : ["out"],
+    "static-chunk-type" : "wav-channel"
+}

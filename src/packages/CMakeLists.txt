@@ -143,3 +143,25 @@ add_gammou_package(
         ClosedEnd OpenEnd Junction Hammer ReadPoint WritePoint WaveGuide Delay
     COMMON_LIBS
         ${CMAKE_CURRENT_SOURCE_DIR}/waveguides/common_libs/sample_queue.c)
+
+
+##################################
+#           Samplers             #
+##################################
+
+add_gammou_plugin(
+    Sampler
+    ${CMAKE_CURRENT_SOURCE_DIR}/samplers/sampler/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/samplers/sampler/process.c)
+
+add_gammou_plugin(
+    Granular
+    ${CMAKE_CURRENT_SOURCE_DIR}/samplers/granular/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/samplers/granular/process.c)
+
+add_gammou_package(
+    Samplers
+    CONTENT_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/samplers/content.json
+    PLUGINS
+        Sampler Granular)

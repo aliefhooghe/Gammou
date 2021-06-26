@@ -14,7 +14,7 @@ namespace Gammou {
     struct package_descriptor {
         std::string package_name{};
         package_uid uid;
-        std::vector<node_widget_external_plugin_descriptor> plugins{};
+        std::vector<node_widget_external_plugin::descriptor> plugins{};
         std::vector<std::filesystem::path> common_libs{};
     };
 

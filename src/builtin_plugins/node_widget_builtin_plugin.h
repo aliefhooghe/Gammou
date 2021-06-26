@@ -17,7 +17,7 @@ namespace Gammou {
         :   node_widget_factory::plugin{id, name, category}
         {}
 
-        std::unique_ptr<plugin_node_widget> create_node(circuit_tree&) override
+        std::unique_ptr<plugin_node_widget> create_node(abstract_configuration_directory&) override
         {
             return std::make_unique<plugin_node_widget>(
                 name(), id(),

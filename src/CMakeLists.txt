@@ -27,6 +27,11 @@ endif()
 ############################
 
 set(GAMMOU_COMMON_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/application/application.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/application/application.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/application/patch_browser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/application/patch_browser.cpp
+
     ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/configuration.h
     ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/configuration.cpp
 
@@ -36,25 +41,27 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/builtin_plugins/load_builtin_plugins.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/builtin_plugins/node_widget_builtin_plugin.h
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/control_node_widgets/parameter_serialization.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/control_node_widgets/parameter_serialization.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/control_node_widgets/knob_node_widget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/control_node_widgets/knob_node_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/control_node_widgets/load_control_plugins.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/control_node_widgets/load_control_plugins.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node_plugin.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node_plugin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/control_node_widgets/parameter_serialization.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/control_node_widgets/parameter_serialization.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_editor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_editor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_tree_model.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_tree_model.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node_plugin.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node_plugin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/configuration_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/configuration_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/factory_widget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/factory_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/internal_node_widget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/internal_node_widget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/main_gui.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/main_gui.cpp
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/configuration/abstract_configuration_page.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/configuration/abstract_configuration_directory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/ir_loader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/ir_loader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_external_plugin.h
@@ -71,6 +78,9 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/synthesizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/synthesizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/voice_manager.h
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils/wav_loader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils/wav_loader.cpp
 )
 
 ############################

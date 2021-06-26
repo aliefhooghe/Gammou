@@ -7,12 +7,16 @@
 #include <nlohmann/json.hpp>
 
 #include "gui/circuit_editor.h"
-#include "gui/circuit_tree_model.h"
+#include "configuration/abstract_configuration_directory.h"
 
 namespace Gammou {
 
     class plugin_node_widget;
 
+    /**
+     * \class node_widget_factory
+     * \brief
+     */
     class node_widget_factory {
     public:
         using plugin_id = uint64_t;
@@ -24,31 +28,21 @@ namespace Gammou {
          */
         class plugin {
         public:
-            virtual ~plugin() = default;
-
-            plugin(
-                plugin_id id,
-                const std::string name,
-                const std::string category)
-            :   _id{id}, _name{name}, _category{category}
-            {}
+            plugin(plugin_id id, const std::string& name, const std::string& category);
+            virtual ~plugin() noexcept = default;
 
             /**
              *  \return a new plugin node built with default state
              */
-            virtual std::unique_ptr<plugin_node_widget> create_node(circuit_tree& dir) =0;
+            virtual std::unique_ptr<plugin_node_widget> create_node(abstract_configuration_directory& dir) =0;
 
             /**
              *  \param internal_state from which the node will be deserialized
              *  \return a new plugin node built with given state
              */
             virtual std::unique_ptr<plugin_node_widget> create_node(
-                circuit_tree& dir,
-                const nlohmann::json& internal_state)
-            {
-                (void)internal_state;
-                return create_node(dir);
-            }
+                abstract_configuration_directory& dir,
+                const nlohmann::json& internal_state);
 
             /**
              *  \brief Return a module containing all the dependendies needed
@@ -94,16 +88,16 @@ namespace Gammou {
          */
         std::unique_ptr<plugin_node_widget> create_node(
             plugin_id id,
-            circuit_tree& parent_config);
+            abstract_configuration_directory& parent_config);
 
         /**
-         *  \brief create a node with the plugin identified by the plugin 
+         *  \brief create a node with the plugin identified by the plugin
          *  \param state state to build the node from
          *  \return the new node
          */
         std::unique_ptr<plugin_node_widget> create_node(
             const nlohmann::json& state,
-            circuit_tree& parent_config);
+            abstract_configuration_directory& parent_config);
 
         /**
          *
@@ -138,7 +132,7 @@ namespace Gammou {
          * @return factory plugin id
          */
         auto id() const noexcept { return _plugin_id; }
-        
+
         /**
          * @return a json object with factory id and internal state
          */

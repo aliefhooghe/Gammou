@@ -129,7 +129,7 @@ namespace Gammou {
     {
     }
 
-    std::unique_ptr<plugin_node_widget> value_knob_node_widget_plugin::create_node(circuit_tree&)
+    std::unique_ptr<plugin_node_widget> value_knob_node_widget_plugin::create_node(abstract_configuration_directory&)
     {
         return std::make_unique<knob_node_widget>(
             _synth,
@@ -137,7 +137,7 @@ namespace Gammou {
             _synth.allocate_parameter(0.f));
     }
 
-    std::unique_ptr<plugin_node_widget> value_knob_node_widget_plugin::create_node(circuit_tree&, const nlohmann::json& json)
+    std::unique_ptr<plugin_node_widget> value_knob_node_widget_plugin::create_node(abstract_configuration_directory&, const nlohmann::json& json)
     {
         auto param = parameter_from_json(json, _synth);
         return std::make_unique<knob_node_widget>(
@@ -155,7 +155,7 @@ namespace Gammou {
     {
     }
 
-    std::unique_ptr<plugin_node_widget> gain_knob_node_widget_plugin::create_node(circuit_tree&)
+    std::unique_ptr<plugin_node_widget> gain_knob_node_widget_plugin::create_node(abstract_configuration_directory&)
     {
         return std::make_unique<knob_node_widget>(
             _synth,
@@ -163,7 +163,7 @@ namespace Gammou {
             _synth.allocate_parameter(0.f));
     }
 
-    std::unique_ptr<plugin_node_widget> gain_knob_node_widget_plugin::create_node(circuit_tree&, const nlohmann::json& json)
+    std::unique_ptr<plugin_node_widget> gain_knob_node_widget_plugin::create_node(abstract_configuration_directory&, const nlohmann::json& json)
     {
         auto param = parameter_from_json(json, _synth);
         return std::make_unique<knob_node_widget>(

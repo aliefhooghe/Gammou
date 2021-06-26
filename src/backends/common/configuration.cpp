@@ -4,38 +4,36 @@
 
 namespace Gammou {
 
-    std::filesystem::path configuration::get_packages_directory_path()
+    static std::filesystem::path get_config_dir(const char *env_var, const char *home_suffix, const char *default_dir)
     {
-        if (auto raw_path = std::getenv(GAMMOU_PACKAGE_PATH_ENV)) {
+        if (auto raw_path = std::getenv(env_var)) {
             const auto package_path = std::filesystem::path{raw_path};
             if (std::filesystem::is_directory(package_path))
                 return package_path;
         }
         else if (auto home = std::getenv("HOME")) {
-            const auto package_path = std::filesystem::path{home} / ".gammou/packages";
+            const auto package_path = std::filesystem::path{home} / home_suffix;
             if (std::filesystem::is_directory(package_path))
                 return package_path;
         }
 
         // default
-        return "./packages";
+        return default_dir;
+    }
+
+    std::filesystem::path configuration::get_packages_directory_path()
+    {
+        return get_config_dir(GAMMOU_PACKAGE_PATH_ENV, ".gammou/packages", "./packages");
     }
 
     std::filesystem::path configuration::get_patch_path()
     {
-        if (auto raw_path = std::getenv(GAMMOU_PATCH_PATH_ENV)) {
-            const auto patch_path = std::filesystem::path{raw_path};
-            if (std::filesystem::is_directory(raw_path))
-                return raw_path;
-        }
-        else if (auto home = std::getenv("HOME")) {
-            const auto patch_path = std::filesystem::path{home} / ".gammou/patchs";
-            if (std::filesystem::is_directory(patch_path))
-                return patch_path;
-        }
+        return get_config_dir(GAMMOU_PATCH_PATH_ENV, ".gammou/patchs", "./patchs");
+    }
 
-        // default
-        return "./patchs";
+    std::filesystem::path configuration::get_samples_path()
+    {
+        return get_config_dir(GAMMOU_SAMPLE_PATH_ENV, ".gammou/samples", "./samples");
     }
 
 }

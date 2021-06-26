@@ -9,8 +9,8 @@ namespace Gammou {
     class  value_knob_node_widget_plugin  : public node_widget_factory::plugin {
     public:
         value_knob_node_widget_plugin(synthesizer& synth);
-        std::unique_ptr<plugin_node_widget> create_node(circuit_tree&) override;
-        std::unique_ptr<plugin_node_widget> create_node(circuit_tree&, const nlohmann::json&) override;
+        std::unique_ptr<plugin_node_widget> create_node(abstract_configuration_directory&) override;
+        std::unique_ptr<plugin_node_widget> create_node(abstract_configuration_directory&, const nlohmann::json&) override;
     private:
         synthesizer& _synth;
     };
@@ -18,8 +18,8 @@ namespace Gammou {
     class  gain_knob_node_widget_plugin  : public node_widget_factory::plugin {
     public:
         gain_knob_node_widget_plugin(synthesizer& synth);
-        std::unique_ptr<plugin_node_widget> create_node(circuit_tree&) override;
-        std::unique_ptr<plugin_node_widget> create_node(circuit_tree&, const nlohmann::json&) override;
+        std::unique_ptr<plugin_node_widget> create_node(abstract_configuration_directory&) override;
+        std::unique_ptr<plugin_node_widget> create_node(abstract_configuration_directory&, const nlohmann::json&) override;
     private:
         synthesizer& _synth;
     };
