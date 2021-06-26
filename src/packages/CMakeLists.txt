@@ -12,6 +12,11 @@ add_gammou_plugin(
     ${CMAKE_CURRENT_SOURCE_DIR}/base/tanh_plugin/process.c)
 
 add_gammou_plugin(
+    HalfTanh
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/half_tanh/plugin.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/half_tanh/process.c)
+
+add_gammou_plugin(
     Invert
     ${CMAKE_CURRENT_SOURCE_DIR}/base/invert/plugin.json
     ${CMAKE_CURRENT_SOURCE_DIR}/base/invert/process.c)
@@ -63,6 +68,7 @@ add_gammou_package(
     PLUGINS
         Invert
         Tanh
+        HalfTanh
         SinPlugin
         SawPlugin
         SquarePlugin
