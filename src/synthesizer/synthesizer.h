@@ -15,20 +15,6 @@ namespace Gammou
     class synthesizer {
         static constexpr auto _samplerate_symbol = "_sample_rate";
 
-        /**
-         *  \enum midi_inputs The available channel midi inputs
-         */
-        enum midi_inputs {
-            gate = 0u,          /** 1. when note is on, 0. otherwise **/
-            pitch,              /** the pitch of the note being played (Hz) **/
-            attack,             /** the attack velocity in [0., 1.] **/
-
-            midi_input_count
-        };
-
-        static constexpr auto polyphonic_to_master_channel_count = 2u;
-        static constexpr auto voice_disappearance_treshold_default = 0.0003f;
-
     public:
 
         class circuit_controller
@@ -41,6 +27,7 @@ namespace Gammou
 
         using opt_level = DSPJIT::graph_execution_context::opt_level;
         using parameter = parameter_manager::parameter;
+        using voice_mode = voice_manager::mode;
 
         /**
          *  \brief Initialize a synthesizer instance
@@ -107,15 +94,16 @@ namespace Gammou
         void set_sample_rate(float samplerate);
 
         /**
-         * \brief Set the amplitude threshold used to determine if a voice
-         * should be stopped
-         */
-        void set_voice_disapearance_threshold(float threshold);
-
-        /**
          * \brief Return the llvm context used for JIT compilation
          */
         auto& get_llvm_context() noexcept { return _llvm_context; }
+
+        /**
+         *
+         */
+        void set_voice_mode(const voice_mode mode) noexcept;
+
+        voice_mode get_voice_mode() const noexcept;
 
         /**
          **
@@ -211,11 +199,6 @@ namespace Gammou
 
         void _process_one_sample(const float[], float output[]) noexcept;
 
-        auto get_voice_midi_input(voice_manager::voice voice) noexcept
-        {
-            return _midi_input_values.data() + voice * static_cast<uint32_t>(midi_input_count);
-        }
-
         class master_circuit_controller : public circuit_controller
         {
         public:
@@ -249,9 +232,6 @@ namespace Gammou
         const unsigned int _input_count;
         const unsigned int _output_count;
 
-        //  Midi input values are stored here for every running voices
-        std::vector<float> _midi_input_values;
-
         //  Circuit execution context
         DSPJIT::graph_execution_context _master_circuit_context;
         DSPJIT::graph_execution_context _polyphonic_circuit_context;
@@ -270,9 +250,6 @@ namespace Gammou
 
         //  Voice management
         voice_manager _voice_manager;
-        unsigned int _voice_disappearance_sample_count{20000u};
-        float _voice_disappearance_treshold{voice_disappearance_treshold_default};
-        std::vector<unsigned int> _voice_lifetime;
 
         //  Parameter management
         parameter_manager _parameter_manager;

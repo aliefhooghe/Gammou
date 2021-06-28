@@ -80,6 +80,7 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/synthesizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/synthesizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/voice_manager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/voice_manager.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/utils/wav_loader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/utils/wav_loader.cpp
