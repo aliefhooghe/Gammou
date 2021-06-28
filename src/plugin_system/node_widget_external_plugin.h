@@ -18,7 +18,7 @@ namespace nlohmann {
     struct adl_serializer<std::filesystem::path> {
         static void to_json(json& j, const std::filesystem::path& path)
         {
-            j = path.string();
+            j = path.generic_string();
         }
 
         static void from_json(const json& j, std::filesystem::path& path)
@@ -34,7 +34,6 @@ namespace Gammou
     public:
         enum class static_chunk_type
         {
-            NONE,
             WAV_CHANNEL,
             WAV_SAMPLE
         };
@@ -47,7 +46,7 @@ namespace Gammou
             std::vector<std::string> input_names{};
             std::vector<std::string> output_names{};
             std::vector<std::filesystem::path> modules_paths{};
-            static_chunk_type static_chunk{static_chunk_type::NONE};
+            static_chunk_type static_chunk{static_chunk_type::WAV_CHANNEL};
         };
 
         node_widget_external_plugin(
@@ -63,6 +62,7 @@ namespace Gammou
         static std::unique_ptr<node_widget_external_plugin> from_desc(const descriptor&, llvm::LLVMContext&);
 
         std::unique_ptr<plugin_node_widget> create_node(abstract_configuration_directory&) override;
+        std::unique_ptr<plugin_node_widget> create_node(abstract_configuration_directory&, const nlohmann::json&) override;
         std::unique_ptr<llvm::Module> module() override;
 
         void set_input_names(std::vector<std::string>&& names);

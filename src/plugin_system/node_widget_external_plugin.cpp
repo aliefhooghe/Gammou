@@ -22,7 +22,8 @@ namespace Gammou {
             std::unique_ptr<DSPJIT::compile_node_class>&& node,
             abstract_configuration_directory& parent_config,
             static_chunk_type chunk_type)
-        :   plugin_node_widget{name, id, std::move(node)}
+        :   plugin_node_widget{name, id, std::move(node)},
+            _chunk_type{chunk_type}
         {
             LOG_INFO("CREATE external_node_widget with wav channel\n");
             _initialize(parent_config, chunk_type);
@@ -32,10 +33,55 @@ namespace Gammou {
 
         nlohmann::json serialize_internal_state() override
         {
-            return  {};
+            if (_sample_path.has_value()) {
+                nlohmann::json json = {{"sample-path", _sample_path.value()}};
+                if (_chunk_type == static_chunk_type::WAV_CHANNEL)
+                    json["channel-id"] = _sample_channel_id;
+                return json;
+            }
+            else {
+                return {};
+            }
+        }
+
+        void deserialize_internal_state(const nlohmann::json& json)
+        {
+            // Retrieve fields from json
+            auto it = json.find("sample-path");
+
+            if (it != json.end()) {
+                _sample_path = it->get<std::string>();
+                if (_chunk_type == static_chunk_type::WAV_CHANNEL)
+                    json.at("channel-id").get_to(_sample_channel_id);
+                _load_wav_sample(_sample_path.value());
+            }
+            // else : no sample to load
         }
 
     private:
+        void _load_wav_sample(const std::filesystem::path& sample_path)
+        {
+            try {
+                LOG_INFO("[external_node_widget] Loading wav sample '%s'\n",
+                    sample_path.generic_string().c_str());
+                const auto sample = load_wav_from_file(sample_path);
+
+                //  Register the relevant static memory chunk
+                if (_chunk_type == static_chunk_type::WAV_CHANNEL) {
+                    _config_page->register_static_memory_chunk(node(), sample.clone_channel_data(0u));
+                    _config_page->compile();
+                    _sample_path = sample_path;
+                }
+                else {
+                    // TOTO : Not implemented
+                }
+            }
+            catch (const std::exception& e)
+            {
+                LOG_ERROR("[external_node_widget] Unable to load wav sample : '%s'\n", e.what());
+            }
+        }
+
         void _initialize(abstract_configuration_directory& parent_config, static_chunk_type chunk_type)
         {
             /// Create the configuration widget
@@ -44,49 +90,46 @@ namespace Gammou {
             if (chunk_type != static_chunk_type::WAV_CHANNEL)
                 throw std::invalid_argument("external_node_widget : unsupported static memory chunk type");
 
-            auto samples_dir =
-                std::make_unique<View::filesystem_directory_model>(
-                    configuration::get_samples_path());
-            auto samples_browser = View::make_directory_view(std::move(samples_dir), 100, 100);
-
+            auto samples_browser =
+                std::make_unique<View::filesystem_view>(
+                    configuration::get_samples_path(),
+                    100, 100);
             // Sample selection callback
             samples_browser->set_value_select_callback(
                 [this](const auto& sample_path)
                 {
-                    try {
-                        LOG_INFO("[external_node_widget] Loading wav sample '%s'\n",
-                            sample_path.generic_string().c_str());
-                        const auto sample = load_wav_from_file(sample_path);
-
-                        //  Register the first channel as a static memory chunk
-                        _config_dir->register_static_memory_chunk(
-                            node(), sample.clone_channel_data(0u));
-
-                        // Trigger circuit recompilation
-                        _config_dir->compile();
-                    }
-                    catch (const std::exception& e)
-                    {
-                        LOG_ERROR("[external_node_widget] Unable to load wav sample : '%s'\n", e.what());
-                    }
+                    _load_wav_sample(sample_path);
                 });
 
-            _config_widget = std::make_shared<View::header>(std::move(samples_browser));
+            auto update_button = std::make_unique<View::text_push_button>("Update");
+            update_button->set_callback(
+                [br = samples_browser.get()]()
+                {
+                    br->update();
+                });
+
+            _config_widget =
+                std::make_shared<View::header>(
+                    View::make_vertical_layout(
+                        std::move(update_button),
+                        std::move(samples_browser)));
 
             /// Create the configuration directory
             auto new_name = name();
-            _config_dir = parent_config.create_directory(new_name, _config_widget);
+            _config_page = parent_config.create_page(new_name, _config_widget);
             set_name(new_name);
         }
 
-        std::unique_ptr<abstract_configuration_directory> _config_dir{};
+        const static_chunk_type _chunk_type;
+        std::optional<std::filesystem::path> _sample_path{};
+        unsigned int _sample_channel_id{0u};
+        std::unique_ptr<abstract_configuration_page> _config_page{};
         std::shared_ptr<View::widget> _config_widget{};
     };
 
     /**
      *  Plugin descriptor deserialization
      */
-
     static node_widget_external_plugin::static_chunk_type _parse_chunk_type(const std::string& str)
     {
         if (str == "wav-channel")
@@ -149,6 +192,23 @@ namespace Gammou {
                 std::make_unique<plugin_node_widget>(name(), id(),  _dsp_plugin.create_node());
         _set_io_names(*node);
         return node;
+    }
+
+    std::unique_ptr<plugin_node_widget> node_widget_external_plugin::create_node(abstract_configuration_directory& parent_config, const nlohmann::json& internal_state)
+    {
+        const auto& proc_info = _dsp_plugin.get_process_info();
+
+        if (proc_info.use_static_memory) {
+            auto node =
+                std::make_unique<external_node_widget>(
+                    name(), id(), _dsp_plugin.create_node(), parent_config, _static_memory_chunk);
+            node->deserialize_internal_state(internal_state);
+            _set_io_names(*node);
+            return node;
+        }
+        else {
+            return create_node(parent_config);
+        }
     }
 
     std::unique_ptr<llvm::Module> node_widget_external_plugin::module()
