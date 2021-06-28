@@ -53,9 +53,6 @@ namespace Gammou {
 
         //  Midi inputs
         std::vector<RtMidiIn> _midi_inputs{};
-
-        //  widget node factory
-        node_widget_factory _node_factory;
     };
 
 }

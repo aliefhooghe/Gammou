@@ -54,9 +54,6 @@ namespace Gammou {
         std::unique_ptr<application> _application;
         std::unique_ptr<View::vst2_display> _display;
         ERect _window_rect; //  used by host
-
-        //  Widget node factory
-        node_widget_factory _node_factory;
     };
 
 

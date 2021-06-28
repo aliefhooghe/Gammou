@@ -26,7 +26,7 @@ namespace Gammou {
         class parameter {
             friend class parameter_manager;
         public:
-            parameter(parameter&& other)
+            parameter(parameter&& other) noexcept
             :   _mgr{other._mgr}
             {
                 _id = other._id;

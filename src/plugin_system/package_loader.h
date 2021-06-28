@@ -2,24 +2,55 @@
 #define GAMMOU_PACKAGE_LOADER_H_
 
 #include <filesystem>
+#include <map>
+
 #include "node_widget_factory.h"
 
 namespace Gammou
 {
-    /**
-     *  \brief  Load a package into a node_widget_factory
-     *  \param package_root_dir_path the root directory of the package (this directory must contain a content.json file)
-     *  \param factory the factory in which all the plugins will be loaded
-     *  \details a package is a directory containing a file content.json
-     */
-    void load_package(const std::filesystem::path& package_root_dir_path, node_widget_factory& factory);
+    using package_uid = uint64_t;
 
-    /**
-     *  \brief Load all package located in a given directory (without recursing in subdir)
-     *  \param packages_dir_path the directory in which packages will be looked for
-     *  \param factory the factory in which all the packages will be loaded
-     */
-    void load_all_packages(const std::filesystem::path& packages_dir_path, node_widget_factory& factory);
+    class node_widget_factory_builder
+    {
+    public:
+        node_widget_factory_builder(llvm::LLVMContext& llvm_context);
+
+        /**
+         *  \brief Load a package
+         *  \param package_root_dir_path the root directory of the package (this directory must contain a content.json file)
+         *  \details a package is a directory containing a file content.json
+         */
+        node_widget_factory_builder& load_package(const std::filesystem::path& package_root_dir_path);
+
+        /**
+         *  \brief Load all package located in a given directory (without recursing in subdir)
+         *  \param packages_dir_path the directory in which packages will be looked for
+         */
+        node_widget_factory_builder& load_packages(const std::filesystem::path& packages_dir_path);
+
+        /**
+         *  \brief build a factory with the loaded packages
+         *  \note Resolve packages dependency befaore building, 
+         *  and remove packages with missing dependencies
+         */
+        std::unique_ptr<node_widget_factory> build();
+        
+    private:
+        struct package
+        {
+            package_uid uid;
+            std::string name;
+            std::vector<package_uid> dependencies{};
+            std::vector<std::unique_ptr<node_widget_factory::plugin>> loaded_plugins{};
+            std::unique_ptr<llvm::Module> lib_module{};
+        };
+
+        void _resolve_dependencies();
+        package _load_package(const std::filesystem::path& package_root_dir_path);
+
+        std::map<package_uid, package> _packages{};
+        llvm::LLVMContext& _llvm_context;
+    };
 }
 
 #endif

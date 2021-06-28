@@ -10,7 +10,6 @@ namespace Gammou {
     public:
         application(
             synthesizer& synth,
-            node_widget_factory& factory,
             std::unique_ptr<View::widget>&& additional_toolbox = {});
 
         nlohmann::json serialize();
@@ -21,10 +20,10 @@ namespace Gammou {
     private:
         std::unique_ptr<View::widget> _make_main_gui(
             synthesizer& synth,
-            node_widget_factory& factory,
             std::unique_ptr<View::widget>&& additional_toolbox);
         std::unique_ptr<View::widget> _make_toolbox(std::unique_ptr<View::widget>&& additional_toolbox);
 
+        std::unique_ptr<node_widget_factory> _factory{};
         configuration_widget *_configuration_widget{nullptr};
         std::unique_ptr<View::widget> _main_gui{};
     };

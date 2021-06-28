@@ -1,9 +1,5 @@
 
 #include "vst2_plugin.h"
-
-#include "plugin_system/package_loader.h"
-#include "builtin_plugins/load_builtin_plugins.h"
-#include "gui/control_node_widgets/load_control_plugins.h"
 #include "synthesizer/midi_parser.h"
 #include "backends/common/configuration.h"
 
@@ -13,9 +9,92 @@
 
 namespace Gammou {
 
+    static constexpr char* opcode_names[] =
+    {
+        "effOpen",
+        "effClose",
+        "effSetProgram",
+        "effGetProgram",
+        "effSetProgramName",
+        "effGetProgramName",
+        "effGetParamLabel",
+        "effGetParamDisplay",
+        "effGetParamName",
+        "effGetVu",
+        "effSetSampleRate",
+        "effSetBlockSize",
+        "effMainsChanged",
+        "effEditGetRect",
+        "effEditOpen",
+        "effEditClose",
+        "effEditDraw",
+        "effEditMouse",
+        "effEditKey",
+        "effEditIdle",
+        "effEditTop",
+        "effEditSleep",
+        "effIdentify",
+        "effGetChunk",
+        "effSetChunk",
+        "effProcessEvents",
+        "effCanBeAutomated",
+        "effString2Parameter",
+        "effGetNumProgramCategories",
+        "effGetProgramNameIndexed",
+        "effCopyProgram",
+        "effConnectInput",
+        "effConnectOutput",
+        "effGetInputProperties",
+        "effGetOutputProperties",
+        "effGetPlugCategory",
+        "effGetCurrentPosition",
+        "effGetDestinationBuffer",
+        "effOfflineNotify",
+        "effOfflinePrepare",
+        "effOfflineRun",
+        "effProcessVarIo",
+        "effSetSpeakerArrangement",
+        "effSetBlockSizeAndSampleRate",
+        "effSetBypass",
+        "effGetEffectName",
+        "effGetErrorText",
+        "effGetVendorString",
+        "effGetProductString",
+        "effGetVendorVersion",
+        "effVendorSpecific",
+        "effCanDo",
+        "effGetTailSize",
+        "effIdle",
+        "effGetIcon",
+        "effSetViewPosition",
+        "effGetParameterProperties",
+        "effKeysRequired",
+        "effGetVstVersion",
+        "effEditKeyDown",
+        "effEditKeyUp",
+        "effSetEditKnobMode",
+        "effGetMidiProgramName",
+        "effGetCurrentMidiProgram",
+        "effGetMidiProgramCategory",
+        "effHasMidiProgramsChanged",
+        "effGetMidiKeyName",
+        "effBeginSetProgram",
+        "effEndSetProgram",
+        "effGetSpeakerArrangement",
+        "effShellGetNextPlugin",
+        "effStartProcess",
+        "effStopProcess",
+        "effSetTotalSampleToProcess",
+        "effSetPanLaw",
+        "effBeginLoadBank",
+        "effBeginLoadProgram",
+        "effSetProcessPrecision",
+        "effGetNumMidiInputChannels",
+        "effGetNumMidiOutputChannels"
+    };
+
     vst2_plugin::vst2_plugin(audioMasterCallback master)
-    :   _synthesizer{_llvm_context},
-        _node_factory{_llvm_context}
+    :   _synthesizer{_llvm_context}
     {
         //  Allocate effect instance
         _effect = static_cast<AEffect*>(std::malloc(sizeof(AEffect)));
@@ -42,20 +121,8 @@ namespace Gammou {
         _effect->version = kVstVersion;
         _effect->processReplacing = process_replacing_proc;
 
-        //  Load builtin plugins into factory
-        load_builtin_plugins(_node_factory);
-
-        //  Load control plugins into factory
-        load_control_plugins(_synthesizer, _node_factory);
-
-        //  Load packages into factory
-        load_all_packages(configuration::get_packages_directory_path(), _node_factory);
-
-        //  Prepare synthesizer
-        _synthesizer.add_library_module(_node_factory.module());
-
         //  Build gui
-        _application = std::make_unique<application>(_synthesizer, _node_factory);
+        _application = std::make_unique<application>(_synthesizer);
 
         //  Initialize display
         _display = View::create_vst2_display(_application->main_gui(), 1);
@@ -137,10 +204,15 @@ namespace Gammou {
                 return 1;
                 break;
 
-            case effEditKey:
+            case effEditKeyDown:
+            {
+                const bool used = plugin->_display->text_input(index, value, opt);
+                return static_cast<int>(used);
+            }
+                break;
+
             case effEditKeyUp:
-                plugin->_display->text_input(index, value, opt);
-                return 1;
+                return 0;
                 break;
 
             case effGetNumMidiInputChannels:
@@ -166,6 +238,9 @@ namespace Gammou {
                 break;
 
             default:
+                if (effEditIdle != opcode && opcode <= effGetNumMidiOutputChannels) {
+                    LOG_INFO("[vst2_plugin] Received unhandled opcode : %s\n", opcode_names[opcode]);
+                }
                 return 0u;
         }
 

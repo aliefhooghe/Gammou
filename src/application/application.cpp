@@ -1,19 +1,33 @@
 #include "application.h"
+#include "backends/common/configuration.h"
 #include "gui/factory_widget.h"
 #include "gui/configuration_widget.h"
 #include "gui/composite_node_plugin.h"
-
+#include "plugin_system/package_loader.h"
 #include "patch_browser.h"
+#include "builtin_plugins/load_builtin_plugins.h"
+#include "gui/control_node_widgets/load_control_plugins.h"
 
 namespace Gammou
 {
 
     application::application(
         synthesizer& synth,
-        node_widget_factory& factory,
         std::unique_ptr<View::widget>&& additional_toolbox)
     {
-        _main_gui = _make_main_gui(synth, factory, std::move(additional_toolbox));
+        _factory = node_widget_factory_builder{synth.get_llvm_context()}
+            .load_packages(configuration::get_packages_directory_path())
+            .build();
+
+        // Load control and builtin plugins into factory
+        load_control_plugins(synth, *_factory);
+        load_builtin_plugins(*_factory);
+
+        // Set up the main gui
+        _main_gui = _make_main_gui(synth, std::move(additional_toolbox));
+
+        //  Prepare synthesizer to use plugins
+        synth.add_library_module(_factory->module());
     }
 
     nlohmann::json application::serialize()
@@ -33,11 +47,10 @@ namespace Gammou
 
     std::unique_ptr<View::widget> application::_make_main_gui(
         synthesizer& synth,
-        node_widget_factory& factory,
         std::unique_ptr<View::widget>&& additional_toolbox)
     {
         auto main_editor_proxy = std::make_unique<View::widget_proxy<>>(1200, 750);
-        auto factory_browser = std::make_unique<factory_widget>(factory, 100, 500);
+        auto factory_browser = std::make_unique<factory_widget>(*_factory, 100, 500);
         auto configuration_browser =
             std::make_unique<configuration_widget>(
                 *factory_browser, synth, *main_editor_proxy, 210, 60);
@@ -46,7 +59,7 @@ namespace Gammou
         _configuration_widget = configuration_browser.get();
 
         // create the composite node plugin
-        factory.register_plugin(std::make_unique<composite_node_plugin>(*factory_browser));
+        _factory->register_plugin(std::make_unique<composite_node_plugin>(*factory_browser));
         factory_browser->rescan_factory();
 
         //  left side bar

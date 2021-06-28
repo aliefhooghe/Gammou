@@ -113,6 +113,11 @@ namespace Gammou
         void set_voice_disapearance_threshold(float threshold);
 
         /**
+         * \brief Return the llvm context used for JIT compilation
+         */
+        auto& get_llvm_context() noexcept { return _llvm_context; }
+
+        /**
          **
          **    Process thread part
          **
@@ -208,7 +213,7 @@ namespace Gammou
 
         auto get_voice_midi_input(voice_manager::voice voice) noexcept
         {
-            return _midi_input_values.data() + voice * midi_input_count;
+            return _midi_input_values.data() + voice * static_cast<uint32_t>(midi_input_count);
         }
 
         class master_circuit_controller : public circuit_controller

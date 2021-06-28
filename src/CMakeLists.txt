@@ -49,8 +49,8 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/control_node_widgets/parameter_serialization.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_editor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_editor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_tree_model.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_tree_model.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/configuration_tree.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/configuration_tree.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node_plugin.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node_plugin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/configuration_widget.h
