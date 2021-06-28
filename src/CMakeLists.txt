@@ -59,6 +59,8 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/factory_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/internal_node_widget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/internal_node_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/synthesizer_gui.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/synthesizer_gui.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/configuration/abstract_configuration_page.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/configuration/abstract_configuration_directory.h

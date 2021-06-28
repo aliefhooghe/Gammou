@@ -1,6 +1,6 @@
 
 #include "configuration_widget.h"
-#include "internal_node_widget.h"
+#include "synthesizer_gui.h"
 
 namespace Gammou
 {
@@ -48,7 +48,7 @@ namespace Gammou
     };
 
     /**
-     *  Configuration directory implementation 
+     *  Configuration directory implementation
      */
 
     configuration_directory::configuration_directory(configuration_widget& config_widget, configuration_tree& directory)
@@ -246,12 +246,16 @@ namespace Gammou
 
         // Remove the nodes : this will also remove relevant configuration dirs
         _master_circuit_editor->clear();
-        _master_circuit_editor->insert_node_widget(50, 50, _make_master_from_polyphonic_node());
-        _master_circuit_editor->insert_node_widget(50, 100, _make_master_output_node());
+        _master_circuit_editor->insert_node_widget(
+            50, 50, synthesizer_gui::make_master_from_polyphonic_node(_synthesizer));
+        _master_circuit_editor->insert_node_widget(
+            50, 100, synthesizer_gui::make_master_output_node(_synthesizer));
 
         _polyphonic_circuit_editor->clear();
-        _polyphonic_circuit_editor->insert_node_widget(50, 50, _make_polyphonic_midi_input_node());
-        _polyphonic_circuit_editor->insert_node_widget(50, 100, _make_polyphonic_to_master_node());
+        _polyphonic_circuit_editor->insert_node_widget(
+            50, 50, synthesizer_gui::make_polyphonic_midi_input_node(_synthesizer));
+        _polyphonic_circuit_editor->insert_node_widget(
+            50, 100, synthesizer_gui::make_polyphonic_to_master_node(_synthesizer));
 
         // Update the circuit browser
         update();
@@ -296,21 +300,14 @@ namespace Gammou
 
     void configuration_widget::_initialize_circuit_editors()
     {
-        auto master_editor = _make_editor(_synthesizer.get_master_circuit_controller());
-        auto polyphonic_editor = _make_editor(_synthesizer.get_polyphonic_circuit_controller());
+        auto master_editor = synthesizer_gui::make_editor(_synthesizer.get_master_circuit_controller());
+        auto polyphonic_editor = synthesizer_gui::make_editor(_synthesizer.get_polyphonic_circuit_controller());
 
         _master_circuit_editor = master_editor.get();
         _polyphonic_circuit_editor = polyphonic_editor.get();
 
         _master_circuit_widget = _wrap_editor(std::move(master_editor));
         _polyphonic_circuit_widget = _wrap_editor(std::move(polyphonic_editor));
-    }
-
-    std::unique_ptr<circuit_editor> configuration_widget::_make_editor(synthesizer::circuit_controller& circuit)
-    {
-        auto editor = std::make_unique<circuit_editor>(200, 400);
-        editor->set_circuit_changed_callback([&circuit]() { circuit.compile(); } );
-        return editor;
     }
 
     std::shared_ptr<View::widget> configuration_widget::_wrap_editor(std::unique_ptr<circuit_editor>&& editor)
@@ -322,67 +319,13 @@ namespace Gammou
                     View::color_theme::color::SURFACE_DARK);
     }
 
-    std::unique_ptr<node_widget> configuration_widget::_make_master_from_polyphonic_node()
-    {
-        return std::make_unique<internal_node_widget>(
-            "From Polyphonic",
-            master_from_polyphonic_node_id,
-            _synthesizer.from_polyphonic_node());
-    }
-
-    std::unique_ptr<node_widget> configuration_widget::_make_master_output_node()
-    {
-        return std::make_unique<internal_node_widget>(
-            "Output",
-            master_output_node_id,
-            _synthesizer.output_node());
-    }
-
-    std::unique_ptr<node_widget> configuration_widget::_make_polyphonic_midi_input_node()
-    {
-        auto midi_input =
-            std::make_unique<internal_node_widget>(
-            "Midi In",
-            polyphonic_midi_input_node_id,
-            _synthesizer.midi_input_node());
-
-        midi_input->set_output_name(0u, "Gate");
-        midi_input->set_output_name(1u, "Pitch");
-        midi_input->set_output_name(2u, "Attack");
-        midi_input->set_output_name(3u, "Release");
-
-        return midi_input;
-    }
-
-    std::unique_ptr<node_widget> configuration_widget::_make_polyphonic_to_master_node()
-    {
-        return std::make_unique<internal_node_widget>(
-            "To Master",
-            polyphonic_to_master_node_id,
-            _synthesizer.to_master_node());
-    }
-
     std::unique_ptr<node_widget> configuration_widget::_deserialize_node(abstract_configuration_directory& parent_config, const nlohmann::json& json)
     {
         if (json.is_string()) {
-            return _deserialize_internal_node(json.get<std::string>());
+            return synthesizer_gui::deserialize_internal_node(json.get<std::string>(), _synthesizer);
         }
         else {
             return _factory.create_node(parent_config, json);
         }
-    }
-
-    std::unique_ptr<node_widget> configuration_widget::_deserialize_internal_node(const std::string& identifier)
-    {
-        if (identifier == master_from_polyphonic_node_id)
-            return _make_master_from_polyphonic_node();
-        else if (identifier == master_output_node_id)
-            return _make_master_output_node();
-        else if (identifier ==  polyphonic_midi_input_node_id)
-            return _make_polyphonic_midi_input_node();
-        else  if (identifier == polyphonic_to_master_node_id)
-            return _make_polyphonic_to_master_node();
-        else
-            throw std::runtime_error("main_gui::deserialize : Unknown internal node : " + identifier);
     }
 }

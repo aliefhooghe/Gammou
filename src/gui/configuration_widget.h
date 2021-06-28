@@ -10,12 +10,6 @@ namespace Gammou
     {
         friend class configuration_directory;
         friend class configuration_page;
-
-        static constexpr auto master_from_polyphonic_node_id = "from-polyphonic";
-        static constexpr auto master_output_node_id = "output";
-        static constexpr auto polyphonic_midi_input_node_id = "midi-input";
-        static constexpr auto polyphonic_to_master_node_id = "to-master";
-
     public:
         configuration_widget(
             factory_widget& factory,
@@ -33,15 +27,8 @@ namespace Gammou
         void _initialize();
         void _initialize_circuit_editors();
 
-        std::unique_ptr<circuit_editor> _make_editor(synthesizer::circuit_controller& circuit);
         std::shared_ptr<View::widget> _wrap_editor(std::unique_ptr<circuit_editor>&& editor);
-        std::unique_ptr<node_widget> _make_master_from_polyphonic_node();
-        std::unique_ptr<node_widget> _make_master_output_node();
-        std::unique_ptr<node_widget> _make_polyphonic_midi_input_node();
-        std::unique_ptr<node_widget> _make_polyphonic_to_master_node();
-
         std::unique_ptr<node_widget> _deserialize_node(abstract_configuration_directory& parent_config, const nlohmann::json&);
-        std::unique_ptr<node_widget> _deserialize_internal_node(const std::string& identifier);
 
         std::shared_ptr<View::widget> _polyphonic_circuit_widget{};
         std::shared_ptr<View::widget> _master_circuit_widget{};
