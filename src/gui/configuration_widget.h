@@ -1,41 +1,15 @@
 #ifndef CONFIGURATION_WIDGET_H_
 #define CONFIGURATION_WIDGET_H_
 
-#include "circuit_tree_model.h"
+#include "configuration_tree.h"
 #include "factory_widget.h"
 
 namespace Gammou
 {
-    class configuration_widget;
-
-    class configuration_directory : public abstract_configuration_directory
-    {
-    public:
-        configuration_directory(configuration_widget& config_widget, circuit_tree& directory);
-        configuration_directory(configuration_directory&&) noexcept = delete;
-        configuration_directory(const configuration_directory&) = delete;
-        ~configuration_directory();
-
-        void compile() override;
-        void register_static_memory_chunk(const DSPJIT::compile_node_class& node, std::vector<uint8_t>&& data) override;
-        void free_static_memory_chunk(const DSPJIT::compile_node_class& node) override;
-        void display() override;
-        void rename(const std::string& name) override;
-
-        std::unique_ptr<abstract_configuration_directory> create_directory(
-            std::string &desired_name, std::weak_ptr<View::widget> widget) override;
-
-        // std::unique_ptr<abstract_configuration_page> create_page(
-        //     std::string &desired_name, std::weak_ptr<View::widget> widget) override;
-
-    private:
-        configuration_widget& _config_widget;
-        circuit_tree* _dir{};
-    };
-
-    class configuration_widget : public View::owning_directory_view<circuit_tree>
+    class configuration_widget : public View::owning_directory_view<configuration_tree>
     {
         friend class configuration_directory;
+        friend class configuration_page;
 
         static constexpr auto master_from_polyphonic_node_id = "from-polyphonic";
         static constexpr auto master_output_node_id = "output";
@@ -55,7 +29,7 @@ namespace Gammou
         void reset_editor();
 
     private:
-        void _select_config(circuit_tree& config_dir);
+        void _select_config(configuration_tree& config_dir);
         void _initialize();
         void _initialize_circuit_editors();
 
@@ -71,8 +45,8 @@ namespace Gammou
 
         std::shared_ptr<View::widget> _polyphonic_circuit_widget{};
         std::shared_ptr<View::widget> _master_circuit_widget{};
-        std::unique_ptr<configuration_directory> _master_circuit_dir{};
-        std::unique_ptr<configuration_directory> _polyphonic_circuit_dir{};
+        std::unique_ptr<abstract_configuration_directory> _master_circuit_dir{};
+        std::unique_ptr<abstract_configuration_directory> _polyphonic_circuit_dir{};
 
         circuit_editor *_polyphonic_circuit_editor{};
         circuit_editor *_master_circuit_editor{};
