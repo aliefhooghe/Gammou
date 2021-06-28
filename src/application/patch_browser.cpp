@@ -2,8 +2,6 @@
 
 #include "patch_browser.h"
 #include "backends/common/configuration.h"
-#include "helpers/filesystem_directory_model.h"
-
 
 namespace Gammou
 {
@@ -15,10 +13,7 @@ namespace Gammou
         auto save_button = std::make_unique<View::text_push_button>("Save", 80, 21);
         auto update_button = std::make_unique<View::text_push_button>("Update", 195, 21);
 
-        auto filesystem_view =
-            View::make_directory_view(
-                std::make_unique<View::filesystem_directory_model>(patch_dir_path),
-                140, 90);
+        auto filesystem_view = std::make_unique<View::filesystem_view>(patch_dir_path, 140, 90);
 
         LOG_INFO("[main gui] Using patch path '%s'\n",
                  patch_dir_path.generic_string().c_str());
@@ -28,7 +23,6 @@ namespace Gammou
         update_button->set_callback(
             [fv = filesystem_view.get()]()
             {
-                fv->data_model().sync();
                 fv->update();
             });
 
@@ -80,7 +74,6 @@ namespace Gammou
                     const auto json = app.serialize();
                     stream << json.dump();
                     stream.close();
-                    fv->data_model().sync();
                     fv->update();
                     LOG_INFO("[main gui] Saved patch '%s'\n", preset_path.generic_string().c_str());
                 }
