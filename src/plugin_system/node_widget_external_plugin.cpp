@@ -7,6 +7,7 @@
 #include "utils/wav_loader.h"
 #include "backends/common/configuration.h"
 #include "utils/serialization_helpers.h"
+#include "helpers/layout_builder.h"
 
 namespace Gammou {
 
@@ -109,11 +110,9 @@ namespace Gammou {
                     br->update();
                 });
 
-            _config_widget =
-                std::make_shared<View::header>(
-                    View::make_vertical_layout(
-                        std::move(update_button),
-                        std::move(samples_browser)));
+            const View::layout_builder builder{};
+            _config_widget = builder.shared_header(
+                builder.vertical(std::move(update_button), std::move(samples_browser)));
 
             /// Create the configuration directory
             auto new_name = name();

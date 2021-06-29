@@ -1,6 +1,7 @@
 
 #include "configuration_widget.h"
 #include "synthesizer_gui.h"
+#include "helpers/layout_builder.h"
 
 namespace Gammou
 {
@@ -343,11 +344,8 @@ namespace Gammou
 
     std::shared_ptr<View::widget> configuration_widget::_wrap_editor(std::unique_ptr<circuit_editor>&& editor)
     {
-        return std::make_shared<View::header>(
-                    std::make_unique<View::map_wrapper>(
-                        std::move(editor),
-                        100, 100),
-                    View::color_theme::color::SURFACE_DARK);
+        const View::layout_builder builder{};
+        return builder.shared_header(builder.map(std::move(editor)), View::color_theme::color::SURFACE_DARK, 0.f /* no internal border */);
     }
 
     std::unique_ptr<node_widget> configuration_widget::_deserialize_node(abstract_configuration_directory& parent_config, const nlohmann::json& json)

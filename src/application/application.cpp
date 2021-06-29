@@ -7,6 +7,7 @@
 #include "patch_browser.h"
 #include "builtin_plugins/load_builtin_plugins.h"
 #include "gui/control_node_widgets/load_control_plugins.h"
+#include "helpers/layout_builder.h"
 
 namespace Gammou
 {
@@ -62,36 +63,52 @@ namespace Gammou
         _factory->register_plugin(std::make_unique<composite_node_plugin>(*factory_browser));
         factory_browser->rescan_factory();
 
-        //  left side bar
-        auto left_sidebar =
-            View::make_vertical_layout(
-                make_patch_browser(*this),
-                std::make_unique<View::header>(std::move(factory_browser)),
-                std::make_unique<View::header>(std::move(configuration_browser)));
+        //  Build the gui
+        const View::layout_builder builder{};
 
-        auto toolbox = _make_toolbox(std::move(additional_toolbox));
-
-        return std::make_unique<View::background>(
-                    View::make_horizontal_layout(
-                        std::move(left_sidebar),
-                        View::make_vertical_layout(
-                            std::move(toolbox),
-                            std::move(main_editor_proxy))));
+        return builder.windows(
+                builder.horizontal<false>(
+                    builder.vertical<false>(
+                        make_patch_browser(*this),
+                        builder.header(std::move(factory_browser)),
+                        builder.header(std::move(configuration_browser))),
+                    builder.vertical<false>(
+                        _make_toolbox(synth, std::move(additional_toolbox)),
+                        std::move(main_editor_proxy)
+                )));
     }
 
-    std::unique_ptr<View::widget> application::_make_toolbox(std::unique_ptr<View::widget>&& additional_toolbox)
+    std::unique_ptr<View::widget> application::_make_toolbox(synthesizer& synth, std::unique_ptr<View::widget>&& additional_toolbox)
     {
-        const auto common_toolbox_width = additional_toolbox ? 100 : 700;
-        auto common_toolbox = std::make_unique<View::panel<>>(common_toolbox_width, 110);
-
-        auto reset_button = std::make_unique<View::text_push_button>("Reset", 80, 21);
+        // Reset button
+        auto reset_button = std::make_unique<View::text_push_button>("Reset", 80, 21, View::size_constraint{60});
         reset_button->set_callback([this]() { _configuration_widget->reset_editor(); });
 
-        common_toolbox->insert_widget(5, 5, std::move(reset_button));
+        // Voicing modes
+        using voicing_mode_model =
+            View::storage_directory_model<
+                std::string,
+                synthesizer::voice_mode,
+                View::alphabetical_compare>;
+
+        auto voicing_modes = std::make_unique<voicing_mode_model>();
+        const auto& polyphonic_mode = voicing_modes->insert_value("Polyphonic", synthesizer::voice_mode::POLYPHONIC);
+        voicing_modes->insert_value("Legato", synthesizer::voice_mode::LEGATO);
+
+        auto voicing_modes_control = View::make_directory_view(std::move(voicing_modes), 150, 50);
+        voicing_modes_control->set_value_select_callback(
+            [&synth](const auto mode)
+            {
+                synth.set_voice_mode(mode);
+            });
+        voicing_modes_control->select_value(polyphonic_mode);
+
+        const View::layout_builder builder{};
+        auto common_toolbox = builder.vertical(std::move(reset_button), std::move(voicing_modes_control));
 
         if (!additional_toolbox)
-            return std::make_unique<View::header>(std::move(common_toolbox));
+            return builder.header(std::move(common_toolbox));
         else
-            return View::make_horizontal_layout(std::make_unique<View::header>(std::move(common_toolbox)), std::move(additional_toolbox));
+            return builder.horizontal(builder.header(std::move(common_toolbox)), std::move(additional_toolbox));
     }
 }

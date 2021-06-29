@@ -4,6 +4,7 @@
 #include "composite_node_plugin.h"
 #include "composite_node.h"
 #include "../gui/internal_node_widget.h"
+#include "helpers/layout_builder.h"
 
 #include "log.h"
 
@@ -116,7 +117,6 @@ namespace Gammou {
                 });
 
             // Create composite node toolbox :
-            auto toolbox = std::make_unique<View::panel<>>(100, 100);
 
             // rename
             auto name_text_input = std::make_unique<View::text_input>();
@@ -149,18 +149,18 @@ namespace Gammou {
                     _factory.register_user_node(*this, name());
                 });
 
-            toolbox->insert_widget(5, 5, std::move(name_text_input));
-            toolbox->insert_widget(5, 5 + 21 + 5, std::move(name_button));
-            toolbox->insert_widget(5, 5 + 21 + 5 + 21 + 5, std::move(export_button));
-
+            View::layout_builder builder{};
             _editor_widget =
-                View::make_shared_vertical_layout(
-                    std::make_unique<View::header>(std::move(toolbox)),
-                    std::make_unique<View::header>(
-                        std::make_unique<View::map_wrapper>(
-                            std::move(editor),
-                            100, 100),
-                        View::color_theme::color::SURFACE_DARK));
+                builder.shared_vertical(
+                    builder.header(
+                        builder.vertical(
+                            builder.horizontal(std::move(name_text_input), std::move(name_button)),
+                            std::move(export_button))
+                    ),
+                    builder.header(
+                        builder.map(std::move(editor)),
+                        View::color_theme::color::SURFACE_DARK,
+                        0.f /* no internal border */));
 
             //  Create editor dir with available name
             std::string new_name = node_name;

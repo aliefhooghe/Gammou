@@ -2,6 +2,7 @@
 
 #include "patch_browser.h"
 #include "backends/common/configuration.h"
+#include "helpers/layout_builder.h"
 
 namespace Gammou
 {
@@ -9,8 +10,8 @@ namespace Gammou
     {
         const auto patch_dir_path = configuration::get_patch_path();
 
-        auto preset_name_input = std::make_unique<View::text_input>(110, 21);
-        auto save_button = std::make_unique<View::text_push_button>("Save", 80, 21);
+        auto preset_name_input = std::make_unique<View::text_input>(110, 21, View::size_constraint{110});
+        auto save_button = std::make_unique<View::text_push_button>("Save", 80, 21, View::size_constraint{60, 120});
         auto update_button = std::make_unique<View::text_push_button>("Update", 195, 21);
 
         auto filesystem_view = std::make_unique<View::filesystem_view>(patch_dir_path, 140, 90);
@@ -87,14 +88,13 @@ namespace Gammou
                 }
             });
 
-        auto panel = std::make_unique<View::panel<>>(210, 60);
-        panel->insert_widget(5, 5, std::move(preset_name_input));
-        panel->insert_widget(5 + 110 + 5, 5, std::move(save_button));
-        panel->insert_widget(5, 5 + 21 + 5, std::move(update_button));
+        const View::layout_builder builder{};
 
-        return std::make_unique<View::header>(
-            View::make_vertical_layout(
-                std::move(panel),
-                std::move(filesystem_view)));
+        return builder.header(
+                builder.vertical(
+                    builder.horizontal(
+                        std::move(preset_name_input), std::move(save_button)),
+                    std::move(filesystem_view)
+                ));
     }
 }

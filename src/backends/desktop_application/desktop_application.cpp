@@ -5,6 +5,7 @@
 #include "builtin_plugins/load_builtin_plugins.h"
 #include "gui/control_node_widgets/load_control_plugins.h"
 #include "helpers/alphabetical_compare.h"
+#include "helpers/layout_builder.h"
 #include "plugin_system/package_loader.h"
 #include "synthesizer/midi_parser.h"
 
@@ -21,13 +22,16 @@ namespace Gammou {
         _initialize_midi_multiplex();
 
         // gui
-        auto additional_toolbox = View::make_horizontal_layout(
-            std::make_unique<View::header>(_make_midi_device_widget())
+        const View::layout_builder builder{};
+
+        auto additional_toolbox =
+            builder.horizontal(
+                builder.header(_make_midi_device_widget())
 #ifndef GAMMOU_BENCHMARKING_MODE
-            ,
-            std::make_unique<View::header>(_make_audio_device_widget())
+                ,
+                builder.header(_make_audio_device_widget())
 #endif
-        );
+            );
 
         _application = std::make_unique<application>(_synthesizer, std::move(additional_toolbox));
 

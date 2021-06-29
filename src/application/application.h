@@ -21,7 +21,9 @@ namespace Gammou {
         std::unique_ptr<View::widget> _make_main_gui(
             synthesizer& synth,
             std::unique_ptr<View::widget>&& additional_toolbox);
-        std::unique_ptr<View::widget> _make_toolbox(std::unique_ptr<View::widget>&& additional_toolbox);
+        std::unique_ptr<View::widget> _make_toolbox(
+            synthesizer& synth,
+            std::unique_ptr<View::widget>&& additional_toolbox);
 
         std::unique_ptr<node_widget_factory> _factory{};
         configuration_widget *_configuration_widget{nullptr};
