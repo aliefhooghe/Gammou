@@ -634,77 +634,11 @@ namespace Gammou {
         std::vector<link_desc> links;
     };
 
-    static void from_json(const nlohmann::json& json, node_desc& desc)
-    {
-        json.at("x").get_to(desc.x);
-        json.at("y").get_to(desc.y);
-        desc.node = json.at("node");
-    }
-
-    static void to_json(nlohmann::json& json, const node_desc& desc)
-    {
-        json = nlohmann::json{
-            {"x", desc.x},
-            {"y", desc.y},
-            {"node", desc.node}
-        };
-    }
-
-    static void from_json(const nlohmann::json& json, link_source_desc& desc)
-    {
-        json.at("node").get_to(desc.node);
-        json.at("out").get_to(desc.out);
-    }
-
-    static void to_json(nlohmann::json& json, const link_source_desc& desc)
-    {
-        json = nlohmann::json{
-            {"node", desc.node},
-            {"out", desc.out}
-        };
-    }
-
-    static void from_json(const nlohmann::json& json, link_dest_desc& desc)
-    {
-        json.at("node").get_to(desc.node);
-        json.at("in").get_to(desc.in);
-    }
-
-    static void to_json(nlohmann::json& json, const link_dest_desc& desc)
-    {
-        json = nlohmann::json{
-            {"node", desc.node},
-            {"in", desc.in}
-        };
-    }
-
-    static void from_json(const nlohmann::json& json, link_desc& desc)
-    {
-        json.at("from").get_to(desc.from);
-        json.at("to").get_to(desc.to);
-    }
-
-    static void to_json(nlohmann::json& json, const link_desc& desc)
-    {
-        json = nlohmann::json{
-            {"from", desc.from},
-            {"to", desc.to}
-        };
-    }
-
-    static void from_json(const nlohmann::json& json, circuit_desc& desc)
-    {
-        json.at("nodes").get_to(desc.nodes);
-        json.at("links").get_to(desc.links);
-    }
-
-    static void to_json(nlohmann::json& json, const circuit_desc& desc)
-    {
-        json = nlohmann::json{
-            {"nodes", desc.nodes},
-            {"links", desc.links}
-        };
-    }
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(node_desc, x, y, node)
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(link_source_desc, node, out)
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(link_dest_desc, node, in)
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(link_desc, from, to)
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(circuit_desc, nodes, links)
 
     nlohmann::json circuit_editor::serialize()
     {
@@ -780,5 +714,4 @@ namespace Gammou {
 
         // caller is responsible of recompilation
     }
-
 }

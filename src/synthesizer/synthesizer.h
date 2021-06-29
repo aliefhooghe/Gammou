@@ -99,11 +99,26 @@ namespace Gammou
         auto& get_llvm_context() noexcept { return _llvm_context; }
 
         /**
-         *
+         *  \brief Set voicing mode
+         *  \param mode Voicing mode : POLYPHONIC or LEGATO
          */
         void set_voice_mode(const voice_mode mode) noexcept;
 
+        /**
+         *  \brief Return the current synthesizer voicing mode
+         */
         voice_mode get_voice_mode() const noexcept;
+
+        /**
+         *  \brief Set the synthesizer main gain (output factor)
+         *  \param gain Main gain to be applid on output
+         */
+        void set_main_gain(float gain) noexcept { _main_gain = gain; }
+
+        /**
+         *  \brief Get the current main gain
+         */
+        auto get_main_gain() const noexcept { return _main_gain; }
 
         /**
          **
@@ -258,7 +273,7 @@ namespace Gammou
         param_id _learning_param;
 
         //  Main settings
-        float _volume{0.2f};
+        float _main_gain{0.2f};
     };
 
 } // namespace Gammou

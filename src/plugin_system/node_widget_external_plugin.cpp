@@ -6,6 +6,7 @@
 #include "node_widget_external_plugin.h"
 #include "utils/wav_loader.h"
 #include "backends/common/configuration.h"
+#include "utils/serialization_helpers.h"
 
 namespace Gammou {
 

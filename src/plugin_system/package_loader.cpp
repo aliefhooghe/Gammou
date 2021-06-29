@@ -7,6 +7,7 @@
 
 #include "package_loader.h"
 #include "node_widget_external_plugin.h"
+#include "utils/serialization_helpers.h"
 
 namespace Gammou {
 
@@ -65,7 +66,7 @@ namespace Gammou {
         try {
             for (const auto& entry : std::filesystem::directory_iterator(packages_dir_path)) {
                 const auto entry_path = entry.path();
-                if (std::filesystem::is_directory(entry) && entry_path != ".." && entry_path != ".") 
+                if (std::filesystem::is_directory(entry) && entry_path != ".." && entry_path != ".")
                     load_package(entry_path);
             }
         }
@@ -118,7 +119,7 @@ namespace Gammou {
 
                 if (!dependencies_satisfied) {
                     // Remove package whose dependencies are not satisfied
-                    _packages.erase(uid);   
+                    _packages.erase(uid);
                     all_dependencies_satisfied = false;
                     break;
                 }

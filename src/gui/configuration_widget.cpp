@@ -50,7 +50,6 @@ namespace Gammou
     /**
      *  Configuration directory implementation
      */
-
     configuration_directory::configuration_directory(configuration_widget& config_widget, configuration_tree& directory)
     :   _config_widget{config_widget}, _dir{&directory}
     {
@@ -102,15 +101,15 @@ namespace Gammou
         return new_dir;
     }
 
-     std::unique_ptr<abstract_configuration_page> configuration_directory::create_page(
-         std::string &desired_name, std::weak_ptr<View::widget> widget)
-     {
-         auto new_page = std::make_unique<configuration_page>(
-             _config_widget,
-             _dir->insert_config_leaf(desired_name, configuration_leaf{widget}));
-         _config_widget.update();
-         return new_page;
-     }
+    std::unique_ptr<abstract_configuration_page> configuration_directory::create_page(
+        std::string &desired_name, std::weak_ptr<View::widget> widget)
+    {
+        auto new_page = std::make_unique<configuration_page>(
+            _config_widget,
+            _dir->insert_config_leaf(desired_name, configuration_leaf{widget}));
+        _config_widget.update();
+        return new_page;
+    }
 
     /**
      *  Configuration page implementation
@@ -118,48 +117,66 @@ namespace Gammou
      configuration_page::configuration_page(configuration_widget& config_widget, configuration_leaf& leaf)
     :  _config_widget{config_widget},
        _leaf{&leaf}
-     {
-     }
+    {
+    }
 
-     configuration_page::~configuration_page()
-     {
-         _config_widget.data_model().remove_config(*_leaf);
-         _config_widget.update();
-     }
+    configuration_page::~configuration_page()
+    {
+        _config_widget.data_model().remove_config(*_leaf);
+        _config_widget.update();
+    }
 
-     void configuration_page::compile()
-     {
-         if (auto ctl = _leaf->get_circuit_controller())
-             ctl->compile();
-     }
+    void configuration_page::compile()
+    {
+        if (auto ctl = _leaf->get_circuit_controller())
+            ctl->compile();
+    }
 
-     void configuration_page::register_static_memory_chunk(const DSPJIT::compile_node_class& node, std::vector<uint8_t>&& data)
-     {
-         if (auto ctl = _leaf->get_circuit_controller())
-             ctl->register_static_memory_chunk(node, std::move(data));
-     }
+    void configuration_page::register_static_memory_chunk(const DSPJIT::compile_node_class& node, std::vector<uint8_t>&& data)
+    {
+        if (auto ctl = _leaf->get_circuit_controller())
+            ctl->register_static_memory_chunk(node, std::move(data));
+    }
 
-     void configuration_page::free_static_memory_chunk(const DSPJIT::compile_node_class& node)
-     {
-         if (auto ctl = _leaf->get_circuit_controller())
-             ctl->free_static_memory_chunk(node);
-     }
+    void configuration_page::free_static_memory_chunk(const DSPJIT::compile_node_class& node)
+    {
+        if (auto ctl = _leaf->get_circuit_controller())
+            ctl->free_static_memory_chunk(node);
+    }
 
-     void configuration_page::display()
-     {
-         LOG_ERROR("[configuration_page] Display is not implemented\n");
-     }
+    void configuration_page::display()
+    {
+       _config_widget._select_config(*_leaf);
+    }
 
-     void configuration_page::rename(const std::string& name)
-     {
-         auto& new_leaf = _config_widget.data_model().rename_config(*_leaf, name);
-         _leaf = &new_leaf;
-         _config_widget.update();
-     }
+    void configuration_page::rename(const std::string& name)
+    {
+        auto& new_leaf = _config_widget.data_model().rename_config(*_leaf, name);
+        _leaf = &new_leaf;
+        _config_widget.update();
+    }
 
-     /**
-      *  Configuration widget implementation
-      */
+
+    /**
+     *  Synthesizer state serialization/deserialization
+     */
+    struct synthesizer_state
+    {
+        nlohmann::json master_circuit{};
+        nlohmann::json polyphonic_circuit{};
+        synthesizer::voice_mode voicing_mode{synthesizer::voice_mode::POLYPHONIC};
+        float main_gain{0.2f};
+    };
+
+    NLOHMANN_JSON_SERIALIZE_ENUM(synthesizer::voice_mode, {
+        {synthesizer::voice_mode::POLYPHONIC, "polyphonic"},
+        {synthesizer::voice_mode::LEGATO, "legato"}
+    })
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(synthesizer_state, master_circuit, polyphonic_circuit, voicing_mode, main_gain)
+
+    /**
+     *  Configuration widget implementation
+     */
     configuration_widget::configuration_widget(
         factory_widget& factory,
         synthesizer& synth,
@@ -195,49 +212,63 @@ namespace Gammou
     bool configuration_widget::deserialize_configuration(const nlohmann::json& json)
     {
         try {
+            synthesizer_state state{};
+            from_json(json, state);
+
             reset_editor();
+
             _master_circuit_editor->deserialize(
-                json.at("master-circuit"),
+                state.master_circuit,
                 [this](const nlohmann::json &j)
                 {
                     return _deserialize_node(*_master_circuit_dir, j);
                 });
             _polyphonic_circuit_editor->deserialize(
-                json.at("polyphonic-circuit"),
+                state.polyphonic_circuit,
                 [this](const nlohmann::json &j)
                 {
                     return _deserialize_node(*_polyphonic_circuit_dir, j);
                 });
 
+            _synthesizer.set_voice_mode(state.voicing_mode);
+            _synthesizer.set_main_gain(state.main_gain);
+
             // Recompile the new loaded circuit
             _synthesizer.get_master_circuit_controller().compile();
             _synthesizer.get_polyphonic_circuit_controller().compile();
+
             return true;
         }
         catch (const std::exception &e) {
             reset_editor();
-            LOG_ERROR("[configuration_widget Failed to load preset : %s\n", e.what());
-            return false;
-        }
-        catch (...) {
-            reset_editor();
-            LOG_ERROR("[configuration_widget] Failed to load preset : unknown error\n");
+            LOG_ERROR("[configuration_widget] Failed to load preset : %s\n", e.what());
             return false;
         }
     }
 
     nlohmann::json configuration_widget::serialize_configuration()
     {
-        return {
-            {"master-circuit", _master_circuit_editor->serialize()},
-            {"polyphonic-circuit", _polyphonic_circuit_editor->serialize()}
+        const synthesizer_state state{
+            _master_circuit_editor->serialize(),
+            _polyphonic_circuit_editor->serialize(),
+            _synthesizer.get_voice_mode(),
+            _synthesizer.get_main_gain()
         };
+        nlohmann::json json{};
+        to_json(json, state);
+        return json;
     }
 
     void configuration_widget::_select_config(configuration_tree& config_dir)
     {
         _editor_proxy.set_widget(config_dir.get_config_widget());
         select_directory(config_dir);
+    }
+
+    void configuration_widget::_select_config(configuration_leaf& config_leaf)
+    {
+        _editor_proxy.set_widget(config_leaf.get_config_widget());
+        select_value(config_leaf);
     }
 
     void configuration_widget::reset_editor()
