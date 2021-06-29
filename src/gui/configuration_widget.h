@@ -24,6 +24,7 @@ namespace Gammou
 
     private:
         void _select_config(configuration_tree& config_dir);
+        void _select_config(configuration_leaf& config_leaf);
         void _initialize();
         void _initialize_circuit_editors();
 
