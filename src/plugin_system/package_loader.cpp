@@ -130,7 +130,7 @@ namespace Gammou {
     node_widget_factory_builder::package node_widget_factory_builder::_load_package(const std::filesystem::path& package_root_dir_path)
     {
         using namespace std::filesystem;
-        LOG_DEBUG("[gammou][load package] Scanning package '%s'\n", dir_path.generic_string().c_str());
+        LOG_DEBUG("[gammou][load package] Scanning package '%s'\n", package_root_dir_path.generic_string().c_str());
 
         //  a package is a directory
         if (!is_directory(package_root_dir_path))
