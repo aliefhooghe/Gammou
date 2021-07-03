@@ -44,8 +44,8 @@ void node_initialize(const wav_channel *sample, granular_state *state)
 
     const float radius = 0.3f;
     for (unsigned int i = 0u; i < GRAIN_COUNT; i++) {
-        state->grains[i].grain_center = -1000.f;//rnd_float(state, 5.f, 1.f);
-        state->grains[i].grain_cursor = -1.f;// state->grains[i].grain_center + (state->time - state->first_grain_time);
+        state->grains[i].grain_center = -1000.f;
+        state->grains[i].grain_cursor = -1.f;
     }
 }
 
@@ -81,7 +81,7 @@ void node_process(const wav_channel *sample, granular_state *state, float pos, f
 
         if (env_cursor > max_env_cursor)
         {
-            state->first_grain_time += rnd_float(state, radius, radius_width);
+            state->first_grain_time += (rnd_float(state, radius, radius_width) / speed);
             state->grains[i].grain_center = rnd_float(state, pos, width);
             state->grains[i].grain_cursor = state->grains[i].grain_center + (state->time - state->first_grain_time) * speed;
         }
