@@ -10,9 +10,9 @@ namespace Gammou
     {
         const auto patch_dir_path = configuration::get_patch_path();
 
-        auto preset_name_input = std::make_unique<View::text_input>(110, 21, View::size_constraint{110});
-        auto save_button = std::make_unique<View::text_push_button>("Save", 80, 21, View::size_constraint{60, 120});
-        auto update_button = std::make_unique<View::text_push_button>("Update", 195, 21);
+        auto preset_name_input = std::make_unique<View::text_input>();
+        auto save_button = std::make_unique<View::text_push_button>("Save");
+        auto update_button = std::make_unique<View::text_push_button>("Update");
 
         auto filesystem_view = std::make_unique<View::filesystem_view>(patch_dir_path, 140, 90);
 
@@ -61,6 +61,7 @@ namespace Gammou
                 }
             });
 
+        save_button->freeze_size();
         save_button->set_callback(
             [&app, input = preset_name_input.get(), fv = filesystem_view.get(), patch_dir_path]()
             {
@@ -94,6 +95,7 @@ namespace Gammou
                 builder.vertical(
                     builder.horizontal(
                         std::move(preset_name_input), std::move(save_button)),
+                    std::move(update_button),
                     std::move(filesystem_view)
                 ));
     }

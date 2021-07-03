@@ -72,7 +72,7 @@ namespace Gammou
                         make_patch_browser(*this),
                         builder.header(std::move(factory_browser)),
                         builder.header(std::move(configuration_browser))),
-                    builder.vertical<false>(
+                    builder.vertical(
                         _make_toolbox(synth, std::move(additional_toolbox)),
                         std::move(main_editor_proxy)
                 )));
@@ -81,7 +81,7 @@ namespace Gammou
     std::unique_ptr<View::widget> application::_make_toolbox(synthesizer& synth, std::unique_ptr<View::widget>&& additional_toolbox)
     {
         // Reset button
-        auto reset_button = std::make_unique<View::text_push_button>("Reset", 80, 21, View::size_constraint{60});
+        auto reset_button = std::make_unique<View::text_push_button>("Reset");
         reset_button->set_callback([this]() { _configuration_widget->reset_editor(); });
 
         // Voicing modes
