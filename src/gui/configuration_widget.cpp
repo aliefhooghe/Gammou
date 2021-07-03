@@ -38,10 +38,10 @@ namespace Gammou
         void rename(const std::string& name) override;
 
         std::unique_ptr<abstract_configuration_directory> create_directory(
-            std::string& desired_name, std::weak_ptr<View::widget> widget) override;
+            std::string& desired_name, std::shared_ptr<View::widget>&& widget) override;
 
         std::unique_ptr<abstract_configuration_page> create_page(
-            std::string &desired_name, std::weak_ptr<View::widget> widget) override;
+            std::string &desired_name, std::shared_ptr<View::widget>&& widget) override;
 
     private:
         configuration_widget& _config_widget;
@@ -93,21 +93,21 @@ namespace Gammou
     }
 
     std::unique_ptr<abstract_configuration_directory> configuration_directory::create_directory(
-        std::string &desired_name, std::weak_ptr<View::widget> widget)
+        std::string &desired_name, std::shared_ptr<View::widget>&& widget)
     {
         auto new_dir = std::make_unique<configuration_directory>(
             _config_widget,
-            _dir->insert_config_dir(desired_name, configuration_tree{widget}));
+            _dir->insert_config_dir(desired_name, configuration_tree{std::move(widget)}));
         _config_widget.update();
         return new_dir;
     }
 
     std::unique_ptr<abstract_configuration_page> configuration_directory::create_page(
-        std::string &desired_name, std::weak_ptr<View::widget> widget)
+        std::string &desired_name, std::shared_ptr<View::widget>&& widget)
     {
         auto new_page = std::make_unique<configuration_page>(
             _config_widget,
-            _dir->insert_config_leaf(desired_name, configuration_leaf{widget}));
+            _dir->insert_config_leaf(desired_name, configuration_leaf{std::move(widget)}));
         _config_widget.update();
         return new_page;
     }
@@ -293,7 +293,7 @@ namespace Gammou
         update();
 
         //  Select master circuit by default
-        _editor_proxy.set_widget(_master_circuit_widget);
+        _master_circuit_dir->display();
 
         // Recompile circuits
         _synthesizer.get_master_circuit_controller().compile();
@@ -302,16 +302,25 @@ namespace Gammou
 
     void configuration_widget::_initialize()
     {
-        _initialize_circuit_editors();
+        // initialize circuit editors
+        auto master_editor = synthesizer_gui::make_editor(_synthesizer.get_master_circuit_controller());
+        auto polyphonic_editor = synthesizer_gui::make_editor(_synthesizer.get_polyphonic_circuit_controller());
+
+        _master_circuit_editor = master_editor.get();
+        _polyphonic_circuit_editor = polyphonic_editor.get();
+
+        auto master_circuit_widget = _wrap_editor(std::move(master_editor));
+        auto polyphonic_circuit_widget = _wrap_editor(std::move(polyphonic_editor));
+
 
         std::string master_name = "Master";
         std::string polyphonic_name = "Polyphonic";
 
         auto& root = data_model();
         auto& master_circuit_dir =
-            root.insert_config_dir(master_name, configuration_tree{_master_circuit_widget, &_synthesizer.get_master_circuit_controller()});
+            root.insert_config_dir(master_name, configuration_tree{std::move(master_circuit_widget), &_synthesizer.get_master_circuit_controller()});
         auto& polyphonic_circuit_dir =
-            root.insert_config_dir(polyphonic_name, configuration_tree{_polyphonic_circuit_widget, &_synthesizer.get_polyphonic_circuit_controller()});
+            root.insert_config_dir(polyphonic_name, configuration_tree{std::move(polyphonic_circuit_widget), &_synthesizer.get_polyphonic_circuit_controller()});
 
         _master_circuit_dir = std::make_unique<configuration_directory>(*this, master_circuit_dir);
         _polyphonic_circuit_dir = std::make_unique<configuration_directory>(*this, polyphonic_circuit_dir);
@@ -328,18 +337,6 @@ namespace Gammou
             });
 
         reset_editor();
-    }
-
-    void configuration_widget::_initialize_circuit_editors()
-    {
-        auto master_editor = synthesizer_gui::make_editor(_synthesizer.get_master_circuit_controller());
-        auto polyphonic_editor = synthesizer_gui::make_editor(_synthesizer.get_polyphonic_circuit_controller());
-
-        _master_circuit_editor = master_editor.get();
-        _polyphonic_circuit_editor = polyphonic_editor.get();
-
-        _master_circuit_widget = _wrap_editor(std::move(master_editor));
-        _polyphonic_circuit_widget = _wrap_editor(std::move(polyphonic_editor));
     }
 
     std::shared_ptr<View::widget> configuration_widget::_wrap_editor(std::unique_ptr<circuit_editor>&& editor)

@@ -111,12 +111,12 @@ namespace Gammou {
                 });
 
             const View::layout_builder builder{};
-            _config_widget = builder.shared_header(
+            auto config_widget = builder.shared_header(
                 builder.vertical(std::move(update_button), std::move(samples_browser)));
 
             /// Create the configuration directory
             auto new_name = name();
-            _config_page = parent_config.create_page(new_name, _config_widget);
+            _config_page = parent_config.create_page(new_name, std::move(config_widget));
             set_name(new_name);
         }
 
@@ -124,7 +124,6 @@ namespace Gammou {
         std::optional<std::filesystem::path> _sample_path{};
         unsigned int _sample_channel_id{0u};
         std::unique_ptr<abstract_configuration_page> _config_page{};
-        std::shared_ptr<View::widget> _config_widget{};
     };
 
     /**

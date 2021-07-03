@@ -150,7 +150,7 @@ namespace Gammou {
                 });
 
             View::layout_builder builder{};
-            _editor_widget =
+            auto editor_widget =
                 builder.shared_vertical(
                     builder.header(
                         builder.vertical(
@@ -164,7 +164,7 @@ namespace Gammou {
 
             //  Create editor dir with available name
             std::string new_name = node_name;
-            _config_dir = parent_config.create_directory(new_name, _editor_widget);
+            _config_dir = parent_config.create_directory(new_name, std::move(editor_widget));
             set_name(new_name);
             name_text_input_ptr->set_text(new_name);
 
@@ -202,7 +202,6 @@ namespace Gammou {
         DSPJIT::composite_node *_composite_node;
         std::unique_ptr<abstract_configuration_directory> _config_dir{};
         circuit_editor *_internal_editor{};
-        std::shared_ptr<View::widget> _editor_widget{};
     };
 
     // Composite node plugin implementation

@@ -6,8 +6,8 @@ namespace Gammou {
     /**
      *  Configuration leaf implementation
      */
-    configuration_leaf::configuration_leaf(const std::weak_ptr<View::widget> ed, synthesizer::circuit_controller* circuit_ctl)
-    : _config_widget{ ed }, _circuit_controller{ circuit_ctl }
+    configuration_leaf::configuration_leaf(std::shared_ptr<View::widget>&& ed, synthesizer::circuit_controller* circuit_ctl)
+    : _config_widget{ std::move(ed) }, _circuit_controller{ circuit_ctl }
     {
 
     }
@@ -26,8 +26,8 @@ namespace Gammou {
      *  Configuration tree implementation
      */
 
-    configuration_tree::configuration_tree(const std::weak_ptr<View::widget> ed, synthesizer::circuit_controller* circuit_ctl)
-    : _config_widget{ ed }, _circuit_controller{ circuit_ctl }
+    configuration_tree::configuration_tree(std::shared_ptr<View::widget>&& ed, synthesizer::circuit_controller* circuit_ctl)
+    : _config_widget{ std::move(ed) }, _circuit_controller{ circuit_ctl }
     {}
 
     std::weak_ptr<View::widget> configuration_tree::get_config_widget()

@@ -10,8 +10,8 @@ namespace Gammou
     {
     public:
         ~abstract_configuration_directory() override = default;
-        virtual std::unique_ptr<abstract_configuration_directory> create_directory(std::string &desired_name, std::weak_ptr<View::widget> widget) =0;
-        virtual std::unique_ptr<abstract_configuration_page> create_page(std::string &desired_name, std::weak_ptr<View::widget> widget) =0;
+        virtual std::unique_ptr<abstract_configuration_directory> create_directory(std::string &desired_name, std::shared_ptr<View::widget>&& widget) =0;
+        virtual std::unique_ptr<abstract_configuration_page> create_page(std::string &desired_name, std::shared_ptr<View::widget>&& widget) =0;
     };
 
 }

@@ -13,7 +13,7 @@ namespace Gammou {
     {
         friend class configuration_tree;
     public:
-        explicit configuration_leaf(const std::weak_ptr<View::widget> ed = {}, synthesizer::circuit_controller* circuit_ctl = nullptr);
+        explicit configuration_leaf(std::shared_ptr<View::widget>&& ed = {}, synthesizer::circuit_controller* circuit_ctl = nullptr);
         configuration_leaf(const configuration_leaf&) = delete;
         configuration_leaf(configuration_leaf&&) noexcept = default;
 
@@ -29,7 +29,7 @@ namespace Gammou {
         synthesizer::circuit_controller* get_circuit_controller() const noexcept;
 
     private:
-        std::weak_ptr<View::widget> _config_widget{};
+        std::shared_ptr<View::widget> _config_widget{};
         synthesizer::circuit_controller* _circuit_controller{ nullptr };
     };
 
@@ -39,7 +39,9 @@ namespace Gammou {
         using implem =
             View::abstract_storage_directory_model<std::string, configuration_leaf, View::alphabetical_compare, configuration_tree>;
     public:
-        configuration_tree(const std::weak_ptr<View::widget> ed = {}, synthesizer::circuit_controller* circuit_ctl = nullptr);
+        configuration_tree(std::shared_ptr<View::widget>&& ed = {}, synthesizer::circuit_controller* circuit_ctl = nullptr);
+        configuration_tree(const configuration_tree&) = delete;
+        configuration_tree(configuration_tree&&) noexcept = default;
 
         /**
          * \brief Get the configuration widget linked to this node
@@ -97,7 +99,7 @@ namespace Gammou {
         configuration_tree* _find_parent(const configuration_leaf& child, std::string& key);
         void _find_available_name(std::string& desired_name);
 
-        std::weak_ptr<View::widget> _config_widget{};
+        std::shared_ptr<View::widget> _config_widget{};
         synthesizer::circuit_controller* _circuit_controller{ nullptr };
     };
 
