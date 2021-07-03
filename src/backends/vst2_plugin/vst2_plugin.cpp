@@ -9,90 +9,6 @@
 
 namespace Gammou {
 
-    static constexpr char* opcode_names[] =
-    {
-        "effOpen",
-        "effClose",
-        "effSetProgram",
-        "effGetProgram",
-        "effSetProgramName",
-        "effGetProgramName",
-        "effGetParamLabel",
-        "effGetParamDisplay",
-        "effGetParamName",
-        "effGetVu",
-        "effSetSampleRate",
-        "effSetBlockSize",
-        "effMainsChanged",
-        "effEditGetRect",
-        "effEditOpen",
-        "effEditClose",
-        "effEditDraw",
-        "effEditMouse",
-        "effEditKey",
-        "effEditIdle",
-        "effEditTop",
-        "effEditSleep",
-        "effIdentify",
-        "effGetChunk",
-        "effSetChunk",
-        "effProcessEvents",
-        "effCanBeAutomated",
-        "effString2Parameter",
-        "effGetNumProgramCategories",
-        "effGetProgramNameIndexed",
-        "effCopyProgram",
-        "effConnectInput",
-        "effConnectOutput",
-        "effGetInputProperties",
-        "effGetOutputProperties",
-        "effGetPlugCategory",
-        "effGetCurrentPosition",
-        "effGetDestinationBuffer",
-        "effOfflineNotify",
-        "effOfflinePrepare",
-        "effOfflineRun",
-        "effProcessVarIo",
-        "effSetSpeakerArrangement",
-        "effSetBlockSizeAndSampleRate",
-        "effSetBypass",
-        "effGetEffectName",
-        "effGetErrorText",
-        "effGetVendorString",
-        "effGetProductString",
-        "effGetVendorVersion",
-        "effVendorSpecific",
-        "effCanDo",
-        "effGetTailSize",
-        "effIdle",
-        "effGetIcon",
-        "effSetViewPosition",
-        "effGetParameterProperties",
-        "effKeysRequired",
-        "effGetVstVersion",
-        "effEditKeyDown",
-        "effEditKeyUp",
-        "effSetEditKnobMode",
-        "effGetMidiProgramName",
-        "effGetCurrentMidiProgram",
-        "effGetMidiProgramCategory",
-        "effHasMidiProgramsChanged",
-        "effGetMidiKeyName",
-        "effBeginSetProgram",
-        "effEndSetProgram",
-        "effGetSpeakerArrangement",
-        "effShellGetNextPlugin",
-        "effStartProcess",
-        "effStopProcess",
-        "effSetTotalSampleToProcess",
-        "effSetPanLaw",
-        "effBeginLoadBank",
-        "effBeginLoadProgram",
-        "effSetProcessPrecision",
-        "effGetNumMidiInputChannels",
-        "effGetNumMidiOutputChannels"
-    };
-
     vst2_plugin::vst2_plugin(audioMasterCallback master)
     :   _synthesizer{_llvm_context}
     {
@@ -238,9 +154,6 @@ namespace Gammou {
                 break;
 
             default:
-                if (effEditIdle != opcode && opcode <= effGetNumMidiOutputChannels) {
-                    LOG_INFO("[vst2_plugin] Received unhandled opcode : %s\n", opcode_names[opcode]);
-                }
                 return 0u;
         }
 
