@@ -41,7 +41,7 @@ namespace Gammou
             DSPJIT::graph_execution_context& polyphonic_context);
 
         void set_voice_mode(mode);
-        voice_manager::mode voice_manager::get_voice_mode() const noexcept;
+        voice_manager::mode get_voice_mode() const noexcept;
         bool note_on(note, float velocity);
         bool note_off(note);
         void process_one_sample(float output[]);
