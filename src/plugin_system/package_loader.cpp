@@ -52,7 +52,7 @@ namespace Gammou {
         }
         catch (const std::exception& e)
         {
-            LOG_ERROR("[Package loader] Could not load package at '%'\n%s\n",
+            LOG_ERROR("[Package loader] Could not load package at '%s'\n%s\n",
                 package_root_dir_path.generic_string().c_str(), e.what());
         }
 
