@@ -318,8 +318,9 @@ namespace Gammou {
                 _socket_highlight_x = cx + focused_node->pos_x();
                 _socket_highlight_y = cy + focused_node->pos_y();
                 invalidate();
-                return true;
             }
+
+            return true;
         }
         else {
             if (_last_focused != nullptr || _socket_highlighting == true) {
