@@ -177,7 +177,7 @@ namespace Gammou {
         auto module = load_ir_modules(ctx, desc.modules_paths);
         auto plugin = std::make_unique<node_widget_external_plugin>(desc.plugin_id, desc.name, desc.category, desc.static_chunk, std::move(module));
         plugin->set_input_names(std::vector<std::string>(desc.input_names));
-        plugin->set_input_names(std::vector<std::string>(desc.input_names));
+        plugin->set_output_names(std::vector<std::string>(desc.output_names));
         return plugin;
     }
 
