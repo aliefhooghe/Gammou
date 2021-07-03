@@ -17,6 +17,9 @@ namespace Gammou {
         configuration_leaf(const configuration_leaf&) = delete;
         configuration_leaf(configuration_leaf&&) noexcept = default;
 
+        configuration_leaf& operator= (const configuration_leaf&) = delete;
+        configuration_leaf& operator= (configuration_leaf&&) = default;
+
         /**
          * \brief Get the configuration widget linked to this leaf
          */
@@ -42,6 +45,9 @@ namespace Gammou {
         configuration_tree(std::shared_ptr<View::widget>&& ed = {}, synthesizer::circuit_controller* circuit_ctl = nullptr);
         configuration_tree(const configuration_tree&) = delete;
         configuration_tree(configuration_tree&&) noexcept = default;
+
+        configuration_tree& operator= (configuration_tree&) = delete;
+        configuration_tree& operator= (configuration_tree&&) noexcept = default;
 
         /**
          * \brief Get the configuration widget linked to this node
