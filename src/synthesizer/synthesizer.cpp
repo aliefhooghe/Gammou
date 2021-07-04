@@ -79,7 +79,7 @@ namespace Gammou {
 
         _parameter_manager{samplerate}
     {
-        std::fill_n(_midi_learn_map.begin(), 255u, parameter_manager::INVALID_PARAM);
+        std::fill_n(_midi_learn_map.begin(), _midi_learn_map.size(), parameter_manager::INVALID_PARAM);
         set_sample_rate(samplerate);
     }
 
