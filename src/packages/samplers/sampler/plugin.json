@@ -3,6 +3,6 @@
     "uid"  : 15239750269115967853,
     "category" : "Sampler",
     "input-names" : ["pos", "speed"],
-    "output-names" : ["out"],
+    "output-names" : ["Lin", "Raw"],
     "static-chunk-type" : "wav-channel"
 }

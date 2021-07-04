@@ -1,6 +1,7 @@
 
 #include <math.h>
 #include <synthesizer_def.h>
+#include <sample_utils.h>
 
 #define GRAIN_COUNT 16u
 
@@ -54,21 +55,6 @@ static float grain_env(float t, float dev)
     return expf(-t * t / (2.f * dev * dev));
 }
 
-static float get_sample(const wav_channel *sample, int idx)
-{
-    if (idx < 0 || idx >= sample->sample_count)
-        return 0.f;
-    else
-        return sample->samples[idx];
-}
-
-static float sample_value(const wav_channel *sample, float pos)
-{
-    const int idx = (int)(pos * _sample_rate);
-    const float factor = pos - (float)idx;
-    return factor * get_sample(sample, idx) + (1.f - factor) * get_sample(sample, idx);
-}
-
 void node_process(const wav_channel *sample, granular_state *state, float pos, float width, float radius, float radius_width, float dev, float speed, float *out)
 {
     const float dt = 1.f / _sample_rate;
@@ -87,7 +73,7 @@ void node_process(const wav_channel *sample, granular_state *state, float pos, f
         }
 
         const float updated_env_cursor = state->grains[i].grain_cursor - state->grains[i].grain_center;
-        output += sample_value(sample, state->grains[i].grain_cursor) * grain_env(env_cursor, dev);
+        output += channel_value_lin(sample, state->grains[i].grain_cursor) * grain_env(env_cursor, dev);
         state->grains[i].grain_cursor += dt * speed;
     }
 

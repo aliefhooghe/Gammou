@@ -226,18 +226,24 @@ add_gammou_plugin(
     PLUGIN_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/samplers/sampler/plugin.json
     SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/samplers/sampler/process.c)
+        ${CMAKE_CURRENT_SOURCE_DIR}/samplers/sampler/process.c
+    INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_SOURCE_DIR}/samplers/common_libs)
 
 add_gammou_plugin(
     Granular
     PLUGIN_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/samplers/granular/plugin.json
     SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/samplers/granular/process.c)
+        ${CMAKE_CURRENT_SOURCE_DIR}/samplers/granular/process.c
+    INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_SOURCE_DIR}/samplers/common_libs)
 
 add_gammou_package(
     Samplers
     CONTENT_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/samplers/content.json
     PLUGINS
-        Sampler Granular)
+        Sampler Granular
+    COMMON_LIBS
+        ${CMAKE_CURRENT_SOURCE_DIR}/samplers/common_libs/sample_utils.c)
