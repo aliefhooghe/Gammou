@@ -12,7 +12,10 @@ namespace Gammou {
                 return package_path;
         }
         else if (auto home = std::getenv("HOME")) {
-            const auto package_path = std::filesystem::path{home} / home_suffix;
+            const auto package_path =
+                home_suffix != nullptr ?
+                    std::filesystem::path{home} / home_suffix :
+                    std::filesystem::path{home};
             if (std::filesystem::is_directory(package_path))
                 return package_path;
         }
@@ -33,7 +36,7 @@ namespace Gammou {
 
     std::filesystem::path configuration::get_samples_path()
     {
-        return get_config_dir(GAMMOU_SAMPLE_PATH_ENV, ".gammou/samples", "./samples");
+        return get_config_dir(GAMMOU_SAMPLE_PATH_ENV, nullptr, "./samples");
     }
 
 }
