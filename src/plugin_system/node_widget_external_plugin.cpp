@@ -61,7 +61,7 @@ namespace Gammou {
         }
 
     private:
-        void _load_wav_sample(const std::filesystem::path& sample_path)
+        bool _load_wav_sample(const std::filesystem::path& sample_path)
         {
             try {
                 LOG_INFO("[external_node_widget] Loading wav sample '%s'\n",
@@ -73,14 +73,17 @@ namespace Gammou {
                     _config_page->register_static_memory_chunk(node(), sample.clone_channel_data(0u));
                     _config_page->compile();
                     _sample_path = sample_path;
+                    return true;
                 }
                 else {
                     // TOTO : Not implemented
+                    return false;
                 }
             }
             catch (const std::exception& e)
             {
                 LOG_ERROR("[external_node_widget] Unable to load wav sample : '%s'\n", e.what());
+                return false;
             }
         }
 
@@ -98,9 +101,10 @@ namespace Gammou {
                     100, 100);
             // Sample selection callback
             samples_browser->set_value_select_callback(
-                [this](const auto& sample_path)
+                [this, br = samples_browser.get()](const auto& sample_path)
                 {
-                    _load_wav_sample(sample_path);
+                    if (!_load_wav_sample(sample_path))
+                        br->reset_selection();
                 });
 
             auto update_button = std::make_unique<View::text_push_button>("Update");

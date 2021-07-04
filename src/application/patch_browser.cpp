@@ -28,36 +28,33 @@ namespace Gammou
             });
 
         filesystem_view->set_value_select_callback(
-            [&app, name_input = preset_name_input.get(), patch_dir_path](const auto &preset_path)
+            [&app, name_input = preset_name_input.get(), patch_dir_path, fv = filesystem_view.get()](const auto &preset_path)
             {
                 LOG_INFO("[main gui] Loading patch '%s'\n", preset_path.generic_string().c_str());
 
-                nlohmann::json json;
-                std::ifstream stream{preset_path, std::ios_base::in};
-
-                if (!stream.good())
-                    return;
-
                 try
                 {
-                    stream >> json;
+                    nlohmann::json json;
+                    std::ifstream stream{preset_path, std::ios_base::in};
+
+                    if (!stream.good())
+                        throw std::invalid_argument("Unable to open patch file");
+                    else
+                        stream >> json;
+
+                    if (app.deserialize(json)) {
+                        const auto relative_path =
+                            std::filesystem::relative(preset_path, patch_dir_path);
+                        name_input->set_text(relative_path.generic_string());
+                    }
+                    else {
+                        throw std::invalid_argument("Unable to deserialize state from json object");
+                    }
                 }
                 catch (const std::exception &e)
                 {
-                    LOG_ERROR("[main gui] Failed to load json file : %s\n", e.what());
-                    return;
-                }
-                catch (...)
-                {
-                    LOG_ERROR("[main gui] Failed to load json file : unknown error\n");
-                    return;
-                }
-
-                if (app.deserialize(json))
-                {
-                    const auto relative_path =
-                        std::filesystem::relative(preset_path, patch_dir_path);
-                    name_input->set_text(relative_path.generic_string());
+                    LOG_ERROR("[main gui] Failed to load state : %s\n", e.what());
+                    fv->reset_selection();
                 }
             });
 
@@ -71,7 +68,7 @@ namespace Gammou
                     std::ofstream stream{preset_path, std::ios_base::trunc};
 
                     if (!stream.good())
-                        throw std::exception{};
+                        throw std::invalid_argument("Unable to open patch file for write");
 
                     const auto json = app.serialize();
                     stream << json.dump();
@@ -81,11 +78,7 @@ namespace Gammou
                 }
                 catch (const std::exception &e)
                 {
-                    LOG_ERROR("[main gui] Failed to save preset : %s\n", e.what());
-                }
-                catch (...)
-                {
-                    LOG_ERROR("[main gui] Failed to save preset : unknown error\n");
+                    LOG_ERROR("[main gui] Failed to save state : %s\n", e.what());
                 }
             });
 
