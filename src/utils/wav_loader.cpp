@@ -154,7 +154,7 @@ namespace Gammou {
         return channels;
     }
 
-    static std::vector<uint8_t> _load_bin_file(const std::filesystem::path& path)
+    static std::vector<uint8_t> _load_wav_file(const std::filesystem::path& path)
     {
         std::ifstream stream{path, std::ios::binary};
         if (!stream.is_open())
@@ -162,17 +162,24 @@ namespace Gammou {
 
         stream.seekg(0, std::ios::end);
         const auto file_size = stream.tellg();
-        std::vector<uint8_t> raw_data(file_size);
-        stream.seekg(std::ios::beg);
-        stream.read(reinterpret_cast<char*>(raw_data.data()), file_size);
-        stream.close();
 
-        return raw_data;
+        if (file_size <= sizeof(WAVE_file_header)) {
+            stream.close();
+            throw std::invalid_argument("wav loader : file is too small");
+        }
+        else {
+            std::vector<uint8_t> raw_data(file_size);
+            stream.seekg(std::ios::beg);
+            stream.read(reinterpret_cast<char*>(raw_data.data()), file_size);
+            stream.close();
+
+            return raw_data;
+        }
     }
 
     wav_sample load_wav_from_file(const std::filesystem::path& path)
     {
-        const auto raw_data = _load_bin_file(path);
+        const auto raw_data = _load_wav_file(path);
 
         //   Check file header
         const auto file_header = reinterpret_cast<const WAVE_file_header*>(raw_data.data());
@@ -187,7 +194,7 @@ namespace Gammou {
         WAVE_format_descriptor format;
 
         // Read block
-        while (cursor < end) {
+        while (cursor < (end - sizeof(WAVE_generic_block_header))) {
             const auto block_header = reinterpret_cast<const WAVE_generic_block_header*>(cursor);
 
             // format block
