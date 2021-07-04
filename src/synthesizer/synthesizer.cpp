@@ -197,6 +197,11 @@ namespace Gammou {
         return _voice_manager.get_voice_mode();
     }
 
+    std::size_t synthesizer::get_voice_count() const noexcept
+    {
+        return _polyphonic_circuit_context.get_instance_count();
+    }
+
     void synthesizer::dump_native_code(const std::string& filename_prefix)
     {
         const uint8_t *master_code_data = nullptr;

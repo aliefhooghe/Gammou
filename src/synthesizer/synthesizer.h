@@ -109,6 +109,9 @@ namespace Gammou
          */
         voice_mode get_voice_mode() const noexcept;
 
+
+        std::size_t get_voice_count() const noexcept;
+
         /**
          *  \brief Set the synthesizer main gain (output factor)
          *  \param gain Main gain to be applid on output
