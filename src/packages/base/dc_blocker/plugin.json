@@ -1,0 +1,7 @@
+{
+    "name" : "DC Blocker",
+    "uid"  : 15224846075776299583,
+    "category" : "Filter",
+    "input-names" : ["in"],
+    "output-names" : ["out"]
+}

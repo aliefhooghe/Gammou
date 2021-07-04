@@ -1,0 +1,7 @@
+{
+    "name" : "Sin",
+    "uid"  : 9371533241038442701,
+    "category" : "Oscillator",
+    "input-names" : ["freq"],
+    "output-names" : ["out"]
+}

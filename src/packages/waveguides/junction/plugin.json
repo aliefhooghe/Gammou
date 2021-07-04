@@ -1,0 +1,7 @@
+{
+    "name" : "Junction",
+    "uid"  : 12940517311460282712,
+    "category" : "Waveguides",
+    "input-names" : ["in -", "Refl", "in +"],
+    "output-names" : ["out +", "out -"]
+}

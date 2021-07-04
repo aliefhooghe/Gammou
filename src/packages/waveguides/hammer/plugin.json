@@ -1,0 +1,7 @@
+{
+    "name" : "Hammer",
+    "uid"  : 11468496073748411161,
+    "category" : "Waveguides",
+    "input-names" : ["in -", "k", "in +"],
+    "output-names" : ["out +", "out -"]
+}

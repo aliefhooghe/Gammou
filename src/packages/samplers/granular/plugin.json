@@ -1,0 +1,8 @@
+{
+    "name" : "Granular",
+    "uid"  : 375976094868895825,
+    "category" : "Sampler",
+    "input-names" : ["pos", "width", "radius", "radius_width", "dev", "speed"],
+    "output-names" : ["out"],
+    "static-chunk-type" : "wav-channel"
+}

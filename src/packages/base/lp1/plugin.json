@@ -1,0 +1,7 @@
+{
+    "name" : "Lp1",
+    "uid"  : 15071368858070565797,
+    "category" : "Filter",
+    "input-names" : ["in", "cutoff"],
+    "output-names" : ["out"]
+}

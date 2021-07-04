@@ -1,0 +1,7 @@
+{
+    "name" : "Moog Ladder",
+    "uid"  : 17616764063811089248,
+    "category" : "Filter",
+    "input-names" : ["In", "Cutoff", "G"],
+    "output-names" : ["out"]
+}

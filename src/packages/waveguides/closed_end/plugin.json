@@ -1,0 +1,7 @@
+{
+    "name" : "Closed End",
+    "uid"  : 83883500291199227,
+    "category" : "Waveguides",
+    "input-names" : ["in"],
+    "output-names" : ["out"]
+}

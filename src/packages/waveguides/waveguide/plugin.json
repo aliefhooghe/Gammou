@@ -1,0 +1,7 @@
+{
+    "name" : "Waveguide",
+    "uid"  : 4056574897038437391,
+    "category" : "Waveguides",
+    "input-names" : ["in -", "t", "g", "in +"],
+    "output-names" : ["out +", "out -"]
+}

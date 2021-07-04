@@ -1,0 +1,7 @@
+{
+    "name" : "Opened End",
+    "uid"  : 16128341101362828553,
+    "category" : "Waveguides",
+    "input-names" : ["in"],
+    "output-names" : ["out"]
+}

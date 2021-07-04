@@ -1,0 +1,7 @@
+{
+    "name" : "Saw",
+    "uid"  : 2605014017441422226,
+    "category" : "Oscillator",
+    "input-names" : ["freq"],
+    "output-names" : ["out"]
+}

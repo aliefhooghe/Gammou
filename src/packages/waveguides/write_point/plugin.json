@@ -1,0 +1,7 @@
+{
+    "name" : "WritePoint",
+    "uid"  : 17719408104217638523,
+    "category" : "Waveguides",
+    "input-names" : ["in -", "Write", "in +"],
+    "output-names" : ["out +", "out -"]
+}
