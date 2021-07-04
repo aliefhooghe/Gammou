@@ -14,7 +14,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 option(GAMMOU_ENABLE_DESKTOP_APP "Build a desktop application" OFF)
 option(GAMMOU_ENABLE_VST2_PLUGIN "Build a VST2 plugin" ON)
-
+option(GAMMOU_DESKTOP_APP_BENCHMARK_MODE "Enable benchmark mode in desktop application" OFF)
 # Use static runtime library on MSVC
 if (WIN32)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -116,6 +116,10 @@ if (GAMMOU_ENABLE_DESKTOP_APP)
     add_executable(gammou_desktop_app ${GAMMOU_DESKTOP_SRC} ${GAMMOU_COMMON_SRC})
     target_include_directories(gammou_desktop_app PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${RTAUDIO_INCLUDE_DIR} ${RTMIDI_INCLUDE_DIR})
     target_link_libraries(gammou_desktop_app PUBLIC View DSPJIT ${RTMIDI_LIBRARIES} ${RTAUDIO_LIBRARIES})
+
+    if (GAMMOU_DESKTOP_APP_BENCHMARK_MODE)
+        target_compile_definitions(gammou_desktop_app PUBLIC "GAMMOU_BENCHMARK_MODE")
+    endif()
 endif()
 
 ############################

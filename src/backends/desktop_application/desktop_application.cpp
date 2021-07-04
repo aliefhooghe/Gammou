@@ -26,11 +26,11 @@ namespace Gammou {
 
         auto additional_toolbox =
             builder.horizontal<false>(
-                builder.header(_make_midi_device_widget())
-#ifndef GAMMOU_BENCHMARKING_MODE
-                ,
-                builder.header(_make_audio_device_widget())
+                builder.header(_make_midi_device_widget()),
+#ifndef GAMMOU_BENCHMARK_MODE
+                builder.header(_make_benchmark_toolbox()),
 #endif
+                builder.header(_make_debug_toolbox())
             );
 
         _application = std::make_unique<application>(_synthesizer, std::move(additional_toolbox));
@@ -47,17 +47,39 @@ namespace Gammou {
     void desktop_application::run()
     {
         _display->open("Gammou");
+#ifdef GAMMOU_BENCHMARK_MODE
 
-#ifdef GAMMOU_BENCHMARKING_MODE
+        const auto block_count = 20u;
+        const auto block_size = 30000u;
+        const auto count = block_count * block_size;
+
         auto minimum_sample_per_seconds = std::numeric_limits<float>::max();
+        bool send_note_on = true;
+        uint8_t current_note = 0;
         float dummy_output[2];
+
+        _synthesizer.set_sample_rate(44100.f);
+
         while (_display->is_open()) {
-            constexpr auto count = 100000u;
             const auto start = std::chrono::steady_clock::now();
             _synthesizer.update_program();
 
-            for (auto i = 0u; i < count; ++i)
-                _synthesizer.process_sample(nullptr, dummy_output);
+            for (auto j = 0u; j < block_count; ++j) {
+                for (auto i = 0u; i < block_size; ++i)
+                    _synthesizer.process_sample(nullptr, dummy_output);
+
+                if (send_note_on)
+                    _synthesizer.midi_note_on(current_note, 0.5);
+                else
+                    _synthesizer.midi_note_off(current_note, 0.5);
+
+                current_note++;
+
+                if (current_note >= 128) {
+                    current_note = 0u;
+                    send_note_on = !send_note_on;
+                }
+            }
 
             const auto end = std::chrono::steady_clock::now();
             const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
