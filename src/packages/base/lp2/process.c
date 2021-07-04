@@ -18,7 +18,7 @@ void node_process(struct filter_state *state, float in, float cutoff_freq, float
 {
     const float dt = 1.f / _sample_rate;
     const float Q = 0.125f / clamp(q, 0.015625f, 8192.f);
-    const float omega = CST_2_PI * clamp(cutoff_freq, 1.f, 18000.f);
+    const float omega = CST_2_PI * clamp(cutoff_freq, 8.f, _sample_rate / 2.f);
 
     const float a = omega * omega * dt * dt * dt;
     const float tmp = 4.f * omega * Q * dt;
