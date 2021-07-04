@@ -273,4 +273,20 @@ namespace Gammou {
         return midi_settings_widget;
     }
 
+    std::unique_ptr<View::widget> desktop_application::_make_debug_toolbox()
+    {
+        const View::layout_builder builder{};
+        auto button = std::make_unique<View::text_push_button>("Dump native code");
+
+        button->set_callback(
+            [this]()
+            {
+                _synthesizer.dump_native_code("native_code");
+            });
+
+        return builder.vertical(
+            std::move(button),
+            builder.empty_space());
+    }
+
 }

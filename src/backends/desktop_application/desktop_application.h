@@ -35,6 +35,7 @@ namespace Gammou {
         // toolbox construction
         std::unique_ptr<View::widget> _make_audio_device_widget();
         std::unique_ptr<View::widget> _make_midi_device_widget();
+        std::unique_ptr<View::widget> _make_debug_toolbox();
 
         /*
          *  Members

@@ -4,6 +4,8 @@
 #include "synthesizer.h"
 
 #include <iostream>
+#include <fstream>
+
 namespace Gammou {
 
     /**
@@ -195,6 +197,19 @@ namespace Gammou {
         return _voice_manager.get_voice_mode();
     }
 
+    void synthesizer::dump_native_code(const std::string& filename_prefix)
+    {
+        const uint8_t *master_code_data = nullptr;
+        const uint8_t *polyphonic_code_data = nullptr;
+        std::size_t master_code_size = 0u;
+        std::size_t polyphonic_code_size = 0u;
+
+        if (polyphonic_code_data = _polyphonic_circuit_context.get_native_code(polyphonic_code_size))
+            _dump_native_code(filename_prefix + "_polyponic.bin", polyphonic_code_data, polyphonic_code_size);
+        if (master_code_data = _master_circuit_context.get_native_code(master_code_size))
+            _dump_native_code(filename_prefix + "_master.bin", master_code_data, master_code_size);
+    }
+
     bool synthesizer::update_program() noexcept
     {
         const auto b1 = _master_circuit_context.update_program();
@@ -214,5 +229,15 @@ namespace Gammou {
 
         //  Apply master processing
         _master_circuit_context.process(polyphonic_output, output);
+    }
+
+    void synthesizer::_dump_native_code(const std::string& path, const uint8_t *data, std::size_t size)
+    {
+        std::ofstream output{path.c_str(), std::ios::binary};
+        if (output.is_open()) {
+            LOG_INFO("[synthesizer] Dumping native code to '%s'\n", path.c_str());
+            output.write(reinterpret_cast<const char*>(data), size);
+            output.close();
+        }
     }
 }

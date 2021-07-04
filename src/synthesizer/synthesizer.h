@@ -121,6 +121,11 @@ namespace Gammou
         auto get_main_gain() const noexcept { return _main_gain; }
 
         /**
+         * \brief Dump circuits native code objects to file
+         */
+        void dump_native_code(const std::string& filename_prefix);
+
+        /**
          **
          **    Process thread part
          **
@@ -213,6 +218,7 @@ namespace Gammou
         using param_id = parameter_manager::param_id;
 
         void _process_one_sample(const float[], float output[]) noexcept;
+        void _dump_native_code(const std::string& path, const uint8_t *data, std::size_t size);
 
         class master_circuit_controller : public circuit_controller
         {
