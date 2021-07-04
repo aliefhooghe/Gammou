@@ -137,6 +137,7 @@ namespace Gammou {
                     }
                     catch (std::exception&)
                     {
+                        input->set_text(name());
                         LOG_WARNING("[composite node][config toolbox] Cannot rename configuration\n");
                     }
                 });
