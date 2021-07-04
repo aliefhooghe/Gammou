@@ -25,7 +25,7 @@ namespace Gammou {
         const View::layout_builder builder{};
 
         auto additional_toolbox =
-            builder.horizontal(
+            builder.horizontal<false>(
                 builder.header(_make_midi_device_widget())
 #ifndef GAMMOU_BENCHMARKING_MODE
                 ,

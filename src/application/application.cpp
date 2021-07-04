@@ -109,6 +109,8 @@ namespace Gammou
         if (!additional_toolbox)
             return builder.header(std::move(common_toolbox));
         else
-            return builder.horizontal(builder.header(std::move(common_toolbox)), std::move(additional_toolbox));
+            return builder.horizontal<false>(
+                builder.header(std::move(common_toolbox)),
+                std::move(additional_toolbox));
     }
 }
