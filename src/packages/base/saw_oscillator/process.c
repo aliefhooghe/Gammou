@@ -1,7 +1,6 @@
 
 #include <synthesizer_def.h>
-
-#include "../common_libs/math_utils.h"
+#include <math_utils.h>
 
 struct saw_state
 {

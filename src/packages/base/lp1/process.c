@@ -1,6 +1,6 @@
 
 #include <synthesizer_def.h>
-#include "../common_libs/math_constant.h"
+#include <math_constant.h>
 
 struct lp1_state
 {

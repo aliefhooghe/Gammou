@@ -1,8 +1,7 @@
 
 #include <synthesizer_def.h>
-
-#include "../common_libs/math_constant.h"
-#include "../common_libs/math_utils.h"
+#include <math_constant.h>
+#include <math_utils.h>
 
 struct sin_state
 {

@@ -18,16 +18,42 @@ define_property(
 	FULL_DOCS "List of bytecode file generated for this plugin")
 
 
-function(add_llvm_bytecode_object source_file output_file)
+function(add_llvm_bytecode_object)
+	# Parse and check arguments
+	cmake_parse_arguments(
+		ARGS								# prefix
+		""									# bools
+		"SOURCE;OUTPUT"						# monovalued
+		"INCLUDE_DIRECTORIES"				# multivalued
+		${ARGN}
+	)
+
+	if (NOT ARGS_SOURCE)
+		message(FATAL_ERROR "add_llvm_bytecode_object missing SOURCE argument")
+	elseif (NOT ARGS_OUTPUT)
+		message(FATAL_ERROR "add_llvm_bytecode_object missing OUTPUT argument")
+	endif()
+
+	set (CLANG_IR_FLAGS
+		"-emit-llvm"
+		"-O2"
+		"-I${CMAKE_CURRENT_SOURCE_DIR}/common"
+	)
+
+	if (ARGS_INCLUDE_DIRECTORIES)
+		foreach(INC_DIR ${ARGS_INCLUDE_DIRECTORIES})
+			list(APPEND CLANG_IR_FLAGS "-I${INC_DIR}")
+		endforeach()
+	endif()
+
 	add_custom_command(
 		OUTPUT
-			${output_file}
+			${ARGS_OUTPUT}
 		COMMAND
 			clang
-			${source_file}
-			-c -emit-llvm -O2
-			-o ${output_file}
-			-I "${CMAKE_CURRENT_SOURCE_DIR}/common"
+			${ARGS_SOURCE}
+			-c ${CLANG_IR_FLAGS}
+			-o ${ARGS_OUTPUT}
 		DEPENDS
 			${source_file}
 		COMMAND_EXPAND_LISTS
@@ -39,7 +65,21 @@ endfunction()
 #          Add Gammou Plugin            #
 #                                       #
 #########################################
-function(add_gammou_plugin target plugin_file) # ... sources
+function(add_gammou_plugin target)
+	# Parse and check arguments
+	cmake_parse_arguments(
+		ARGS							# prefix
+		""								# bools
+		"PLUGIN_FILE"					# monovalued
+		"SOURCES;INCLUDE_DIRECTORIES"	# multivalued
+		${ARGN}
+	)
+
+	if (NOT ARGS_PLUGIN_FILE)
+		message(FATAL_ERROR "add_gammou_plugin missing PLUGIN_FILE argument")
+	elseif (NOT ARGS_SOURCES)
+		message(FATAL_ERROR "add_gammou_plugin missing SOURCES argument")
+	endif()
 
 	#	List of generated llvm ir modules
 	set(bytecode_modules)
@@ -49,10 +89,17 @@ function(add_gammou_plugin target plugin_file) # ... sources
 	file(MAKE_DIRECTORY ${plugin_dir})
 
 	#	Compile each source to llvm bytecode
-	foreach(source_file ${ARGN})
+	foreach(source_file ${ARGS_SOURCES})
 		get_filename_component(source_name ${source_file} NAME_WE)
 		set(output_file ${plugin_dir}/${source_name}.bc)
-		add_llvm_bytecode_object(${source_file} ${output_file})
+		add_llvm_bytecode_object(
+			SOURCE
+				${source_file}
+			OUTPUT
+				${output_file}
+			INCLUDE_DIRECTORIES
+				${ARGS_INCLUDE_DIRECTORIES}
+		)
 		list(APPEND bytecode_modules ${output_file})
 	endforeach()
 
@@ -66,10 +113,10 @@ function(add_gammou_plugin target plugin_file) # ... sources
 		ARGS
 			${PLUGIN_GENERATOR_PATH}
 			${plugin_content_file}
-			${plugin_file}
+			${ARGS_PLUGIN_FILE}
 			${bytecode_modules}
 		DEPENDS
-			${plugin_file}
+			${ARGS_PLUGIN_FILE}
 	)
 
 	#	Create the target
@@ -94,10 +141,10 @@ endfunction()
 function(add_gammou_package target)
 	# parse and check arguments
 	cmake_parse_arguments(
-		ARGS						# prefix
-		""							# bools
-		"CONTENT_FILE"				# monovalued
-		"PLUGINS;COMMON_LIBS"		# multivalued
+		ARGS										# prefix
+		""											# bools
+		"CONTENT_FILE"								# monovalued
+		"PLUGINS;COMMON_LIBS;INCLUDE_DIRECTORIES"	# multivalued
 		${ARGN}
 	)
 
@@ -153,7 +200,13 @@ function(add_gammou_package target)
 		foreach(source_file ${ARGS_COMMON_LIBS})
 			get_filename_component(source_name ${source_file} NAME_WE)
 			set(output_file ${package_libs_dir}/${source_name}.bc)
-			add_llvm_bytecode_object(${source_file} ${output_file})
+			add_llvm_bytecode_object(
+				SOURCE
+					${source_file}
+				OUTPUT
+					${output_file}
+				INCLUDE_DIRECTORIES
+					${ARGS_INCLUDE_DIRECTORIES})
 			list(APPEND package_lib_modules ${output_file})
 		endforeach()
 	endif()

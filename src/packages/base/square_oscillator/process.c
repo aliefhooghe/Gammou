@@ -1,6 +1,4 @@
-
-
-#include "../common_libs/math_utils.h"
+#include <math_utils.h>
 
 void node_initialize(void *state_ptr)
 {
