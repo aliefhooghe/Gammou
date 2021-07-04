@@ -1,0 +1,7 @@
+{
+    "name" : "Shannon Freq",
+    "uid"  : 16677944745340837006,
+    "category" : "Calculus",
+    "input-names" : [],
+    "output-names" : ["Freq"]
+}

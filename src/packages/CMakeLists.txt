@@ -7,6 +7,33 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/AddGammouPackage.cmake)
 #####################
 
 add_gammou_plugin(
+    Absolute
+    PLUGIN_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/absolute/plugin.json
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/absolute/process.c
+    INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
+
+add_gammou_plugin(
+    Clamp
+    PLUGIN_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/clamp/plugin.json
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/clamp/process.c
+    INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
+
+add_gammou_plugin(
+    Exp
+    PLUGIN_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/exp/plugin.json
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/exp/process.c
+    INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
+
+add_gammou_plugin(
     Tanh
     PLUGIN_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/base/tanh_plugin/plugin.json
@@ -105,22 +132,33 @@ add_gammou_plugin(
     INCLUDE_DIRECTORIES
         ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
 
+add_gammou_plugin(
+    ShannonFreq
+    PLUGIN_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/shannon_freq/plugin.json
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/shannon_freq/process.c)
+
 add_gammou_package(
     Base
     CONTENT_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/base/content.json
     PLUGINS
-        Invert
-        Tanh
+        Absolute
+        ADSRPlugin
+        BiquadLpPlugin
+        Clamp
+        DCBlocker
+        Exp
         HalfTanh
-        SinPlugin
-        SawPlugin
-        SquarePlugin
+        Invert
         Lp1Plugin
         Lp2Plugin
-        BiquadLpPlugin
-        DCBlocker
-        ADSRPlugin
+        SawPlugin
+        ShannonFreq
+        SinPlugin
+        SquarePlugin
+        Tanh
     COMMON_LIBS
         ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs/math_utils.c
     INCLUDE_DIRECTORIES
