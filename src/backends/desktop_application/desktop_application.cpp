@@ -28,7 +28,7 @@ namespace Gammou {
             builder.horizontal<false>(
                 builder.header(_make_midi_device_widget()),
 #ifndef GAMMOU_BENCHMARK_MODE
-                builder.header(_make_benchmark_toolbox()),
+                builder.header(_make_audio_device_widget()),
 #endif
                 builder.header(_make_debug_toolbox())
             );
