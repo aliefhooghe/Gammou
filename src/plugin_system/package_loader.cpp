@@ -61,7 +61,7 @@ namespace Gammou {
 
     node_widget_factory_builder& node_widget_factory_builder::load_packages(const std::filesystem::path& packages_dir_path)
     {
-        LOG_INFO("[gammou][load package] Scanning package directory '%s'\n", packages_dir_path.generic_string().c_str());
+        LOG_INFO("[package loader] Scanning package directory '%s'\n", packages_dir_path.generic_string().c_str());
 
         try {
             for (const auto& entry : std::filesystem::directory_iterator(packages_dir_path)) {
@@ -72,7 +72,7 @@ namespace Gammou {
         }
         catch (const std::exception& e)
         {
-            LOG_ERROR("[gammou][load all packages] Unable to list directory package '%s'.\n%s\n",
+            LOG_ERROR("[package loader]  Unable to list directory package '%s'.\n%s\n",
                 packages_dir_path.c_str(), e.what());
         }
 
@@ -93,12 +93,15 @@ namespace Gammou {
                 factory->add_library_module(std::move(package.lib_module));
         }
 
+        LOG_DEBUG("[package loader] Packages where loaded.\n");
         return factory;
     }
 
     void node_widget_factory_builder::_resolve_dependencies()
     {
         bool all_dependencies_satisfied = true;
+
+        LOG_DEBUG("[package loader] Checking package dependencies...\n");
 
         do {
             all_dependencies_satisfied = true;
@@ -108,12 +111,17 @@ namespace Gammou {
                 bool dependencies_satisfied = true;
 
                 for (const auto& dep : package.dependencies) {
-                    if (_packages.find(dep) == _packages.end())
+                    auto dep_it = _packages.find(dep);
+                    if (dep_it == _packages.end())
                     {
-                        LOG_WARNING("[package loader] Unable to load package '%s', dependency uid:%lld is missing\n",
-                            package.name, dep);
+                        LOG_ERROR("[package loader] Unable to load package '%s', dependency uid:%lld is missing\n",
+                            package.name.c_str(), dep);
                         dependencies_satisfied = false;
                         break;
+                    }
+                    else {
+                        LOG_DEBUG("[package loader] Package '%s' dependency '%s' (uid:%lld) is satisfied\n",
+                            package.name.c_str(), dep_it->second.name.c_str(), dep);
                     }
                 }
 
@@ -130,7 +138,7 @@ namespace Gammou {
     node_widget_factory_builder::package node_widget_factory_builder::_load_package(const std::filesystem::path& package_root_dir_path)
     {
         using namespace std::filesystem;
-        LOG_DEBUG("[gammou][load package] Scanning package '%s'\n", package_root_dir_path.generic_string().c_str());
+        LOG_DEBUG("[package loader] Scanning package '%s'\n", package_root_dir_path.generic_string().c_str());
 
         //  a package is a directory
         if (!is_directory(package_root_dir_path))
@@ -155,7 +163,7 @@ namespace Gammou {
             std::move(package_desc.dependencies)
         };
 
-        LOG_INFO("[gammou][load package] Loading package uid : 0x%016llx, name : '%s'\n",
+        LOG_INFO("[package loader] Loading package uid : 0x%016llx, name : '%s'\n",
             package_desc.uid,
             package_desc.package_name.c_str());
 
@@ -169,7 +177,7 @@ namespace Gammou {
             }
 
             //  Create and plugin into factory
-            LOG_DEBUG("[gammou][load package] Loading plugin uid : 0x%016lx, name : '%s'\n", node_class_desc.plugin_id, node_class_desc.name.c_str());
+            LOG_DEBUG("[package loader] Loading plugin uid : 0x%016lx, name : '%s'\n", node_class_desc.plugin_id, node_class_desc.name.c_str());
 
             try {
                 pack.loaded_plugins.emplace_back(
@@ -179,7 +187,7 @@ namespace Gammou {
             catch (const std::exception& e)
             {
                 // A plugin load failure is tolerable
-                LOG_ERROR("[gammou][load package] Failed to load plugin '%s'.\n%s\n",
+                LOG_ERROR("[package loader] Failed to load plugin '%s'.\n%s\n",
                     node_class_desc.name.c_str(), e.what());
             }
         }
@@ -191,7 +199,7 @@ namespace Gammou {
             if (lib_path.is_relative())
                 lib_path = package_root_dir_path / lib_path;
 
-            LOG_DEBUG("[gammou][load package] Loading common lib object %s\n",
+            LOG_DEBUG("[package loader] Loading common lib object %s\n",
                 lib_path.generic_string().c_str());
 
             auto module = llvm::parseIRFile(lib_path.string(), error, _llvm_context);
