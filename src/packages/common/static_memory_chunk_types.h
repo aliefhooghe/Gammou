@@ -8,6 +8,7 @@ extern "C" {
 typedef struct
 {
     unsigned int sample_count;
+    float sample_rate;
     float samples[1];
 } wav_channel;
 

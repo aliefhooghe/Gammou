@@ -32,12 +32,14 @@ namespace Gammou {
     std::vector<uint8_t> wav_sample::clone_channel_data(std::size_t channel_id) const
     {
         const auto data_size = _sample_count * sizeof(float);
-        std::vector<uint8_t> chunk(sizeof(wav_channel::sample_count) + data_size);
+        const auto header_size = sizeof(wav_channel::sample_count) + sizeof(wav_channel::sample_rate);
+        std::vector<uint8_t> chunk(header_size + data_size);
 
         const auto& chan = get_channel(channel_id);
         auto *raw_channel = reinterpret_cast<wav_channel*>(chunk.data());
 
         raw_channel->sample_count = _sample_count;
+        raw_channel->sample_rate = _sample_rate;
         std::memcpy(raw_channel->samples, chan.data(), data_size);
 
         return chunk;
