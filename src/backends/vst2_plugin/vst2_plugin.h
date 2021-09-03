@@ -21,7 +21,6 @@ namespace Gammou {
         /*
          *      VST callbacks
          */
-
         static intptr_t dispatcher_proc(AEffect* fx,
                                         int32_t opcode,
                                         int32_t index,
@@ -39,12 +38,22 @@ namespace Gammou {
         /*
          *      helpers
          */
+        void _call_master_callback(
+            int32_t opcode,
+            int32_t index,
+            intptr_t value,
+            void *ptr,
+            float opt);
+
         void _handle_event(const VstEvent& ev);
         std::size_t _load_state(const void *chunk, std::size_t size);
         std::size_t _save_state(void **chunk_ptr);
 
         //  Vst2 plugin instance
         AEffect* _effect;
+
+        //  Host control callback
+        const audioMasterCallback _master_callback;
 
         //  Processing
         llvm::LLVMContext _llvm_context{};

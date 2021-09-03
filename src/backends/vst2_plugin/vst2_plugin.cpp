@@ -10,7 +10,8 @@
 namespace Gammou {
 
     vst2_plugin::vst2_plugin(audioMasterCallback master)
-    :   _synthesizer{_llvm_context}
+    :   _synthesizer{_llvm_context},
+        _master_callback{master}
     {
         //  Allocate effect instance
         _effect = static_cast<AEffect*>(std::malloc(sizeof(AEffect)));
@@ -187,6 +188,16 @@ namespace Gammou {
             output_left_buffer[i] = tmp[0];
             output_right_buffer[i] = tmp[1];
         }
+    }
+
+    void vst2_plugin::_call_master_callback(
+            int32_t opcode,
+            int32_t index,
+            intptr_t value,
+            void *ptr,
+            float opt)
+    {
+        _master_callback(_effect, opcode, index, value, ptr, opt);
     }
 
     void vst2_plugin::_handle_event(const VstEvent &ev)
