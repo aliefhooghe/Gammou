@@ -107,6 +107,7 @@ find_package(nlohmann_json CONFIG REQUIRED)
 ############################
 
 if (GAMMOU_ENABLE_DESKTOP_APP)
+    message(STATUS "Build desktop application")
     find_package(RtAudio REQUIRED)
     find_package(RtMidi REQUIRED)
 
@@ -123,6 +124,12 @@ if (GAMMOU_ENABLE_DESKTOP_APP)
     if (GAMMOU_DESKTOP_APP_BENCHMARK_MODE)
         target_compile_definitions(gammou_desktop_app PUBLIC "GAMMOU_BENCHMARK_MODE")
     endif()
+
+    if(WIN32)
+        # Do not create a console application on windows
+        set_target_properties(gammou_desktop_app PROPERTIES LINK_FLAGS "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+    endif()
+
 endif()
 
 ############################
