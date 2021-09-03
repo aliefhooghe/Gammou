@@ -15,8 +15,8 @@
 
 namespace Gammou {
 
-    desktop_application::desktop_application(float samplerate, unsigned int input_count, unsigned int output_count)
-    : _synthesizer{_llvm_context, samplerate, input_count, output_count}
+    desktop_application::desktop_application(unsigned int input_count, unsigned int output_count)
+    : _synthesizer{_llvm_context, 44100.f, input_count, output_count}
     {
         // midi multiplex
         _initialize_midi_multiplex();
