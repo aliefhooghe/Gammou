@@ -215,6 +215,12 @@ namespace Gammou {
             _dump_native_code(filename_prefix + "_master.bin", master_code_data, master_code_size);
     }
 
+    void synthesizer::enable_ir_dump(bool enable)
+    {
+        _master_circuit_context.enable_ir_dump(enable);
+        _polyphonic_circuit_context.enable_ir_dump(enable);
+    }
+
     bool synthesizer::update_program() noexcept
     {
         const auto b1 = _master_circuit_context.update_program();

@@ -129,6 +129,11 @@ namespace Gammou
         void dump_native_code(const std::string& filename_prefix);
 
         /**
+         * \brief Enable/disable the IR code dump to logs
+         */
+        void enable_ir_dump(bool enable = true);
+
+        /**
          **
          **    Process thread part
          **
