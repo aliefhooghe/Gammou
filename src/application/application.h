@@ -12,9 +12,19 @@ namespace Gammou {
             synthesizer& synth,
             std::unique_ptr<View::widget>&& additional_toolbox = {});
 
+        /**
+         * \brief Serialize application state to json object
+         */
         nlohmann::json serialize();
+
+        /**
+         * \brief Deserialize application state from json object
+         */
         bool deserialize(nlohmann::json& json);
 
+        /**
+         * \brief Get a reference on the gui main widget
+         */
         View::widget& main_gui() noexcept;
 
     private:
