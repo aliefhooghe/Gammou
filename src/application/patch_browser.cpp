@@ -14,7 +14,7 @@ namespace Gammou
         auto save_button = std::make_unique<View::text_push_button>("Save");
         auto update_button = std::make_unique<View::text_push_button>("Update");
 
-        auto filesystem_view = std::make_unique<View::filesystem_view>(patch_dir_path, 140, 90);
+        auto filesystem_view = std::make_unique<View::filesystem_view>(patch_dir_path, 140, 250);
 
         LOG_INFO("[main gui] Using patch path '%s'\n",
                  patch_dir_path.generic_string().c_str());
