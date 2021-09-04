@@ -48,6 +48,7 @@ namespace Gammou {
         void _handle_event(const VstEvent& ev);
         std::size_t _load_state(const void *chunk, std::size_t size);
         std::size_t _save_state(void **chunk_ptr);
+        void _update_windos_rect();
 
         //  Vst2 plugin instance
         AEffect* _effect;

@@ -43,11 +43,7 @@ namespace Gammou {
 
         //  Initialize display
         _display = View::create_vst2_display(_application->main_gui(), 1);
-
-        _window_rect.left = 0u;
-        _window_rect.right = _display->px_width();
-        _window_rect.top = 0u;
-        _window_rect.bottom = _display->px_height();
+        _update_windos_rect();
     }
 
     AEffect *vst2_plugin::create_AEffect_instance(audioMasterCallback master)
@@ -263,6 +259,14 @@ namespace Gammou {
             LOG_ERROR("Failed to save VST2 state (unknown error)\n");
             return 0u;
         }
+    }
+
+    void vst2_plugin::_update_windos_rect()
+    {
+        _window_rect.left = 0u;
+        _window_rect.right = _display->px_width();
+        _window_rect.top = 0u;
+        _window_rect.bottom = _display->px_height();
     }
 
 } // namespace Gammou
