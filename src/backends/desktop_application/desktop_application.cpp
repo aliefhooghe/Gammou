@@ -206,6 +206,11 @@ namespace Gammou {
         }
     }
 
+    bool desktop_application::_ignore_api(RtAudio::Api api)
+    {
+        return (api == RtAudio::LINUX_ALSA);
+    }
+
     std::unique_ptr<View::widget> desktop_application::_make_audio_device_widget()
     {
         //  The model used to describe available audio devices
@@ -225,6 +230,9 @@ namespace Gammou {
         RtAudio::getCompiledApi(apis);
 
         for (const auto api : apis) {
+            if(_ignore_api(api))
+                continue;
+
             RtAudio rt_audio{api};
             auto& api_dir = audio_device_tree->get_or_create_directory(RtAudio::getApiDisplayName(api));
             const auto device_count = rt_audio.getDeviceCount();

@@ -31,6 +31,7 @@ namespace Gammou {
             unsigned int device_index,
             unsigned int sample_rate);
         void _stop_audio();
+        bool _ignore_api(RtAudio::Api);
 
         // toolbox construction
         std::unique_ptr<View::widget> _make_audio_device_widget();
