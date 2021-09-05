@@ -13,6 +13,7 @@ namespace Gammou
         auto preset_name_input = std::make_unique<View::text_input>();
         auto save_button = std::make_unique<View::text_push_button>("Save");
         auto update_button = std::make_unique<View::text_push_button>("Update");
+        auto remove_button = std::make_unique<View::text_push_button>("Remove");
 
         auto filesystem_view = std::make_unique<View::filesystem_view>(patch_dir_path, 140, 250);
 
@@ -25,6 +26,21 @@ namespace Gammou
             [fv = filesystem_view.get()]()
             {
                 fv->update();
+            });
+
+        remove_button->set_callback(
+            [fv = filesystem_view.get()]()
+            {
+                fv->visit_selected_item(
+                    [fv](const auto& item)
+                    {
+                        using item_type = std::decay_t<decltype(item)>;
+                        if constexpr (std::is_same_v<item_type, std::filesystem::path>) {
+                            std::remove(item.generic_string().c_str());
+                            fv->update();
+                        }
+                    }
+                );
             });
 
         filesystem_view->set_value_select_callback(
@@ -89,6 +105,7 @@ namespace Gammou
                     builder.horizontal(
                         std::move(preset_name_input), std::move(save_button)),
                     std::move(update_button),
+                    std::move(remove_button),
                     std::move(filesystem_view)
                 ));
     }
