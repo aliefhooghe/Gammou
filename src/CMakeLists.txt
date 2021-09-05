@@ -8,6 +8,11 @@ if (NOT WIN32)
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 endif()
 
+# Use static runtime library on MSVC
+if (WIN32)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
 
 ############################
 #                          #
@@ -18,10 +23,6 @@ endif()
 option(GAMMOU_ENABLE_DESKTOP_APP "Build a desktop application" OFF)
 option(GAMMOU_ENABLE_VST2_PLUGIN "Build a VST2 plugin" ON)
 option(GAMMOU_DESKTOP_APP_BENCHMARK_MODE "Enable benchmark mode in desktop application" OFF)
-# Use static runtime library on MSVC
-if (WIN32)
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-endif()
 
 ############################
 #                          #
