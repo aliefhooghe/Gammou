@@ -2,7 +2,6 @@
     "name" : "Clamp",
     "uid"  : 7692610958130762003,
     "category" : "Calculus",
-    "mutable-state-size": 0,
     "input-names" : ["in", "min", "max"],
     "output-names" : ["out"]
 }

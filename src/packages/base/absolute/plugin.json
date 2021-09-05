@@ -2,7 +2,6 @@
     "name" : "Absolute",
     "uid"  : 1235849085197680920,
     "category" : "Calculus",
-    "mutable-state-size": 0,
     "input-names" : ["in"],
     "output-names" : ["out"]
 }

@@ -2,7 +2,6 @@
     "name" : "Square",
     "uid"  : 11281339367032197477,
     "category" : "Oscillator",
-    "mutable-state-size": 8,
     "input-names" : ["freq", "phase"],
     "output-names" : ["out"]
 }

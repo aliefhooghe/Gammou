@@ -2,7 +2,6 @@
     "name" : "Tanh",
     "uid"  : 16829942394719614092,
     "category" : "Calculus",
-    "mutable-state-size": 0,
     "input-names" : ["in"],
     "output-names" : ["out"]
 }
