@@ -30,11 +30,11 @@ namespace Gammou
 
         /**
          *  \brief build a factory with the loaded packages
-         *  \note Resolve packages dependency befaore building, 
+         *  \note Resolve packages dependency before building,
          *  and remove packages with missing dependencies
          */
         std::unique_ptr<node_widget_factory> build();
-        
+
     private:
         struct package
         {
