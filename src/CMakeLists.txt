@@ -119,8 +119,8 @@ if (GAMMOU_ENABLE_DESKTOP_APP)
     )
 
     add_executable(gammou_desktop_app ${GAMMOU_DESKTOP_SRC} ${GAMMOU_COMMON_SRC})
-    target_include_directories(gammou_desktop_app PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})# ${RTAUDIO_INCLUDE_DIR} ${RTMIDI_INCLUDE_DIR})
-    target_link_libraries(gammou_desktop_app PUBLIC View DSPJIT RtMidi::rtmidi RtAudio::rtaudio)
+    target_include_directories(gammou_desktop_app PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(gammou_desktop_app PUBLIC View DSPJIT RtMidi::rtmidi RtAudio::rtaudio nlohmann_json::nlohmann_json nlohmann_json)
 
     if (GAMMOU_DESKTOP_APP_BENCHMARK_MODE)
         target_compile_definitions(gammou_desktop_app PUBLIC "GAMMOU_BENCHMARK_MODE")
