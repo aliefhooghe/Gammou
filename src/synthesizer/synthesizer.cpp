@@ -238,11 +238,19 @@ namespace Gammou {
 
     void synthesizer::_dump_native_code(const std::string& path, const uint8_t *data, std::size_t size)
     {
-        std::ofstream output{path.c_str(), std::ios::binary};
-        if (output.is_open()) {
-            LOG_INFO("[synthesizer] Dumping native code to '%s'\n", path.c_str());
-            output.write(reinterpret_cast<const char*>(data), size);
-            output.close();
+        if (size > 0)
+        {
+            std::ofstream output{path.c_str(), std::ios::binary};
+            if (output.is_open()) {
+                LOG_INFO("[synthesizer] Dumping native code to '%s'\n", path.c_str());
+                output.write(reinterpret_cast<const char*>(data), size);
+                output.close();
+            }
+        }
+        else
+        {
+            LOG_WARNING("[synthesizer][_dump_native_code] Empty native code was not dumped to '%s'.",
+                path.c_str());
         }
     }
 }
