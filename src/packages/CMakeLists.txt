@@ -1,6 +1,12 @@
+cmake_minimum_required (VERSION 3.15)
+project(GammouPackages)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/AddGammouPackage.cmake)
+# Include and configure the package generation helpers
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/AddGammouPackage.cmake)
+set(GAMMOU_PLUGIN_COMMON_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/common)
+set(GAMMOU_PACKAGE_GENERATOR_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../tools/package_generator.py)
+set(GAMMOU_PLUGIN_GENERATOR_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../tools/plugin_generator.py)
 
 #####################
 #        Base       #

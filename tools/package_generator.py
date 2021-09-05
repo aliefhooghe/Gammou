@@ -2,7 +2,6 @@
 
 import argparse
 import json
-import sys
 import os
 
 def unixPath(p):
@@ -10,9 +9,6 @@ def unixPath(p):
     return p.replace(os.path.sep, '/')
 
 def generate_content_file(output, package_content, plugin_contents, common_libs):
-    #   Get package directory
-    package_dir = os.path.dirname(output)
-
     #   Build plugin list
     package_plugins = []
     for p in plugin_contents:
@@ -50,8 +46,8 @@ def generate_content_file(output, package_content, plugin_contents, common_libs)
             json.dumps(input_content, sort_keys=True, indent=4))
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-o", "--output", help="package json source file", nargs=1, required=True)
+    parser = argparse.ArgumentParser(description="Generate a package content file with given plugins and common lib modules")
+    parser.add_argument("-o", "--output", help="package json output file", nargs=1, required=True)
     parser.add_argument("--package-content", help="package json source file", nargs=1, required=True)
     parser.add_argument("--plugins-content", help="plugins json sources files", nargs='*', required=False)
     parser.add_argument("--common-libs", help="additional bytecode module", nargs='*', required=False)

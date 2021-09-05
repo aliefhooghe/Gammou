@@ -4,9 +4,6 @@ cmake_minimum_required (VERSION 3.1)
 find_package (Python3 COMPONENTS Interpreter REQUIRED)
 include(CMakeParseArguments)
 
-set(PACKAGE_GENERATOR_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../tools/package_generator.py)
-set(PLUGIN_GENERATOR_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../tools/plugin_generator.py)
-
 define_property(
 	TARGET PROPERTY "GAMMOU_PLUGIN_CONTENT_FILE"
 	BRIEF_DOCS "Json file describing a plugin"
@@ -16,7 +13,6 @@ define_property(
 	TARGET PROPERTY "GAMMOU_PLUGIN_MODULES"
 	BRIEF_DOCS "List of bytecode file generated for this plugin"
 	FULL_DOCS "List of bytecode file generated for this plugin")
-
 
 function(add_llvm_bytecode_object)
 	# Parse and check arguments
@@ -37,8 +33,14 @@ function(add_llvm_bytecode_object)
 	set (CLANG_IR_FLAGS
 		"-emit-llvm"
 		"-O2"
-		"-I${CMAKE_CURRENT_SOURCE_DIR}/common"
+		# "-I${CMAKE_CURRENT_SOURCE_DIR}/common"
 	)
+
+	if (GAMMOU_PLUGIN_COMMON_INCLUDE_DIRECTORIES)
+		foreach(INC_DIR ${GAMMOU_PLUGIN_COMMON_INCLUDE_DIRECTORIES})
+			list(APPEND CLANG_IR_FLAGS "-I${INC_DIR}")
+		endforeach()
+	endif()
 
 	if (ARGS_INCLUDE_DIRECTORIES)
 		foreach(INC_DIR ${ARGS_INCLUDE_DIRECTORIES})
@@ -111,10 +113,10 @@ function(add_gammou_plugin target)
 		COMMAND
 			Python3::Interpreter
 		ARGS
-			${PLUGIN_GENERATOR_PATH}
-			${plugin_content_file}
-			${ARGS_PLUGIN_FILE}
-			${bytecode_modules}
+			${GAMMOU_PLUGIN_GENERATOR_PATH}
+			--output ${plugin_content_file}
+			--plugin-content ${ARGS_PLUGIN_FILE}
+			--modules ${bytecode_modules}
 		DEPENDS
 			${ARGS_PLUGIN_FILE}
 	)
@@ -219,13 +221,13 @@ function(add_gammou_package target)
 		COMMAND
 			Python3::Interpreter
 		ARGS
-			${PACKAGE_GENERATOR_PATH}
-			-o ${package_content_file}
+			${GAMMOU_PACKAGE_GENERATOR_PATH}
+			--output ${package_content_file}
 			--package-content ${ARGS_CONTENT_FILE}
 			--plugins-content ${all_plugin_content_files}
 			--common-libs ${package_lib_modules}
 		DEPENDS
-			${PACKAGE_GENERATOR_PATH}
+			${GAMMOU_PACKAGE_GENERATOR_PATH}
 			${package_lib_modules}
 			${all_plugin_content_files}
 			${ARGS_CONTENT_FILE}
