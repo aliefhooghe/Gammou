@@ -2,6 +2,7 @@
 #define GAMMOU_APPLICATION_H_
 
 #include "gui/configuration_widget.h"
+#include "voice_mode_selector.h"
 
 namespace Gammou {
 
@@ -37,6 +38,7 @@ namespace Gammou {
 
         std::unique_ptr<node_widget_factory> _factory{};
         configuration_widget *_configuration_widget{nullptr};
+        voice_mode_selector *_voice_mode_selector{nullptr};
         std::unique_ptr<View::widget> _main_gui{};
     };
 

@@ -1,13 +1,14 @@
 #include "application.h"
 #include "backends/common/configuration.h"
-#include "gui/factory_widget.h"
-#include "gui/configuration_widget.h"
-#include "gui/composite_node_plugin.h"
-#include "plugin_system/package_loader.h"
-#include "patch_browser.h"
 #include "builtin_plugins/load_builtin_plugins.h"
+#include "gui/composite_node_plugin.h"
+#include "gui/configuration_widget.h"
 #include "gui/control_node_widgets/load_control_plugins.h"
+#include "gui/factory_widget.h"
 #include "helpers/layout_builder.h"
+#include "patch_browser.h"
+#include "plugin_system/package_loader.h"
+#include "voice_mode_selector.h"
 
 namespace Gammou
 {
@@ -38,7 +39,12 @@ namespace Gammou
 
     bool application::deserialize(nlohmann::json& json)
     {
-        return _configuration_widget->deserialize_configuration(json);
+        const bool success = _configuration_widget->deserialize_configuration(json);
+
+        if (success)
+            _voice_mode_selector->sync();
+
+        return success;
     }
 
     View::widget& application::main_gui() noexcept
@@ -50,11 +56,11 @@ namespace Gammou
         synthesizer& synth,
         std::unique_ptr<View::widget>&& additional_toolbox)
     {
-        auto main_editor_proxy = std::make_unique<View::widget_proxy<>>(1200, 750);
-        auto factory_browser = std::make_unique<factory_widget>(*_factory, 100, 500);
+        auto main_editor_proxy = std::make_unique<View::widget_proxy<>>(1200, 720);
+        auto factory_browser = std::make_unique<factory_widget>(*_factory, 100, 300);
         auto configuration_browser =
             std::make_unique<configuration_widget>(
-                *factory_browser, synth, *main_editor_proxy, 210, 60);
+                *factory_browser, synth, *main_editor_proxy, 210, 150);
 
         // keep a pointer on the configuration widget
         _configuration_widget = configuration_browser.get();
@@ -84,27 +90,15 @@ namespace Gammou
         auto reset_button = std::make_unique<View::text_push_button>("Reset");
         reset_button->set_callback([this]() { _configuration_widget->reset_editor(); });
 
-        // Voicing modes
-        using voicing_mode_model =
-            View::storage_directory_model<
-                std::string,
-                synthesizer::voice_mode,
-                View::alphabetical_compare>;
-
-        auto voicing_modes = std::make_unique<voicing_mode_model>();
-        const auto& polyphonic_mode = voicing_modes->insert_value("Polyphonic", synthesizer::voice_mode::POLYPHONIC);
-        voicing_modes->insert_value("Legato", synthesizer::voice_mode::LEGATO);
-
-        auto voicing_modes_control = View::make_directory_view(std::move(voicing_modes), 150, 50);
-        voicing_modes_control->set_value_select_callback(
-            [&synth](const auto mode)
-            {
-                synth.set_voice_mode(mode);
-            });
-        voicing_modes_control->select_value(polyphonic_mode);
+        // Voice mode selector
+        auto voice_mode_control = std::make_unique<voice_mode_selector>(synth);
+        _voice_mode_selector = voice_mode_control.get();
 
         const View::layout_builder builder{};
-        auto common_toolbox = builder.vertical(std::move(reset_button), std::move(voicing_modes_control));
+        auto common_toolbox =
+            builder.vertical(
+                std::move(reset_button),
+                std::move(voice_mode_control));
 
         if (!additional_toolbox)
             return builder.header(std::move(common_toolbox));

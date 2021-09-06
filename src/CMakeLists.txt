@@ -35,6 +35,8 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/application/application.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/application/patch_browser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/application/patch_browser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/application/voice_mode_selector.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/application/voice_mode_selector.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/configuration.h
     ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/configuration.cpp
