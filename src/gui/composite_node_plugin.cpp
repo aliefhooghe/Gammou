@@ -13,17 +13,20 @@ namespace Gammou {
     struct composite_node_state
     {
         std::string name;
-        unsigned int input_count;
-        unsigned int output_count;
+        std::vector<std::string> input_names;
+        std::vector<std::string> output_names;
         nlohmann::json internal_circuit_state;
     };
 
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(composite_node_state, name, input_count, output_count, internal_circuit_state)
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(composite_node_state, name, input_names, output_names, internal_circuit_state)
 
     class composite_node_widget : public plugin_node_widget {
         static constexpr auto composite_input_id = "composite_input";
         static constexpr auto composite_output_id = "composite_output";
     public:
+        /**
+         * \brief Connstruct a fresh new composite node
+         */
         composite_node_widget(
             factory_widget& factory,
             abstract_configuration_directory& parent_config,
@@ -32,7 +35,9 @@ namespace Gammou {
         : plugin_node_widget{"name", composite_node_plugin::uid,
             [this, input_count, output_count]()
             {
-                auto node = std::make_unique<DSPJIT::composite_node>(input_count, output_count);
+                auto node =
+                    std::make_unique<DSPJIT::composite_node>(
+                        input_count,output_count);
                 _composite_node = node.get();
                 return std::move(node);
             }()},
@@ -43,6 +48,9 @@ namespace Gammou {
             _internal_editor->insert_node_widget(10, 10, _make_output_node());
         }
 
+        /**
+         * \brief Connstruct a composite node from saved state
+         */
         composite_node_widget(
             factory_widget& factory,
             abstract_configuration_directory& parent_config,
@@ -50,13 +58,22 @@ namespace Gammou {
         : plugin_node_widget{"name", composite_node_plugin::uid,
             [&state, this]()
             {
-                auto node = std::make_unique<DSPJIT::composite_node>(state.input_count, state.output_count);
+                auto node =
+                    std::make_unique<DSPJIT::composite_node>(
+                        state.input_names.size(),
+                        state.output_names.size());
                 _composite_node = node.get();
                 return std::move(node);
             }()},
           _factory{factory}
         {
             _initialize(parent_config, state.name);
+
+            // Restore IO names from state
+            for (auto i = 0; i < state.input_names.size(); ++i)
+                set_input_name(i, state.input_names[i]);
+            for (auto i = 0; i < state.output_names.size(); ++i)
+                set_output_name(i, state.output_names[i]);
 
             _internal_editor->deserialize(
                 state.internal_circuit_state,
@@ -75,10 +92,15 @@ namespace Gammou {
         {
             composite_node_state state{
                 name(),
-                node().get_input_count(),
-                node().get_output_count(),
+                std::vector<std::string>{get_input_count()},
+                std::vector<std::string>{get_output_count()},
                 _internal_editor->serialize()
             };
+
+            for (auto i = 0; i < state.input_names.size(); ++i)
+                state.input_names[i] = get_input_name(i);
+            for (auto i = 0; i < state.output_names.size(); ++i)
+                state.output_names[i] = get_output_name(i);
 
             nlohmann::json json;
             to_json(json, state);
@@ -88,14 +110,20 @@ namespace Gammou {
     private:
         std::unique_ptr<node_widget>_make_input_node()
         {
-            return std::make_unique<internal_node_widget>(
+            auto node = std::make_unique<internal_node_widget>(
                     "Input", composite_input_id, _composite_node->input());
+            for (auto i = 0u; i < get_input_count(); ++i)
+                node->set_output_name(i, get_input_name(i));
+            return node;
         }
 
         std::unique_ptr<node_widget> _make_output_node()
         {
-            return std::make_unique<internal_node_widget>(
+            auto node = std::make_unique<internal_node_widget>(
                     "Output", composite_output_id, _composite_node->output());
+            for (auto i = 0u; i < get_output_count(); ++i)
+                node->set_input_name(i, get_output_name(i));
+            return node;
         }
 
         void _initialize(abstract_configuration_directory& parent_config, const std::string& node_name)
