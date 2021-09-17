@@ -56,8 +56,8 @@ namespace Gammou
         static constexpr auto node_width = 120;
 
     private:
-        static auto _default_input_name(unsigned int idx) { return "In " + std::to_string(idx); }
-        static auto _default_output_name(unsigned int idx) { return "Out " + std::to_string(idx); }
+        static auto _default_input_name(unsigned int idx) { return "in " + std::to_string(idx); }
+        static auto _default_output_name(unsigned int idx) { return "out " + std::to_string(idx); }
 
         bool _input_id_at(unsigned int& input_id, float x, float y);
         bool _output_id_at(unsigned int& output_id, float x, float y);
