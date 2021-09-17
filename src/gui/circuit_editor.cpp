@@ -87,6 +87,18 @@ namespace Gammou {
             throw std::out_of_range("get_output_name: bad output_id");
     }
 
+     unsigned int node_widget::get_input_count()
+    {
+        _check_io_counts();
+        return _input_names.size();
+    }
+
+     unsigned int node_widget::get_output_count()
+    {
+        _check_io_counts();
+        return _output_names.size();
+    }
+
     void node_widget::draw(NVGcontext *vg)
     {
         // Check if IO have been added/removed

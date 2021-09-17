@@ -36,6 +36,9 @@ namespace Gammou
         const std::string& get_input_name(const unsigned int input_id);
         const std::string& get_output_name(const unsigned int output_id);
 
+        unsigned int get_input_count();
+        unsigned int get_output_count();
+
         auto& node() const noexcept { return _node; }
         auto& node() noexcept { return _node; }
 
