@@ -78,15 +78,20 @@ namespace Gammou
         save_button->set_callback(
             [&app, input = preset_name_input.get(), fv = filesystem_view.get(), patch_dir_path]()
             {
+                const auto preset_path = patch_dir_path / input->get_text();
+                LOG_INFO("[main gui] Saving patch '%s'\n", preset_path.generic_string().c_str());
+
                 try
                 {
-                    const auto preset_path = patch_dir_path / input->get_text();
-                    std::ofstream stream{preset_path, std::ios_base::trunc};
+                    // First: try to serialize
+                    const auto json = app.serialize();
 
+                    // Write file if serialize is successfull: avoid removing a valid state if
+                    // serialization fail
+                    std::ofstream stream{preset_path, std::ios_base::trunc};
                     if (!stream.good())
                         throw std::invalid_argument("Unable to open patch file for write");
 
-                    const auto json = app.serialize();
                     stream << json.dump();
                     stream.close();
                     fv->update();
