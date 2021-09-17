@@ -75,7 +75,7 @@ namespace Gammou {
         if (input_id < _input_names.size())
             return _input_names[input_id];
         else
-            throw std::out_of_range("input id");
+            throw std::out_of_range("get_input_name: bad input id");
     }
 
     const std::string& node_widget::get_output_name(const unsigned int output_id)
@@ -84,7 +84,7 @@ namespace Gammou {
         if (output_id < _output_names.size())
             return _output_names[output_id];
         else
-            throw std::out_of_range("output_id");
+            throw std::out_of_range("get_output_name: bad output_id");
     }
 
     void node_widget::draw(NVGcontext *vg)
