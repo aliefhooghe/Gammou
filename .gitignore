@@ -1,2 +1,4 @@
+.vscode
 /build/*
 /src/out
+/src/.vs
