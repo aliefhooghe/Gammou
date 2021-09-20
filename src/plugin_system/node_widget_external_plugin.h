@@ -2,7 +2,7 @@
 #define GAMMOU_NODE_WIDGET_EXTERNAL_PLUGIN_H_
 
 #include "node_widget_factory.h"
-#include "external_plugin.h" // DSPJIT
+#include "external_plugin/external_plugin.h" // DSPJIT
 
 #include <filesystem>
 #include <nlohmann/json.hpp>
