@@ -27,7 +27,7 @@ namespace Gammou {
         :   plugin_node_widget{name, id, std::move(node)},
             _chunk_type{chunk_type}
         {
-            LOG_INFO("CREATE external_node_widget with wav channel\n");
+            LOG_DEBUG("CREATE external_node_widget with wav channel\n");
             _initialize(parent_config);
         }
 

@@ -142,7 +142,7 @@ namespace Gammou {
 
         //  a package is a directory
         if (!is_directory(package_root_dir_path))
-            throw std::runtime_error("load_package : given path is not a directory");
+            throw std::runtime_error("load_package: given path is not a directory");
 
         //  compute content file path
         auto content_file_path = package_root_dir_path / "content.json";
@@ -151,7 +151,7 @@ namespace Gammou {
         //  load json object from the file
         std::ifstream stream{ content_file_path };
         if (!stream.is_open())
-            throw std::runtime_error("load_package : cannot load content.json file");
+            throw std::runtime_error("load_package: cannot load content.json file");
         else
             stream >> json_object;
 
@@ -163,7 +163,7 @@ namespace Gammou {
             std::move(package_desc.dependencies)
         };
 
-        LOG_INFO("[package loader] Loading package uid : 0x%016llx, name : '%s'\n",
+        LOG_INFO("[package loader] Loading package uid: 0x%016llx, name: '%s'\n",
             package_desc.uid,
             package_desc.package_name.c_str());
 
@@ -177,7 +177,7 @@ namespace Gammou {
             }
 
             //  Create and plugin into factory
-            LOG_DEBUG("[package loader] Loading plugin uid : 0x%016lx, name : '%s'\n", node_class_desc.plugin_id, node_class_desc.name.c_str());
+            LOG_DEBUG("[package loader] Loading plugin uid: 0x%016lx, name: '%s'\n", node_class_desc.plugin_id, node_class_desc.name.c_str());
 
             try {
                 pack.loaded_plugins.emplace_back(
@@ -187,7 +187,7 @@ namespace Gammou {
             catch (const std::exception& e)
             {
                 // A plugin load failure is tolerable
-                LOG_ERROR("[package loader] Failed to load plugin '%s'.\n%s\n",
+                LOG_ERROR("[package loader] Failed to load plugin '%s': %s\n",
                     node_class_desc.name.c_str(), e.what());
             }
         }
