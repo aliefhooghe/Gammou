@@ -69,7 +69,7 @@ namespace Gammou
         return builder.windows(
                 builder.horizontal<false>(
                     builder.vertical<false>(
-                        make_patch_browser(*this),
+                        make_patch_browser(*this, configuration::get_patch_path()),
                         builder.header(std::move(factory_browser)),
                         builder.header(std::move(configuration_browser))),
                     builder.vertical(

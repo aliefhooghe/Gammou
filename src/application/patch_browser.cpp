@@ -1,24 +1,20 @@
 #include <fstream>
 
 #include "patch_browser.h"
-#include "backends/common/configuration.h"
 #include "helpers/layout_builder.h"
 
 namespace Gammou
 {
-    std::unique_ptr<View::widget> make_patch_browser(application &app)
+    std::unique_ptr<View::widget> make_patch_browser(application &app,  const std::filesystem::path& patch_path)
     {
-        const auto patch_dir_path = configuration::get_patch_path();
-
         auto preset_name_input = std::make_unique<View::text_input>();
         auto save_button = std::make_unique<View::text_push_button>("Save");
         auto update_button = std::make_unique<View::text_push_button>("Update");
         auto remove_button = std::make_unique<View::text_push_button>("Remove");
 
-        auto filesystem_view = std::make_unique<View::filesystem_view>(patch_dir_path, 140, 250);
+        auto filesystem_view = std::make_unique<View::filesystem_view>(patch_path, 140, 250);
 
-        LOG_INFO("[main gui] Using patch path '%s'\n",
-                 patch_dir_path.generic_string().c_str());
+        LOG_INFO("[main gui] Using patch path '%s'\n", patch_path.generic_string().c_str());
 
         preset_name_input->set_text("patch");
 
@@ -44,7 +40,7 @@ namespace Gammou
             });
 
         filesystem_view->set_value_select_callback(
-            [&app, name_input = preset_name_input.get(), patch_dir_path, fv = filesystem_view.get()](const auto &preset_path)
+            [&app, name_input = preset_name_input.get(), patch_path, fv = filesystem_view.get()](const auto &preset_path)
             {
                 LOG_INFO("[main gui] Loading patch '%s'\n", preset_path.generic_string().c_str());
 
@@ -60,7 +56,7 @@ namespace Gammou
 
                     if (app.deserialize(json)) {
                         const auto relative_path =
-                            std::filesystem::relative(preset_path, patch_dir_path);
+                            std::filesystem::relative(preset_path, patch_path);
                         name_input->set_text(relative_path.generic_string());
                     }
                     else {
@@ -76,9 +72,9 @@ namespace Gammou
 
         save_button->freeze_size();
         save_button->set_callback(
-            [&app, input = preset_name_input.get(), fv = filesystem_view.get(), patch_dir_path]()
+            [&app, input = preset_name_input.get(), fv = filesystem_view.get(), patch_path]()
             {
-                const auto preset_path = patch_dir_path / input->get_text();
+                const auto preset_path = patch_path / input->get_text();
                 LOG_INFO("[main gui] Saving patch '%s'\n", preset_path.generic_string().c_str());
 
                 try
