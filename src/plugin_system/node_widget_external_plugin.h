@@ -13,6 +13,7 @@ namespace Gammou
     public:
         enum class static_chunk_type
         {
+            NONE,
             WAV_CHANNEL,
             WAV_SAMPLE
         };
@@ -25,7 +26,7 @@ namespace Gammou
             std::vector<std::string> input_names{};
             std::vector<std::string> output_names{};
             std::vector<std::filesystem::path> modules_paths{};
-            static_chunk_type static_chunk{static_chunk_type::WAV_CHANNEL};
+            static_chunk_type static_chunk{static_chunk_type::NONE};
         };
 
         node_widget_external_plugin(

@@ -28,7 +28,7 @@ namespace Gammou {
             _chunk_type{chunk_type}
         {
             LOG_INFO("CREATE external_node_widget with wav channel\n");
-            _initialize(parent_config, chunk_type);
+            _initialize(parent_config);
         }
 
         ~external_node_widget() noexcept = default;
@@ -87,12 +87,12 @@ namespace Gammou {
             }
         }
 
-        void _initialize(abstract_configuration_directory& parent_config, static_chunk_type chunk_type)
+        void _initialize(abstract_configuration_directory& parent_config)
         {
             /// Create the configuration widget
 
             // only wav channel now
-            if (chunk_type != static_chunk_type::WAV_CHANNEL)
+            if (_chunk_type != static_chunk_type::WAV_CHANNEL)
                 throw std::invalid_argument("external_node_widget : unsupported static memory chunk type");
 
             auto samples_browser =
@@ -156,8 +156,9 @@ namespace Gammou {
 
         // static chunk type is optional
         auto it = j.find("static-chunk-type");
-        if (it != j.end())
-            desc.static_chunk = _parse_chunk_type(it->get<std::string>());
+        desc.static_chunk = it != j.end() ?
+            _parse_chunk_type(it->get<std::string>()) :
+            node_widget_external_plugin::static_chunk_type::NONE;
     }
 
     /**
@@ -173,6 +174,9 @@ namespace Gammou {
         _dsp_plugin{std::move(module)},
         _static_memory_chunk{static_memory}
     {
+        const auto& proc_info = _dsp_plugin.get_process_info();
+        if (proc_info.use_static_memory && static_memory == static_chunk_type::NONE)
+            throw std::invalid_argument("No chunk type was declared for an external node using static chunk");
     }
 
     std::unique_ptr<node_widget_external_plugin> node_widget_external_plugin::from_desc(const node_widget_external_plugin::descriptor& desc, llvm::LLVMContext& ctx)
