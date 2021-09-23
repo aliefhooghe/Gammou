@@ -30,7 +30,7 @@ namespace Gammou
         /**
          * \brief Reset synthesizer circuits and configuration tree
          */
-        void reset_editor();
+        void reset_editor(bool recompile = true);
 
     private:
         void _select_config(configuration_tree& config_dir);
