@@ -6,7 +6,7 @@
 namespace Gammou {
 
     /**
-     *  \brief Load all the builtin plugins into the factory
+     *  \brief Load all the builtin calculus plugins into the factory
      *  \param factory the factory in which builtin plugins must be loaded
      */
     void load_builtin_plugins(node_widget_factory& factory);
