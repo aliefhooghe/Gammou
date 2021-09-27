@@ -216,7 +216,7 @@ namespace Gammou
             synthesizer_state state{};
             from_json(json, state);
 
-            reset_editor(false); // do not recompile
+            reset_editor();
 
             _master_circuit_editor->deserialize(
                 state.master_circuit,
@@ -272,7 +272,7 @@ namespace Gammou
         select_value(config_leaf);
     }
 
-    void configuration_widget::reset_editor(bool recompile)
+    void configuration_widget::reset_editor()
     {
         LOG_DEBUG("[configuration_widget] Reset content\n");
 
@@ -295,11 +295,9 @@ namespace Gammou
         //  Select master circuit by default
         _master_circuit_dir->display();
 
-        // Recompile circuits if needed
-        if (recompile) {
-            _synthesizer.get_master_circuit_controller().compile();
-            _synthesizer.get_polyphonic_circuit_controller().compile();
-        }
+        // Recompile circuits
+        _synthesizer.get_master_circuit_controller().compile();
+        _synthesizer.get_polyphonic_circuit_controller().compile();
     }
 
     void configuration_widget::_initialize()
