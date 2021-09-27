@@ -9,13 +9,22 @@
 
 namespace Gammou
 {
-    class node_widget_external_plugin : public node_widget_factory::plugin {
+    /**
+     * \brief Plugin implementation for node whose process is defined in external bitcode.
+     * It provide the necessary user interface for static chunk management (sample browsing and loading)
+     */
+    class external_plugin : public node_widget_factory::plugin {
     public:
+
+        /**
+         * \brief Define different sources of data for the static memory chunk if used
+         * These map to a given memory layout that the nodes should handle.
+         */
         enum class static_chunk_type
         {
-            NONE,
-            WAV_CHANNEL,
-            WAV_SAMPLE
+            NONE,           //<< No static chunk is used
+            WAV_CHANNEL,    //<< Data from a wav single channel is used as static chunk
+            // WAV_SAMPLE      //<< Data from a wav's all channels is used as a static chunk
         };
 
         struct descriptor
@@ -29,17 +38,17 @@ namespace Gammou
             static_chunk_type static_chunk{static_chunk_type::NONE};
         };
 
-        node_widget_external_plugin(
+        external_plugin(
             const node_widget_factory::plugin_id plugin_id,
             const std::string& name, const std::string& category,
             const static_chunk_type static_memory,
             std::unique_ptr<llvm::Module>&& module);
 
-        node_widget_external_plugin(const node_widget_external_plugin&) = delete;
-        node_widget_external_plugin(node_widget_external_plugin&&) = default;
-        ~node_widget_external_plugin() = default;
+        external_plugin(const external_plugin&) = delete;
+        external_plugin(external_plugin&&) = default;
+        ~external_plugin() = default;
 
-        static std::unique_ptr<node_widget_external_plugin> from_desc(const descriptor&, llvm::LLVMContext&);
+        static std::unique_ptr<external_plugin> from_desc(const descriptor&, llvm::LLVMContext&);
 
         std::unique_ptr<plugin_node_widget> create_node(abstract_configuration_directory&) override;
         std::unique_ptr<plugin_node_widget> create_node(abstract_configuration_directory&, const nlohmann::json&) override;
@@ -60,7 +69,7 @@ namespace Gammou
     /**
      * \brief Deserialize a node widget external plugin descriptor from a json object
      */
-    void from_json(const nlohmann::json&, node_widget_external_plugin::descriptor&);
+    void from_json(const nlohmann::json&, external_plugin::descriptor&);
 }
 
 #endif

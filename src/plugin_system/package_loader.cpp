@@ -6,7 +6,7 @@
 #include <llvm/Linker/Linker.h>
 
 #include "package_loader.h"
-#include "node_widget_external_plugin.h"
+#include "external_plugin.h"
 #include "utils/serialization_helpers.h"
 
 namespace Gammou {
@@ -14,7 +14,7 @@ namespace Gammou {
     struct package_descriptor {
         std::string package_name{};
         package_uid uid;
-        std::vector<node_widget_external_plugin::descriptor> plugins{};
+        std::vector<external_plugin::descriptor> plugins{};
         std::vector<std::filesystem::path> common_libs{};
         std::vector<package_uid> dependencies{};
     };
@@ -181,7 +181,7 @@ namespace Gammou {
 
             try {
                 pack.loaded_plugins.emplace_back(
-                    node_widget_external_plugin::from_desc(
+                    external_plugin::from_desc(
                         node_class_desc, _llvm_context));
             }
             catch (const std::exception& e)

@@ -72,12 +72,14 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/configuration/abstract_configuration_directory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/ir_loader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/ir_loader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_external_plugin.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_external_plugin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/external_plugin.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/external_plugin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_factory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/node_widget_factory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/package_loader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/package_loader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/static_chunk_node_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plugin_system/static_chunk_node_widget.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/midi_parser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/synthesizer/midi_parser.cpp
