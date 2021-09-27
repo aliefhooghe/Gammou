@@ -31,7 +31,10 @@ namespace Gammou {
             _initialize(parent_config);
         }
 
-        ~external_node_widget() noexcept = default;
+        ~external_node_widget() noexcept
+        {
+            _config_page->free_static_memory_chunk(node());
+        }
 
         nlohmann::json serialize_internal_state() override
         {
