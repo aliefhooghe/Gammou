@@ -305,17 +305,30 @@ namespace Gammou {
 
     std::unique_ptr<View::widget> desktop_application::_make_debug_toolbox()
     {
-        const View::layout_builder builder{};
-        auto button = std::make_unique<View::text_push_button>("Dump native code");
-
-        button->set_callback(
+        // Native code dump to file
+        auto dump_code_button = std::make_unique<View::text_push_button>("Dump native code");
+        dump_code_button->set_callback(
             [this]()
             {
                 _synthesizer.dump_native_code("native_code");
             });
 
+        // Enable/disable ir dump on logs
+        auto dump_ir_box = std::make_unique<View::checkbox>();
+        dump_ir_box->set_callback(
+            [this](bool checked)
+            {
+                LOG_INFO("[desktop application] %s ir code dump\n",
+                    checked ? "enable" : "disable");
+                _synthesizer.enable_ir_dump(checked);
+            });
+
+        View::layout_builder builder{};
         return builder.vertical(
-            std::move(button),
+            std::move(dump_code_button),
+            builder.horizontal(
+                std::move(dump_ir_box),
+                std::make_unique<View::label>("Enable ir dump")),
             builder.empty_space());
     }
 
