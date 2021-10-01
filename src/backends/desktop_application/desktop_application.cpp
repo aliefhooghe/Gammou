@@ -255,7 +255,7 @@ namespace Gammou {
 
         //  Build a widget view of device tree
         auto view =
-            View::make_directory_view(std::move(audio_device_tree), 500, 50);
+            View::make_directory_view(std::move(audio_device_tree), 300, 50);
 
         //  Set callback to select
         view->set_value_select_callback(
@@ -299,7 +299,7 @@ namespace Gammou {
             midi_settings_widget->insert_widget(x_offset * 18, y_offset, std::move(device_label));
         }
 
-        midi_settings_widget->resize(500, line_height * std::max(1u, midi_input_count) + y_start_offset * 2);
+        midi_settings_widget->resize(300, line_height * std::max(1u, midi_input_count) + y_start_offset * 2);
         return midi_settings_widget;
     }
 
