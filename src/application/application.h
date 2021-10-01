@@ -21,7 +21,7 @@ namespace Gammou {
         /**
          * \brief Deserialize application state from json object
          */
-        bool deserialize(nlohmann::json& json);
+        void deserialize(const nlohmann::json& json);
 
         /**
          * \brief Get a reference on the gui main widget

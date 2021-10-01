@@ -210,7 +210,7 @@ namespace Gammou
             });
     }
 
-    bool configuration_widget::deserialize_configuration(const nlohmann::json& json)
+    void configuration_widget::deserialize_configuration(const nlohmann::json& json)
     {
         try {
             synthesizer_state state{};
@@ -237,13 +237,10 @@ namespace Gammou
             // Recompile the new loaded circuit
             _synthesizer.get_master_circuit_controller().compile();
             _synthesizer.get_polyphonic_circuit_controller().compile();
-
-            return true;
         }
         catch (const std::exception &e) {
             reset_editor();
-            LOG_ERROR("[configuration_widget] Failed to load preset : %s\n", e.what());
-            return false;
+            throw;
         }
     }
 

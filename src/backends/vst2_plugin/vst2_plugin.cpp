@@ -212,23 +212,21 @@ namespace Gammou {
         LOG_INFO("Loading VST2 state (size = %llu)\n", size);
         const auto data = reinterpret_cast<const uint8_t*>(chunk);
 
-        nlohmann::json json_object;
-
         try {
-            json_object = nlohmann::json::from_cbor(data, data + size);
+            const auto json_object = nlohmann::json::from_cbor(data, data + size);
+            _application->deserialize(json_object);
+            return size;
         }
         catch(const std::exception& e)
         {
-            LOG_ERROR("Failed to deserialize cbor object : %s\n", e.what());
+            LOG_ERROR("Failed to deserialize vst2 state: %s\n", e.what());
             return 0u;
         }
         catch(...)
         {
-            LOG_ERROR("Failed to deserialize cbor object : unknown error\n");
+            LOG_ERROR("Failed to deserialize vst2 state: unknown error\n");
             return 0u;
         }
-
-        return _application->deserialize(json_object) ? size : 0u;
     }
 
     std::size_t vst2_plugin::_save_state(void **chunk_ptr)
@@ -251,12 +249,12 @@ namespace Gammou {
         }
         catch(const std::exception& e)
         {
-            LOG_ERROR("Failed to save VST2 state : %s\n", e.what());
+            LOG_ERROR("Failed to save VST2 state: %s\n", e.what());
             return 0u;
         }
         catch(...)
         {
-            LOG_ERROR("Failed to save VST2 state (unknown error)\n");
+            LOG_ERROR("Failed to save VST2 state: unknown error\n");
             return 0u;
         }
     }

@@ -54,14 +54,12 @@ namespace Gammou
                     else
                         stream >> json;
 
-                    if (app.deserialize(json)) {
-                        const auto relative_path =
-                            std::filesystem::relative(preset_path, patch_path);
-                        name_input->set_text(relative_path.generic_string());
-                    }
-                    else {
-                        throw std::invalid_argument("Unable to deserialize state from json object");
-                    }
+                    // Deserialize application state
+                    app.deserialize(json);
+
+                    // Update the patch browser view
+                    const auto relative_path = std::filesystem::relative(preset_path, patch_path);
+                    name_input->set_text(relative_path.generic_string());
                 }
                 catch (const std::exception &e)
                 {

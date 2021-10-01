@@ -37,14 +37,10 @@ namespace Gammou
         return _configuration_widget->serialize_configuration();
     }
 
-    bool application::deserialize(nlohmann::json& json)
+    void application::deserialize(const nlohmann::json& json)
     {
-        const bool success = _configuration_widget->deserialize_configuration(json);
-
-        if (success)
-            _voice_mode_selector->sync();
-
-        return success;
+        _configuration_widget->deserialize_configuration(json);
+        _voice_mode_selector->sync();
     }
 
     View::widget& application::main_gui() noexcept

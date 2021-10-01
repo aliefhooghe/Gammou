@@ -20,7 +20,7 @@ namespace Gammou
         /**
          * \brief Deserialize synthesizer circuits and settings
          */
-        bool deserialize_configuration(const nlohmann::json&);
+        void deserialize_configuration(const nlohmann::json&);
 
         /**
          * \brief Serialize synthesizer circuits and settings
