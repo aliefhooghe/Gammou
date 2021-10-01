@@ -209,9 +209,9 @@ namespace Gammou {
         std::size_t master_code_size = 0u;
         std::size_t polyphonic_code_size = 0u;
 
-        if (polyphonic_code_data = _polyphonic_circuit_context.get_native_code(polyphonic_code_size))
+        if ((polyphonic_code_data = _polyphonic_circuit_context.get_native_code(polyphonic_code_size)) != nullptr)
             _dump_native_code(filename_prefix + "_polyponic.bin", polyphonic_code_data, polyphonic_code_size);
-        if (master_code_data = _master_circuit_context.get_native_code(master_code_size))
+        if ((master_code_data = _master_circuit_context.get_native_code(master_code_size)) != nullptr)
             _dump_native_code(filename_prefix + "_master.bin", master_code_data, master_code_size);
     }
 
