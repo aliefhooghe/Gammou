@@ -3,6 +3,7 @@
 
 #include "backends/common/configuration.h"
 #include "helpers/layout_builder.h"
+#include "utils/serialization_helpers.h"
 #include "utils/wav_loader.h"
 
 namespace Gammou
