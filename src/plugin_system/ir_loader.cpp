@@ -1,5 +1,6 @@
 
 #include "ir_loader.h"
+#include "ir_helper.h"
 #include "log.h"
 
 #include <llvm/IRReader/IRReader.h>
@@ -15,13 +16,13 @@ namespace Gammou {
     {
         llvm::SMDiagnostic error;
         std::unique_ptr<llvm::Module> module{};
-        llvm::raw_os_ostream stream{std::cout};
+        std::string error_string;
 
         for (auto i = 0u; i < paths.size(); ++i) {
             auto loaded_module = llvm::parseIRFile(paths[i].generic_string(), error, ctx);
 
-            if (llvm::verifyModule(*loaded_module, &stream))
-                throw std::invalid_argument("IR module is broken");
+            if (ir_helper::check_module(*loaded_module, error_string))
+                throw std::invalid_argument("[IR loader] IR module is broken: " + error_string);
 
             // link the modules togethers
             if (i == 0u)
