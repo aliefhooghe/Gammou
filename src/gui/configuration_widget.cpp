@@ -12,11 +12,11 @@ namespace Gammou
         configuration_page(configuration_page&&) noexcept = delete;
         ~configuration_page() override;
 
-        void compile();
-        void register_static_memory_chunk(const DSPJIT::compile_node_class& node, std::vector<uint8_t>&& data);
-        void free_static_memory_chunk(const DSPJIT::compile_node_class& node);
-        void display();
-        void rename(const std::string& name);
+        void compile() override;
+        void register_static_memory_chunk(const DSPJIT::compile_node_class& node, std::vector<uint8_t>&& data) override;
+        void free_static_memory_chunk(const DSPJIT::compile_node_class& node) override;
+        void display() override;
+        void rename(const std::string& name) override;
 
     private:
         configuration_widget& _config_widget;
