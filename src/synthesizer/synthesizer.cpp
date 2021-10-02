@@ -86,19 +86,12 @@ namespace Gammou {
     void synthesizer::process_sample(const float input[], float output[]) noexcept
     {
         _process_one_sample(input, output);
-
-        for (auto i = 0u; i < _output_count; ++i)
-            output[i] *= _main_gain;
     }
 
     void synthesizer::process_buffer(std::size_t sample_count, const float[],float outputs[]) noexcept
     {
         for (auto i = 0u; i < sample_count; ++i)
             _process_one_sample(nullptr, outputs + i * _output_count);
-
-        const auto buffer_size = _output_count * sample_count;
-        for (auto i = 0u; i < buffer_size; ++i)
-            outputs[i] *= _main_gain;
     }
 
     void synthesizer::midi_note_on(uint8_t note, float velocity)

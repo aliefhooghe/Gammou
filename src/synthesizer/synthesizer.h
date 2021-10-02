@@ -32,7 +32,7 @@ namespace Gammou
         /**
          *  \brief Initialize a synthesizer instance
          *  \param llvm_context llvm context instance used to perform just in time compilation
-         *  \param input_count \todo
+         *  \param input_count \todo (unused)
          *  \param output_count synthesizer output_count \see output_node()
          *  \param voice_count the maximum number of voice that can be played at the same time
          *  \param level Optimization level in {None, Less, Default, Aggressive}
@@ -111,17 +111,6 @@ namespace Gammou
 
 
         std::size_t get_voice_count() const noexcept;
-
-        /**
-         *  \brief Set the synthesizer main gain (output factor)
-         *  \param gain Main gain to be applid on output
-         */
-        void set_main_gain(float gain) noexcept { _main_gain = gain; }
-
-        /**
-         *  \brief Get the current main gain
-         */
-        auto get_main_gain() const noexcept { return _main_gain; }
 
         /**
          * \brief Dump circuits native code objects to file
@@ -285,9 +274,6 @@ namespace Gammou
         std::array<param_id, 256u> _midi_learn_map;
         bool _midi_learning{false};
         param_id _learning_param;
-
-        //  Main settings
-        float _main_gain{0.2f};
     };
 
 } // namespace Gammou
