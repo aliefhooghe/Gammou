@@ -219,7 +219,7 @@ namespace Gammou {
                 throw std::runtime_error("composite_node_plugin::deserialize : Unknown internal node : " + identifier);
         }
 
-        std::string _default_name()
+        std::string _default_name() const
         {
             const auto ptr_val = reinterpret_cast<intptr_t>(this);
             std::stringstream ss;
