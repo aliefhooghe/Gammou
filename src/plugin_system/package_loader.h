@@ -13,7 +13,27 @@ namespace Gammou
     class node_widget_factory_builder
     {
     public:
+        struct dependency
+        {
+            package_uid uid;
+            std::string name;
+        };
+
+        struct package
+        {
+            package_uid uid;
+            std::string name;
+            std::vector<dependency> dependencies{};
+            std::vector<std::unique_ptr<node_widget_factory::plugin>> loaded_plugins{};
+            std::unique_ptr<llvm::Module> lib_module{};
+        };
+
         node_widget_factory_builder(llvm::LLVMContext& llvm_context);
+
+        /**
+         *  \brief Add a package in the factory
+         */
+        node_widget_factory_builder& add_package(package&& package);
 
         /**
          *  \brief Load a package
@@ -36,14 +56,6 @@ namespace Gammou
         std::unique_ptr<node_widget_factory> build();
 
     private:
-        struct package
-        {
-            package_uid uid;
-            std::string name;
-            std::vector<package_uid> dependencies{};
-            std::vector<std::unique_ptr<node_widget_factory::plugin>> loaded_plugins{};
-            std::unique_ptr<llvm::Module> lib_module{};
-        };
 
         void _resolve_dependencies();
         package _load_package(const std::filesystem::path& package_root_dir_path);

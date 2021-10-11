@@ -46,4 +46,16 @@ namespace nlohmann {
     };
 }
 
+namespace Gammou {
+
+    template <typename Tkey, typename Tfield>
+    static void optional_field_get_to(const nlohmann::json& json, const Tkey& key, Tfield& field)
+    {
+        const auto it = json.find(key);
+        if (it != json.end())
+            it->get_to(field);
+    }
+
+}
+
 #endif

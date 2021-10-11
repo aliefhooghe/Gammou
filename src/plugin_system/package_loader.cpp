@@ -11,30 +11,24 @@
 
 namespace Gammou {
 
+
     struct package_descriptor {
         std::string package_name{};
         package_uid uid;
         std::vector<external_plugin::descriptor> plugins{};
         std::vector<std::filesystem::path> common_libs{};
-        std::vector<package_uid> dependencies{};
+        std::vector<node_widget_factory_builder::dependency> dependencies{};
     };
+
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(node_widget_factory_builder::dependency, uid, name)
 
     void from_json(const nlohmann::json& j, package_descriptor& desc)
     {
         j.at("package-name").get_to(desc.package_name);
         j.at("package-uid").get_to(desc.uid);
-
-        auto it = j.find("plugins");
-        if (it != j.end())
-            it->get_to(desc.plugins);
-
-        it = j.find("common-libs");
-        if (it != j.end())
-            it->get_to(desc.common_libs);
-
-        it = j.find("package-dependencies");
-        if (it != j.end())
-            it->get_to(desc.dependencies);
+        optional_field_get_to(j, "plugins", desc.plugins);
+        optional_field_get_to(j, "common-libs", desc.common_libs);
+        optional_field_get_to(j, "package-dependencies", desc.dependencies);
     }
 
     node_widget_factory_builder::node_widget_factory_builder(llvm::LLVMContext& llvm_context)
@@ -42,21 +36,26 @@ namespace Gammou {
     {
     }
 
+    node_widget_factory_builder& node_widget_factory_builder::add_package(package&& package)
+    {
+        const auto uid = package.uid;
+        _packages.emplace(uid, std::move(package));
+        return *this;
+    }
+
     node_widget_factory_builder& node_widget_factory_builder::load_package(const std::filesystem::path& package_root_dir_path)
     {
         try
         {
             auto package = _load_package(package_root_dir_path);
-            const auto uid = package.uid;
-            _packages.emplace(uid, std::move(package));
+            return add_package(std::move(package));
         }
         catch (const std::exception& e)
         {
             LOG_ERROR("[Package loader] Could not load package at '%s'\n%s\n",
                 package_root_dir_path.generic_string().c_str(), e.what());
+            return *this;
         }
-
-        return *this;
     }
 
     node_widget_factory_builder& node_widget_factory_builder::load_packages(const std::filesystem::path& packages_dir_path)
@@ -111,16 +110,16 @@ namespace Gammou {
                 bool dependencies_satisfied = true;
 
                 for (const auto& dep : package.dependencies) {
-                    auto dep_it = _packages.find(dep);
+                    auto dep_it = _packages.find(dep.uid);
                     if (dep_it == _packages.end())
                     {
-                        LOG_ERROR("[package loader] Unable to load package '%s', dependency uid:%lld is missing\n",
-                            package.name.c_str(), dep);
+                        LOG_ERROR("[package loader] Unable to load package '%s': dependency '%s' (uid=%lld) is missing\n",
+                            package.name.c_str(), dep.name.c_str(), dep.uid);
                         dependencies_satisfied = false;
                         break;
                     }
                     else {
-                        LOG_DEBUG("[package loader] Package '%s' dependency '%s' (uid:%lld) is satisfied\n",
+                        LOG_DEBUG("[package loader] Package '%s' dependency '%s' (uid=%lld) is satisfied\n",
                             package.name.c_str(), dep_it->second.name.c_str(), dep);
                     }
                 }
