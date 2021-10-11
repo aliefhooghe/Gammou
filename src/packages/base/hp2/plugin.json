@@ -1,0 +1,7 @@
+{
+    "name" : "Hp2",
+    "uid"  : 16677558166354903267,
+    "category" : "Filter",
+    "input-names" : ["In", "Cutoff", "Q"],
+    "output-names" : ["out"]
+}
