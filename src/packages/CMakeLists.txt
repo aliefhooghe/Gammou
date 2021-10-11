@@ -111,6 +111,15 @@ add_gammou_plugin(
         ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
 
 add_gammou_plugin(
+    Hp2Plugin
+    PLUGIN_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/hp2/plugin.json
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/hp2/process.c
+    INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
+
+add_gammou_plugin(
     BiquadLpPlugin
     PLUGIN_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/base/biquad_filter/plugin.json
@@ -159,6 +168,7 @@ add_gammou_package(
         Invert
         Lp1Plugin
         Lp2Plugin
+        Hp2Plugin
         SawPlugin
         ShannonFreq
         SinPlugin
