@@ -115,6 +115,7 @@ if (GAMMOU_ENABLE_DESKTOP_APP)
     message(STATUS "Build desktop application")
     find_package(RtAudio REQUIRED)
     find_package(RtMidi REQUIRED)
+    find_package(cxxopts REQUIRED)
 
     set(GAMMOU_DESKTOP_SRC
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/desktop_application.h
@@ -124,7 +125,14 @@ if (GAMMOU_ENABLE_DESKTOP_APP)
 
     add_executable(gammou_desktop_app ${GAMMOU_DESKTOP_SRC} ${GAMMOU_COMMON_SRC})
     target_include_directories(gammou_desktop_app PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(gammou_desktop_app PUBLIC View DSPJIT RtMidi::rtmidi RtAudio::rtaudio nlohmann_json::nlohmann_json nlohmann_json)
+    target_link_libraries(gammou_desktop_app PUBLIC
+        View
+        DSPJIT
+        RtMidi::rtmidi
+        RtAudio::rtaudio
+        cxxopts::cxxopts
+        nlohmann_json::nlohmann_json
+        nlohmann_json)
 
     if (GAMMOU_DESKTOP_APP_BENCHMARK_MODE)
         target_compile_definitions(gammou_desktop_app PUBLIC "GAMMOU_BENCHMARK_MODE")
@@ -154,7 +162,11 @@ if (GAMMOU_ENABLE_VST2_PLUGIN)
 
     add_library(gammou_vst2_plugin MODULE ${GAMMOU_VST_PLUGIN_SRC} ${GAMMOU_COMMON_SRC})
     target_include_directories(gammou_vst2_plugin PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(gammou_vst2_plugin PRIVATE View DSPJIT nlohmann_json::nlohmann_json nlohmann_json)
+    target_link_libraries(gammou_vst2_plugin PRIVATE
+        View
+        DSPJIT
+        nlohmann_json::nlohmann_json
+        nlohmann_json)
 
     if(WIN32)
         # On windows symbol are not exported by default

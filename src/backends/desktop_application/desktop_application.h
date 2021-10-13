@@ -16,10 +16,15 @@ namespace Gammou {
     class desktop_application {
         friend class midi_device_widget;
     public:
-        desktop_application(unsigned int input_count, unsigned int output_count);
+        desktop_application(
+            unsigned int input_count,
+            unsigned int output_count,
+            const std::optional<std::filesystem::path>& initial_path = {});
         ~desktop_application();
 
-        void run();
+        void open_display();
+        void wait_display();
+        void close_display();
 
     private:
         void _initialize_midi_multiplex();

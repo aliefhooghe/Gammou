@@ -1,6 +1,8 @@
 
-#include "desktop_application.h"
 
+#include <fstream>
+
+#include "desktop_application.h"
 #include "backends/common/configuration.h"
 #include "builtin_plugins/load_builtin_plugins.h"
 #include "gui/control_node_widgets/load_control_plugins.h"
@@ -9,13 +11,12 @@
 #include "plugin_system/package_loader.h"
 #include "synthesizer/midi_parser.h"
 
-#ifdef GAMMOU_BENCHMARKING_MODE
-#include <chrono>
-#endif
-
 namespace Gammou {
 
-    desktop_application::desktop_application(unsigned int input_count, unsigned int output_count)
+    desktop_application::desktop_application(
+        unsigned int input_count,
+        unsigned int output_count,
+        const std::optional<std::filesystem::path>& initial_path)
     : _synthesizer{_llvm_context, 44100.f, input_count, output_count}
     {
         // midi multiplex
@@ -35,6 +36,28 @@ namespace Gammou {
 
         _application = std::make_unique<application>(_synthesizer, std::move(additional_toolbox));
 
+        if (initial_path.has_value())
+        {
+            const auto& patch_path = initial_path.value();
+            try
+            {
+                nlohmann::json json;
+                std::ifstream stream{patch_path, std::ios_base::in};
+
+                if (!stream.good())
+                    throw std::invalid_argument("Unable to open initial patch file");
+                else
+                    stream >> json;
+
+                _application->deserialize(json);
+            }
+            catch (std::exception& error)
+            {
+                LOG_ERROR("[desktop application] Unable to load initial patch: '%s'\n",
+                    patch_path.generic_string().c_str());
+            }
+        }
+
         //  display
         _display = View::create_application_display(_application->main_gui(), 1);
     }
@@ -44,53 +67,17 @@ namespace Gammou {
         _stop_audio();
     }
 
-    void desktop_application::run()
+    void desktop_application::open_display()
     {
         _display->open("Gammou");
-#ifdef GAMMOU_BENCHMARK_MODE
+    }
+    void desktop_application::close_display()
+    {
+        _display->close();
+    }
 
-        const auto block_count = 20u;
-        const auto block_size = 30000u;
-        const auto count = block_count * block_size;
-
-        auto minimum_sample_per_seconds = std::numeric_limits<float>::max();
-        bool send_note_on = true;
-        uint8_t current_note = 0;
-        float dummy_output[2];
-
-        _synthesizer.set_sample_rate(44100.f);
-
-        while (_display->is_open()) {
-            const auto start = std::chrono::steady_clock::now();
-            _synthesizer.update_program();
-
-            for (auto j = 0u; j < block_count; ++j) {
-                for (auto i = 0u; i < block_size; ++i)
-                    _synthesizer.process_sample(nullptr, dummy_output);
-
-                if (send_note_on)
-                    _synthesizer.midi_note_on(current_note, 0.5);
-                else
-                    _synthesizer.midi_note_off(current_note, 0.5);
-
-                current_note++;
-
-                if (current_note >= 128) {
-                    current_note = 0u;
-                    send_note_on = !send_note_on;
-                }
-            }
-
-            const auto end = std::chrono::steady_clock::now();
-            const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-            const auto sample_per_seconds = 1000.f * static_cast<float>(count) / static_cast<float>(duration);
-            std::cout << "Current speed " << std::scientific << sample_per_seconds << " samples per second\n";
-
-            if (sample_per_seconds < minimum_sample_per_seconds)
-                minimum_sample_per_seconds = sample_per_seconds;
-        }
-        std::cout << "Minimum speed " << minimum_sample_per_seconds << " samples per second\n";
-#endif
+    void desktop_application::wait_display()
+    {
         _display->wait();
     }
 
