@@ -1,7 +1,7 @@
 
 #include "vst2_plugin.h"
 #include "synthesizer/midi_parser.h"
-#include "backends/common/configuration.h"
+#include "backends/common/default_configuration.h"
 
 #include <algorithm>
 #include <cstdlib>
@@ -38,8 +38,14 @@ namespace Gammou {
         _effect->version = kVstVersion;
         _effect->processReplacing = process_replacing_proc;
 
-        //  Build gui
-        _application = std::make_unique<application>(_synthesizer);
+        //  Build application with default settings
+        const application::configuration options
+        {
+            .package_path = default_configuration::get_packages_directory_path(),
+            .patch_path = default_configuration::get_patch_path()
+        };
+
+        _application = std::make_unique<application>(options, _synthesizer);
 
         //  Initialize display
         _display = View::create_vst2_display(_application->main_gui(), 1);
