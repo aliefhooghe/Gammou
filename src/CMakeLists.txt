@@ -38,8 +38,8 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/application/voice_mode_selector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/application/voice_mode_selector.cpp
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/configuration.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/configuration.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/default_configuration.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/default_configuration.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/builtin_plugins/additional_builtin_nodes.h
     ${CMAKE_CURRENT_SOURCE_DIR}/builtin_plugins/additional_builtin_nodes.cpp

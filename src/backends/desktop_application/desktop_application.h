@@ -19,6 +19,7 @@ namespace Gammou {
         desktop_application(
             unsigned int input_count,
             unsigned int output_count,
+            const application::configuration& configuration,
             const std::optional<std::filesystem::path>& initial_path = {});
         ~desktop_application();
 

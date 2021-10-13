@@ -9,7 +9,15 @@ namespace Gammou {
     class application
     {
     public:
+
+        struct configuration
+        {
+            std::filesystem::path package_path;
+            std::filesystem::path patch_path;
+        };
+
         application(
+            const configuration& config,
             synthesizer& synth,
             std::unique_ptr<View::widget>&& additional_toolbox = {});
 
@@ -30,6 +38,7 @@ namespace Gammou {
 
     private:
         std::unique_ptr<View::widget> _make_main_gui(
+            const configuration& config,
             synthesizer& synth,
             std::unique_ptr<View::widget>&& additional_toolbox);
         std::unique_ptr<View::widget> _make_toolbox(

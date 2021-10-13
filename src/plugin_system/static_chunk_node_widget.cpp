@@ -1,7 +1,7 @@
 
 #include "static_chunk_node_widget.h"
 
-#include "backends/common/configuration.h"
+#include "backends/common/default_configuration.h"
 #include "helpers/layout_builder.h"
 #include "utils/serialization_helpers.h"
 #include "utils/wav_loader.h"
@@ -92,7 +92,7 @@ namespace Gammou
 
         auto samples_browser =
             std::make_unique<View::filesystem_view>(
-                configuration::get_samples_path(),
+                default_configuration::get_samples_path(),
                 100, 100);
         // Sample selection callback
         samples_browser->set_value_select_callback(

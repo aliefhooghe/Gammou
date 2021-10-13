@@ -3,7 +3,6 @@
 #include <fstream>
 
 #include "desktop_application.h"
-#include "backends/common/configuration.h"
 #include "builtin_plugins/load_builtin_plugins.h"
 #include "gui/control_node_widgets/load_control_plugins.h"
 #include "helpers/alphabetical_compare.h"
@@ -16,13 +15,14 @@ namespace Gammou {
     desktop_application::desktop_application(
         unsigned int input_count,
         unsigned int output_count,
+        const application::configuration& configuration,
         const std::optional<std::filesystem::path>& initial_path)
     : _synthesizer{_llvm_context, 44100.f, input_count, output_count}
     {
         // midi multiplex
         _initialize_midi_multiplex();
 
-        // gui
+        // additional toolbox
         const View::layout_builder builder{};
 
         auto additional_toolbox =
@@ -34,7 +34,12 @@ namespace Gammou {
                 builder.header(_make_debug_toolbox())
             );
 
-        _application = std::make_unique<application>(_synthesizer, std::move(additional_toolbox));
+        // initialize application
+        _application =
+            std::make_unique<application>(
+                configuration,
+                _synthesizer,
+                std::move(additional_toolbox));
 
         if (initial_path.has_value())
         {
