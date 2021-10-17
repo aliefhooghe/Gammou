@@ -138,11 +138,6 @@ if (GAMMOU_ENABLE_DESKTOP_APP)
         target_compile_definitions(gammou_desktop_app PUBLIC "GAMMOU_BENCHMARK_MODE")
     endif()
 
-    if(WIN32)
-        # Do not create a console application on windows
-        set_target_properties(gammou_desktop_app PROPERTIES LINK_FLAGS "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
-    endif()
-
 endif()
 
 ############################
