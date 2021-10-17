@@ -41,8 +41,8 @@ namespace Gammou {
         //  Build application with default settings
         const application::configuration options
         {
-            .package_path = default_configuration::get_packages_directory_path(),
-            .patch_path = default_configuration::get_patch_path()
+            default_configuration::get_packages_directory_path(),
+            default_configuration::get_patch_path()
         };
 
         _application = std::make_unique<application>(options, _synthesizer);
