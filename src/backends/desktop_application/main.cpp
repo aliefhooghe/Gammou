@@ -23,15 +23,15 @@ static bool parse_options(int argc, char **argv, application_options& options)
 
     constexpr auto no_gui_opt = "no-gui";
     constexpr auto patch_opt = "patch";
-    constexpr auto package_path_opt = "package-path";
-    constexpr auto patch_path_opt = "patch-path";
+    constexpr auto package_path_opt = "packages-path";
+    constexpr auto patch_path_opt = "patchs-path";
 
     try {
         parser.add_options()
             (no_gui_opt, "Run without gui")
             (patch_opt, "Load a patch", cxxopts::value<std::string>())
-            (package_path_opt, "Package path", cxxopts::value<std::string>())
-            (patch_path_opt, "Patch path", cxxopts::value<std::string>())
+            (package_path_opt, "Packages directory path", cxxopts::value<std::string>())
+            (patch_path_opt, "Patchs directory path", cxxopts::value<std::string>())
         ;
 
         const auto parsed_arguments = parser.parse(argc, argv);
