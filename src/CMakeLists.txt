@@ -102,7 +102,7 @@ set(GAMMOU_COMMON_SRC
 ############################
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/View/src View EXCLUDE_FROM_ALL)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/DSPJIT/src DSPJIT EXCLUDE_FROM_ALL)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/DSPJIT DSPJIT EXCLUDE_FROM_ALL)
 find_package(nlohmann_json CONFIG REQUIRED)
 
 ############################

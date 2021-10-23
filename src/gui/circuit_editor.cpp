@@ -1,7 +1,6 @@
+#include <DSPJIT/log.h>
 
 #include "circuit_editor.h"
-
-#include <iostream>
 
 namespace Gammou {
 

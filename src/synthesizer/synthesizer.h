@@ -3,9 +3,8 @@
 
 #include <memory>
 
-#include <compile_node_class.h>
-#include <graph_execution_context.h>
-#include <object_dumper.h>
+#include <DSPJIT/compile_node_class.h>
+#include <DSPJIT/graph_execution_context_factory.h>
 
 #include "voice_manager.h"
 #include "parameter_manager.h"
@@ -113,11 +112,6 @@ namespace Gammou
         std::size_t get_voice_count() const noexcept;
 
         /**
-         * \brief Dump circuits native code objects to file
-         */
-        void dump_native_code(const std::string& filename_prefix);
-
-        /**
          * \brief Enable/disable the IR code dump to logs
          */
         void enable_ir_dump(bool enable = true);
@@ -215,7 +209,6 @@ namespace Gammou
         using param_id = parameter_manager::param_id;
 
         void _process_one_sample(const float[], float output[]) noexcept;
-        void _dump_native_code(const std::string& path, const uint8_t *data, std::size_t size);
 
         class master_circuit_controller : public circuit_controller
         {

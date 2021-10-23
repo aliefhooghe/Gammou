@@ -8,7 +8,7 @@
 #include <string>
 #include <nlohmann/json.hpp>
 
-#include <compile_node_class.h>   //  DSPJIT nodes
+#include <DSPJIT/compile_node_class.h>
 #include <view.h>
 
 
@@ -162,7 +162,7 @@ namespace Gammou
             OFF,
             DRAG_NODE,
             MOVE_NODE,
-            LINK_NODE 
+            LINK_NODE
         };
 
         drag_state _drag_state{drag_state::OFF};

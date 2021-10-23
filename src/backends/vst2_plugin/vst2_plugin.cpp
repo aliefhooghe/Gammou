@@ -3,6 +3,8 @@
 #include "synthesizer/midi_parser.h"
 #include "backends/common/default_configuration.h"
 
+#include <DSPJIT/log.h>
+
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>

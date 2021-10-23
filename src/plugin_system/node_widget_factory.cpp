@@ -2,8 +2,9 @@
 #include <llvm/Transforms/Utils/Cloning.h>
 #include <llvm/Linker/Linker.h>
 
+#include <DSPJIT/log.h>
+
 #include "node_widget_factory.h"
-#include "log.h"
 
 namespace Gammou {
 

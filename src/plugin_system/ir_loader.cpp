@@ -1,14 +1,13 @@
 
-#include "ir_loader.h"
-#include "ir_helper.h"
-#include "log.h"
+#include <DSPJIT/ir_helper.h>
 
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/IR/Verifier.h>
 #include <llvm/Support/SourceMgr.h>
 #include <llvm/Support/raw_os_ostream.h>
 #include <llvm/Linker/Linker.h>
-#include <iostream>
+
+#include "ir_loader.h"
 
 namespace Gammou {
 

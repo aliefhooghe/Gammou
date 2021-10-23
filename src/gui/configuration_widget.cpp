@@ -1,4 +1,6 @@
 
+#include <DSPJIT/log.h>
+
 #include "configuration_widget.h"
 #include "synthesizer_gui.h"
 #include "helpers/layout_builder.h"

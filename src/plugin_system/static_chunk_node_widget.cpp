@@ -1,8 +1,9 @@
 
-#include "static_chunk_node_widget.h"
+#include <DSPJIT/log.h>
 
 #include "backends/common/default_configuration.h"
 #include "helpers/layout_builder.h"
+#include "static_chunk_node_widget.h"
 #include "utils/serialization_helpers.h"
 #include "utils/wav_loader.h"
 
