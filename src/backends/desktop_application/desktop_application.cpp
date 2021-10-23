@@ -1,6 +1,7 @@
 
 
 #include <fstream>
+#include <DSPJIT/log.h>
 
 #include "desktop_application.h"
 #include "builtin_plugins/load_builtin_plugins.h"

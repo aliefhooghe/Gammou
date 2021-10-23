@@ -5,6 +5,8 @@
 #include <optional>
 #include <thread>
 
+#include <DSPJIT/log.h>
+
 #include "backends/common/default_configuration.h"
 #include "desktop_application.h"
 

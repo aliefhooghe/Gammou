@@ -1,6 +1,7 @@
 #ifndef GAMMOU_DESKTOP_APPLICATION_H_
 #define GAMMOU_DESKTOP_APPLICATION_H_
 
+#include <optional>
 #include <RtAudio.h>
 #include <RtMidi.h>
 
