@@ -17,11 +17,16 @@ namespace Gammou {
     class desktop_application {
         friend class midi_device_widget;
     public:
+
+        struct configuration
+        {
+            synthesizer::configuration synthesizer_config{};
+            application::configuration application_config{};
+            std::optional<std::filesystem::path> initial_path{};
+        };
+
         desktop_application(
-            unsigned int input_count,
-            unsigned int output_count,
-            const application::configuration& configuration,
-            const std::optional<std::filesystem::path>& initial_path = {});
+            const configuration& config);
         ~desktop_application();
 
         void open_display();

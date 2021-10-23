@@ -12,7 +12,7 @@
 namespace Gammou {
 
     vst2_plugin::vst2_plugin(audioMasterCallback master)
-    :   _synthesizer{_llvm_context},
+    :   _synthesizer{_llvm_context, synthesizer::configuration{}},
         _master_callback{master}
     {
         //  Allocate effect instance

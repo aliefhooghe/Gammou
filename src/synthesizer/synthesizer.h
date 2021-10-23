@@ -28,6 +28,16 @@ namespace Gammou
         using parameter = parameter_manager::parameter;
         using voice_mode = voice_manager::mode;
 
+        struct configuration
+        {
+            float sample_rate{44100.f};
+            unsigned int input_count{0u};
+            unsigned int output_count{2u};
+            unsigned int voice_count{256u};
+            opt_level optimization_level{opt_level::Aggressive};
+            llvm::TargetOptions target_options{};
+        };
+
         /**
          *  \brief Initialize a synthesizer instance
          *  \param llvm_context llvm context instance used to perform just in time compilation
@@ -38,13 +48,8 @@ namespace Gammou
          *  \param options native target code generation advanced options
          */
         synthesizer(
-            llvm::LLVMContext &llvm_context,
-            float samplerate = 48000.f,
-            unsigned int input_count = 0u,
-            unsigned int output_count = 2u,
-            unsigned int voice_count = 256,
-            const opt_level level = opt_level::Aggressive,
-            const llvm::TargetOptions& options = llvm::TargetOptions{});
+            llvm::LLVMContext& llvm_context,
+            const configuration& config);
 
         synthesizer(const synthesizer&) = delete;
         synthesizer(synthesizer&&) = delete;

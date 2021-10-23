@@ -12,8 +12,8 @@ namespace Gammou {
 
         struct configuration
         {
-            std::filesystem::path package_path;
-            std::filesystem::path patch_path;
+            std::filesystem::path packages_path{};
+            std::filesystem::path patchs_path{};
         };
 
         application(

@@ -18,7 +18,7 @@ namespace Gammou
         std::unique_ptr<View::widget>&& additional_toolbox)
     {
         _factory = node_widget_factory_builder{synth.get_llvm_context()}
-            .load_packages(config.package_path)
+            .load_packages(config.packages_path)
             .build();
 
         // Load control and builtin plugins into factory
@@ -72,7 +72,7 @@ namespace Gammou
         return builder.windows(
                 builder.horizontal<false>(
                     builder.vertical<false>(
-                        make_patch_browser(*this, config.patch_path),
+                        make_patch_browser(*this, config.patchs_path),
                         builder.header(std::move(factory_browser)),
                         builder.header(std::move(configuration_browser))),
                     builder.vertical(

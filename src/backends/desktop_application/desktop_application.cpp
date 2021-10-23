@@ -14,11 +14,8 @@
 namespace Gammou {
 
     desktop_application::desktop_application(
-        unsigned int input_count,
-        unsigned int output_count,
-        const application::configuration& configuration,
-        const std::optional<std::filesystem::path>& initial_path)
-    : _synthesizer{_llvm_context, 44100.f, input_count, output_count}
+        const configuration& config)
+    : _synthesizer{_llvm_context, config.synthesizer_config}
     {
         // midi multiplex
         _initialize_midi_multiplex();
@@ -38,13 +35,13 @@ namespace Gammou {
         // initialize application
         _application =
             std::make_unique<application>(
-                configuration,
+                config.application_config,
                 _synthesizer,
                 std::move(additional_toolbox));
 
-        if (initial_path.has_value())
+        if (config.initial_path.has_value())
         {
-            const auto& patch_path = initial_path.value();
+            const auto& patch_path = config.initial_path.value();
             try
             {
                 nlohmann::json json;

@@ -56,29 +56,27 @@ namespace Gammou {
      */
     synthesizer::synthesizer(
             llvm::LLVMContext &llvm_context,
-            float samplerate,
-            unsigned int input_count,
-            unsigned int output_count,
-            unsigned int voice_count,
-            const opt_level level,
-            const llvm::TargetOptions& options)
+            const configuration& config)
     :   _llvm_context{llvm_context},
-        _input_count{input_count},
-        _output_count{output_count},
-        _master_circuit_context{DSPJIT::graph_execution_context_factory::build(llvm_context, level, options)},
-        _polyphonic_circuit_context{DSPJIT::graph_execution_context_factory::build(llvm_context, level, options)},
+        _input_count{config.input_count},
+        _output_count{config.output_count},
+        _master_circuit_context{
+            DSPJIT::graph_execution_context_factory::build(
+                llvm_context, config.optimization_level, config.target_options)},
+        _polyphonic_circuit_context{
+            DSPJIT::graph_execution_context_factory::build(
+                llvm_context, config.optimization_level, config.target_options)},
         _from_polyphonic{0u, voice_manager::polyphonic_to_master_channel_count},
-        _output{output_count, 0u},
+        _output{config.output_count, 0u},
         _midi_input{0u, voice_manager::midi_input_count},
         _to_master{voice_manager::polyphonic_to_master_channel_count, 0u},
-        _voice_manager{voice_count, _polyphonic_circuit_context},
+        _voice_manager{config.voice_count, _polyphonic_circuit_context},
         _master_circuit_controller{*this},
         _polyphonic_circuit_controller{*this},
-
-        _parameter_manager{samplerate}
+        _parameter_manager{config.sample_rate}
     {
         std::fill_n(_midi_learn_map.begin(), _midi_learn_map.size(), parameter_manager::INVALID_PARAM);
-        set_sample_rate(samplerate);
+        set_sample_rate(config.sample_rate);
     }
 
     void synthesizer::process_sample(const float input[], float output[]) noexcept

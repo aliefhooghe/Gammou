@@ -14,8 +14,7 @@
 struct application_options
 {
     bool no_gui{false};
-    Gammou::application::configuration application_configuration;
-    std::optional<std::filesystem::path> initial_patch_path{};
+    Gammou::desktop_application::configuration configuration;
 };
 
 static bool parse_options(int argc, char **argv, application_options& options)
@@ -39,22 +38,22 @@ static bool parse_options(int argc, char **argv, application_options& options)
         const auto parsed_arguments = parser.parse(argc, argv);
 
         if (parsed_arguments.count(patch_opt) > 0)
-            options.initial_patch_path = parsed_arguments[patch_opt].as<std::string>();
+            options.configuration.initial_path = parsed_arguments[patch_opt].as<std::string>();
         if (parsed_arguments.count(no_gui_opt) > 0)
             options.no_gui = true;
 
         if (parsed_arguments.count(package_path_opt) > 0)
-            options.application_configuration.package_path =
+            options.configuration.application_config.packages_path =
                 parsed_arguments[package_path_opt].as<std::string>();
         else
-            options.application_configuration.package_path =
+            options.configuration.application_config.packages_path =
                 Gammou::default_configuration::get_packages_directory_path();
 
         if (parsed_arguments.count(patch_path_opt) > 0)
-            options.application_configuration.patch_path =
+            options.configuration.application_config.patchs_path =
                 parsed_arguments[patch_path_opt].as<std::string>();
         else
-            options.application_configuration.patch_path =
+            options.configuration.application_config.patchs_path =
                 Gammou::default_configuration::get_patch_path();
 
         return true;
@@ -69,11 +68,7 @@ static bool parse_options(int argc, char **argv, application_options& options)
 
 static int run_desktop_application(const application_options& options)
 {
-    Gammou::desktop_application app{
-        0u, // input count (unused)
-        2u, // output count
-        options.application_configuration,
-        options.initial_patch_path};
+    Gammou::desktop_application app{options.configuration};
 
     if (options.no_gui) {
         for (;;) {
