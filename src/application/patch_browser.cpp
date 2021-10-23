@@ -1,5 +1,7 @@
 #include <fstream>
 
+#include <DSPJIT/log.h>
+
 #include "patch_browser.h"
 #include "helpers/layout_builder.h"
 

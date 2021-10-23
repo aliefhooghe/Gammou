@@ -1,4 +1,6 @@
 
+#include <DSPJIT/log.h>
+
 #include "voice_manager.h"
 
 namespace Gammou

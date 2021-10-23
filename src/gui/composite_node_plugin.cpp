@@ -1,12 +1,11 @@
 
-#include <sstream>
+#include <DSPJIT/composite_node.h>
+#include <DSPJIT/log.h>
 
 #include "composite_node_plugin.h"
-#include "composite_node.h"
 #include "../gui/internal_node_widget.h"
 #include "helpers/layout_builder.h"
 
-#include "log.h"
 
 namespace Gammou {
 

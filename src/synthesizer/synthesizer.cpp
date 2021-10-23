@@ -1,10 +1,8 @@
 #include <algorithm>
 #include <llvm/Transforms/Utils/Cloning.h>
+#include <DSPJIT/log.h>
 
 #include "synthesizer.h"
-
-#include <iostream>
-#include <fstream>
 
 namespace Gammou {
 
@@ -67,8 +65,8 @@ namespace Gammou {
     :   _llvm_context{llvm_context},
         _input_count{input_count},
         _output_count{output_count},
-        _master_circuit_context{_llvm_context, 1u, level, options},
-        _polyphonic_circuit_context{_llvm_context, voice_count, level, options},
+        _master_circuit_context{DSPJIT::graph_execution_context_factory::build(llvm_context, level, options)},
+        _polyphonic_circuit_context{DSPJIT::graph_execution_context_factory::build(llvm_context, level, options)},
         _from_polyphonic{0u, voice_manager::polyphonic_to_master_channel_count},
         _output{output_count, 0u},
         _midi_input{0u, voice_manager::midi_input_count},
@@ -195,19 +193,6 @@ namespace Gammou {
         return _polyphonic_circuit_context.get_instance_count();
     }
 
-    void synthesizer::dump_native_code(const std::string& filename_prefix)
-    {
-        const uint8_t *master_code_data = nullptr;
-        const uint8_t *polyphonic_code_data = nullptr;
-        std::size_t master_code_size = 0u;
-        std::size_t polyphonic_code_size = 0u;
-
-        if ((polyphonic_code_data = _polyphonic_circuit_context.get_native_code(polyphonic_code_size)) != nullptr)
-            _dump_native_code(filename_prefix + "_polyponic.bin", polyphonic_code_data, polyphonic_code_size);
-        if ((master_code_data = _master_circuit_context.get_native_code(master_code_size)) != nullptr)
-            _dump_native_code(filename_prefix + "_master.bin", master_code_data, master_code_size);
-    }
-
     void synthesizer::enable_ir_dump(bool enable)
     {
         _master_circuit_context.enable_ir_dump(enable);
@@ -233,23 +218,5 @@ namespace Gammou {
 
         //  Apply master processing
         _master_circuit_context.process(polyphonic_output, output);
-    }
-
-    void synthesizer::_dump_native_code(const std::string& path, const uint8_t *data, std::size_t size)
-    {
-        if (size > 0)
-        {
-            std::ofstream output{path.c_str(), std::ios::binary};
-            if (output.is_open()) {
-                LOG_INFO("[synthesizer] Dumping native code to '%s'\n", path.c_str());
-                output.write(reinterpret_cast<const char*>(data), size);
-                output.close();
-            }
-        }
-        else
-        {
-            LOG_WARNING("[synthesizer][_dump_native_code] Empty native code was not dumped to '%s'.",
-                path.c_str());
-        }
     }
 }

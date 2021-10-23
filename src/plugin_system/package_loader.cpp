@@ -5,6 +5,8 @@
 #include <llvm/Support/SourceMgr.h>
 #include <llvm/Linker/Linker.h>
 
+#include <DSPJIT/log.h>
+
 #include "package_loader.h"
 #include "external_plugin.h"
 #include "utils/serialization_helpers.h"
