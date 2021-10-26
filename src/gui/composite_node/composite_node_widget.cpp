@@ -1,3 +1,4 @@
+#include <sstream>
 
 #include "composite_node_plugin.h"
 #include "composite_node_widget.h"
