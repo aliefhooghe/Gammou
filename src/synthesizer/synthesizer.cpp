@@ -65,7 +65,7 @@ namespace Gammou {
                 llvm_context, config.optimization_level, config.target_options)},
         _polyphonic_circuit_context{
             DSPJIT::graph_execution_context_factory::build(
-                llvm_context, config.optimization_level, config.target_options)},
+                llvm_context, config.optimization_level, config.target_options, config.voice_count)},
         _from_polyphonic{0u, voice_manager::polyphonic_to_master_channel_count},
         _output{config.output_count, 0u},
         _midi_input{0u, voice_manager::midi_input_count},
