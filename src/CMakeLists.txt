@@ -57,8 +57,10 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_editor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/configuration_tree.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/configuration_tree.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node_plugin.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node_plugin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node/composite_node_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node/composite_node_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node/composite_node_plugin.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node/composite_node_plugin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/configuration_widget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/configuration_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/factory_widget.h

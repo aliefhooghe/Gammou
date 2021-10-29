@@ -2,7 +2,7 @@
 #define GAMMOU_COMPOSITE_NODE_PLUGIN_H_
 
 #include "plugin_system/node_widget_factory.h"
-#include "configuration_widget.h"
+#include "gui/configuration_widget.h"
 
 namespace Gammou {
 

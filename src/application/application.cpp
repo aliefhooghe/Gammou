@@ -1,6 +1,6 @@
 #include "application.h"
 #include "builtin_plugins/load_builtin_plugins.h"
-#include "gui/composite_node_plugin.h"
+#include "gui/composite_node/composite_node_plugin.h"
 #include "gui/configuration_widget.h"
 #include "gui/control_node_widgets/load_control_plugins.h"
 #include "gui/factory_widget.h"
