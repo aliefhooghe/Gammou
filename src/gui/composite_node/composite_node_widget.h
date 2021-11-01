@@ -45,15 +45,24 @@ namespace Gammou
         nlohmann::json serialize_internal_state() override;
 
         /**
-         * \brief Override nod_widget method to keep rename wisget
+         * \brief Override nod_widget method to keep name text input
          * up to date
          */
         void set_name(const std::string& name) override;
 
+        /**
+         * \brief Rename input and apply the name to the internal input node
+         */
+        void set_input_name(unsigned int input_id, const std::string& name) override;
+
+        /**
+         * \brief Rename output and apply the name to the internal output node
+         */
+        void set_output_name(unsigned int output_id, const std::string& name) override;
+
     private:
         std::unique_ptr<node_widget> _make_input_node();
         std::unique_ptr<node_widget> _make_output_node();
-
 
         std::unique_ptr<circuit_editor> _initialize_internal_editor();
         std::unique_ptr<View::widget> _initialize_main_toolbox();
@@ -69,7 +78,9 @@ namespace Gammou
         factory_widget &_factory;
         DSPJIT::composite_node *_composite_node;
         std::unique_ptr<abstract_configuration_directory> _config_dir{};
-        circuit_editor *_internal_editor{};
+        node_widget *_input_node{nullptr};
+        node_widget *_output_node{nullptr};
+        circuit_editor *_internal_editor{nullptr};
         View::text_input *_name_text_input{nullptr};
     };
 

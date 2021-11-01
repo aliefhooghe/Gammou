@@ -1,6 +1,8 @@
 
 #include "composite_node_plugin.h"
 #include "composite_node_widget.h"
+#include "io_naming_toolbox.h"
+
 #include "gui/internal_node_widget.h"
 
 #include <DSPJIT/log.h>
@@ -40,13 +42,13 @@ namespace Gammou
      },
      _factory{factory}
     {
-        _initialize(parent_config, state.name);
-
         // Restore IO names from state
         for (auto i = 0; i < state.input_names.size(); ++i)
             set_input_name(i, state.input_names[i]);
         for (auto i = 0; i < state.output_names.size(); ++i)
             set_output_name(i, state.output_names[i]);
+
+        _initialize(parent_config, state.name);
 
         _internal_editor->deserialize(
             state.internal_circuit_state,
@@ -84,12 +86,27 @@ namespace Gammou
             _name_text_input->set_text(name);
     }
 
+    void composite_node_widget::set_input_name(unsigned int input_id, const std::string& name)
+    {
+        plugin_node_widget::set_input_name(input_id, name);
+        if (_input_node != nullptr)
+            _input_node->set_output_name(input_id, name);
+    }
+
+    void composite_node_widget::set_output_name(unsigned int output_id, const std::string& name)
+    {
+        plugin_node_widget::set_output_name(output_id, name);
+        if (_output_node != nullptr)
+            _output_node->set_input_name(output_id, name);
+    }
+
     std::unique_ptr<node_widget> composite_node_widget::_make_input_node()
     {
         auto node = std::make_unique<internal_node_widget>(
             "Input", composite_input_id, _composite_node->input());
         for (auto i = 0u; i < get_input_count(); ++i)
             node->set_output_name(i, get_input_name(i));
+        _input_node = node.get();
         return node;
     }
 
@@ -99,6 +116,7 @@ namespace Gammou
             "Output", composite_output_id, _composite_node->output());
         for (auto i = 0u; i < get_output_count(); ++i)
             node->set_input_name(i, get_output_name(i));
+        _output_node = node.get();
         return node;
     }
 
@@ -129,7 +147,7 @@ namespace Gammou
         auto name_text_input = std::make_unique<View::text_input>();
         _name_text_input = name_text_input.get();
 
-        auto name_button = std::make_unique<View::text_push_button>("rename");
+        auto name_button = std::make_unique<View::text_push_button>("rename circuit");
         name_button->set_callback(
             [this, input = name_text_input.get()]()
             {
@@ -140,8 +158,8 @@ namespace Gammou
                     // Rename the configuration page
                     _config_dir->rename(new_name);
 
-                    // Rename the node widget name
-                    set_name(new_name);
+                    // Rename the node widget
+                    plugin_node_widget::set_name(new_name);
                 }
                 catch (std::exception &)
                 {
@@ -161,27 +179,27 @@ namespace Gammou
         // Create layout
         View::layout_builder builder{};
         return builder.header(
-                    builder.vertical(
-                        builder.horizontal(std::move(name_text_input), std::move(name_button)),
-                        std::move(export_button)));
+            builder.vertical(
+                builder.horizontal(std::move(name_text_input), std::move(name_button)),
+                std::move(export_button)));
     }
 
     void composite_node_widget::_initialize(abstract_configuration_directory &parent_config, const std::string &node_name)
     {
-        //  Create circuit editor
         auto editor = _initialize_internal_editor();
-
-        // Create composite node toolbox :
         auto main_toolbox = _initialize_main_toolbox();
+        auto io_naming = std::make_unique<io_naming_toolbox>(*this, 256.f);
 
         View::layout_builder builder{};
         auto editor_widget =
-            builder.shared_vertical(
-                std::move(main_toolbox),
-                builder.header(
-                    builder.map(std::move(editor)),
-                    View::color_theme::color::SURFACE_DARK,
-                    0.f /* no internal border */));
+            builder.shared_horizontal(
+                builder.header(std::move(io_naming)),
+                builder.vertical(
+                    std::move(main_toolbox),
+                    builder.header(
+                        builder.map(std::move(editor)),
+                        View::color_theme::color::SURFACE_DARK,
+                        0.f /* no internal border */)));
 
         //  Create editor dir with available name
         std::string new_name = node_name;
