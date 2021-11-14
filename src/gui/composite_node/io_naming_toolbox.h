@@ -17,9 +17,6 @@ namespace Gammou
             node_widget& node,
             float height);
 
-        io_naming_toolbox(const io_naming_toolbox&) = delete;
-        io_naming_toolbox(io_naming_toolbox&&) noexcept = default;
-
         void update();
 
     private:

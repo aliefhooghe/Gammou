@@ -6,6 +6,8 @@
 
 namespace Gammou
 {
+    class io_naming_toolbox;
+
     class composite_node_widget : public plugin_node_widget
     {
         static constexpr auto composite_input_id = "composite_input";
@@ -66,6 +68,7 @@ namespace Gammou
 
         std::unique_ptr<circuit_editor> _initialize_internal_editor();
         std::unique_ptr<View::widget> _initialize_main_toolbox();
+        std::unique_ptr<View::widget> _initialize_io_resize_toolbox(io_naming_toolbox&);
 
         void _initialize(abstract_configuration_directory &parent_config, const std::string &node_name);
         std::unique_ptr<node_widget> _deserialize_internal_node(const std::string &identifier);

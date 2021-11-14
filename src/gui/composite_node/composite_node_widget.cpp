@@ -184,16 +184,59 @@ namespace Gammou
                 std::move(export_button)));
     }
 
+    std::unique_ptr<View::widget> composite_node_widget::_initialize_io_resize_toolbox(io_naming_toolbox& toolbox)
+    {
+        auto add_input_button = std::make_unique<View::text_push_button>("Input+");
+        auto rem_input_button = std::make_unique<View::text_push_button>("Input-");
+        auto add_output_button = std::make_unique<View::text_push_button>("Output+");
+        auto rem_output_button = std::make_unique<View::text_push_button>("Output-");
+
+        add_input_button->set_callback(
+            [this, &toolbox]()
+            {
+                _composite_node->add_input();
+                toolbox.update();
+            });
+        rem_input_button->set_callback(
+            [this, &toolbox]()
+            {
+                _composite_node->remove_input();
+                toolbox.update();
+            });
+        add_output_button->set_callback(
+            [this, &toolbox]()
+            {
+                _composite_node->add_output();
+                toolbox.update();
+            });
+        rem_output_button->set_callback(
+            [this, &toolbox]()
+            {
+                _composite_node->remove_output();
+                toolbox.update();
+            });
+
+        View::layout_builder builder{};
+        return builder.vertical(
+            builder.horizontal(std::move(add_input_button), std::move(add_output_button)),
+            builder.horizontal(std::move(rem_input_button), std::move(rem_output_button)));
+    }
+
     void composite_node_widget::_initialize(abstract_configuration_directory &parent_config, const std::string &node_name)
     {
         auto editor = _initialize_internal_editor();
         auto main_toolbox = _initialize_main_toolbox();
         auto io_naming = std::make_unique<io_naming_toolbox>(*this, 256.f);
+        auto io_resize_toolbox = _initialize_io_resize_toolbox(*io_naming);
 
+        // Create the main widget
         View::layout_builder builder{};
         auto editor_widget =
             builder.shared_horizontal(
-                builder.header(std::move(io_naming)),
+                builder.vertical(
+                    builder.header(std::move(io_naming)),
+                    builder.header(std::move(io_resize_toolbox))
+                ),
                 builder.vertical(
                     std::move(main_toolbox),
                     builder.header(
