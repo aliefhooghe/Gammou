@@ -64,8 +64,6 @@ namespace Gammou
         for (auto i = 0u; i< output_count; ++i)
             _output_names[i]->set_text(
                 _node.get_output_name(i));
-
-        invalidate();
     }
 
 
