@@ -214,20 +214,29 @@ namespace Gammou {
     }
 
     template <typename TNameGen>
-    static void _check_io_name_vector(std::vector<std::string>& names, unsigned int node_io_count, TNameGen gen)
+    static bool _check_io_name_vector(std::vector<std::string>& names, unsigned int node_io_count, TNameGen gen)
     {
         const auto gui_io_count = names.size();
         if (gui_io_count != node_io_count) {
             names.resize(node_io_count);
             for (auto i = gui_io_count; i < node_io_count; i++)
                 names[i] = gen(i);
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
     void node_widget::_check_io_counts()
     {
-        _check_io_name_vector(_input_names, _node.get_input_count(), _default_input_name);
-        _check_io_name_vector(_output_names, _node.get_output_count(), _default_output_name);
+        const auto input_count_changed =
+            _check_io_name_vector(_input_names, _node.get_input_count(), _default_input_name);
+        const auto output_count_changed =
+            _check_io_name_vector(_output_names, _node.get_output_count(), _default_output_name);
+
+        if (input_count_changed || output_count_changed)
+            resize_height(widget_node_height(_node));
     }
 
     /**
