@@ -74,7 +74,7 @@ namespace Gammou {
         catch (const std::exception& e)
         {
             LOG_ERROR("[package loader]  Unable to list directory package '%s'.\n%s\n",
-                packages_dir_path.c_str(), e.what());
+                packages_dir_path.generic_string().c_str(), e.what());
         }
 
         return *this;
