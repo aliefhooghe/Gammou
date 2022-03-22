@@ -20,7 +20,7 @@ namespace Gammou {
         for (auto i = 0u; i < paths.size(); ++i) {
             auto loaded_module = llvm::parseIRFile(paths[i].generic_string(), error, ctx);
 
-            if (ir_helper::check_module(*loaded_module, error_string))
+            if (DSPJIT::check_module(*loaded_module, error_string))
                 throw std::invalid_argument("[IR loader] IR module is broken: " + error_string);
 
             // link the modules togethers
