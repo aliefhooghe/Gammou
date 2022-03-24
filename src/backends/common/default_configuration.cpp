@@ -1,6 +1,6 @@
 
 #include <cstdlib>
-#include "configuration.h"
+#include "default_configuration.h"
 
 namespace Gammou {
 
@@ -24,17 +24,17 @@ namespace Gammou {
         return default_dir;
     }
 
-    std::filesystem::path configuration::get_packages_directory_path()
+    std::filesystem::path default_configuration::get_packages_directory_path()
     {
         return get_config_dir(GAMMOU_PACKAGE_PATH_ENV, ".gammou/packages", "./packages");
     }
 
-    std::filesystem::path configuration::get_patch_path()
+    std::filesystem::path default_configuration::get_patch_path()
     {
         return get_config_dir(GAMMOU_PATCH_PATH_ENV, ".gammou/patchs", "./patchs");
     }
 
-    std::filesystem::path configuration::get_samples_path()
+    std::filesystem::path default_configuration::get_samples_path()
     {
         return get_config_dir(GAMMOU_SAMPLE_PATH_ENV, nullptr, "./samples");
     }

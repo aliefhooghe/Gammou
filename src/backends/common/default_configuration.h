@@ -10,7 +10,7 @@
 namespace Gammou {
 
 
-    class configuration {
+    class default_configuration {
     public:
 
         /**

@@ -1,7 +1,9 @@
 
 #include "vst2_plugin.h"
 #include "synthesizer/midi_parser.h"
-#include "backends/common/configuration.h"
+#include "backends/common/default_configuration.h"
+
+#include <DSPJIT/log.h>
 
 #include <algorithm>
 #include <cstdlib>
@@ -10,7 +12,7 @@
 namespace Gammou {
 
     vst2_plugin::vst2_plugin(audioMasterCallback master)
-    :   _synthesizer{_llvm_context},
+    :   _synthesizer{_llvm_context, synthesizer::configuration{}},
         _master_callback{master}
     {
         //  Allocate effect instance
@@ -38,8 +40,14 @@ namespace Gammou {
         _effect->version = kVstVersion;
         _effect->processReplacing = process_replacing_proc;
 
-        //  Build gui
-        _application = std::make_unique<application>(_synthesizer);
+        //  Build application with default settings
+        const application::configuration options
+        {
+            default_configuration::get_packages_directory_path(),
+            default_configuration::get_patch_path()
+        };
+
+        _application = std::make_unique<application>(options, _synthesizer);
 
         //  Initialize display
         _display = View::create_vst2_display(_application->main_gui(), 1);

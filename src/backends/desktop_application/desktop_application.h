@@ -1,6 +1,7 @@
 #ifndef GAMMOU_DESKTOP_APPLICATION_H_
 #define GAMMOU_DESKTOP_APPLICATION_H_
 
+#include <optional>
 #include <RtAudio.h>
 #include <RtMidi.h>
 
@@ -16,10 +17,21 @@ namespace Gammou {
     class desktop_application {
         friend class midi_device_widget;
     public:
-        desktop_application(unsigned int input_count, unsigned int output_count);
+
+        struct configuration
+        {
+            synthesizer::configuration synthesizer_config{};
+            application::configuration application_config{};
+            std::optional<std::filesystem::path> initial_path{};
+        };
+
+        desktop_application(
+            const configuration& config);
         ~desktop_application();
 
-        void run();
+        void open_display();
+        void wait_display();
+        void close_display();
 
     private:
         void _initialize_midi_multiplex();

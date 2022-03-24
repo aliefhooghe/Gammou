@@ -1,7 +1,7 @@
 #ifndef GAMMOU_ADDITIONAL_BUILTIN_NODES_H_
 #define GAMMOU_ADDITIONAL_BUILTIN_NODES_H_
 
-#include <compile_node_class.h>
+#include <DSPJIT/compile_node_class.h>
 
 namespace Gammou {
 

@@ -1,10 +1,8 @@
 #include <algorithm>
 #include <llvm/Transforms/Utils/Cloning.h>
+#include <DSPJIT/log.h>
 
 #include "synthesizer.h"
-
-#include <iostream>
-#include <fstream>
 
 namespace Gammou {
 
@@ -58,47 +56,38 @@ namespace Gammou {
      */
     synthesizer::synthesizer(
             llvm::LLVMContext &llvm_context,
-            float samplerate,
-            unsigned int input_count,
-            unsigned int output_count,
-            unsigned int voice_count,
-            const opt_level level,
-            const llvm::TargetOptions& options)
+            const configuration& config)
     :   _llvm_context{llvm_context},
-        _input_count{input_count},
-        _output_count{output_count},
-        _master_circuit_context{_llvm_context, 1u, level, options},
-        _polyphonic_circuit_context{_llvm_context, voice_count, level, options},
+        _input_count{config.input_count},
+        _output_count{config.output_count},
+        _master_circuit_context{
+            DSPJIT::graph_execution_context_factory::build(
+                llvm_context, config.optimization_level, config.target_options)},
+        _polyphonic_circuit_context{
+            DSPJIT::graph_execution_context_factory::build(
+                llvm_context, config.optimization_level, config.target_options, config.voice_count)},
         _from_polyphonic{0u, voice_manager::polyphonic_to_master_channel_count},
-        _output{output_count, 0u},
+        _output{config.output_count, 0u},
         _midi_input{0u, voice_manager::midi_input_count},
         _to_master{voice_manager::polyphonic_to_master_channel_count, 0u},
-        _voice_manager{voice_count, _polyphonic_circuit_context},
+        _voice_manager{config.voice_count, _polyphonic_circuit_context},
         _master_circuit_controller{*this},
         _polyphonic_circuit_controller{*this},
-
-        _parameter_manager{samplerate}
+        _parameter_manager{config.sample_rate}
     {
         std::fill_n(_midi_learn_map.begin(), _midi_learn_map.size(), parameter_manager::INVALID_PARAM);
-        set_sample_rate(samplerate);
+        set_sample_rate(config.sample_rate);
     }
 
     void synthesizer::process_sample(const float input[], float output[]) noexcept
     {
         _process_one_sample(input, output);
-
-        for (auto i = 0u; i < _output_count; ++i)
-            output[i] *= _main_gain;
     }
 
     void synthesizer::process_buffer(std::size_t sample_count, const float[],float outputs[]) noexcept
     {
         for (auto i = 0u; i < sample_count; ++i)
             _process_one_sample(nullptr, outputs + i * _output_count);
-
-        const auto buffer_size = _output_count * sample_count;
-        for (auto i = 0u; i < buffer_size; ++i)
-            outputs[i] *= _main_gain;
     }
 
     void synthesizer::midi_note_on(uint8_t note, float velocity)
@@ -202,19 +191,6 @@ namespace Gammou {
         return _polyphonic_circuit_context.get_instance_count();
     }
 
-    void synthesizer::dump_native_code(const std::string& filename_prefix)
-    {
-        const uint8_t *master_code_data = nullptr;
-        const uint8_t *polyphonic_code_data = nullptr;
-        std::size_t master_code_size = 0u;
-        std::size_t polyphonic_code_size = 0u;
-
-        if (polyphonic_code_data = _polyphonic_circuit_context.get_native_code(polyphonic_code_size))
-            _dump_native_code(filename_prefix + "_polyponic.bin", polyphonic_code_data, polyphonic_code_size);
-        if (master_code_data = _master_circuit_context.get_native_code(master_code_size))
-            _dump_native_code(filename_prefix + "_master.bin", master_code_data, master_code_size);
-    }
-
     void synthesizer::enable_ir_dump(bool enable)
     {
         _master_circuit_context.enable_ir_dump(enable);
@@ -240,23 +216,5 @@ namespace Gammou {
 
         //  Apply master processing
         _master_circuit_context.process(polyphonic_output, output);
-    }
-
-    void synthesizer::_dump_native_code(const std::string& path, const uint8_t *data, std::size_t size)
-    {
-        if (size > 0)
-        {
-            std::ofstream output{path.c_str(), std::ios::binary};
-            if (output.is_open()) {
-                LOG_INFO("[synthesizer] Dumping native code to '%s'\n", path.c_str());
-                output.write(reinterpret_cast<const char*>(data), size);
-                output.close();
-            }
-        }
-        else
-        {
-            LOG_WARNING("[synthesizer][_dump_native_code] Empty native code was not dumped to '%s'.",
-                path.c_str());
-        }
     }
 }

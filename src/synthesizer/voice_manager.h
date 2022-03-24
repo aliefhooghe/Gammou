@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "graph_execution_context.h"
+#include <DSPJIT/graph_execution_context.h>
 
 namespace Gammou
 {
@@ -56,7 +56,7 @@ namespace Gammou
 
         inline auto _get_voice_midi_input(voice voice) noexcept
         {
-            return _midi_input_values.data() + 
+            return _midi_input_values.data() +
                 static_cast<int>(voice) * static_cast<int>(midi_input_count);
         }
 

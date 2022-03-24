@@ -1,7 +1,9 @@
 
-#include "desktop_application.h"
 
-#include "backends/common/configuration.h"
+#include <fstream>
+#include <DSPJIT/log.h>
+
+#include "desktop_application.h"
 #include "builtin_plugins/load_builtin_plugins.h"
 #include "gui/control_node_widgets/load_control_plugins.h"
 #include "helpers/alphabetical_compare.h"
@@ -9,19 +11,16 @@
 #include "plugin_system/package_loader.h"
 #include "synthesizer/midi_parser.h"
 
-#ifdef GAMMOU_BENCHMARKING_MODE
-#include <chrono>
-#endif
-
 namespace Gammou {
 
-    desktop_application::desktop_application(unsigned int input_count, unsigned int output_count)
-    : _synthesizer{_llvm_context, 44100.f, input_count, output_count}
+    desktop_application::desktop_application(
+        const configuration& config)
+    : _synthesizer{_llvm_context, config.synthesizer_config}
     {
         // midi multiplex
         _initialize_midi_multiplex();
 
-        // gui
+        // additional toolbox
         const View::layout_builder builder{};
 
         auto additional_toolbox =
@@ -33,7 +32,34 @@ namespace Gammou {
                 builder.header(_make_debug_toolbox())
             );
 
-        _application = std::make_unique<application>(_synthesizer, std::move(additional_toolbox));
+        // initialize application
+        _application =
+            std::make_unique<application>(
+                config.application_config,
+                _synthesizer,
+                std::move(additional_toolbox));
+
+        if (config.initial_path.has_value())
+        {
+            const auto& patch_path = config.initial_path.value();
+            try
+            {
+                nlohmann::json json;
+                std::ifstream stream{patch_path, std::ios_base::in};
+
+                if (!stream.good())
+                    throw std::invalid_argument("Unable to open initial patch file");
+                else
+                    stream >> json;
+
+                _application->deserialize(json);
+            }
+            catch (std::exception& error)
+            {
+                LOG_ERROR("[desktop application] Unable to load initial patch: '%s'\n",
+                    patch_path.generic_string().c_str());
+            }
+        }
 
         //  display
         _display = View::create_application_display(_application->main_gui(), 1);
@@ -44,53 +70,17 @@ namespace Gammou {
         _stop_audio();
     }
 
-    void desktop_application::run()
+    void desktop_application::open_display()
     {
         _display->open("Gammou");
-#ifdef GAMMOU_BENCHMARK_MODE
+    }
+    void desktop_application::close_display()
+    {
+        _display->close();
+    }
 
-        const auto block_count = 20u;
-        const auto block_size = 30000u;
-        const auto count = block_count * block_size;
-
-        auto minimum_sample_per_seconds = std::numeric_limits<float>::max();
-        bool send_note_on = true;
-        uint8_t current_note = 0;
-        float dummy_output[2];
-
-        _synthesizer.set_sample_rate(44100.f);
-
-        while (_display->is_open()) {
-            const auto start = std::chrono::steady_clock::now();
-            _synthesizer.update_program();
-
-            for (auto j = 0u; j < block_count; ++j) {
-                for (auto i = 0u; i < block_size; ++i)
-                    _synthesizer.process_sample(nullptr, dummy_output);
-
-                if (send_note_on)
-                    _synthesizer.midi_note_on(current_note, 0.5);
-                else
-                    _synthesizer.midi_note_off(current_note, 0.5);
-
-                current_note++;
-
-                if (current_note >= 128) {
-                    current_note = 0u;
-                    send_note_on = !send_note_on;
-                }
-            }
-
-            const auto end = std::chrono::steady_clock::now();
-            const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-            const auto sample_per_seconds = 1000.f * static_cast<float>(count) / static_cast<float>(duration);
-            std::cout << "Current speed " << std::scientific << sample_per_seconds << " samples per second\n";
-
-            if (sample_per_seconds < minimum_sample_per_seconds)
-                minimum_sample_per_seconds = sample_per_seconds;
-        }
-        std::cout << "Minimum speed " << minimum_sample_per_seconds << " samples per second\n";
-#endif
+    void desktop_application::wait_display()
+    {
         _display->wait();
     }
 
@@ -255,7 +245,7 @@ namespace Gammou {
 
         //  Build a widget view of device tree
         auto view =
-            View::make_directory_view(std::move(audio_device_tree), 500, 50);
+            View::make_directory_view(std::move(audio_device_tree), 300, 50);
 
         //  Set callback to select
         view->set_value_select_callback(
@@ -299,20 +289,12 @@ namespace Gammou {
             midi_settings_widget->insert_widget(x_offset * 18, y_offset, std::move(device_label));
         }
 
-        midi_settings_widget->resize(500, line_height * std::max(1u, midi_input_count) + y_start_offset * 2);
+        midi_settings_widget->resize(300, line_height * std::max(1u, midi_input_count) + y_start_offset * 2);
         return midi_settings_widget;
     }
 
     std::unique_ptr<View::widget> desktop_application::_make_debug_toolbox()
     {
-        // Native code dump to file
-        auto dump_code_button = std::make_unique<View::text_push_button>("Dump native code");
-        dump_code_button->set_callback(
-            [this]()
-            {
-                _synthesizer.dump_native_code("native_code");
-            });
-
         // Enable/disable ir dump on logs
         auto dump_ir_box = std::make_unique<View::checkbox>();
         dump_ir_box->set_callback(
@@ -325,7 +307,6 @@ namespace Gammou {
 
         View::layout_builder builder{};
         return builder.vertical(
-            std::move(dump_code_button),
             builder.horizontal(
                 std::move(dump_ir_box),
                 std::make_unique<View::label>("Enable ir dump")),

@@ -228,8 +228,6 @@ function(add_gammou_package target)
 			--common-libs ${package_lib_modules}
 		DEPENDS
 			${GAMMOU_PACKAGE_GENERATOR_PATH}
-			${package_lib_modules}
-			${all_plugin_content_files}
 			${ARGS_CONTENT_FILE}
 	)
 
@@ -239,6 +237,7 @@ function(add_gammou_package target)
 		ALL
 		DEPENDS
 			${package_content_file}
+			${ARGS_PLUGINS}
 			${package_plugin_modules}
 			${package_lib_modules}
 	)

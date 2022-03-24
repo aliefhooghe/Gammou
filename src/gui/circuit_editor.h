@@ -8,7 +8,7 @@
 #include <string>
 #include <nlohmann/json.hpp>
 
-#include <compile_node_class.h>   //  DSPJIT nodes
+#include <DSPJIT/compile_node_class.h>
 #include <view.h>
 
 
@@ -25,9 +25,9 @@ namespace Gammou
 
         void apply_color_theme(const View::color_theme& theme) override;
 
-        void set_name(const std::string& name);
-        void set_input_name(unsigned int input_id, const std::string& name);
-        void set_output_name(unsigned int output_id, const std::string& name);
+        virtual void set_name(const std::string& name);
+        virtual void set_input_name(unsigned int input_id, const std::string& name);
+        virtual void set_output_name(unsigned int output_id, const std::string& name);
 
         void set_internal(bool internal = true) noexcept { _is_internal = internal; }
         bool is_internal() const noexcept { return _is_internal; }
@@ -162,7 +162,7 @@ namespace Gammou
             OFF,
             DRAG_NODE,
             MOVE_NODE,
-            LINK_NODE 
+            LINK_NODE
         };
 
         drag_state _drag_state{drag_state::OFF};

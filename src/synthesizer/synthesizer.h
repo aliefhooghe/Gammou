@@ -3,9 +3,8 @@
 
 #include <memory>
 
-#include <compile_node_class.h>
-#include <graph_execution_context.h>
-#include <object_dumper.h>
+#include <DSPJIT/compile_node_class.h>
+#include <DSPJIT/graph_execution_context_factory.h>
 
 #include "voice_manager.h"
 #include "parameter_manager.h"
@@ -29,23 +28,28 @@ namespace Gammou
         using parameter = parameter_manager::parameter;
         using voice_mode = voice_manager::mode;
 
+        struct configuration
+        {
+            float sample_rate{44100.f};
+            unsigned int input_count{0u};
+            unsigned int output_count{2u};
+            unsigned int voice_count{256u};
+            opt_level optimization_level{opt_level::Aggressive};
+            llvm::TargetOptions target_options{};
+        };
+
         /**
          *  \brief Initialize a synthesizer instance
          *  \param llvm_context llvm context instance used to perform just in time compilation
-         *  \param input_count \todo
+         *  \param input_count \todo (unused)
          *  \param output_count synthesizer output_count \see output_node()
          *  \param voice_count the maximum number of voice that can be played at the same time
          *  \param level Optimization level in {None, Less, Default, Aggressive}
          *  \param options native target code generation advanced options
          */
         synthesizer(
-            llvm::LLVMContext &llvm_context,
-            float samplerate = 48000.f,
-            unsigned int input_count = 0u,
-            unsigned int output_count = 2u,
-            unsigned int voice_count = 256,
-            const opt_level level = opt_level::Aggressive,
-            const llvm::TargetOptions& options = llvm::TargetOptions{});
+            llvm::LLVMContext& llvm_context,
+            const configuration& config);
 
         synthesizer(const synthesizer&) = delete;
         synthesizer(synthesizer&&) = delete;
@@ -111,22 +115,6 @@ namespace Gammou
 
 
         std::size_t get_voice_count() const noexcept;
-
-        /**
-         *  \brief Set the synthesizer main gain (output factor)
-         *  \param gain Main gain to be applid on output
-         */
-        void set_main_gain(float gain) noexcept { _main_gain = gain; }
-
-        /**
-         *  \brief Get the current main gain
-         */
-        auto get_main_gain() const noexcept { return _main_gain; }
-
-        /**
-         * \brief Dump circuits native code objects to file
-         */
-        void dump_native_code(const std::string& filename_prefix);
 
         /**
          * \brief Enable/disable the IR code dump to logs
@@ -226,7 +214,6 @@ namespace Gammou
         using param_id = parameter_manager::param_id;
 
         void _process_one_sample(const float[], float output[]) noexcept;
-        void _dump_native_code(const std::string& path, const uint8_t *data, std::size_t size);
 
         class master_circuit_controller : public circuit_controller
         {
@@ -285,9 +272,6 @@ namespace Gammou
         std::array<param_id, 256u> _midi_learn_map;
         bool _midi_learning{false};
         param_id _learning_param;
-
-        //  Main settings
-        float _main_gain{0.2f};
     };
 
 } // namespace Gammou

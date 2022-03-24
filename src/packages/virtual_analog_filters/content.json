@@ -2,6 +2,9 @@
     "package-name" : "Virtual Analog Filters",
     "package-uid" : 5458928518991008774,
     "package-dependencies" : [
-        1677973763332651888
+        {
+            "name": "Base",
+            "uid": 1677973763332651888
+        }
     ]
 }

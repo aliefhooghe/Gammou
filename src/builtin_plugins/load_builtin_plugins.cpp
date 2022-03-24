@@ -3,7 +3,7 @@
 #include "node_widget_builtin_plugin.h"
 #include "load_builtin_plugins.h"
 
-#include "common_nodes.h" //  from DSPJIT
+#include <DSPJIT/common_nodes.h>
 #include "additional_builtin_nodes.h"
 
 namespace Gammou {

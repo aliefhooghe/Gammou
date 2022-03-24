@@ -1,4 +1,6 @@
 
+#include <DSPJIT/log.h>
+
 #include "configuration_widget.h"
 #include "synthesizer_gui.h"
 #include "helpers/layout_builder.h"
@@ -12,11 +14,11 @@ namespace Gammou
         configuration_page(configuration_page&&) noexcept = delete;
         ~configuration_page() override;
 
-        void compile();
-        void register_static_memory_chunk(const DSPJIT::compile_node_class& node, std::vector<uint8_t>&& data);
-        void free_static_memory_chunk(const DSPJIT::compile_node_class& node);
-        void display();
-        void rename(const std::string& name);
+        void compile() override;
+        void register_static_memory_chunk(const DSPJIT::compile_node_class& node, std::vector<uint8_t>&& data) override;
+        void free_static_memory_chunk(const DSPJIT::compile_node_class& node) override;
+        void display() override;
+        void rename(const std::string& name) override;
 
     private:
         configuration_widget& _config_widget;
@@ -166,14 +168,13 @@ namespace Gammou
         nlohmann::json master_circuit{};
         nlohmann::json polyphonic_circuit{};
         synthesizer::voice_mode voicing_mode{synthesizer::voice_mode::POLYPHONIC};
-        float main_gain{0.2f};
     };
 
     NLOHMANN_JSON_SERIALIZE_ENUM(synthesizer::voice_mode, {
         {synthesizer::voice_mode::POLYPHONIC, "polyphonic"},
         {synthesizer::voice_mode::LEGATO, "legato"}
     })
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(synthesizer_state, master_circuit, polyphonic_circuit, voicing_mode, main_gain)
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(synthesizer_state, master_circuit, polyphonic_circuit, voicing_mode)
 
     /**
      *  Configuration widget implementation
@@ -232,7 +233,6 @@ namespace Gammou
                 });
 
             _synthesizer.set_voice_mode(state.voicing_mode);
-            _synthesizer.set_main_gain(state.main_gain);
 
             // Recompile the new loaded circuit
             _synthesizer.get_master_circuit_controller().compile();
@@ -249,8 +249,7 @@ namespace Gammou
         const synthesizer_state state{
             _master_circuit_editor->serialize(),
             _polyphonic_circuit_editor->serialize(),
-            _synthesizer.get_voice_mode(),
-            _synthesizer.get_main_gain()
+            _synthesizer.get_voice_mode()
         };
         nlohmann::json json{};
         to_json(json, state);

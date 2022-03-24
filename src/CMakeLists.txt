@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (NOT WIN32)
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pkgconf_modules")
 endif()
 
 # Use static runtime library on MSVC
@@ -38,8 +38,8 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/application/voice_mode_selector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/application/voice_mode_selector.cpp
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/configuration.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/configuration.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/default_configuration.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/backends/common/default_configuration.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/builtin_plugins/additional_builtin_nodes.h
     ${CMAKE_CURRENT_SOURCE_DIR}/builtin_plugins/additional_builtin_nodes.cpp
@@ -57,8 +57,12 @@ set(GAMMOU_COMMON_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/circuit_editor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/configuration_tree.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/configuration_tree.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node_plugin.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node_plugin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node/composite_node_widget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node/composite_node_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node/composite_node_plugin.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node/composite_node_plugin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node/io_naming_toolbox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/composite_node/io_naming_toolbox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/configuration_widget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/configuration_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/factory_widget.h
@@ -102,7 +106,7 @@ set(GAMMOU_COMMON_SRC
 ############################
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/View/src View EXCLUDE_FROM_ALL)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/DSPJIT/src DSPJIT EXCLUDE_FROM_ALL)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/DSPJIT DSPJIT EXCLUDE_FROM_ALL)
 find_package(nlohmann_json CONFIG REQUIRED)
 
 ############################
@@ -115,6 +119,7 @@ if (GAMMOU_ENABLE_DESKTOP_APP)
     message(STATUS "Build desktop application")
     find_package(RtAudio REQUIRED)
     find_package(RtMidi REQUIRED)
+    find_package(cxxopts REQUIRED)
 
     set(GAMMOU_DESKTOP_SRC
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/desktop_application.h
@@ -124,15 +129,17 @@ if (GAMMOU_ENABLE_DESKTOP_APP)
 
     add_executable(gammou_desktop_app ${GAMMOU_DESKTOP_SRC} ${GAMMOU_COMMON_SRC})
     target_include_directories(gammou_desktop_app PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(gammou_desktop_app PUBLIC View DSPJIT RtMidi::rtmidi RtAudio::rtaudio nlohmann_json::nlohmann_json nlohmann_json)
+    target_link_libraries(gammou_desktop_app PUBLIC
+        View
+        DSPJIT
+        RtMidi::rtmidi
+        RtAudio::rtaudio
+        cxxopts::cxxopts
+        nlohmann_json::nlohmann_json
+        nlohmann_json)
 
     if (GAMMOU_DESKTOP_APP_BENCHMARK_MODE)
         target_compile_definitions(gammou_desktop_app PUBLIC "GAMMOU_BENCHMARK_MODE")
-    endif()
-
-    if(WIN32)
-        # Do not create a console application on windows
-        set_target_properties(gammou_desktop_app PROPERTIES LINK_FLAGS "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
     endif()
 
 endif()
@@ -154,7 +161,11 @@ if (GAMMOU_ENABLE_VST2_PLUGIN)
 
     add_library(gammou_vst2_plugin MODULE ${GAMMOU_VST_PLUGIN_SRC} ${GAMMOU_COMMON_SRC})
     target_include_directories(gammou_vst2_plugin PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(gammou_vst2_plugin PRIVATE View DSPJIT nlohmann_json::nlohmann_json nlohmann_json)
+    target_link_libraries(gammou_vst2_plugin PRIVATE
+        View
+        DSPJIT
+        nlohmann_json::nlohmann_json
+        nlohmann_json)
 
     if(WIN32)
         # On windows symbol are not exported by default

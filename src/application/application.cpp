@@ -1,7 +1,6 @@
 #include "application.h"
-#include "backends/common/configuration.h"
 #include "builtin_plugins/load_builtin_plugins.h"
-#include "gui/composite_node_plugin.h"
+#include "gui/composite_node/composite_node_plugin.h"
 #include "gui/configuration_widget.h"
 #include "gui/control_node_widgets/load_control_plugins.h"
 #include "gui/factory_widget.h"
@@ -14,11 +13,12 @@ namespace Gammou
 {
 
     application::application(
+        const configuration& config,
         synthesizer& synth,
         std::unique_ptr<View::widget>&& additional_toolbox)
     {
         _factory = node_widget_factory_builder{synth.get_llvm_context()}
-            .load_packages(configuration::get_packages_directory_path())
+            .load_packages(config.packages_path)
             .build();
 
         // Load control and builtin plugins into factory
@@ -26,7 +26,7 @@ namespace Gammou
         load_builtin_plugins(*_factory);
 
         // Set up the main gui
-        _main_gui = _make_main_gui(synth, std::move(additional_toolbox));
+        _main_gui = _make_main_gui(config, synth, std::move(additional_toolbox));
 
         //  Prepare synthesizer to use plugins
         synth.add_library_module(_factory->module());
@@ -49,6 +49,7 @@ namespace Gammou
     }
 
     std::unique_ptr<View::widget> application::_make_main_gui(
+        const configuration& config,
         synthesizer& synth,
         std::unique_ptr<View::widget>&& additional_toolbox)
     {
@@ -71,7 +72,7 @@ namespace Gammou
         return builder.windows(
                 builder.horizontal<false>(
                     builder.vertical<false>(
-                        make_patch_browser(*this, configuration::get_patch_path()),
+                        make_patch_browser(*this, config.patchs_path),
                         builder.header(std::move(factory_browser)),
                         builder.header(std::move(configuration_browser))),
                     builder.vertical(

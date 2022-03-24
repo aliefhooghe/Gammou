@@ -1,6 +1,7 @@
 
+#include <DSPJIT/common_nodes.h>
+
 #include "knob_node_widget.h"
-#include "common_nodes.h"
 #include "parameter_serialization.h"
 
 namespace Gammou {

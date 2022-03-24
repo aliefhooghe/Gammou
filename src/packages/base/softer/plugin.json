@@ -1,0 +1,7 @@
+{
+    "name" : "Softer",
+    "uid"  : 15045196858045223747,
+    "category" : "Filter",
+    "input-names" : ["in", "cutoff"],
+    "output-names" : ["out"]
+}

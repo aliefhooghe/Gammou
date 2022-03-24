@@ -102,11 +102,29 @@ add_gammou_plugin(
         ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
 
 add_gammou_plugin(
+    SofterPlugin
+    PLUGIN_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/softer/plugin.json
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/softer/process.c
+    INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
+
+add_gammou_plugin(
     Lp2Plugin
     PLUGIN_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/base/lp2/plugin.json
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/base/lp2/process.c
+    INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
+
+add_gammou_plugin(
+    Hp2Plugin
+    PLUGIN_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/hp2/plugin.json
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/hp2/process.c
     INCLUDE_DIRECTORIES
         ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
 
@@ -159,9 +177,11 @@ add_gammou_package(
         Invert
         Lp1Plugin
         Lp2Plugin
+        Hp2Plugin
         SawPlugin
         ShannonFreq
         SinPlugin
+        SofterPlugin
         SquarePlugin
         Tanh
     COMMON_LIBS

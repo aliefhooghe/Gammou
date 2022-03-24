@@ -1,7 +1,7 @@
 
 
 #include "additional_builtin_nodes.h"
-#include "graph_compiler.h"
+#include <DSPJIT/graph_compiler.h>
 
 namespace Gammou {
 
