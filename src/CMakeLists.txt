@@ -122,6 +122,9 @@ if (GAMMOU_ENABLE_DESKTOP_APP)
     find_package(cxxopts REQUIRED)
 
     set(GAMMOU_DESKTOP_SRC
+        ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/application_options.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/argument_parser.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/argument_parser.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/desktop_application.h
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/desktop_application.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/desktop_application/main.cpp
