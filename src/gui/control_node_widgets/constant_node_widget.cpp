@@ -1,4 +1,4 @@
-
+#include <sstream>
 #include <DSPJIT/common_nodes.h>
 #include "constant_node_widget.h"
 
