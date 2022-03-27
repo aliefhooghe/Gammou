@@ -12,7 +12,6 @@ void node_initialize(struct ramp_state* state)
 
 void node_process(struct ramp_state* state, float speed, float *out)
 {
-    const float dt = 1.f / _sample_rate;
-    state->value += speed / dt;
+    state->value += speed / _sample_rate;
     *out = state->value;
 }

@@ -536,7 +536,7 @@ namespace Gammou {
                     LOG_ERROR("[circuit_editor] Failed to create a node: %s\n", e.what());
                 }
 
-				return true;
+                return true;
             }
         }
 
@@ -619,9 +619,9 @@ namespace Gammou {
         float D = std::min<float>(std::fabs(x_input - x_output), x_input >= x_output ? 50.f : 100.f);
 
         nvgBeginPath(vg);
-		nvgMoveTo(vg, x_output, y_output);
+        nvgMoveTo(vg, x_output, y_output);
         nvgBezierTo(vg, x_output + D, y_output, x_input - D, y_input, x_input, y_input);
-		nvgStrokeWidth(vg, link_width);
+        nvgStrokeWidth(vg, link_width);
         nvgStrokeColor(vg, color);
         nvgStroke(vg);
     }
