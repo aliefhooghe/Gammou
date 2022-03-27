@@ -9,6 +9,7 @@ namespace Gammou {
     public:
         constant_node_widget_plugin();
         std::unique_ptr<plugin_node_widget> create_node(abstract_configuration_directory&) override;
+        std::unique_ptr<plugin_node_widget> create_node(abstract_configuration_directory&, const nlohmann::json&) override;
     };
 
 }

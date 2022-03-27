@@ -16,6 +16,11 @@ namespace Gammou
             const auto text_input_width = node_width - 2.f * node_widget::node_header_size;
             auto text_input = std::make_unique<View::text_input>(text_input_width);
 
+            // Pretty print the initial value
+            std::stringstream ss;
+            ss << initial_value;
+            text_input->set_text(ss.str());
+
             text_input->set_enter_callback(
                 [this, input = text_input.get()]()
                 {
@@ -30,7 +35,15 @@ namespace Gammou
                 std::move(text_input));
         }
 
+    protected:
+        nlohmann::json serialize_internal_state() override
+        {
+            const auto current_value = _constant_node->get_value();
+            return { { "value", current_value } };
+        }
+
     private:
+
         std::unique_ptr<DSPJIT::constant_node> _create_constant_node(float initial_value)
         {
             auto constant_node = std::make_unique<DSPJIT::constant_node>(initial_value);
@@ -65,5 +78,11 @@ namespace Gammou
     std::unique_ptr<plugin_node_widget> constant_node_widget_plugin::create_node(abstract_configuration_directory&)
     {
         return std::make_unique<constant_node_widget>(1.f);
+    }
+
+    std::unique_ptr<plugin_node_widget> constant_node_widget_plugin::create_node(abstract_configuration_directory&, const nlohmann::json& internal_state)
+    {
+        const auto initial_value = internal_state["value"].get<float>();
+        return std::make_unique<constant_node_widget>(initial_value);
     }
 }
