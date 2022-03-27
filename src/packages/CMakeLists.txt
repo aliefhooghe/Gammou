@@ -156,6 +156,15 @@ add_gammou_plugin(
         ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
 
 add_gammou_plugin(
+    Ramp
+    PLUGIN_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/ramp/plugin.json
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/ramp/process.c
+    INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
+
+add_gammou_plugin(
     ShannonFreq
     PLUGIN_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/base/shannon_freq/plugin.json
@@ -178,6 +187,7 @@ add_gammou_package(
         Lp1Plugin
         Lp2Plugin
         Hp2Plugin
+        Ramp
         SawPlugin
         ShannonFreq
         SinPlugin

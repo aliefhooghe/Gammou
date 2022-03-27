@@ -1,0 +1,7 @@
+{
+    "name" : "Ramp",
+    "uid"  : 10489713181897126985,
+    "category" : "Calculus",
+    "input-names" : ["Speed"],
+    "output-names" : ["out"]
+}
