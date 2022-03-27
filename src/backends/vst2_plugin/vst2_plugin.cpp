@@ -51,7 +51,7 @@ namespace Gammou {
 
         //  Initialize display
         _display = View::create_vst2_display(_application->main_gui(), 1);
-        _update_windos_rect();
+        _update_windows_rect();
     }
 
     AEffect *vst2_plugin::create_AEffect_instance(audioMasterCallback master)
@@ -267,7 +267,7 @@ namespace Gammou {
         }
     }
 
-    void vst2_plugin::_update_windos_rect()
+    void vst2_plugin::_update_windows_rect()
     {
         _window_rect.left = 0u;
         _window_rect.right = _display->px_width();
