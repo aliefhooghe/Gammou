@@ -65,16 +65,19 @@ namespace Gammou {
 
     std::unique_ptr<plugin_node_widget> node_widget_factory::create_node(const nlohmann::json& state, abstract_configuration_directory& parent_config)
     {
-        const auto id = state.at("plugin-uid").get<uint64_t>();
-        const auto& internal_state = state.at("state");
+        const auto uid = state.at("plugin-uid").get<uint64_t>();
 
-        LOG_DEBUG("node_widget_factory::create_node({plugin-uid : %llu, ...})\n", id);
-
-        auto it = _plugins.find(id);
-        if (it != _plugins.end())
-            return it->second->create_node(parent_config, internal_state);
-        else
+        LOG_DEBUG("node_widget_factory::create_node({plugin-uid : %llu, ...})\n", uid);
+        auto it = _plugins.find(uid);
+        if (it == _plugins.end())
             throw std::runtime_error("node_widget_factory::create_node unkown id");
+
+        // Use state if one was provided
+        auto internal_state_it = state.find("state");
+        if (internal_state_it != state.end())
+            return it->second->create_node(parent_config, *internal_state_it);
+        else
+            return it->second->create_node(parent_config);
     }
 
     std::unique_ptr<llvm::Module> node_widget_factory::module()
@@ -100,7 +103,12 @@ namespace Gammou {
     {
         nlohmann::json json;
         json["plugin-uid"] = _plugin_id;
-        json["state"] = serialize_internal_state();
+
+        // Add the internal state if any
+        auto internal_state = serialize_internal_state();
+        if (!internal_state.is_null())
+            json["state"] = serialize_internal_state();
+
         return json;
     }
 }
