@@ -51,7 +51,6 @@ namespace Gammou {
 
         //  Initialize display
         _display = View::create_vst2_display(_application->main_gui(), 1);
-        _update_windows_rect();
     }
 
     AEffect *vst2_plugin::create_AEffect_instance(audioMasterCallback master)
@@ -79,6 +78,7 @@ namespace Gammou {
             case effEditGetRect:
             {
                 ERect **rect_ref = (ERect **)ptr;
+                plugin->_update_windows_rect();
                 *rect_ref = &(plugin->_window_rect);
             }
                 break;
