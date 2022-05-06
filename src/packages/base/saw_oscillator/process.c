@@ -17,7 +17,7 @@ void node_initialize(struct saw_state *saw)
  **/
 void node_process(struct saw_state *saw, float freq, float *out)
 {
-    const float dt = 1.f / _sample_rate;
+    const float dt = _sample_duration;
     const float fr = clamp(freq, 0.5f, 18000.f);
     const float output_factor = _sample_rate / (4.f * fr * (1.f - fr / _sample_rate));
 

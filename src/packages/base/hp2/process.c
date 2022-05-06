@@ -27,7 +27,7 @@ void node_process(struct filter_state *state, float in, float cutoff_freq, float
     const double omega0 = 6.28318530718f * clamp(cutoff_freq, 1.f, 16000.f);
     const double Q = clamp(q, 0.6f, 100.f);
 
-    const double dt = 1.f / _sample_rate;
+    const double dt = _sample_duration;
     const double y = state->output;
     const double yd = state->output_derivate;
     const double xd2 = (in - 2.f * state->input_queue[0] + state->input_queue[1]) / (dt * dt);

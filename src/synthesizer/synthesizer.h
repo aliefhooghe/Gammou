@@ -13,6 +13,7 @@ namespace Gammou
 {
     class synthesizer {
         static constexpr auto _samplerate_symbol = "_sample_rate";
+        static constexpr auto _sample_duration_symbol = "_sample_duration";
 
     public:
 

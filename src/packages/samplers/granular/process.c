@@ -57,7 +57,7 @@ static float grain_env(float t, float dev)
 
 void node_process(const wav_channel *sample, granular_state *state, float pos, float width, float radius, float radius_width, float dev, float speed, float *out)
 {
-    const float dt = 1.f / _sample_rate;
+    const float dt = _sample_duration;
     const float max_env_cursor = dev * 4.5f;
     float output = 0.f;
 
