@@ -22,7 +22,6 @@ endif()
 
 option(GAMMOU_ENABLE_DESKTOP_APP "Build a desktop application" OFF)
 option(GAMMOU_ENABLE_VST2_PLUGIN "Build a VST2 plugin" ON)
-option(GAMMOU_DESKTOP_APP_BENCHMARK_MODE "Enable benchmark mode in desktop application" OFF)
 
 ############################
 #                          #
@@ -142,10 +141,6 @@ if (GAMMOU_ENABLE_DESKTOP_APP)
         cxxopts::cxxopts
         nlohmann_json::nlohmann_json
         nlohmann_json)
-
-    if (GAMMOU_DESKTOP_APP_BENCHMARK_MODE)
-        target_compile_definitions(gammou_desktop_app PUBLIC "GAMMOU_BENCHMARK_MODE")
-    endif()
 
 endif()
 
