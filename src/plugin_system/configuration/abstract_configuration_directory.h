@@ -2,6 +2,7 @@
 #define GAMMOU_CONFIGURATION_DIRECTORY_H_
 
 #include <memory>
+#include <view.h>
 #include "abstract_configuration_page.h"
 
 namespace Gammou

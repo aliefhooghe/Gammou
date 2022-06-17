@@ -2,6 +2,7 @@
 #define GAMMOU_CONFIGURATION_PAGE_H_
 
 #include <string>
+#include <DSPJIT/compile_node_class.h>
 
 namespace Gammou
 {
