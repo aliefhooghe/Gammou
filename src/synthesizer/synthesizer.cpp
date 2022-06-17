@@ -165,12 +165,15 @@ namespace Gammou {
 
     void synthesizer::set_sample_rate(float samplerate)
     {
+        const auto sampleduration = 1.f / samplerate;
         LOG_INFO("[synthesizer : Set sample rate to %f Hz\n", samplerate);
 
         _master_circuit_context.set_global_constant(_samplerate_symbol, samplerate);
+        _master_circuit_context.set_global_constant(_sample_duration_symbol, sampleduration);
         _master_circuit_controller.compile();
 
         _polyphonic_circuit_context.set_global_constant(_samplerate_symbol, samplerate);
+        _polyphonic_circuit_context.set_global_constant(_sample_duration_symbol, sampleduration);
         _polyphonic_circuit_controller.compile();
 
         _parameter_manager.set_sample_rate(samplerate);

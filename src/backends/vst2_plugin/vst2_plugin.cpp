@@ -55,8 +55,15 @@ namespace Gammou {
 
     AEffect *vst2_plugin::create_AEffect_instance(audioMasterCallback master)
     {
-        auto plugin = new vst2_plugin(master);
-        return plugin->_effect;
+        try {
+            auto plugin = new vst2_plugin(master);
+            return plugin->_effect;
+        }
+        catch (...)
+        {
+            // Avoid throwing a c++ exception to a non c++ program
+            return nullptr;
+        }
     }
 
     intptr_t vst2_plugin::dispatcher_proc(

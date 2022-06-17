@@ -8,9 +8,10 @@ extern "C" {
 #endif
 
 /**
- * \brief Global synthesizer _sample_rate variable
+ * \brief Global synthesizer variables
  */
-extern const float _sample_rate;
+extern const float _sample_rate;        // The synthesizer sample rate (Hz)
+extern const float _sample_duration;    // The synthesizer sample duration (Sec)
 
 #ifdef __cplusplus
 }
