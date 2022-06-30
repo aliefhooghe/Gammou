@@ -30,11 +30,7 @@ function(add_llvm_bytecode_object)
         message(FATAL_ERROR "add_llvm_bytecode_object missing OUTPUT argument")
     endif()
 
-    set (CLANG_IR_FLAGS
-        "-emit-llvm"
-        "-O2"
-        # "-I${CMAKE_CURRENT_SOURCE_DIR}/common"
-    )
+    set (CLANG_IR_FLAGS "-emit-llvm" "-O2")
 
     if (GAMMOU_PLUGIN_COMMON_INCLUDE_DIRECTORIES)
         foreach(INC_DIR ${GAMMOU_PLUGIN_COMMON_INCLUDE_DIRECTORIES})
@@ -229,7 +225,8 @@ function(add_gammou_package target)
         DEPENDS
             ${GAMMOU_PACKAGE_GENERATOR_PATH}
             ${ARGS_CONTENT_FILE}
-    )
+            ${all_plugin_content_files}
+)
 
     #    Create the target
     add_custom_target(
