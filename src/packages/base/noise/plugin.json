@@ -1,0 +1,7 @@
+{
+    "name" : "Noise",
+    "uid"  : 14166506368755242698,
+    "category" : "Oscillator",
+    "input-names" : [],
+    "output-names" : ["out"]
+}

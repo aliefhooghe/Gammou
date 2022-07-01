@@ -1,7 +1,9 @@
 
 #include <math.h>
-#include <synthesizer_def.h>
+
+#include <math_utils.h>
 #include <sample_utils.h>
+#include <synthesizer_def.h>
 
 #define GRAIN_COUNT 16u
 
@@ -20,20 +22,15 @@ typedef struct
 
 } granular_state;
 
-static unsigned int rnd_step(unsigned int last)
-{
-    return 1664525u * last + 1013904223u;
-}
-
 static float rnd_val(unsigned int rnd)
 {
-    return ((float)(rnd % 10000) - 5000.f) / 10000.f;
+    return ((float)(rnd % 0xFFFFu) - (float)0xFFFFu) / (float)(0x1FFFEu);
 }
 
 static float rnd_float(granular_state *state, float center, float width)
 {
     const float val = center + rnd_val(state->rnd) * width;
-    state->rnd = rnd_step(state->rnd);
+    state->rnd = linear_congruential_step(state->rnd);
     return val;
 }
 

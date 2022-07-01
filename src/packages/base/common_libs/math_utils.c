@@ -52,3 +52,8 @@ float copy_sign(float from, float to)
         0x7fffffffu & (*(unsigned int*)&to);    // absolute(to
     return *(const float*)&bits;
 }
+
+unsigned int linear_congruential_step(unsigned int last)
+{
+    return 1664525u * last + 1013904223u;
+}

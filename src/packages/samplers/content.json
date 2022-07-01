@@ -1,4 +1,10 @@
 {
     "package-name" : "Samplers",
-    "package-uid" : 551797650914548932
+    "package-uid" : 551797650914548932,
+    "package-dependencies" : [
+        {
+            "name": "Base",
+            "uid": 1677973763332651888
+        }
+    ]
 }

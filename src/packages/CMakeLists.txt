@@ -39,6 +39,15 @@ add_gammou_plugin(
         ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
 
 add_gammou_plugin(
+    Noise
+    PLUGIN_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/noise/plugin.json
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/noise/process.c
+    INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
+
+add_gammou_plugin(
     Tanh
     PLUGIN_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/base/tanh_plugin/plugin.json
@@ -182,6 +191,7 @@ add_gammou_package(
         Clamp
         DCBlocker
         Exp
+        Noise
         HalfTanh
         Invert
         Lp1Plugin
@@ -301,7 +311,8 @@ add_gammou_plugin(
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/samplers/sampler/process.c
     INCLUDE_DIRECTORIES
-        ${CMAKE_CURRENT_SOURCE_DIR}/samplers/common_libs)
+        ${CMAKE_CURRENT_SOURCE_DIR}/samplers/common_libs
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
 
 add_gammou_plugin(
     Granular
@@ -310,7 +321,8 @@ add_gammou_plugin(
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/samplers/granular/process.c
     INCLUDE_DIRECTORIES
-        ${CMAKE_CURRENT_SOURCE_DIR}/samplers/common_libs)
+        ${CMAKE_CURRENT_SOURCE_DIR}/samplers/common_libs
+        ${CMAKE_CURRENT_SOURCE_DIR}/base/common_libs)
 
 add_gammou_package(
     Samplers

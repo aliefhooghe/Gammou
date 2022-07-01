@@ -23,4 +23,9 @@ float exclude_zero(float x, float epsilon);
 float absolute(float x);
 float copy_sign(float from, float to);
 
+/**
+ * \brief Linear congruential generator step
+ */
+unsigned int linear_congruential_step(unsigned int last);
+
 #endif
