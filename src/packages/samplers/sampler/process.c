@@ -16,5 +16,5 @@ void node_process(const wav_channel *const sample, sampler_state *state, float p
 {
     *out = channel_value_lin(sample, pos + state->pos);
     *out2 = channel_value_raw(sample, pos + state->pos);
-    state->pos += (speed / _sample_rate);
+    state->pos += (speed * _sample_duration);
 }
