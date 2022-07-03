@@ -185,17 +185,18 @@ namespace Gammou {
                     _audio_device->stopStream();
                 if (_audio_device->isStreamOpen())
                     _audio_device->closeStream();
-                _audio_device.reset();
             }
             catch(...)
             {
                 LOG_ERROR("[desktop_application][_stop_audio] Failed to stop audio\n");
             }
+            _audio_device.reset();
         }
     }
 
     bool desktop_application::_ignore_api(RtAudio::Api api)
     {
+        // The ALSA API is slowing down the startup too much
         return (api == RtAudio::LINUX_ALSA);
     }
 
