@@ -229,7 +229,7 @@ namespace Gammou {
             for (auto idx = 0u; idx <  device_count; ++idx) {
                 const auto info = rt_audio.getDeviceInfo(idx);
 
-                if (info.probed) {
+                if (info.probed && info.outputChannels == _synthesizer.get_output_count()) {
                     auto& device_dir = api_dir.get_or_create_directory(info.name);
 
                     for (auto sample_rate : info.sampleRates) {
