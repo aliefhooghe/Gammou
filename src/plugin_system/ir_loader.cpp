@@ -1,5 +1,6 @@
 
 #include <DSPJIT/ir_helper.h>
+#include <DSPJIT/log.h>
 
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/IR/Verifier.h>
@@ -18,10 +19,22 @@ namespace Gammou {
         std::string error_string;
 
         for (auto i = 0u; i < paths.size(); ++i) {
-            auto loaded_module = llvm::parseIRFile(paths[i].generic_string(), error, ctx);
+            const auto path = paths[i].generic_string();
+            auto loaded_module = llvm::parseIRFile(path, error, ctx);
 
+            if (!loaded_module)
+            {
+                LOG_ERROR("[IR loader] Failed to load module %s\n", path.c_str());
+                LOG_ERROR("[IR loader] Error: %s, at line %d\n",
+                    error.getMessage().str().c_str(), error.getLineNo());
+                throw std::invalid_argument("[IR loader] Load failure");
+            }
             if (DSPJIT::check_module(*loaded_module, error_string))
-                throw std::invalid_argument("[IR loader] IR module is broken: " + error_string);
+            {
+                LOG_ERROR("[IR loader] Modume verification error for %s: %s\n",
+                    path.c_str(), error_string.c_str());
+                throw std::invalid_argument("[IR loader] IR module is broken");
+            }
 
             // link the modules togethers
             if (i == 0u)
